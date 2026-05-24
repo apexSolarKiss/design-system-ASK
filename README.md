@@ -1,5 +1,7 @@
 # ASK — Design System
 
+![design-system-ASK banner](design-system-ASK-banner.jpg)
+
 > Minimal design foundations for the ASK visual identity. Tokens, not components — the irreducible expression of the system, meant to be imported and built on.
 >
 > **order from chaos // beauty in systems**
