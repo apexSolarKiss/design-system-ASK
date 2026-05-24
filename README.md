@@ -1,4 +1,4 @@
-# ASK — Design System
+# Design System // ASK
 
 ![design-system-ASK banner](design-system-ASK-banner.jpg)
 
@@ -7,6 +7,8 @@
 > **order from chaos // beauty in systems**
 
 The line above is the ASK master tagline. It is canonically defined in `brand-architecture.md` (in ASK's context system, not this repo) — displayed here, not defined here. See the Voice section below for the protected-payload rule.
+
+This repo, `design-system-ASK`, is the reference implementation of the ASK design family.
 
 This repo conforms to **`visual-identity-system.md`** in ASK's canonical context as the source of truth. The files here are a downstream implementation; when the two disagree, the canonical file wins.
 
@@ -19,9 +21,11 @@ A foundational design system for **ASK** — a meta-brand expressed through a si
 Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers on top of these tokens elsewhere; it does not live here.
 
 ### Source materials
-- `uploads/ASK 9 4.jpg` — primary brand mark, 2160×2160 raster
-- `uploads/ASK 9 4.ai` *(referenced but not transmitted; vector source not currently in project — request when needed for print/large-format)*
-- Canonical spec: `visual-identity-system.md` (in ASK's personal context system; not present in this repo)
+- `assets/logo-ASK.svg` — primary vector wordmark, `fill: currentColor`
+- `assets/logo-ASK-white.png` — raster wordmark, white on transparent (light-mode pairing)
+- `assets/logo-ASK-lavender-ASK.png` — raster wordmark, lavender-ASK on transparent (dark-mode pairing)
+- Canonical spec: `visual-identity-system.md` (in ASK's canonical context, not in this repo)
+- Operator-side vector working source: `ASK 9 4.ai` (Illustrator file, not in this repo by design — production assets only)
 
 ---
 
@@ -192,5 +196,5 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 
 ## Caveats / known gaps
 
-- The `.ai` vector source was not transmitted — the wordmark currently lives only as a 2160×2160 raster. Send the vector for print or large-format work.
+- The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
 - This is foundations only. No product, codebase, or sub-brand surface has been built on top yet.
