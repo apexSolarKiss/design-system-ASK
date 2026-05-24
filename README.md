@@ -197,4 +197,4 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- This is foundations only. No product, codebase, or sub-brand surface has been built on top yet.
+- This is foundations only. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
