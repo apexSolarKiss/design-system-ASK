@@ -1,0 +1,48 @@
+/* Shared card chrome for design-system preview cards.
+   Cards are designed at 700px wide, height varies.
+   Each card is its own HTML file that imports this + colors_and_type.css.
+*/
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  color: var(--fg-on-card, #201D26);
+}
+body {
+  width: 700px;
+  box-sizing: border-box;
+}
+.card {
+  box-sizing: border-box;
+  width: 700px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.card.tinted {
+  background: linear-gradient(45deg, #D4C6E1 0%, #E2D3F0 100%);
+  color: #FFFFFF;
+}
+.card.dark {
+  background: linear-gradient(45deg, #201D26 0%, #0A090C 100%);
+  color: #D4C6E1;
+}
+.card.plain {
+  background: #FFFFFF;
+  color: #201D26;
+}
+.label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0;
+}
+.mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+}
