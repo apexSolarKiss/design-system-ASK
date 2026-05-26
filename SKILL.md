@@ -28,6 +28,14 @@ Cardinal rules — do not break without explicit permission:
 
 If creating visual artifacts (slides, mocks, throwaway prototypes), copy assets out and create static HTML files for the user to view. Link `colors_and_type.css` and inherit its tokens — don't redefine them.
 
+For static artifacts, also:
+- copy or sync the design-system-ASK files you reference (`colors_and_type.css`, fonts, required assets) into the artifact bundle, rather than linking outside it
+- record which design-system-ASK commit the artifact inherited from, when practical, so the freeze is traceable
+- let `colors_and_type.css` handle light/dark: explicit `data-theme="dark"`, explicit `data-theme="light"`, the `.theme-dark` class, and the `prefers-color-scheme` OS preference all resolve correctly without artifact-side overrides
+- follow cardinal rule #1 for type and cardinal rule #3 for color
+
+Static artifacts freeze inheritance at render time; production code may use a live dependency or import model if appropriate.
+
 If working on production code, copy the tokens into the host system's variable file under an `--ask-` namespace and read the rules here to become an expert in designing with this brand.
 
 If the user invokes this skill without any other guidance, ask them what they want to build or design, ask some questions, and act as an expert designer who outputs HTML artifacts _or_ production code, depending on the need.
