@@ -19,7 +19,7 @@ Provenance record for a static output artifact rendered from the design-system-A
 | JetBrainsMono.woff2 | `_dsa-tokens/fonts/JetBrainsMono.woff2` | `<sha256 here>` |
 | JetBrainsMono-Italic.woff2 | `_dsa-tokens/fonts/JetBrainsMono-Italic.woff2` | `<sha256 here>` |
 
-Add or remove rows for `assets/logo-*` if used in the artifact.
+Add or remove rows for any required project-approved assets copied into the artifact bundle. Do not include `logo-ASK` assets unless the consuming artifact is an ASK-instance surface and has explicitly accepted that Tier 3 overlay.
 
 ## Consuming project
 

@@ -38,5 +38,5 @@ A static output artifact fails design-system-ASK inheritance if any of the follo
 
 ## Tier boundary fails
 
-- design-system-ASK Tier 3 instance identity (the `--ask-*` variable prefix used as instance naming, the "ASK Design System" branding, the logo-ASK wordmark) is propagated into the consuming project's artifact unless the consuming project is itself an ASK-instance surface and has explicitly accepted that overlay
+- Visible design-system-ASK Tier 3 instance identity — the "ASK Design System" branding or the `logo-ASK` wordmark — is propagated into the consuming project's artifact unless the consuming project is itself an ASK-instance surface and has explicitly accepted that overlay.
 - The consuming project's own Tier 3 identity is fused with the upstream Tier 2 design language rather than layered cleanly on top
