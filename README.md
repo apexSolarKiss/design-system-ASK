@@ -2,7 +2,7 @@
 
 ![design-system-ASK banner](design-system-ASK-banner.jpg)
 
-> Minimal design foundations for the ASK visual identity. Tokens, not components — the irreducible expression of the system, meant to be imported and built on.
+> Minimal design foundations for the ASK visual identity. Tokens remain irreducible; the repo may also carry static-artifact inheritance scaffolds that show downstream surfaces how to consume them without redefining them.
 >
 > **order from chaos // beauty in systems**
 
@@ -26,6 +26,22 @@ Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers 
 - `assets/logo-ASK-lavender-ASK.png` — raster wordmark, lavender-ASK on transparent (dark-mode pairing)
 - Canonical spec: `visual-identity-system.md` (in ASK's canonical context, not in this repo)
 - Operator-side vector working source: `ASK 9 4.ai` (Illustrator file, not in this repo by design — production assets only)
+
+---
+
+## Scope
+
+This repo carries foundations and may carry static-artifact inheritance scaffolds:
+
+1. **Foundations** — tokens, type, color, assets, and visual rules. The irreducible expression of the system and the inheritance source for other ASK-family surfaces.
+2. **Static-artifact inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them.
+
+Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
+
+- **Class A** — system / architecture diagram templates.
+- **Class B** — project-output artifact templates.
+
+Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
 ---
 
@@ -197,4 +213,4 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- This is foundations only. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+- Foundations are present. The static-artifact scaffolds authorized under "Scope" are not yet implemented; the posture lands ahead of the patterns. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
