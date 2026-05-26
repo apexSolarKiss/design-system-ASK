@@ -58,6 +58,7 @@ Static artifacts inherit at generation time and freeze for audit. Downstream pro
 | `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
+| `patterns/diagram-tree/` | Class A system / architecture diagram scaffold — consumption pattern for architecture trees, topology maps, source-of-truth maps |
 
 ---
 
@@ -214,4 +215,4 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The Class B project-output scaffold is implemented at `patterns/output-artifact/`; the Class A diagram-tree scaffold is not yet implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+- Foundations are present. Both Class A (diagram-tree, at `patterns/diagram-tree/`) and Class B (project-output, at `patterns/output-artifact/`) scaffolds are implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
