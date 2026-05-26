@@ -1,0 +1,37 @@
+# Artifact manifest // [consuming-project-name] / [artifact-id]
+
+Provenance record for a static output artifact rendered from the design-system-ASK Class B `output-artifact` pattern.
+
+## Upstream design system
+
+- Repo: https://github.com/apexSolarKiss/design-system-ASK
+- Commit (full): `0000000000000000000000000000000000000000`
+- Commit (short): `0000000`
+- Commit date: `YYYY-MM-DDTHH:MM:SSZ`
+
+## Files copied into local mirror
+
+| File | Path in mirror | SHA-256 |
+| --- | --- | --- |
+| colors_and_type.css | `_dsa-tokens/colors_and_type.css` | `<sha256 here>` |
+| InterVariable.woff2 | `_dsa-tokens/fonts/InterVariable.woff2` | `<sha256 here>` |
+| InterVariable-Italic.woff2 | `_dsa-tokens/fonts/InterVariable-Italic.woff2` | `<sha256 here>` |
+| JetBrainsMono.woff2 | `_dsa-tokens/fonts/JetBrainsMono.woff2` | `<sha256 here>` |
+| JetBrainsMono-Italic.woff2 | `_dsa-tokens/fonts/JetBrainsMono-Italic.woff2` | `<sha256 here>` |
+
+Add or remove rows for any required project-approved assets copied into the artifact bundle. Do not include `logo-ASK` assets unless the consuming artifact is an ASK-instance surface and has explicitly accepted that Tier 3 overlay.
+
+## Consuming project
+
+- Project: `[consuming-project-name]`
+- Artifact path (relative to project root): `[path/to/artifact.html]`
+- Template: `output-artifact` v1 (from `patterns/output-artifact/` in upstream)
+
+## Render
+
+- Rendered at: `YYYY-MM-DDTHH:MM:SSZ`
+- Renderer: `[human author or tool name]`
+
+## Audit / freeze note
+
+This artifact is frozen at render time. The rendered HTML reads the local copy of `colors_and_type.css` synced into the artifact bundle, not a live upstream URL. To re-render against newer upstream tokens, re-sync the local mirror, record a new commit SHA, and regenerate. The previous artifact remains valid for audit at its recorded SHA.

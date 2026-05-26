@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[Artifact title placeholder]</title>
+
+  <!-- design-system-ASK foundations — local mirror.
+       DOWNSTREAM: adjust path if your mirror lives elsewhere. -->
+  <link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+
+  <style>
+    /* ====================================================================
+       Tier 3 overlay — consuming project identity goes here.
+       Keep minimal. Do not redefine Tier 1/2 tokens; use them.
+       ==================================================================== */
+
+    .artifact {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: var(--space-7) var(--space-5);
+    }
+
+    .meta {
+      font-family: var(--font-mono);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-light);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--fg-2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-5);
+      margin: var(--space-5) 0 var(--space-6);
+    }
+    .meta dt { display: inline; opacity: 0.6; margin-right: 0.4em; }
+    .meta dd { display: inline; margin: 0; }
+    .meta > div { display: inline-block; }
+
+    details.disclosure {
+      border-top: 1px solid var(--line-1);
+      padding: var(--space-4) 0;
+    }
+    details.disclosure[open] { padding-bottom: var(--space-5); }
+    details.disclosure summary {
+      cursor: pointer;
+      list-style: none;
+      font-family: var(--font-sans);
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-light);
+      line-height: var(--lh-tight);
+      letter-spacing: var(--tracking-tight);
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+    }
+    details.disclosure summary::-webkit-details-marker { display: none; }
+    details.disclosure summary::before {
+      content: '+';
+      font-family: var(--font-mono);
+      font-weight: var(--fw-light);
+      opacity: 0.5;
+      width: 1ch;
+    }
+    details.disclosure[open] summary::before { content: '−'; }
+
+    footer.provenance {
+      margin-top: var(--space-7);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--line-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-light);
+      color: var(--fg-3);
+    }
+    footer.provenance dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-2) var(--space-4);
+      margin: 0;
+    }
+    footer.provenance dt { opacity: 0.6; }
+    footer.provenance dd { margin: 0; }
+  </style>
+</head>
+<body>
+  <main class="artifact">
+
+    <!-- ==================================================================
+         Header
+         DOWNSTREAM: replace title + subtitle.
+         ================================================================== -->
+    <header>
+      <h1>[Artifact title]</h1>
+      <p class="small">[Artifact subtitle or one-line context.]</p>
+    </header>
+
+    <!-- ==================================================================
+         Meta strip — orientation values, mono-cased.
+         DOWNSTREAM: fill real values.
+         ================================================================== -->
+    <dl class="meta">
+      <div><dt>Project:</dt><dd>[consuming-project-name]</dd></div>
+      <div><dt>Artifact:</dt><dd>[artifact-id]</dd></div>
+      <div><dt>Render:</dt><dd>[YYYY-MM-DDTHH:MM:SSZ]</dd></div>
+      <div><dt>Template:</dt><dd>output-artifact v1</dd></div>
+    </dl>
+
+    <!-- ==================================================================
+         Sections — native progressive disclosure (no JS).
+         DOWNSTREAM: replace section names + bodies with content.
+         ================================================================== -->
+    <section>
+      <details class="disclosure" open>
+        <summary>Section one</summary>
+        <p>Body text placeholder. The weight gap between heading and body does the work; size differences are minimal.</p>
+        <p>One idea per sentence. Keep paragraphs short.</p>
+      </details>
+
+      <details class="disclosure">
+        <summary>Section two</summary>
+        <p>Body text placeholder. Native <code>&lt;details&gt;</code> handles disclosure. No JavaScript required.</p>
+      </details>
+
+      <details class="disclosure">
+        <summary>Section three</summary>
+        <p>Body text placeholder. Mono is for code, technical, and tabular data — e.g. a reference like <code>file_path:42</code>.</p>
+      </details>
+    </section>
+
+    <!-- ==================================================================
+         Provenance footer — visible source-truth metadata.
+         DOWNSTREAM: keep this. Values come from your MANIFEST.md.
+         ================================================================== -->
+    <footer class="provenance">
+      <dl>
+        <dt>design-system-ASK</dt>
+        <dd>commit <code>[upstream-short-sha]</code> · [upstream-commit-date]</dd>
+        <dt>Manifest</dt>
+        <dd>see <code>MANIFEST.md</code> for full provenance</dd>
+        <dt>Static freeze</dt>
+        <dd>frozen at render time; auditable against the recorded SHA</dd>
+      </dl>
+    </footer>
+
+  </main>
+</body>
+</html>
