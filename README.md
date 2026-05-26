@@ -57,6 +57,7 @@ Static artifacts inherit at generation time and freeze for audit. Downstream pro
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
+| `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
 
 ---
 
@@ -213,4 +214,4 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The static-artifact scaffolds authorized under "Scope" are not yet implemented; the posture lands ahead of the patterns. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+- Foundations are present. The Class B project-output scaffold is implemented at `patterns/output-artifact/`; the Class A diagram-tree scaffold is not yet implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
