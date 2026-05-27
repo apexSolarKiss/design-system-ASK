@@ -194,7 +194,7 @@ Contrast is **weight, not size** — headings sit at 400, body at 200. The 200-u
 - Default transition is `opacity` and `transform`. Avoid layout transitions and bouncy easings.
 
 ### Aesthetic anchors
-Linear.app, Coinbase dark mode, Apple, Artblocks. Structural elegance, mathematical clarity, refined light typography. Avoid: playful or bloated visuals, thick typefaces, emotional/empathic design tropes.
+Linear.app, Stripe, Apple. Structural elegance, mathematical clarity, refined light typography. Avoid: playful or bloated visuals, thick typefaces, emotional/empathic design tropes.
 
 ---
 
