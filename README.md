@@ -216,3 +216,11 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
 - Foundations are present. Both Class A (diagram-tree, at `patterns/diagram-tree/`) and Class B (project-output, at `patterns/output-artifact/`) scaffolds are implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+
+---
+
+## License
+
+Copyright 2026 Andrew S Klug // ASK
+
+Licensed under the Apache License 2.0 // see [`LICENSE`](LICENSE)
