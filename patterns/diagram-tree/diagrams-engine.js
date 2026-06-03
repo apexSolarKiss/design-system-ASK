@@ -30,11 +30,21 @@
   const FONT_LABEL_ROOT  = '500 14px "Inter", system-ui, sans-serif';
   const FONT_NOTE        = '300 10px "JetBrains Mono", monospace';
   const FONT_SECTION     = '500 10px "JetBrains Mono", monospace';
+  const FONT_TAG         = '300 9px "JetBrains Mono", monospace';
+
+  // CSS letter-spacing (em) the SVG text carries but canvas.measureText drops.
+  // Each constant = letter-spacing(em) × the font-size it is measured at, and MUST
+  // mirror diagrams.css. Change one there → change it here.
+  const LS_SECTION = 1.8;   // .node-label.section  letter-spacing:0.18em × font-size:10px  (FONT_SECTION)
+  const LS_TAG     = 1.44;  // .section-tag         letter-spacing:0.16em × font-size:9px   (FONT_TAG)
+  const LS_NOTE    = 0.2;   // .node-note           letter-spacing:0.02em × font-size:10px  (FONT_NOTE)
 
   const measureCtx = document.createElement('canvas').getContext('2d');
-  function measure(text, font) {
+  function measure(text, font, ls = 0) {
     measureCtx.font = font;
-    return measureCtx.measureText(text).width;
+    let w = measureCtx.measureText(text).width;
+    if (ls) w += text.length * ls;  // canvas.measureText ignores CSS letter-spacing
+    return w;
   }
 
   function fontFor(node) {
@@ -71,10 +81,10 @@
       const kind = node.kind || 'node';
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
       const displayLabel = kind === 'section' ? '/ ' + node.label.toUpperCase() : node.label;
-      const labelW = measure(displayLabel, fontFor(node));
-      let noteW = node.note ? measure(node.note, FONT_NOTE) : 0;
+      const labelW = measure(displayLabel, fontFor(node), kind === 'section' ? LS_SECTION : 0);
+      let noteW = node.note ? measure(node.note, FONT_NOTE, LS_NOTE) : 0;
       if (kind === 'section' && node.tag) {
-        noteW = Math.max(noteW, measure('// ' + node.tag, FONT_NOTE));
+        noteW = Math.max(noteW, measure('// ' + node.tag, FONT_TAG, LS_TAG));
       }
       const contentW = Math.max(labelW, noteW);
       const totalW = contentW + padX * 2;
