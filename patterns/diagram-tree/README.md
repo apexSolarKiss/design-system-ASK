@@ -11,7 +11,7 @@ A small consumption pattern. Six files:
 - `README.md` — this file
 - `diagram-tree.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-tree.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
-- `diagrams-engine.js` — shared layout + pan/zoom engine; waits for the Inter / JetBrains Mono specs it measures with to load before computing column widths, so text never bleeds between columns on first paint (column widths stretch to fit the actual rendered text)
+- `diagrams-engine.js` — shared layout + pan/zoom engine. When it computes column widths it (a) measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and (b) adds the CSS `letter-spacing` that `canvas.measureText` ignores (section labels carry `0.18em`). Both are required so first-level labels never bleed into the next column; columns stretch to fit the real rendered text. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`); inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram
 
