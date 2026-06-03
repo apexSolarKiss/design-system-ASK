@@ -8,6 +8,10 @@
    The page is expected to expose `.canvas-wrap`, `.stage > svg#svg`,
    and `.hud` with #zoomIn, #zoomOut, #zoomPct, #zoomFit. Style comes
    from diagrams.css (theme-aware via [data-theme]).
+
+   render() is font-aware: it waits for the Inter / JetBrains Mono specs it
+   measures with to load before computing column widths, so text never bleeds
+   between columns on first paint. See renderWhenFontsReady at the bottom.
 */
 (function () {
   /* ---------- layout constants ---------- */
@@ -291,5 +295,23 @@
     }, { passive: false });
   }
 
-  window.DIAGRAMS = { render };
+  /* Public entry. Gate the first measure/layout on web-font load so per-column
+     widths are computed against the ACTUAL fonts, not the fallback. Measuring
+     before the fonts load underestimates text width, which lets long first-level
+     (section) labels bleed into the next column. The specific font specs the
+     engine measures with are loaded explicitly, then render proceeds — with a
+     safe fallback if the Font Loading API is unavailable. */
+  function renderWhenFontsReady(TREE) {
+    const fonts = (typeof document !== 'undefined') && document.fonts;
+    if (!fonts || typeof fonts.load !== 'function') { render(TREE); return; }
+    const needed = [
+      '400 13px "Inter"', '300 13px "Inter"', '500 14px "Inter"',
+      '300 10px "JetBrains Mono"', '500 10px "JetBrains Mono"',
+    ];
+    Promise.all(needed.map((f) => fonts.load(f).catch(() => null)))
+      .then(() => render(TREE))
+      .catch(() => render(TREE));
+  }
+
+  window.DIAGRAMS = { render: renderWhenFontsReady };
 })();

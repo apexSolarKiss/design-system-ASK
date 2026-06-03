@@ -11,7 +11,7 @@ A small consumption pattern. Six files:
 - `README.md` — this file
 - `diagram-tree.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-tree.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
-- `diagrams-engine.js` — shared layout + pan/zoom engine
+- `diagrams-engine.js` — shared layout + pan/zoom engine; waits for the Inter / JetBrains Mono specs it measures with to load before computing column widths, so text never bleeds between columns on first paint (column widths stretch to fit the actual rendered text)
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`); inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram
 
