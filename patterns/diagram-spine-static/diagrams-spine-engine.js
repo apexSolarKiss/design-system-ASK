@@ -93,7 +93,6 @@
   function render(TREE) {
     /* ---------- build node list with measured box sizes + depth ---------- */
     const nodes = [];
-    const edges = [];
 
     function build(node, depth, parentIdx) {
       const kind = node.kind || 'node';
@@ -127,7 +126,6 @@
         boxW, boxH, cx: 0, cy: 0, childIndices: [],
       });
       if (parentIdx !== null && parentIdx !== undefined) {
-        edges.push({ from: parentIdx, to: idx });
         nodes[parentIdx].childIndices.push(idx);
       }
       for (const c of (node.children || [])) build(c, depth + 1, idx);
@@ -203,24 +201,48 @@
     svg.appendChild(edgeLayer);
     svg.appendChild(nodeLayer);
 
-    // vertical orthogonal connectors: parent bottom-center → mid-Y elbow → child top-center
+    /* Comb connectors: per PARENT, one shared horizontal bus at a single Y.
+       Parent stem drops to the bus; the bus spans all children; each child
+       drops vertically from the bus to its own top. A single shared busY (not
+       a per-edge midpoint) is what keeps the run clean when siblings differ in
+       height — otherwise each sibling's elbow lands at a different Y and the
+       bus staircases. Held / legacy styling rides the per-child drop, so the
+       stem and bus stay solid. A single-child parent has no bus → the stem and
+       drop form one straight vertical line (the spine). */
     function bottomY(n) {
       if (n.kind === 'section') return n.cy + (n.tag ? n.boxH / 2 : SECTION_H / 2 - 4);
       return n.cy + n.boxH / 2;
     }
-    for (const e of edges) {
-      const p = nodes[e.from];
-      const c = nodes[e.to];
-      const pX = p.cx, pY = bottomY(p);
-      const cX = c.cx, cY = c.cy - c.boxH / 2;
-      const midY = (pY + cY) / 2;
-      const cls = c.status === 'held' ? 'edge held'
-                : c.status === 'legacy' ? 'edge legacy'
-                : 'edge';
+    for (const p of nodes) {
+      if (p.childIndices.length === 0) continue;
+      const kids = p.childIndices.map((ci) => nodes[ci]);
+      const childDepth = p.depth + 1;
+      const bandTop = bandCenterY[childDepth] - bandH[childDepth] / 2;
+      const pBot = bottomY(p);
+      const busY = pBot + (bandTop - pBot) * 0.5;
+      const xs = kids.map((k) => k.cx);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+
+      // parent stem (solid)
       edgeLayer.appendChild(el('path', {
-        d: `M ${pX} ${pY} L ${pX} ${midY} L ${cX} ${midY} L ${cX} ${cY}`,
-        class: cls,
+        d: `M ${p.cx} ${pBot} L ${p.cx} ${busY}`, class: 'edge',
       }));
+      // horizontal bus across children (only when they span more than one column)
+      if (maxX - minX > 0.5) {
+        edgeLayer.appendChild(el('path', {
+          d: `M ${minX} ${busY} L ${maxX} ${busY}`, class: 'edge',
+        }));
+      }
+      // per-child vertical drop, carrying the child's status
+      for (const c of kids) {
+        const cTop = c.cy - c.boxH / 2;
+        const cls = c.status === 'held' ? 'edge held'
+                  : c.status === 'legacy' ? 'edge legacy'
+                  : 'edge';
+        edgeLayer.appendChild(el('path', {
+          d: `M ${c.cx} ${busY} L ${c.cx} ${cTop}`, class: cls,
+        }));
+      }
     }
 
     for (const n of nodes) {
