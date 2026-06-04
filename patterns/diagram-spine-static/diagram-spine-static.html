@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[consuming-project] — [spine diagram title]</title>
+<meta name="description" content="Illustrative [spine diagram title] for [consuming-project]. Repo prose is source truth.">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference at generation time">
+<!-- design-system-ASK foundations — local mirror.
+     DOWNSTREAM: adjust path if your mirror lives elsewhere. -->
+<link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+<link rel="stylesheet" href="diagrams.css">
+</head>
+<body>
+
+<div class="shell">
+  <div class="bar">
+    <!-- DOWNSTREAM: replace mark + title-block + stamp -->
+    <div class="mark">[org]<span class="sep">/</span>[repo]</div>
+    <div class="title-block">
+      <div class="t">[spine diagram title]</div>
+      <div class="s">[one axis · what this diagram depicts]</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="stamp">
+      <div><span class="k">source-v1</span> // <span class="k">render-v1</span></div>
+      <div>[YYYY-MM-DD]</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="stage" id="stage">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="corner-tick tl"></div>
+    <div class="corner-tick tr"></div>
+    <div class="corner-tick bl"></div>
+    <div class="corner-tick br"></div>
+
+    <!-- DOWNSTREAM: edit legend rows if your tree uses different statuses -->
+    <div class="legend glass">
+      <div class="h"><span>Legend</span><span class="fig">3 states</span></div>
+      <div class="row">
+        <div class="sw"><div class="box-solid"></div></div>
+        <div><span class="lbl">earned</span><span class="sub">live today</span></div>
+      </div>
+      <div class="row">
+        <div class="sw"><div class="box-dashed"></div></div>
+        <div><span class="lbl">held</span><span class="sub">not yet authorized</span></div>
+      </div>
+      <div class="row">
+        <div class="sw"><span class="legacy-txt">legacy</span></div>
+        <div><span class="lbl">legacy</span><span class="sub">residue / superseded</span></div>
+      </div>
+    </div>
+
+    <div class="hud glass">
+      <button id="zoomOut" title="Zoom out">−</button>
+      <div class="pct" id="zoomPct">100%</div>
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomFit" title="Fit">⤢</button>
+    </div>
+
+    <!-- DOWNSTREAM: keep the "illustrative" disclaimer; tighten wording if you wish -->
+    <div class="caption glass">
+      <b>illustrative</b><br>
+      repo prose is source truth. diagram may lag the repo;<br>
+      refresh or trust the prose.
+    </div>
+  </div>
+</div>
+
+<script src="diagram-spine-static.source.js"></script>
+<script src="diagrams-spine-engine.js"></script>
+<script src="export-png.js"></script>
+<script>
+window.DIAGRAMS.render(window.TREE_DIAGRAM);
+</script>
+
+</body>
+</html>
