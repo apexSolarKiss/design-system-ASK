@@ -1,6 +1,6 @@
 # ASK Spectral State
 
-A semantic **state-color system**: a small, identity-free vocabulary of state *roles*, each mapped to a neon hue on a 12-step wheel, calibrated per theme. Defined in [`spectral-state.css`](spectral-state.css).
+A semantic **state-color system**: a small, identity-free vocabulary of state *roles*, each mapped to a neon hue on a 12-step wheel, calibrated per theme. Defined in [`spectral-state.css`](spectral-state.css); rendered visual key in [`spectral-state.html`](spectral-state.html).
 
 It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`) do **not** use it — those are structural and assert no state.
 

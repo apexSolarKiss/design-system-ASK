@@ -52,7 +52,7 @@ The repo may also carry **specialized opt-in foundation primitives** beyond the 
 | Path | What it is |
 | --- | --- |
 | `colors_and_type.css` | CSS variables — colors, type, spacing, radii, motion |
-| `spectral-state.css` + `spectral-state.md` | ASK Spectral State — specialized **opt-in** state-color primitive (eight neon `--state-*` roles on a 12-hue wheel). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
+| `spectral-state.css` + `spectral-state.md` + `spectral-state.html` | ASK Spectral State — specialized **opt-in** state-color primitive (eight neon `--state-*` roles on a 12-hue wheel), with a rendered visual key (`spectral-state.html`). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`, inherits the mode's text color |
