@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASK Spectral State — key</title>
+<meta name="description" content="Visual key for the ASK Spectral State semantic state-color system. Reads spectral-state.css live.">
+<!-- Visual key for the ASK Spectral State primitive (spectral-state.css + spectral-state.md).
+     Reads the foundation + the role tokens live; theme-aware (light default · dark via
+     prefers-color-scheme / [data-theme="dark"]). Open directly. -->
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="spectral-state.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed;
+         color: var(--fg-1); font-family: var(--font-sans); font-weight: 200; padding: 48px 56px; }
+  h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+         color: var(--fg-2); margin-bottom: 36px; }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; max-width: 960px; }
+  .arc-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+               color: var(--fg-2); grid-column: 1 / -1; margin: 18px 0 0; }
+  .swatch { display: flex; align-items: center; gap: 12px; }
+  .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
+  .meta { display: flex; flex-direction: column; }
+  .role { font-family: var(--font-mono); font-size: 12px; color: var(--fg-1); }
+  .hue  { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); letter-spacing: 0.04em; }
+  .demo { margin-top: 44px; }
+  .demo h2 { font-size: 14px; font-weight: 400; letter-spacing: 0.04em; margin: 0 0 6px; }
+  .demo p { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); margin: 0 0 16px; }
+  .nodes { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .node { width: 22px; height: 22px; border-radius: 6px; background: var(--state-neutral); opacity: 0.5; }
+  .node.on { opacity: 1; }
+</style>
+</head>
+<body>
+  <h1>ASK Spectral State</h1>
+  <div class="sub">v1 · AP-proving-first · neon on the lavender field</div>
+
+  <div class="grid">
+    <div class="arc-label">Health arc — maturity ramp (green “go” → red “no”)</div>
+    <div class="swatch"><div class="dot" style="background:var(--state-earned)"></div><div class="meta"><span class="role">state-earned</span><span class="hue">120° green</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-structural)"></div><div class="meta"><span class="role">state-structural</span><span class="hue">90° yellow-green</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-partial)"></div><div class="meta"><span class="role">state-partial</span><span class="hue">60° yellow</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-proposed)"></div><div class="meta"><span class="role">state-proposed</span><span class="hue">30° orange</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-deflated)"></div><div class="meta"><span class="role">state-deflated</span><span class="hue">0° red</span></div></div>
+
+    <div class="arc-label">Cool arc — orthogonal categories · Neutral — the field</div>
+    <div class="swatch"><div class="dot" style="background:var(--state-held)"></div><div class="meta"><span class="role">state-held</span><span class="hue">180° cyan</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-external)"></div><div class="meta"><span class="role">state-external</span><span class="hue">270° violet</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-neutral);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">state-neutral</span><span class="hue">lavender field</span></div></div>
+  </div>
+
+  <div class="demo">
+    <h2>Sparse-signal discipline</h2>
+    <p>most nodes neutral; neon only to say something</p>
+    <div class="nodes">
+      <div class="node"></div>
+      <div class="node on" style="background:var(--state-earned)"></div>
+      <div class="node"></div>
+      <div class="node"></div>
+      <div class="node on" style="background:var(--state-held)"></div>
+      <div class="node"></div>
+      <div class="node on" style="background:var(--state-deflated)"></div>
+      <div class="node"></div>
+      <div class="node"></div>
+      <div class="node on" style="background:var(--state-external)"></div>
+      <div class="node"></div>
+    </div>
+  </div>
+</body>
+</html>
