@@ -4,37 +4,39 @@ A semantic **state-color system**: a small, identity-free vocabulary of state *r
 
 It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`) do **not** use it — those are structural and assert no state.
 
-> **Status: v1 — first-consumer validated.** The role vocabulary, the wheel structure (anchors, health ramp, cool arc, neutral field), and the per-theme calibration are confirmed in a real surface — `asset-pipeline-ASK`'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). One optional perceptual-evenness refinement is noted below but is **not** required.
+> **Status: v1.1 — restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — `asset-pipeline-ASK`'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
 
 ## The eight roles
 
 | Role | Meaning | Hue |
 | --- | --- | --- |
 | `--state-earned` | operationally grounded at full depth — "go" | 120° green |
-| `--state-structural` | structurally / schema proven; not full-flow pressured | 90° yellow-green |
-| `--state-partial` | operational but at bounded depth | 60° yellow |
-| `--state-proposed` | articulated as a candidate; not yet pressured | 30° orange |
+| `--state-structural` | structurally / schema proven; not full-flow pressured | 60° yellow |
+| `--state-partial` | operational but at bounded depth | 30° orange |
 | `--state-deflated` | pressure showed it unnecessary / dead — "no" | 0° red |
 | `--state-held` | a named open question, not yet resolved | 180° cyan |
 | `--state-external` | owned elsewhere (inherited / upstream) | 270° violet |
+| `--state-proposed` | articulated as a candidate / potentiality; not yet pressured | 300° magenta |
 | `--state-neutral` | no asserted state (the default field) | lavender (`--fg-1`) |
+
+The first four are the **health ramp** (ordered, achieved provenness); `held` / `external` / `proposed` are **orthogonal categories** (not a health judgment); `neutral` is the field.
 
 ## Wheel logic
 
 A **12-hue neon wheel** is the palette *resource*: `hsl(H, S, L)`, `H = n×30°`. The wheel is a resource, not a mandate to invent twelve states — only the eight roles draw from it.
 
-- **Health arc — the maturity ramp.** One ordered axis from green "go" to red "no": `earned (120°)` → `structural (90°)` → `partial (60°)` → `proposed (30°)` → `deflated (0°)`. The **green↔red anchors are firm**; the intermediate stops fall on the wheel's 30° steps.
-- **Cool arc — orthogonal categories.** `held (180° cyan)` and `external (270° violet)` take cool hues to signal "different axis, not good-vs-bad" — they are not points on the health ramp.
+- **Health ramp — the achieved-provenness axis.** One ordered axis, green "go" → red "no": `earned (120° green)` → `structural (60° yellow)` → `partial (30° orange)` → `deflated (0° red)`. Four stops, a clean stoplight-style gradient; the **green↔red anchors are firm**; all stops fall on the wheel's 30° steps.
+- **Orthogonal categories — not a health judgment.** `held (180° cyan)`, `external (270° violet)`, and `proposed (300° magenta)` sit off the ramp — "different axis, not good-vs-bad." `proposed` lives here because it is a *potentiality* (a candidate, not yet pressured), not a degree of achieved provenness.
 - **Neutral — the lavender identity field.** `--state-neutral` is the default (`var(--fg-1)`); a node takes a neon hue only to *say something*.
 
-### Per-theme calibration (first-consumer validated)
+### Per-theme calibration
 
 | | Saturation | Lightness | Why |
 | --- | --- | --- | --- |
 | **Light** (on lavender) | 85% | 45% | deeper neon so each hue reads against the light field |
 | **Dark** (on ink) | 95% | 60% | bright neon to pop against the dark field |
 
-Per the foundation's theme model, the dark values appear in both the explicit `[data-theme="dark"]` block and the `prefers-color-scheme: dark` auto block. **Watch-points (confirmed by the first consumer; optional to refine):** on dark, the yellow family (`partial` 60° / `structural` 90°) reads slightly brighter than the cool/red hues at equal `L` — perceptual evenness, *not* a legibility failure; on the light field the same warmer stops read softer/paler. Optional refinement (design-system's call): nudge those stops down in `L` on dark and strengthen them on light. Minor value tweaks only — the roles, the green/red anchors, the health-ramp/cool-arc/neutral-field structure, and the wheel logic are unchanged.
+Per the foundation's theme model, the dark values appear in both the explicit `[data-theme="dark"]` block and the `prefers-color-scheme: dark` auto block. The prior yellow-family perceptual-evenness watch-point is **retired by the v1.1 restructure**: the ramp no longer carries two adjacent near-yellows (yellow-green 90° + yellow 60°) — it is now green / yellow / orange / red, four maximally-distinct stops. `structural` (60° yellow) is the single brightest stop; as one accent in a four-way-distinct ramp it reads cleanly. A one-value `L` tone-down on `structural` remains available if ever wanted.
 
 ## Discipline the system preserves
 
