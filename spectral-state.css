@@ -1,5 +1,5 @@
 /* =========================================================================
-   spectral-state.css — ASK Spectral State
+   spectral-state.css — Spectral State
 
    A semantic state-color system: a small, identity-free vocabulary of STATE
    roles, each mapped to a neon hue on a 12-step wheel, calibrated per theme.
@@ -14,11 +14,13 @@
    resolution (`[data-theme]` + `prefers-color-scheme`) and its `--fg-*` tokens.
    Offline; no CDN.
 
-   STATUS: v1 — AP-proving-first. The role vocabulary and the wheel STRUCTURE
-   (green-earned / red-deflated anchors, health ramp, cool arc, neutral field)
-   are stable. The exact S/L calibration and per-theme values are PROVISIONAL,
-   to be confirmed after the first consumer (asset-pipeline-ASK's interactive
-   spine) proves them in a real surface.
+   STATUS: v1 — first-consumer validated. The role vocabulary, the wheel STRUCTURE
+   (green-earned / red-deflated anchors, health ramp, cool arc, neutral field),
+   and the per-theme calibration are confirmed in a real surface —
+   asset-pipeline-ASK's interactive IA state spine (first consumer), which
+   exercised all eight roles. One optional perceptual-evenness refinement is
+   noted (the yellow family at 60°/90° reads slightly brighter at equal L) but
+   is NOT required — it is not a legibility failure.
 
    ---------------------------------------------------------------------------
    WHEEL LOGIC
@@ -49,8 +51,9 @@
 
 /* ---------- Light (default) — on the light lavender field ----------
    Deeper, more saturated neon so each hue reads against the light gradient.
-   (S 85% / L 45%.) Yellow/green are the legibility watch-points on light;
-   provisional pending the AP proof. */
+   (S 85% / L 45%.) Yellow/green are the legibility watch-points on light —
+   confirmed acceptable by the first consumer; an optional strengthening (lower
+   L / higher S on the 60°/90° stops) is available but not required. */
 :root {
   --state-earned:     hsl(120, 85%, 45%);
   --state-structural: hsl( 90, 85%, 45%);

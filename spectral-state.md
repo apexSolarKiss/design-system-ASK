@@ -1,10 +1,10 @@
-# ASK Spectral State
+# Spectral State
 
 A semantic **state-color system**: a small, identity-free vocabulary of state *roles*, each mapped to a neon hue on a 12-step wheel, calibrated per theme. Defined in [`spectral-state.css`](spectral-state.css); rendered visual key in [`spectral-state.html`](spectral-state.html).
 
 It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`) do **not** use it — those are structural and assert no state.
 
-> **Status: v1 — AP-proving-first.** The role vocabulary and the wheel structure (anchors, health ramp, cool arc, neutral field) are stable. The exact S/L calibration and per-theme values are **provisional**, to be confirmed after the first consumer — `asset-pipeline-ASK`'s interactive spine — proves them in a real surface.
+> **Status: v1 — first-consumer validated.** The role vocabulary, the wheel structure (anchors, health ramp, cool arc, neutral field), and the per-theme calibration are confirmed in a real surface — `asset-pipeline-ASK`'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). One optional perceptual-evenness refinement is noted below but is **not** required.
 
 ## The eight roles
 
@@ -27,14 +27,14 @@ A **12-hue neon wheel** is the palette *resource*: `hsl(H, S, L)`, `H = n×30°`
 - **Cool arc — orthogonal categories.** `held (180° cyan)` and `external (270° violet)` take cool hues to signal "different axis, not good-vs-bad" — they are not points on the health ramp.
 - **Neutral — the lavender identity field.** `--state-neutral` is the default (`var(--fg-1)`); a node takes a neon hue only to *say something*.
 
-### Per-theme calibration (provisional)
+### Per-theme calibration (first-consumer validated)
 
 | | Saturation | Lightness | Why |
 | --- | --- | --- | --- |
 | **Light** (on lavender) | 85% | 45% | deeper neon so each hue reads against the light field |
 | **Dark** (on ink) | 95% | 60% | bright neon to pop against the dark field |
 
-Per the foundation's theme model, the dark values appear in both the explicit `[data-theme="dark"]` block and the `prefers-color-scheme: dark` auto block. **Watch-points** (provisional, to confirm post-AP): yellow/yellow-green legibility on the light field, and perceptual-evenness across hues (yellow reads lighter than blue at equal `L`).
+Per the foundation's theme model, the dark values appear in both the explicit `[data-theme="dark"]` block and the `prefers-color-scheme: dark` auto block. **Watch-points (confirmed by the first consumer; optional to refine):** on dark, the yellow family (`partial` 60° / `structural` 90°) reads slightly brighter than the cool/red hues at equal `L` — perceptual evenness, *not* a legibility failure; on the light field the same warmer stops read softer/paler. Optional refinement (design-system's call): nudge those stops down in `L` on dark and strengthen them on light. Minor value tweaks only — the roles, the green/red anchors, the health-ramp/cool-arc/neutral-field structure, and the wheel logic are unchanged.
 
 ## Discipline the system preserves
 
