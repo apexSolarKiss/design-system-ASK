@@ -38,7 +38,7 @@ This repo carries foundations and may carry static-artifact inheritance scaffold
 
 Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
 
-- **Class A** — system / architecture diagram templates.
+- **Class A** — system / architecture diagram templates. Two **static** orientations: **`diagram-static-H`** (horizontal left→right top-aligned cascade) and **`diagram-static-V`** (vertical top→down centered spine). A future **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern; reserved in naming, not yet built. The taxonomy encodes static-vs-interactive, not just orientation, because the interactive spine is also vertical.
 - **Class B** — project-output artifact templates.
 
 Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
@@ -61,8 +61,8 @@ The repo may also carry **specialized opt-in foundation primitives** beyond the 
 | `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
-| `patterns/diagram-tree/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
-| `patterns/diagram-spine-static/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
+| `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
+| `patterns/diagram-static-V/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
 
 ---
 
@@ -219,7 +219,7 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. Class A diagram scaffolds (horizontal `patterns/diagram-tree/` and vertical `patterns/diagram-spine-static/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+- Foundations are present. Class A diagram scaffolds (horizontal `patterns/diagram-static-H/` and vertical `patterns/diagram-static-V/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
 
 ---
 
