@@ -43,6 +43,8 @@ Scaffolds are consumption patterns, not components. They are not a generator, no
 
 Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
+The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. The first is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color and the scaffolds above do not use it.
+
 ---
 
 ## Index
@@ -50,6 +52,7 @@ Static artifacts inherit at generation time and freeze for audit. Downstream pro
 | Path | What it is |
 | --- | --- |
 | `colors_and_type.css` | CSS variables — colors, type, spacing, radii, motion |
+| `spectral-state.css` + `spectral-state.md` | ASK Spectral State — specialized **opt-in** state-color primitive (eight neon `--state-*` roles on a 12-hue wheel). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`, inherits the mode's text color |
