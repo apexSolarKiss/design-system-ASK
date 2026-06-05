@@ -20,6 +20,14 @@ A static output artifact fails design-system-ASK inheritance if any of the follo
 - Any color outside the closed palette appears: Core 5 + surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`)
 - A semantic green / red / yellow status system appears
 - Invented hex values appear in the artifact's overlay CSS
+- A local `--fg-*` / `--line-*` rebind appears (foreground must be inherited from the foundation ramp, not re-declared at the artifact layer). The **only** sanctioned token override is the Class B line-intensity overlay (`--artifact-line` / `--artifact-line-soft`): white at higher alpha in light mode, foundation lines in dark — white is in-palette and the override is scoped to structural lines, not foreground.
+
+## Self-contained / sealed-output fails
+
+- The delivered artifact is **not self-contained**: it requires the network, a sibling stylesheet, or a sidecar font to render with full styling
+- An external `<link>` / `@import` / live raw-URL stylesheet reference survives into the delivered artifact (the editable template links the local mirror; the *delivered* artifact must be sealed)
+- A relative font URL that resolves outside the artifact survives into the delivered artifact (fonts must be embedded at seal time)
+- An unreplaced template marker (`[placeholder]`, `0000000`, etc.) appears in the delivered artifact
 
 ## Type discipline fails
 

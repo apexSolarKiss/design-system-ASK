@@ -25,7 +25,7 @@ Add or remove rows for any required project-approved assets copied into the arti
 
 - Project: `[consuming-project-name]`
 - Artifact path (relative to project root): `[path/to/artifact.html]`
-- Template: `output-artifact` v1 (from `patterns/output-artifact/` in upstream)
+- Template: `output-artifact` v2 (from `patterns/output-artifact/` in upstream)
 
 ## Render
 
