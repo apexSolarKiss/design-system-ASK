@@ -16,7 +16,7 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 | `--state-proposed` | articulated as a candidate; not yet pressured | 30° orange |
 | `--state-deflated` | pressure showed it unnecessary / dead — "no" | 0° red |
 | `--state-held` | a named open question, not yet resolved | 180° cyan |
-| `--state-external` | owned elsewhere (inherited / upstream) | 240° blue |
+| `--state-external` | owned elsewhere (inherited / upstream) | 270° violet |
 | `--state-neutral` | no asserted state (the default field) | lavender (`--fg-1`) |
 
 ## Wheel logic
@@ -24,7 +24,7 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 A **12-hue neon wheel** is the palette *resource*: `hsl(H, S, L)`, `H = n×30°`. The wheel is a resource, not a mandate to invent twelve states — only the eight roles draw from it.
 
 - **Health arc — the maturity ramp.** One ordered axis from green "go" to red "no": `earned (120°)` → `structural (90°)` → `partial (60°)` → `proposed (30°)` → `deflated (0°)`. The **green↔red anchors are firm**; the intermediate stops fall on the wheel's 30° steps.
-- **Cool arc — orthogonal categories.** `held (180° cyan)` and `external (240° blue)` take cool hues to signal "different axis, not good-vs-bad" — they are not points on the health ramp.
+- **Cool arc — orthogonal categories.** `held (180° cyan)` and `external (270° violet)` take cool hues to signal "different axis, not good-vs-bad" — they are not points on the health ramp.
 - **Neutral — the lavender identity field.** `--state-neutral` is the default (`var(--fg-1)`); a node takes a neon hue only to *say something*.
 
 ### Per-theme calibration (provisional)

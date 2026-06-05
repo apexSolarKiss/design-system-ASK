@@ -37,7 +37,7 @@
 
    Cool arc — orthogonal categories (NOT a health judgment; "different axis"):
      state-held        180°  cyan          a named open question
-     state-external    240°  blue          owned elsewhere (inherited / upstream)
+     state-external    270°  violet        owned elsewhere (inherited / upstream)
 
    Neutral — the lavender identity field (the default; no neon):
      state-neutral     = var(--fg-1)       no asserted state
@@ -58,7 +58,7 @@
   --state-proposed:   hsl( 30, 85%, 45%);
   --state-deflated:   hsl(  0, 85%, 45%);
   --state-held:       hsl(180, 85%, 45%);
-  --state-external:   hsl(240, 85%, 45%);
+  --state-external:   hsl(270, 85%, 45%);
   /* no asserted state — renders as the theme's default foreground (lavender
      field), never a neon. Auto-flips per theme via --fg-1. */
   --state-neutral:    var(--fg-1);
@@ -75,7 +75,7 @@
   --state-proposed:   hsl( 30, 95%, 60%);
   --state-deflated:   hsl(  0, 95%, 60%);
   --state-held:       hsl(180, 95%, 60%);
-  --state-external:   hsl(240, 95%, 60%);
+  --state-external:   hsl(270, 95%, 60%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +86,6 @@
     --state-proposed:   hsl( 30, 95%, 60%);
     --state-deflated:   hsl(  0, 95%, 60%);
     --state-held:       hsl(180, 95%, 60%);
-    --state-external:   hsl(240, 95%, 60%);
+    --state-external:   hsl(270, 95%, 60%);
   }
 }
