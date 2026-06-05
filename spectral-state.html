@@ -28,8 +28,8 @@
   .demo h2 { font-size: 14px; font-weight: 400; letter-spacing: 0.04em; margin: 0 0 6px; }
   .demo p { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); margin: 0 0 16px; }
   .nodes { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-  .node { width: 22px; height: 22px; border-radius: 6px; background: var(--state-neutral); opacity: 0.5; }
-  .node.on { opacity: 1; }
+  .node { width: 22px; height: 22px; border-radius: 6px; background: var(--state-neutral); border: 1px solid var(--fg-3); }
+  .node.on { border-color: transparent; }
 </style>
 </head>
 <body>
@@ -52,7 +52,7 @@
 
   <div class="demo">
     <h2>Sparse-signal discipline</h2>
-    <p>most nodes neutral; neon only to say something</p>
+    <p>most nodes neutral // neon only to say something</p>
     <div class="nodes">
       <div class="node"></div>
       <div class="node on" style="background:var(--state-earned)"></div>
