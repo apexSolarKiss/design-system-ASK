@@ -1,9 +1,9 @@
-/* diagram-tree.source.js
+/* diagram-static-H.source.js
    Source data for the diagram tree.
-   Renderable by diagrams-engine.js.
+   Renderable by diagrams-static-H-engine.js.
 
    DOWNSTREAM: replace this placeholder tree with your project's actual
-   structure. Bump the source-v / render-v stamp in diagram-tree.html
+   structure. Bump the source-v / render-v stamp in diagram-static-H.html
    when topology or major content changes.
 
    Tree node shape:

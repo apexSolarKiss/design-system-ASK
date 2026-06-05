@@ -7,8 +7,8 @@
    SPECIALIZED, OPT-IN foundation primitive. It is for surfaces that encode the
    *state* of architectural elements — e.g. an interactive state diagram where a
    node's color says "this is earned / held / deflated". It is NOT general UI
-   color, and it is NOT used by the static diagram scaffolds (`diagram-tree`,
-   `diagram-spine-static`), which are structural and assert no state.
+   color, and it is NOT used by the static diagram scaffolds (`diagram-static-H`,
+   `diagram-static-V`), which are structural and assert no state.
 
    Layer this ON TOP of `colors_and_type.css` — it relies on that file's theme
    resolution (`[data-theme]` + `prefers-color-scheme`) and its `--fg-*` tokens.

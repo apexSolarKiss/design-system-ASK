@@ -1,12 +1,12 @@
-/* diagram-spine-static.source.js
+/* diagram-static-V.source.js
    Source data for the vertical spine diagram.
-   Renderable by diagrams-spine-engine.js.
+   Renderable by diagrams-static-V-engine.js.
 
    DOWNSTREAM: replace this placeholder tree with your project's actual
-   structure. Bump the source-v / render-v stamp in diagram-spine-static.html
+   structure. Bump the source-v / render-v stamp in diagram-static-V.html
    when topology or major content changes.
 
-   Tree node shape (identical to the horizontal diagram-tree scaffold):
+   Tree node shape (identical to the horizontal diagram-static-H scaffold):
      { kind: 'root'|'section'|'group'|'node', label, note?, tag?, status?, children? }
      kind defaults to 'node' if omitted
      status: 'earned' (default) | 'held' | 'legacy'

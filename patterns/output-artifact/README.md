@@ -2,7 +2,7 @@
 
 A reusable static-artifact scaffold for downstream project-output artifacts — review packets, reports, dashboards, and similar human-readable deliverables that inherit the design-system-ASK visual language.
 
-This is a **Class B** scaffold (project-output artifact templates), distinct from the **Class A** diagram patterns (`patterns/diagram-tree/`, `patterns/diagram-spine-static/`).
+This is a **Class B** scaffold (project-output artifact templates), distinct from the **Class A** diagram patterns (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`).
 
 ## What this pattern is
 
@@ -86,4 +86,4 @@ design-system-ASK supplies the foundations (Tier 1 + Tier 2). The consuming proj
 
 ## Class A vs Class B
 
-This is Class B (project-output artifact templates). Class A (system / architecture diagram templates) are separate patterns at `patterns/diagram-tree/` (horizontal) and `patterns/diagram-spine-static/` (vertical). The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes and — per the table above — bind color differently because they apply it differently.
+This is Class B (project-output artifact templates). Class A (system / architecture diagram templates) are separate patterns at `patterns/diagram-static-H/` (horizontal) and `patterns/diagram-static-V/` (vertical). The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes and — per the table above — bind color differently because they apply it differently.

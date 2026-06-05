@@ -2,7 +2,7 @@
 
 A semantic **state-color system**: a small, identity-free vocabulary of state *roles*, each mapped to a neon hue on a 12-step wheel, calibrated per theme. Defined in [`spectral-state.css`](spectral-state.css).
 
-It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-tree/`, `patterns/diagram-spine-static/`) do **not** use it — those are structural and assert no state.
+It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`) do **not** use it — those are structural and assert no state.
 
 > **Status: v1 — AP-proving-first.** The role vocabulary and the wheel structure (anchors, health ramp, cool arc, neutral field) are stable. The exact S/L calibration and per-theme values are **provisional**, to be confirmed after the first consumer — `asset-pipeline-ASK`'s interactive spine — proves them in a real surface.
 
