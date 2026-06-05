@@ -15,7 +15,7 @@
 */
 (function () {
   /* ---------- layout constants ---------- */
-  const ROW_H = 44;
+  const ROW_H = 60;   // leaf row pitch = BOX_H_NOTE (44) + 16 gap, so note-bearing boxes don't touch
   const GAP_COL = 36;
   const BOX_PAD_X = 14;
   const BOX_H = 26;
