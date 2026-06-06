@@ -11,7 +11,7 @@ Every consumer vendors a local, pinned mirror (`_dsa-tokens/`) — no CDN, no li
 | Consumer | Public status | Consumes | Notes |
 | --- | --- | --- | --- |
 | `asset-pipeline-ASK` | production repo consumer | `diagram-static-H` · `diagram-static-V` · `diagram-interactive-spine` · Spectral State | Full Class A set — architecture-tree + ontology-tree (H), inheritance-spine (V), interactive IA state spine. Only the interactive spine loads `spectral-state.css`. |
-| `urban-observatory` | public project consumer / inheritance proof | `diagram-static-H` · `output-artifact` v2 | Static architecture-tree + ontology (H); Class B artifact-template wired as a Tier 1 + Tier 2 inheritance proof. |
+| `urban-observatory` | public project consumer | `diagram-static-H` · `diagram-interactive-spine` · Spectral State · `output-artifact` v2 | Static architecture-tree + ontology (both H); interactive IA state spine (Spectral State). Class B artifact-template wired (Tier 1 + Tier 2). Built three diagrams, not four — no `diagram-static-V` (no Axis-B inheritance ladder in UO). |
 | `method-ASK` | method-surface diagram consumer | `diagram-static-H` | Single static topology diagram. |
 | `control-surface` | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
 
