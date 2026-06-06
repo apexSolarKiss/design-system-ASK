@@ -36,7 +36,7 @@ A scoped container token cannot reach base-element rules, which is why Class B b
 ## How to use it
 
 1. Copy the four files in `patterns/output-artifact/` into your consuming project.
-2. Sync `colors_and_type.css`, fonts, and any required assets from design-system-ASK into a local mirror (e.g. `./_dsa-tokens/`), pinned to a known upstream commit SHA.
+2. Sync `colors_and_type.css`, fonts, and any required assets from design-system-ASK into a local mirror (e.g. `./_dsa-tokens/`), pinned to a known upstream commit SHA. (For a **single-file** artifact this mirror is only a build input you inline and seal away; only a **multi-file package** keeps a linked mirror — see *Single file vs shared mirror* below.)
 3. Edit `static-output-artifact.html`: replace placeholder content (title, sections, meta, footer references) with your artifact's actual content. Replace the sample list/table/code block — do not restyle the element rules. Do not edit the token references, the line overlay, or the theme behavior.
 4. Add any project-specific chrome (banners, status rails, review-status strips, branding) in the **Tier 3 overlay slot** — see below.
 5. Fill out a `MANIFEST.md` from `MANIFEST.md.example`: record the upstream commit SHA, per-file sha256, your consuming project, artifact path, template version, and render timestamp.
@@ -47,6 +47,15 @@ A scoped container token cannot reach base-element rules, which is why Class B b
 A delivered output artifact must be **self-contained**: it must open with full styling from any location (local file, email attachment, copied folder) with **no network and no sidecar**. Review artifacts have to survive delivery without a stylesheet or font going missing.
 
 This is a **contract** the consuming project's renderer meets — typically by inlining the token CSS and embedding fonts at render time. The renderer is consumer-owned and is **not** part of this pattern (no generator / build pipeline lives in design-system-ASK). The template here links the local mirror (`./_dsa-tokens/colors_and_type.css`) as the editable starting point; sealing happens in the consumer's render step. The hard-fail checklist enforces the self-contained requirement on the delivered artifact.
+
+## Single file vs shared mirror
+
+The `_dsa-tokens/` mirror is the right shape for a **multi-file package** — it is not a mandatory sidecar on every artifact. Choose by how many HTML files share the foundation:
+
+- **A single HTML payload ships as one self-contained file.** Inline the token CSS and base64-embed the fonts at render time, so the artifact is literally one `.html` with no sidecar. The mirror, if used at all, is a build *input* that does not travel with the delivered file — do not ship a `_dsa-tokens/` folder next to a lone HTML.
+- **A package of multiple HTML files that share the foundation vendors one shared `_dsa-tokens/` mirror** the files link, pinned to a known commit. The tokens live once for the package rather than being duplicated into every file.
+
+The rule, in one line: **link a shared mirror only when more than one file consumes it; a single payload seals to a single file.** Either way the delivered artifact still meets the self-contained contract above — sealed-inline for one file, folder-portable for a package.
 
 ## Snapshot / retention convention
 
