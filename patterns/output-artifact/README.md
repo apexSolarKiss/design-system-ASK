@@ -48,6 +48,22 @@ A delivered output artifact must be **self-contained**: it must open with full s
 
 This is a **contract** the consuming project's renderer meets — typically by inlining the token CSS and embedding fonts at render time. The renderer is consumer-owned and is **not** part of this pattern (no generator / build pipeline lives in design-system-ASK). The template here links the local mirror (`./_dsa-tokens/colors_and_type.css`) as the editable starting point; sealing happens in the consumer's render step. The hard-fail checklist enforces the self-contained requirement on the delivered artifact.
 
+## Snapshot / retention convention
+
+A rendered output artifact is a **frozen audit object** once it is reviewed, accepted, or externally shared. The render → seal → freeze step is not the end of the story: how a *regenerated* artifact is retained is part of the contract.
+
+**Required principle.** This is fixed across all consumers:
+
+- A reviewed, accepted, or shared artifact is frozen. Regenerating it produces a **new** artifact, not an edit of the old one.
+- Do **not** overwrite or delete a prior reviewed artifact as "stale". Superseding means **history, not deletion** — prior reviewed renders stay retained.
+
+**Naming — consumer-owned.** The audit rule above is fixed; the filename shape is not. The scaffold prescribes no single default — choose the flavor that matches the artifact's rhythm:
+
+- **Date-driven** outputs: `YYYY-MM-DD_<artifact-name>.html`
+- **Iterative / revision-driven** outputs: `<artifact-name>_v<N>.html`
+
+A consumer may also keep a stable canonical copy under a consumer-owned name for convenience, but prior reviewed renders must remain retained as dated or versioned snapshots. The consuming project picks the flavor; the design system fixes only the retention doctrine, not the filesystem convention.
+
 ## Tier 3 overlay slot
 
 `static-output-artifact.html` carries a clearly marked, intentionally empty **Tier 3 overlay slot**. Project-specific identity — banners, status rails, review-status strips, project branding — belongs there, layered on top:
