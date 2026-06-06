@@ -1,0 +1,82 @@
+# Pattern // diagram-interactive-spine
+
+A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static `diagram-static-H` (horizontal cascade) and `diagram-static-V` (vertical centered spine).
+
+`diagram-interactive-spine` is **Class A — interactive**. It is *not* `diagram-static-V-interactive`: static-vs-interactive is the artifact-class distinction, encoded in the name.
+
+## What this pattern is
+
+A small consumption pattern. Six files:
+
+- `README.md` — this file
+- `diagram-interactive-spine.html` — the shell page (bar, canvas, inspector, legend, HUD, caption)
+- `diagram-interactive-spine.source.js` — the IA data, as a single `window.IA_STATE_SPINE` literal (**consumer-owned**)
+- `diagrams-interactive-spine-engine.js` — the layout + interaction engine (`window.IA_SPINE.render`)
+- `diagrams-interactive-spine.css` — the interactive style layer
+- `export-png.js` — 3840×2880 PNG export that bakes the resolved state colors inline
+
+It is **not** a component library, a generator, a build pipeline, or a project-specific surface. It is a starting point for a project's own interactive IA, building on design-system-ASK foundations.
+
+## It consumes Spectral State (unlike the static scaffolds)
+
+The static diagram scaffolds are **structural** and assert no state — they do not load `spectral-state.css`. This interactive surface is **state-bearing**: each node is colored by one of the eight **Spectral State** roles (`--state-*`), set via a single `--st` custom property per node. So it loads, in order: `colors_and_type.css` → `spectral-state.css` → `diagrams-interactive-spine.css`. **Color encodes state only.**
+
+## Data grammar
+
+```js
+window.IA_STATE_SPINE = {
+  meta:   { title, subtitle, stamp },
+  states: [ { role, label, meaning }, … ],   // the eight Spectral State roles (the legend)
+  nodes:  [ { id, group, label, state, evidence, qualifier?, pointer, modes? }, … ],
+};
+```
+
+- **`group`** — `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state).
+- **`state`** — exactly one of the eight Spectral State roles. Drives node color.
+- **`modes`** — ids of the mode nodes a node intersects; selection draws the relationships and isolates the set.
+- **`evidence` / `qualifier` / `pointer`** — inspector metadata (never encoded in hue). `pointer` is the authoritative repo source for that node.
+
+## Interactions
+
+Hover previews a node (its relationships + inspector); click locks it; click empty space clears. The inspector shows the node's state + meaning and its metadata. Pan (drag), zoom (wheel / HUD), fit (`⤢`). The `PNG` button exports a 3840×2880 poster with the resolved state colors baked in (theme-correct at click time).
+
+## How to use it
+
+1. Copy the six files into your project (e.g. `docs/diagrams/interactive/`).
+2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs.
+3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
+4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
+5. Edit the HTML chrome (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`). Do not edit the canvas / inspector / legend / HUD / corner-tick structure.
+6. Open the HTML directly, or via static hosting. The `PNG` button (or `?export=png`) exports a poster in the resolved theme.
+
+## What downstream must replace
+
+- All IA data in `diagram-interactive-spine.source.js` (states are inherited — keep the eight roles; author your own nodes)
+- The chrome strings in the HTML (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`)
+- The file names (`diagram-interactive-spine.html` / `.source.js`) if you prefer project-specific names
+
+## What not to edit
+
+- `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js` (the shared engine + style + export — modifications break inheritance)
+- The Spectral State role vocabulary (the eight `--state-*` roles) — inherited; do not rename or recolor
+- The load order (`colors_and_type.css` → `spectral-state.css` → pattern CSS)
+
+## Discipline
+
+- **Color encodes state only.** Evidence depth, risk, mode coverage, repo pointers live in the inspector, never in hue.
+- **One state role per node.**
+- **Title by dimension, not the umbrella.** This surface depicts *state* (status / maturity) of the architecture — it is not "the" information architecture. Title it for its dimension, e.g. **"Information architecture — state"** (the placeholder default), not the bare "Information architecture". Structural diagrams name their axis (ontology, inheritance); this one names its dimension (state). Claiming the umbrella title would imply the other diagrams are sub-views of this one — they are peers.
+- **Consumer owns** source data + chrome; **design-system owns** engine / CSS / export.
+- **Offline / no CDN**; local pinned `_dsa-tokens` mirror. No Tier 3.
+
+## Source-truth boundary
+
+design-system-ASK supplies Tier 1 + Tier 2 (and the Spectral State primitive). The diagram is **illustrative**, not source truth — the consuming repo's prose remains authoritative. The consuming project supplies its own Tier 3 identity, its IA content, and its source-truth posture.
+
+## Class A static vs interactive · Class B
+
+- **Class A — static:** `diagram-static-H`, `diagram-static-V` (structural; state-free).
+- **Class A — interactive:** `diagram-interactive-spine` (this pattern; state-bearing; consumes Spectral State).
+- **Class B:** `patterns/output-artifact/` (project-output artifacts).
+
+The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2; they serve different artifact classes.
