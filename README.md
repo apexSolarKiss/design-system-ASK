@@ -38,7 +38,9 @@ This repo carries foundations and may carry static-artifact inheritance scaffold
 
 Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
 
-- **Class A** — system / architecture diagram templates. Two **static** orientations: **`diagram-static-H`** (horizontal left→right top-aligned cascade) and **`diagram-static-V`** (vertical top→down centered spine). A future **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern; reserved in naming, not yet built. The taxonomy encodes static-vs-interactive, not just orientation, because the interactive spine is also vertical.
+- **Class A** — system / architecture diagram templates, in two kinds:
+  - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade) and **`diagram-static-V`** (vertical top→down centered spine) — structural; state-free.
+  - **interactive:** **`diagram-interactive-spine`** — a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
 - **Class B** — project-output artifact templates.
 
 Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
@@ -63,6 +65,7 @@ The repo may also carry **specialized opt-in foundation primitives** beyond the 
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
 | `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
 | `patterns/diagram-static-V/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
+| `patterns/diagram-interactive-spine/` | Class A **interactive** diagram scaffold — navigable, stateful IA state surface (hover/click/inspector/pan-zoom). Consumes the Spectral State primitive for node color; state-bearing (unlike the static scaffolds) |
 
 ---
 
