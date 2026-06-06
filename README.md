@@ -62,6 +62,7 @@ The repo may also carry **specialized opt-in foundation primitives** beyond the 
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
+| `CONSUMERS.md` | Known **public** downstream repos that consume these patterns/tokens — transparency record, not a customer list (private consumers tracked operator-side) |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
 | `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
 | `patterns/diagram-static-V/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
@@ -219,10 +220,18 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 
 ---
 
+## Consumers
+
+Public downstream repos consume these patterns and tokens by reference, vendored at a pinned commit. The known public consumers are tracked in [`CONSUMERS.md`](CONSUMERS.md).
+
+Consuming a pattern does not fork it. A consumer vendors a local pinned mirror (`_dsa-tokens/`, no CDN), supplies its own Tier 3 identity and content, and re-syncs when an upstream pattern or token module changes. design-system-ASK owns the engine, CSS, and export; the consumer owns its source data and chrome.
+
+---
+
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. Class A diagram scaffolds (horizontal `patterns/diagram-static-H/` and vertical `patterns/diagram-static-V/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. urban-observatory has demonstrated Tier 1 + Tier 2 inheritance in practice as a scratch prototype. No public production surface has been built on top yet.
+- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented, and public downstream repos consume them — see [`CONSUMERS.md`](CONSUMERS.md). No public production surface has been built on top yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
 
 ---
 
