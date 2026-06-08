@@ -177,31 +177,35 @@
     var caveat = getCaveat();
     var legend = getLegendRows();
 
-    // Overlay placement (caption top-left, legend top-right).
-    var caveatW = 380, caveatH = 150;
-    var legendW = 440, legendH = 60 + legend.length * 42 + 16;
+    // Overlay placement (caption top-left, legend top-right). Panels are
+    // translucent + rounded — a glass approximation (true backdrop-filter blur
+    // cannot be reproduced in an SVG-as-image raster; over the dark, mostly-empty
+    // ground a translucent fill reads close).
+    var PANEL_RX = 16, PANEL_OPACITY = '0.5';
+    var caveatW = 480, caveatH = 168;
+    var legendW = 520, legendH = 64 + legend.length * 48 + 20;
     var overlayY = HEADER_H + OVERLAY_INSET;
     var caveatX = M;
     var legendX = PAGE_W - M - legendW;
     var swX = legendX + 28;
-    var lblX = swX + 60 + 16;
-    var subOffset = 100;
+    var lblX = swX + 74 + 18;
+    var subOffset = 116;
 
     var legendBody =
-      '<rect x="' + legendX + '" y="' + overlayY + '" width="' + legendW + '" height="' + legendH + '" fill="' + T.panelFill + '" stroke="' + T.line1 + '" rx="6"/>' +
-      '<text x="' + (legendX + 24) + '" y="' + (overlayY + 32) + '" font-family="' + MONO + '" font-size="11" fill="' + T.fg2 + '" letter-spacing="1.76">LEGEND</text>' +
-      '<text x="' + (legendX + legendW - 24) + '" y="' + (overlayY + 32) + '" text-anchor="end" font-family="' + MONO + '" font-size="11" font-weight="500" fill="' + T.fg1 + '" letter-spacing="0.88">' + legend.length + ' STATES</text>';
+      '<rect x="' + legendX + '" y="' + overlayY + '" width="' + legendW + '" height="' + legendH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>' +
+      '<text x="' + (legendX + 28) + '" y="' + (overlayY + 38) + '" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '" letter-spacing="2.34">LEGEND</text>' +
+      '<text x="' + (legendX + legendW - 28) + '" y="' + (overlayY + 38) + '" text-anchor="end" font-family="' + MONO + '" font-size="13" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.04">' + legend.length + ' STATES</text>';
     legend.forEach(function (row, i) {
-      var y = overlayY + 60 + i * 42;
+      var y = overlayY + 66 + i * 48;
       if (row.isSolid) {
-        legendBody += '<rect x="' + (swX + 16) + '" y="' + y + '" width="28" height="16" fill="' + T.nodeFill + '" stroke="' + T.fg1 + '"/>';
+        legendBody += '<rect x="' + (swX + 16) + '" y="' + (y - 10) + '" width="34" height="20" rx="3" fill="' + T.nodeFill + '" stroke="' + T.fg1 + '"/>';
       } else if (row.isDashed) {
-        legendBody += '<rect x="' + (swX + 16) + '" y="' + y + '" width="28" height="16" fill="transparent" stroke="' + T.fg2 + '" stroke-dasharray="4 3"/>';
+        legendBody += '<rect x="' + (swX + 16) + '" y="' + (y - 10) + '" width="34" height="20" rx="3" fill="transparent" stroke="' + T.fg2 + '" stroke-dasharray="4 3"/>';
       } else if (row.isLegacy) {
-        legendBody += '<text x="' + (swX + 30) + '" y="' + (y + 8) + '" text-anchor="middle" font-family="' + SANS + '" font-size="13" font-style="italic" font-weight="300" fill="' + T.fg2 + '" dominant-baseline="middle">legacy</text>';
+        legendBody += '<text x="' + (swX + 33) + '" y="' + y + '" text-anchor="middle" font-family="' + SANS + '" font-size="16" font-style="italic" font-weight="300" fill="' + T.fg2 + '" dominant-baseline="middle">legacy</text>';
       }
-      legendBody += '<text x="' + lblX + '" y="' + (y + 8) + '" font-family="' + SANS + '" font-size="15" fill="' + T.fg1 + '" dominant-baseline="middle">' + xml(row.lbl) + '</text>';
-      legendBody += '<text x="' + (lblX + subOffset) + '" y="' + (y + 8) + '" font-family="' + MONO + '" font-size="11" fill="' + T.fg2 + '" dominant-baseline="middle">' + xml(row.sub) + '</text>';
+      legendBody += '<text x="' + lblX + '" y="' + y + '" font-family="' + SANS + '" font-size="18" fill="' + T.fg1 + '" dominant-baseline="middle">' + xml(row.lbl) + '</text>';
+      legendBody += '<text x="' + (lblX + subOffset) + '" y="' + y + '" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '" dominant-baseline="middle">' + xml(row.sub) + '</text>';
     });
 
     var themeTagSvg = themeTag ?
@@ -224,17 +228,17 @@
       '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
       '  <line x1="0" y1="' + HEADER_H + '" x2="' + PAGE_W + '" y2="' + HEADER_H + '" stroke="' + T.line1 + '"/>\n' +
       '  <text x="' + M + '" y="40" font-family="' + SANS + '" font-size="24" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
-      '  <text x="' + M + '" y="72" font-family="' + SANS + '" font-size="22" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
-      '  <text x="' + M + '" y="92" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '" letter-spacing="0.96">' + xml(subtitle) + '</text>\n' +
+      '  <text x="' + M + '" y="74" font-family="' + SANS + '" font-size="26" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
+      '  <text x="' + M + '" y="94" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '" letter-spacing="1.04">' + xml(subtitle) + '</text>\n' +
       '  ' + themeTagSvg + '\n' +
       '  <text x="' + (PAGE_W - M - 140) + '" y="76" text-anchor="end" font-family="' + MONO + '" font-size="14" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.12">' + xml(stamp1) + '</text>\n' +
       '  <text x="' + (PAGE_W - M - 140) + '" y="96" text-anchor="end" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '" letter-spacing="0.96">' + xml(stamp2) + '</text>\n' +
       '  ' + contentStr + '\n' +
-      '  <rect x="' + caveatX + '" y="' + overlayY + '" width="' + caveatW + '" height="' + caveatH + '" fill="' + T.panelFill + '" stroke="' + T.line1 + '" rx="6"/>\n' +
-      '  <text x="' + (caveatX + 24) + '" y="' + (overlayY + 36) + '" font-family="' + MONO + '" font-size="13" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.82">' + xml(caveat.title) + '</text>\n' +
-      '  <text x="' + (caveatX + 24) + '" y="' + (overlayY + 70) + '" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '">' + xml(caveat.lines[0] || '') + '</text>\n' +
-      '  <text x="' + (caveatX + 24) + '" y="' + (overlayY + 94) + '" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '">' + xml(caveat.lines[1] || '') + '</text>\n' +
-      '  <text x="' + (caveatX + 24) + '" y="' + (overlayY + 118) + '" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '">' + xml(caveat.lines[2] || '') + '</text>\n' +
+      '  <rect x="' + caveatX + '" y="' + overlayY + '" width="' + caveatW + '" height="' + caveatH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>\n' +
+      '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 42) + '" font-family="' + MONO + '" font-size="14" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.96">' + xml(caveat.title) + '</text>\n' +
+      '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 80) + '" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '">' + xml(caveat.lines[0] || '') + '</text>\n' +
+      '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 106) + '" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '">' + xml(caveat.lines[1] || '') + '</text>\n' +
+      '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 132) + '" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '">' + xml(caveat.lines[2] || '') + '</text>\n' +
       '  ' + legendBody + '\n' +
       '</svg>';
   }
