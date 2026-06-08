@@ -21,7 +21,7 @@
   var NS = 'http://www.w3.org/2000/svg';
   var PAGE_W = 3840;
   var PAGE_H = 2880;
-  var HEADER_H = 100;
+  var HEADER_H = 150;
   var M = 56;
   var OVERLAY_INSET = 24;
   var MONO = "'JetBrains Mono', ui-monospace, monospace";
@@ -227,12 +227,12 @@
       '  </defs>\n' +
       '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
       '  <line x1="0" y1="' + HEADER_H + '" x2="' + PAGE_W + '" y2="' + HEADER_H + '" stroke="' + T.line1 + '"/>\n' +
-      '  <text x="' + M + '" y="40" font-family="' + SANS + '" font-size="24" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
-      '  <text x="' + M + '" y="74" font-family="' + SANS + '" font-size="26" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
-      '  <text x="' + M + '" y="94" font-family="' + MONO + '" font-size="13" fill="' + T.fg2 + '" letter-spacing="1.04">' + xml(subtitle) + '</text>\n' +
+      '  <text x="' + M + '" y="58" font-family="' + SANS + '" font-size="32" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
+      '  <text x="' + M + '" y="108" font-family="' + SANS + '" font-size="46" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
+      '  <text x="' + M + '" y="138" font-family="' + MONO + '" font-size="19" fill="' + T.fg2 + '" letter-spacing="1.52">' + xml(subtitle) + '</text>\n' +
       '  ' + themeTagSvg + '\n' +
-      '  <text x="' + (PAGE_W - M - 140) + '" y="76" text-anchor="end" font-family="' + MONO + '" font-size="14" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.12">' + xml(stamp1) + '</text>\n' +
-      '  <text x="' + (PAGE_W - M - 140) + '" y="96" text-anchor="end" font-family="' + MONO + '" font-size="12" fill="' + T.fg2 + '" letter-spacing="0.96">' + xml(stamp2) + '</text>\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="64" text-anchor="end" font-family="' + MONO + '" font-size="20" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.6">' + xml(stamp1) + '</text>\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="94" text-anchor="end" font-family="' + MONO + '" font-size="17" fill="' + T.fg2 + '" letter-spacing="1.36">' + xml(stamp2) + '</text>\n' +
       '  ' + contentStr + '\n' +
       '  <rect x="' + caveatX + '" y="' + overlayY + '" width="' + caveatW + '" height="' + caveatH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>\n' +
       '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 42) + '" font-family="' + MONO + '" font-size="14" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.96">' + xml(caveat.title) + '</text>\n' +
