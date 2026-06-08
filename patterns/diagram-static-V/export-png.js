@@ -21,7 +21,7 @@
   var NS = 'http://www.w3.org/2000/svg';
   var PAGE_W = 3840;
   var PAGE_H = 2880;
-  var HEADER_H = 150;
+  var HEADER_H = 120;
   var M = 56;
   var OVERLAY_INSET = 24;
   var MONO = "'JetBrains Mono', ui-monospace, monospace";
@@ -177,6 +177,13 @@
     var caveat = getCaveat();
     var legend = getLegendRows();
 
+    // Mirror the live header's horizontal bar: repo mark on the left, the
+    // title-block (title + subtitle) to the RIGHT of it — not stacked under it.
+    // Measure the mark at its export font size to find the title column.
+    var hctx = document.createElement('canvas').getContext('2d');
+    hctx.font = '500 32px ' + SANS;
+    var titleX = M + Math.ceil(hctx.measureText(mark).width) + 88;
+
     // Overlay placement (caption top-left, legend top-right). Panels are
     // translucent + rounded — a glass approximation (true backdrop-filter blur
     // cannot be reproduced in an SVG-as-image raster; over the dark, mostly-empty
@@ -227,12 +234,12 @@
       '  </defs>\n' +
       '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
       '  <line x1="0" y1="' + HEADER_H + '" x2="' + PAGE_W + '" y2="' + HEADER_H + '" stroke="' + T.line1 + '"/>\n' +
-      '  <text x="' + M + '" y="58" font-family="' + SANS + '" font-size="32" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
-      '  <text x="' + M + '" y="108" font-family="' + SANS + '" font-size="46" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
-      '  <text x="' + M + '" y="138" font-family="' + MONO + '" font-size="19" fill="' + T.fg2 + '" letter-spacing="1.52">' + xml(subtitle) + '</text>\n' +
+      '  <text x="' + M + '" y="60" font-family="' + SANS + '" font-size="32" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
+      '  <text x="' + titleX + '" y="60" font-family="' + SANS + '" font-size="42" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n' +
+      '  <text x="' + titleX + '" y="92" font-family="' + MONO + '" font-size="18" fill="' + T.fg2 + '" letter-spacing="1.44">' + xml(subtitle) + '</text>\n' +
       '  ' + themeTagSvg + '\n' +
-      '  <text x="' + (PAGE_W - M) + '" y="64" text-anchor="end" font-family="' + MONO + '" font-size="20" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.6">' + xml(stamp1) + '</text>\n' +
-      '  <text x="' + (PAGE_W - M) + '" y="94" text-anchor="end" font-family="' + MONO + '" font-size="17" fill="' + T.fg2 + '" letter-spacing="1.36">' + xml(stamp2) + '</text>\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="56" text-anchor="end" font-family="' + MONO + '" font-size="20" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.6">' + xml(stamp1) + '</text>\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="88" text-anchor="end" font-family="' + MONO + '" font-size="17" fill="' + T.fg2 + '" letter-spacing="1.36">' + xml(stamp2) + '</text>\n' +
       '  ' + contentStr + '\n' +
       '  <rect x="' + caveatX + '" y="' + overlayY + '" width="' + caveatW + '" height="' + caveatH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>\n' +
       '  <text x="' + (caveatX + 28) + '" y="' + (overlayY + 42) + '" font-family="' + MONO + '" font-size="14" font-weight="500" fill="' + T.fg1 + '" letter-spacing="1.96">' + xml(caveat.title) + '</text>\n' +
