@@ -40,7 +40,14 @@ window.TREE_DIAGRAM = {
       ],
     },
     {
+      // REGRESSION GUARD (static-H engine, 2026-06): a section WITH a long note —
+      // reproduces the asset-pipeline-ASK ontology failure where a measured-but-
+      // unrendered section note inflated the depth-1 column and stretched every
+      // first-level connector. The section render branch does not draw notes, so this
+      // note must NOT contribute to measured column width. Keep this case unless/until
+      // section-note rendering is deliberately added to the visual grammar.
       kind: 'section', label: 'third section',
+      note: 'deliberately long section note, present only to verify that an unrendered section note does not stretch the depth-1 column or its connector spans — it must not contribute to measured width',
       children: [
         { label: '[node-5]' },
         { label: '[node-6]', note: '[short note]' },
