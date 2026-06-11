@@ -2,7 +2,7 @@
 
 A reusable static-artifact scaffold for system / architecture diagrams — architecture trees, topology maps, source-of-truth maps, repo-orientation diagrams, and similar ASK-family system diagrams that inherit the design-system-ASK visual language. **`diagram-static-H`** is the **horizontal** Class A static pattern: a left→right, top-aligned cascade.
 
-This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its vertical sibling is `patterns/diagram-static-V/` (top→down centered spine). A future **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern, and not named `diagram-static-V-interactive`; reserved in naming, not yet built.
+This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its static siblings are `patterns/diagram-static-V/` (vertical top→down centered spine — a tree, like this one) and `patterns/diagram-static-SEQ/` (ordered arrowed sequence — succession, not hierarchy). The **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern, and not named `diagram-static-V-interactive`.
 
 ## What this pattern is
 
@@ -54,4 +54,4 @@ The consuming project supplies its own Tier 3 identity, its own source-truth pos
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates) — the **horizontal** left→right cascade. Its **vertical sibling** is `patterns/diagram-static-V/` (top→down centered spine), a separate Class A pattern with its own placement engine but the same data grammar, visual contract, and export. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates) — the **horizontal** left→right cascade. Its static siblings are `patterns/diagram-static-V/` (vertical top→down centered spine) and `patterns/diagram-static-SEQ/` (ordered arrowed sequence), separate Class A patterns with their own placement engines but the same data grammar, visual contract, and export. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.

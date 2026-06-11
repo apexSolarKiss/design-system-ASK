@@ -2,16 +2,17 @@
 
 A reusable static-artifact scaffold for system / architecture diagrams whose natural topology is a **vertical, top-to-bottom, horizontally-centered spine** — ontology maps, inheritance chains, one-axis information-architecture diagrams, and similar ASK-family system diagrams that inherit the design-system-ASK visual language. **`diagram-static-V`** is the **vertical** Class A static pattern: a top→down centered spine.
 
-This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. It is the **vertical sibling** of `patterns/diagram-static-H/` (the horizontal, top-aligned left→right cascade). Same data grammar, same visual contract, same PNG export, same inheritance discipline — only the placement geometry differs.
+This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its static siblings are `patterns/diagram-static-H/` (the horizontal, top-aligned left→right cascade — also a tree) and `patterns/diagram-static-SEQ/` (ordered arrowed sequence — succession, not hierarchy). Same data grammar, same visual contract, same PNG export, same inheritance discipline — only the placement geometry differs.
 
 > **`diagram-static-V` is the *static* vertical pattern.** A future **interactive** IA spine is a *different artifact class* — also vertical, but not a static Class A scaffold. It is reserved in naming as `diagram-interactive-spine` (not yet built) and must **not** be called `diagram-static-V-interactive`. That is exactly why the taxonomy encodes static-vs-interactive, not just H/V.
 
-## When to use this vs `diagram-static-H`
+## When to use this vs `diagram-static-H` / `diagram-static-SEQ`
 
 - **`diagram-static-H`** — horizontal spine, tree expands **left → right**, vertically top-aligned. Good for broad architecture trees, topology maps, source-of-truth maps.
 - **`diagram-static-V`** (this pattern) — vertical spine, tree expands **top → down**, horizontally centered. Good for inheritance chains and one-axis diagrams that read as a centered trunk.
+- **`diagram-static-SEQ`** — ordered **sequence** of steps joined by arrows, left-aligned. The relation is succession, not hierarchy — pipelines, workflows, lifecycles, numbered processes.
 
-They are separate patterns with separate placement engines on purpose: a centered top→down spine is not a rotation of the top-aligned horizontal cascade. Pick the one whose geometry matches the diagram; do not fork one to fake the other.
+They are separate patterns with separate placement engines on purpose: a centered top→down spine is not a rotation of the top-aligned horizontal cascade, and a sequence is not a tree. Pick the one whose geometry matches the diagram; do not fork one to fake the other.
 
 ## What this pattern is
 
@@ -21,8 +22,8 @@ A small consumption pattern. Six files:
 - `diagram-static-V.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-static-V.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
 - `diagrams-static-V-engine.js` — **the vertical placement + pan/zoom engine** (the only file that genuinely differs from `diagram-static-H`). It measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and adds the CSS `letter-spacing` that `canvas.measureText` ignores, so labels never overflow their boxes. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
-- `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to `diagram-static-H/diagrams.css`** — shared by convention, not a runtime import. The spine engine emits the same CSS classes, and centering is an SVG `text-anchor` attribute the engine sets, so no style change is needed.
-- `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to `diagram-static-H/export-png.js`** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves both patterns.
+- `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to the `diagram-static-H` / `diagram-static-SEQ` copies** — shared by convention, not a runtime import. The spine engine emits the same CSS classes, and centering is an SVG `text-anchor` attribute the engine sets, so no style change is needed.
+- `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to the `diagram-static-H` / `diagram-static-SEQ` copies** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves all three patterns.
 
 The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific diagram. It is a starting point for downstream diagrams that consume design-system-ASK foundations.
 
