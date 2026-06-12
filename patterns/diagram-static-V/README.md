@@ -53,6 +53,17 @@ The horizontal placement uses leaf-packing with parents centered over children, 
 5. Edit `diagram-static-V.html` chrome: update `.mark`, `.title-block`, `.stamp`, `.caption`, `<title>`, and `<meta name="description">` to your project's values. Do not edit the canvas / HUD / corner-tick structure.
 6. Open the resulting HTML directly in a browser, or via static hosting / GitHub Pages. Use the `PNG` button in the HUD to export a 3840×2880 render at the current resolved theme.
 
+## PNG export artifact naming
+
+The `PNG` button exports at the page's resolved theme, and the **exported filename carries that theme** — `<base>_source-vN_render-vN-light.png` or `…-dark.png` (theme resolved by the same precedence as the CSS: an explicit `data-theme` on `<html>` wins, otherwise the OS `prefers-color-scheme`). The suffix keeps a light and a dark export of the same diagram from colliding in Downloads, scratch, review folders, or handoff contexts.
+
+That suffix is a property of **raw exporter output**, not of repo-committed artifacts:
+
+- A repo-committed **canonical raster** — a single chosen representative image, e.g. `your-project_<diagram>.png` — **may keep a semantic, unsuffixed filename**. In repo context the filename already says what the image is, and only one variant is committed.
+- If a repo commits **both** the light and dark variants, the `-light` / `-dark` suffixes are **required** to tell them apart.
+
+Example: `asset-pipeline-ASK_discretion-chain.png` is a valid single chosen canonical (dark) raster; if both variants were ever committed they would be named `…-light.png` / `…-dark.png`.
+
 ## What downstream must replace
 
 - All tree data in `diagram-static-V.source.js` (root label, section labels, node labels, notes, tags, statuses)
