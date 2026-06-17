@@ -14,6 +14,7 @@ Every consumer vendors a local, pinned mirror (`_dsa-tokens/`) — no CDN, no li
 | `urban-observatory` | public project consumer | `diagram-static-H` · `diagram-interactive-spine` · Spectral State · `output-artifact` v2 | Static architecture-tree + ontology (both H); interactive IA state spine (Spectral State). Class B artifact-template wired (Tier 1 + Tier 2). Built three diagrams, not four — no `diagram-static-V` (no Axis-B inheritance ladder in UO). |
 | `method-ASK` | method-surface diagram consumer | `diagram-static-H` | Single static topology diagram. |
 | `control-surface` | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
+| `ASK` | public reference implementation (live: a-s-k.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of the design family's foundations. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
 
 ## What this file is not
 
