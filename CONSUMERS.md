@@ -4,7 +4,7 @@ Known **public** downstream repos with **landed** consumption of design-system-A
 
 This file records **landed public consumption only** — which public repo already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
 
-Every consumer vendors a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link. Each consumer owns its source data and chrome; design-system-ASK owns the engine, CSS, and export. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
+Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each consumer owns its source data and chrome; design-system-ASK owns the engine, CSS, and export. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
 
 ## Public consumers
 
@@ -14,7 +14,7 @@ Every consumer vendors a local, pinned mirror (`_dsa-tokens/`) — no CDN, no li
 | `urban-observatory` | public project consumer | `diagram-static-H` · `diagram-interactive-spine` · Spectral State · `output-artifact` v2 | Static architecture-tree + ontology (both H); interactive IA state spine (Spectral State). Class B artifact-template wired (Tier 1 + Tier 2). Built three diagrams, not four — no `diagram-static-V` (no Axis-B inheritance ladder in UO). |
 | `method-ASK` | method-surface diagram consumer | `diagram-static-H` | Single static topology diagram. |
 | `control-surface` | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
-| `ASK` | public reference implementation (live: A-S-K.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of the design family's foundations. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
+| `ASK` | public reference implementation (live: A-S-K.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of `design-system-ASK`. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
 
 ## What this file is not
 
