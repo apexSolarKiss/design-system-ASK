@@ -16,7 +16,7 @@ This repo conforms to **`visual-identity-system.md`** in ASK's canonical context
 
 ## What this is
 
-A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. State is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set.
+A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. Interface and interaction state is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set. The one opt-in exception is semantic state in data and architecture visualizations, which may use the ASK Spectral State primitive (below) — not general UI color.
 
 Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers on top of these tokens elsewhere; it does not live here.
 
