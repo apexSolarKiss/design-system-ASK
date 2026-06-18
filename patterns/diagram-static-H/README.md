@@ -2,7 +2,7 @@
 
 A reusable static-artifact scaffold for system / architecture diagrams — architecture trees, topology maps, source-of-truth maps, repo-orientation diagrams, and similar ASK-family system diagrams that inherit the design-system-ASK visual language. **`diagram-static-H`** is the **horizontal** Class A static pattern: a left→right, top-aligned cascade.
 
-This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its static siblings are `patterns/diagram-static-V/` (vertical top→down centered spine — a tree, like this one) and `patterns/diagram-static-SEQ/` (ordered arrowed sequence — succession, not hierarchy). The **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern, and not named `diagram-static-V-interactive`.
+This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its static siblings are `patterns/diagram-static-V/` (vertical top→down centered spine) and `patterns/diagram-static-SEQ/` (ordered arrowed sequence — succession, not hierarchy). The **interactive** IA spine (`diagram-interactive-spine`) is a *separate artifact class* — not a static Class A pattern, and not named `diagram-static-V-interactive`.
 
 ## What this pattern is
 
