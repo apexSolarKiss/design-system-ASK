@@ -33,12 +33,12 @@
      partially-supported   value of --state-partial           visual-role mapping
      unresolved            value of --state-held              exact mapping
      weakened              new — muted/darkened 30° brown     new Evidence role
-     not-yet-testable      new — neutral lavender-grey        new Evidence role
+     not-yet-testable      new — neutral lavender-gray        new Evidence role
 
    The three reused values are VISUAL-ROLE mappings (and one exact mapping,
    `unresolved → held`); they are NOT semantic aliases. A consuming surface
    keeps the evidence LABELS — Supported / Partially supported / Unresolved —
-   and must never relabel them earned / partial / held just because the colour
+   and must never relabel them earned / partial / held just because the color
    value is shared.
 
    `weakened` is a tonal derivative of `partial`: the same 30° hue family, lower
@@ -47,10 +47,10 @@
    `partial` and from red `deflated`. It is NOT a new wheel position and is NOT
    added to the Spectral State health ramp.
 
-   `not-yet-testable` is OFF the chromatic arc entirely — a neutral lavender-grey
-   for "evidence cannot exist yet at this stage". Colour alone is NOT sufficient
+   `not-yet-testable` is OFF the chromatic arc entirely — a neutral lavender-gray
+   for "evidence cannot exist yet at this stage". Color alone is NOT sufficient
    to express it. Its presentation contract on a consuming surface is:
-       neutral lavender-grey  +  dashed rail  +  hollow marker  +  visible label
+       neutral lavender-gray  +  dashed rail  +  hollow marker  +  visible label
    ========================================================================= */
 
 /* ---------- Light (default) ---------- */
@@ -62,7 +62,7 @@
 
   /* new Evidence State roles — theme-calibrated */
   --evidence-weakened:            hsl( 30, 55%, 32%);    /* muted/darkened 30° — brown */
-  --evidence-not-yet-testable:    hsl(264,  8%, 53%);    /* neutral lavender-grey (see contract above) */
+  --evidence-not-yet-testable:    hsl(264,  8%, 53%);    /* neutral lavender-gray (see contract above) */
 }
 
 /* ---------- Dark — on the dark ink field ----------
