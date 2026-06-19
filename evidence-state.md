@@ -14,22 +14,22 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
 | `partially-supported` | value of `--state-partial` | visual-role mapping |
 | `unresolved` | value of `--state-held` | exact mapping |
 | `weakened` | new — muted/darkened 30° brown | new Evidence State role |
-| `not-yet-testable` | new — neutral lavender-grey + dashed/hollow treatment | new Evidence State role |
+| `not-yet-testable` | new — neutral lavender-gray + dashed/hollow treatment | new Evidence State role |
 
-**Labels stay evidence labels.** A consuming surface keeps **Supported**, **Partially supported**, and **Unresolved** — it must never relabel them `earned` / `partial` / `held` merely because the colour value is shared. The three reused values are *visual-role* mappings (one exact: `unresolved → held`), not semantic aliases.
+**Labels stay evidence labels.** A consuming surface keeps **Supported**, **Partially supported**, and **Unresolved** — it must never relabel them `earned` / `partial` / `held` merely because the color value is shared. The three reused values are *visual-role* mappings (one exact: `unresolved → held`), not semantic aliases.
 
 ## The two new roles
 
 - **`weakened`** — a *tonal derivative* of `partial`: the same 30° hue family, lower saturation and lightness — a muted, darkened orange ("brown"). It reads as a degraded `partial` (the pathway remains viable but has lost credibility), clearly separated from neon `partial` and from red `deflated`. It is **not** a new wheel position and is **not** added to the Spectral State health ramp.
-- **`not-yet-testable`** — **off** the chromatic arc entirely: a neutral lavender-grey for "evidence cannot exist yet at this stage" (distinct from `unresolved`, an open question being worked, and from a neutral field with no asserted state). Colour alone is **not** sufficient. Its presentation contract is mandatory:
+- **`not-yet-testable`** — **off** the chromatic arc entirely: a neutral lavender-gray for "evidence cannot exist yet at this stage" (distinct from `unresolved`, an open question being worked, and from a neutral field with no asserted state). Color alone is **not** sufficient. Its presentation contract is mandatory:
 
   ```text
-  neutral lavender-grey  +  dashed rail  +  hollow marker  +  visible label
+  neutral lavender-gray  +  dashed rail  +  hollow marker  +  visible label
   ```
 
 ## Wheel logic (inherited)
 
-Evidence State draws on the same neon wheel as Spectral State. The three reused values sit on it (`earned` 120°, `partial` 30°, `held` 180°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes colour only to say something.
+Evidence State draws on the same neon wheel as Spectral State. The three reused values sit on it (`earned` 120°, `partial` 30°, `held` 180°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
 
 The Spectral State health ramp is **unchanged**:
 
@@ -45,14 +45,14 @@ Evidence State derivation
 ## Tiers
 
 - **Tier 1 (identity-free):** the `--evidence-*` role names — a stable vocabulary other ASK-family surfaces can reuse.
-- **Tier 2 (ASK design language):** the two new per-theme values (`weakened` brown, `not-yet-testable` lavender-grey); the three reused values inherit Spectral State's Tier 2 by reference.
+- **Tier 2 (ASK design language):** the two new per-theme values (`weakened` brown, `not-yet-testable` lavender-gray); the three reused values inherit Spectral State's Tier 2 by reference.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it
 
 1. Load `colors_and_type.css`, then `spectral-state.css`, then `evidence-state.css`.
-2. On a consuming element, set colour from a single role token, e.g. `fill: var(--evidence-supported)` or `color: var(--evidence-weakened)`.
-3. For `not-yet-testable`, apply the full presentation contract (lavender-grey + dashed rail + hollow marker + visible label) — never colour alone.
+2. On a consuming element, set color from a single role token, e.g. `fill: var(--evidence-supported)` or `color: var(--evidence-weakened)`.
+3. For `not-yet-testable`, apply the full presentation contract (lavender-gray + dashed rail + hollow marker + visible label) — never color alone.
 4. Keep the evidence labels visible; do not relabel reused roles by their Spectral State names.
 
 ```css
@@ -68,4 +68,4 @@ Evidence State derivation
 ## What is upstream vs consumer-local
 
 - **Upstream (this repo):** the five role names, the two new per-theme values, the reuse-by-reference mapping, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
-- **Consumer-local (e.g. `urban-observatory`):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this colour profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.
+- **Consumer-local (e.g. `urban-observatory`):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this color profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.
