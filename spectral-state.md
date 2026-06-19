@@ -4,6 +4,8 @@ A semantic **state-color system**: a small, identity-free vocabulary of state *r
 
 It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/`, `patterns/diagram-static-V/`, `patterns/diagram-static-SEQ/`) do **not** use it — those are structural and assert no state.
 
+**Profiles.** Sanctioned *profiles* may build on this primitive for adjacent semantic domains. The first is [`evidence-state.md`](evidence-state.md) (epistemic evidence-state), which reuses three of the roles below by reference and adds two evidence-specific roles. Spectral State's own eight-role architectural-element vocabulary is unchanged by any profile.
+
 > **Status: v1.1 — restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — `asset-pipeline-ASK`'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
 
 ## The eight roles
