@@ -1,0 +1,448 @@
+/* export-png.js — static-H / static-V / static-SEQ Class A PNG export.
+
+   Ported to the interactive-spine exporter model (2026-06). The previous version
+   rebuilt a fresh SVG and relied on a <style> class-rule block (.node-label,
+   .node-box, …) plus web-font @font-face for the diagram, header, legend, and
+   caveat. SVG-as-image rasterization (data:image/svg+xml → <img> → canvas)
+   applies <style> class rules and @font-face web fonts UNRELIABLY, so on dense
+   diagrams the export dropped fonts, box styling, and header layout while the
+   live browser render stayed correct.
+
+   This version exports the artifact the browser actually rendered: it clones the
+   live diagram <svg> content and inlines getComputedStyle onto every element
+   (fill, stroke, font, letter-spacing, …), and builds the header / legend /
+   caveat chrome with inline presentation attributes — no class rules, no var()
+   left to resolve. Mirrors patterns/diagram-interactive-spine/export-png.js.
+
+   Chrome is laid out at PAGE SCALE (2026-06-11). The diagram content is scaled
+   up to fill the 3840×2880 page, so the header / caveat / legend must be drawn
+   at matching size — earlier versions drew them at on-screen pixel sizes, which
+   read tiny next to the upscaled diagram. Panel widths are now MEASURED from
+   their text (canvas.measureText + manual letter-spacing), the header subtitle
+   wraps to the space left of the stamp, and legend sub-text wraps inside the
+   panel — nothing overflows a panel edge and no fixed column offsets remain.
+
+   Theme-aware: chrome colors read from CSS custom properties at click time.
+*/
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var PAGE_W = 3840;
+  var PAGE_H = 2880;
+  var HEADER_H = 240;
+  var M = 96;
+  var OVERLAY_INSET = 48;
+  var MONO = "'JetBrains Mono', ui-monospace, monospace";
+  var SANS = 'Inter, system-ui, sans-serif';
+
+  var xml = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c];
+    });
+  };
+  var text = function (el) { return (el ? el.textContent : '').replace(/\s+/g, ' ').trim(); };
+
+  /* ---------- text measurement (canvas + manual letter-spacing) ---------- */
+  var measureCtx = document.createElement('canvas').getContext('2d');
+  function textW(s, font, ls) {
+    s = String(s == null ? '' : s);
+    measureCtx.font = font;
+    var w = measureCtx.measureText(s).width;
+    if (ls) w += s.length * ls;
+    return w;
+  }
+  /* Word-wrap to a pixel width. maxLines caps the result (rest joins onto the
+     last line — a safeguard, not a layout feature). */
+  function wrapToWidth(s, font, ls, maxW, maxLines) {
+    if (!s) return [];
+    if (textW(s, font, ls) <= maxW) return [s];
+    var words = s.split(' ');
+    var lines = [];
+    var cur = '';
+    for (var i = 0; i < words.length; i++) {
+      var candidate = cur ? cur + ' ' + words[i] : words[i];
+      if (cur && textW(candidate, font, ls) > maxW) { lines.push(cur); cur = words[i]; }
+      else cur = candidate;
+    }
+    if (cur) lines.push(cur);
+    if (maxLines && lines.length > maxLines) {
+      lines = lines.slice(0, maxLines - 1).concat([lines.slice(maxLines - 1).join(' ')]);
+    }
+    return lines;
+  }
+
+  /* ---------- computed-style inlining (ported from the interactive exporter) ----------
+     Walk a live subtree and its deep clone in lockstep (querySelectorAll('*') is
+     document-order, identical for both), copying computed presentation style onto
+     the clone and dropping classes, so the snapshot is self-contained and CSS-free. */
+  var INLINE_PROPS = [
+    'fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-dasharray',
+    'stroke-opacity', 'opacity', 'font-family', 'font-size', 'font-weight',
+    'font-style', 'letter-spacing', 'text-transform', 'dominant-baseline',
+    'text-anchor',
+  ];
+  function inlineStyles(liveRoot, cloneRoot) {
+    var live = [liveRoot].concat(Array.prototype.slice.call(liveRoot.querySelectorAll('*')));
+    var clone = [cloneRoot].concat(Array.prototype.slice.call(cloneRoot.querySelectorAll('*')));
+    for (var i = 0; i < live.length && i < clone.length; i++) {
+      var cs = getComputedStyle(live[i]);
+      var st = '';
+      for (var p = 0; p < INLINE_PROPS.length; p++) {
+        var v = cs.getPropertyValue(INLINE_PROPS[p]);
+        if (v) st += INLINE_PROPS[p] + ':' + v + ';';
+      }
+      clone[i].setAttribute('style', st);
+      clone[i].removeAttribute('class');
+      // SVG-as-image does not always apply text-transform; bake it.
+      if (cs.getPropertyValue('text-transform') === 'uppercase') {
+        for (var c = 0; c < clone[i].childNodes.length; c++) {
+          var ch = clone[i].childNodes[c];
+          if (ch.nodeType === 3) ch.nodeValue = ch.nodeValue.toUpperCase();
+        }
+      }
+    }
+  }
+
+  /* ---------- theme resolution (chrome colors; read once per export) ---------- */
+  function resolveTheme() {
+    var cs = getComputedStyle(document.documentElement);
+    var v = function (name, fallback) {
+      var raw = cs.getPropertyValue(name).trim();
+      return raw || fallback;
+    };
+    return {
+      bgFrom:    v('--bg-from',   '#D4C6E1'),
+      bgTo:      v('--bg-to',     '#E2D3F0'),
+      fg1:       v('--fg-1',      '#FFFFFF'),
+      fg2:       v('--fg-2',      'rgba(255,255,255,0.82)'),
+      line1:     v('--line-1',    'rgba(255,255,255,0.45)'),
+      nodeFill:  v('--node-fill', '#BFB3D4'),
+      panelFill: v('--bg-from',   '#D4C6E1'),
+    };
+  }
+
+  /* ---------- chrome readers ---------- */
+  function getStamp() {
+    var stamp = document.querySelector('.bar .stamp');
+    if (!stamp) return ['', ''];
+    var divs = stamp.querySelectorAll(':scope > div');
+    return [text(divs[0]).toUpperCase(), text(divs[1])];
+  }
+  function getCaveat() {
+    var cap = document.querySelector('.caption');
+    if (!cap) return { title: '', lines: [] };
+    var b = cap.querySelector('b');
+    var title = (b ? text(b) : '').toUpperCase();
+    var html = cap.innerHTML;
+    var after = html.replace(/^[\s\S]*?<\/b>/i, '').replace(/<br\s*\/?>/gi, '\n');
+    var body = after.replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').trim();
+    var explicit = body.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (explicit.length >= 2) return { title: title, lines: explicit.slice(0, 3) };
+    var max = 58;
+    var out = [];
+    var rem = body;
+    while (rem && out.length < 3) {
+      if (rem.length <= max) { out.push(rem); break; }
+      var cut = rem.lastIndexOf(' ', max);
+      if (cut < 16) cut = max;
+      out.push(rem.slice(0, cut));
+      rem = rem.slice(cut + 1).trim();
+    }
+    return { title: title, lines: out };
+  }
+  function getLegendRows() {
+    return Array.prototype.slice.call(document.querySelectorAll('.legend .row')).map(function (r) {
+      return {
+        lbl: text(r.querySelector('.lbl')),
+        sub: text(r.querySelector('.sub')),
+        isSolid: !!r.querySelector('.box-solid'),
+        isDashed: !!r.querySelector('.box-dashed'),
+        isLegacy: !!r.querySelector('.legacy-txt'),
+      };
+    });
+  }
+  function getVersionParts() {
+    return Array.prototype.slice.call(document.querySelectorAll('.bar .stamp .k')).map(function (e) { return text(e); });
+  }
+  function getFilenameBase() {
+    var file = (location.pathname.split('/').pop() || 'diagram.html');
+    return decodeURIComponent(file).replace(/\.html?$/i, '');
+  }
+  function getThemeTag() {
+    var t = document.querySelector('.theme-tag, .bar .theme-tag');
+    return t ? text(t).replace(/^\/+/, '').trim() : '';
+  }
+  // Resolved light/dark theme, matching the CSS precedence: an explicit
+  // data-theme on <html> wins, otherwise the OS prefers-color-scheme. Used to
+  // suffix the export filename (-light / -dark) so the two renders don't collide.
+  function getThemeName() {
+    var explicit = document.documentElement.getAttribute('data-theme');
+    if (explicit === 'light' || explicit === 'dark') return explicit;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+
+  function buildSvg(T) {
+    var svg = document.getElementById('svg');
+    if (!svg) return null;
+    var diagW = +svg.getAttribute('width');
+    var diagH = +svg.getAttribute('height');
+    if (!diagW || !diagH) return null;
+
+    /* Clone the live diagram content groups and bake computed styles inline — a
+       faithful snapshot of what the browser rendered, not a reconstruction.
+       (Pan/zoom lives on the #stage div, not the SVG content, so the engine
+       coordinates need no un-transform.) */
+    var content = document.createElementNS(NS, 'g');
+    var liveGroups = svg.querySelectorAll(':scope > g'); // edges layer, nodes layer
+    for (var i = 0; i < liveGroups.length; i++) {
+      var clone = liveGroups[i].cloneNode(true);
+      inlineStyles(liveGroups[i], clone);
+      content.appendChild(clone);
+    }
+
+    // Header content (read live, drawn with inline fonts).
+    var mark = text(document.querySelector('.bar .mark'));
+    var title = text(document.querySelector('.bar .title-block .t'));
+    var subtitle = text(document.querySelector('.bar .title-block .s')).toUpperCase();
+    var themeTag = getThemeTag();
+    var stamp = getStamp(), stamp1 = stamp[0], stamp2 = stamp[1];
+    var caveat = getCaveat();
+    var legend = getLegendRows();
+
+    /* ---------- header (laid out at page scale) ----------
+       Repo mark on the left, the title-block (title + subtitle) to the RIGHT of
+       it; stamp (and optional theme tag) right-anchored. The subtitle wraps to
+       the space left of the right column instead of running under it. */
+    var F_MARK   = '500 52px ' + SANS;
+    var F_TITLE  = '400 56px ' + SANS;
+    var F_SUB    = '300 26px ' + MONO,    LS_SUB    = 2.1;
+    var F_STAMP1 = '500 34px ' + MONO,    LS_STAMP1 = 2.7;
+    var F_STAMP2 = '300 28px ' + MONO,    LS_STAMP2 = 2.2;
+    var F_TAG    = '400 22px ' + MONO,    LS_TAG    = 3.1;
+
+    var titleX = M + Math.ceil(textW(mark, F_MARK)) + 88;
+
+    var tagText = themeTag.toUpperCase();
+    var tagW = themeTag ? Math.ceil(textW(tagText, F_TAG, LS_TAG)) + 48 : 0;
+    var rightColW = Math.max(
+      Math.ceil(textW(stamp1, F_STAMP1, LS_STAMP1)),
+      Math.ceil(textW(stamp2, F_STAMP2, LS_STAMP2)),
+      tagW
+    );
+    var stampY1 = themeTag ? 128 : 96;
+    var stampY2 = stampY1 + 52;
+
+    var subMaxW = (PAGE_W - M - rightColW) - titleX - 64;
+    var subLines = wrapToWidth(subtitle, F_SUB, LS_SUB, subMaxW, 2);
+
+    var themeTagSvg = themeTag ?
+      '<rect x="' + (PAGE_W - M - tagW) + '" y="30" width="' + tagW + '" height="52" rx="10" fill="transparent" stroke="' + T.line1 + '"/>' +
+      '<text x="' + (PAGE_W - M - tagW / 2) + '" y="56" text-anchor="middle" font-family="' + MONO + '" font-size="22" fill="' + T.fg2 + '" letter-spacing="3.1" dominant-baseline="middle">' + xml(tagText) + '</text>'
+      : '';
+
+    var headerSvg =
+      '<line x1="0" y1="' + HEADER_H + '" x2="' + PAGE_W + '" y2="' + HEADER_H + '" stroke="' + T.line1 + '"/>\n' +
+      '  <text x="' + M + '" y="104" font-family="' + SANS + '" font-size="52" font-weight="500" fill="' + T.fg1 + '">' + xml(mark) + '</text>\n' +
+      '  <text x="' + titleX + '" y="104" font-family="' + SANS + '" font-size="56" font-weight="400" fill="' + T.fg1 + '">' + xml(title) + '</text>\n';
+    subLines.forEach(function (line, li) {
+      headerSvg += '  <text x="' + titleX + '" y="' + (158 + li * 44) + '" font-family="' + MONO + '" font-size="26" font-weight="300" fill="' + T.fg2 + '" letter-spacing="2.1">' + xml(line) + '</text>\n';
+    });
+    headerSvg +=
+      '  ' + themeTagSvg + '\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="' + stampY1 + '" text-anchor="end" font-family="' + MONO + '" font-size="34" font-weight="500" fill="' + T.fg1 + '" letter-spacing="2.7">' + xml(stamp1) + '</text>\n' +
+      '  <text x="' + (PAGE_W - M) + '" y="' + stampY2 + '" text-anchor="end" font-family="' + MONO + '" font-size="28" font-weight="300" fill="' + T.fg2 + '" letter-spacing="2.2">' + xml(stamp2) + '</text>\n';
+
+    /* ---------- overlay panels (caption top-left, legend top-right) ----------
+       Translucent + rounded — a glass approximation (true backdrop-filter blur
+       cannot be reproduced in an SVG-as-image raster; over the dark, mostly-empty
+       ground a translucent fill reads close). Panel widths are measured from
+       their content so text never crosses a panel edge. */
+    var PANEL_RX = 24, PANEL_OPACITY = '0.5', PAD = 56;
+    var overlayY = HEADER_H + OVERLAY_INSET;
+
+    var F_CAV_T = '500 28px ' + MONO, LS_CAV_T = 3.9;
+    var F_CAV_B = '300 26px ' + MONO;
+    var caveatSvg = '';
+    var cavH = 0;
+    if (caveat.title || caveat.lines.length) {
+      var cavW = Math.ceil(Math.max.apply(null, [textW(caveat.title, F_CAV_T, LS_CAV_T)].concat(
+        caveat.lines.map(function (l) { return textW(l, F_CAV_B); })
+      ))) + PAD * 2;
+      cavH = 160 + Math.max(0, caveat.lines.length - 1) * 52 + 56;
+      caveatSvg =
+        '<rect x="' + M + '" y="' + overlayY + '" width="' + cavW + '" height="' + cavH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>\n' +
+        '  <text x="' + (M + PAD) + '" y="' + (overlayY + 92) + '" font-family="' + MONO + '" font-size="28" font-weight="500" fill="' + T.fg1 + '" letter-spacing="3.9">' + xml(caveat.title) + '</text>\n';
+      caveat.lines.forEach(function (line, li) {
+        caveatSvg += '  <text x="' + (M + PAD) + '" y="' + (overlayY + 160 + li * 52) + '" font-family="' + MONO + '" font-size="26" font-weight="300" fill="' + T.fg2 + '">' + xml(line) + '</text>\n';
+      });
+    }
+
+    var legendBody = '';
+    var legendH = 0;
+    if (legend.length) {
+      var F_LEG_H   = '400 26px ' + MONO, LS_LEG_H   = 4.2;
+      var F_LEG_FIG = '500 26px ' + MONO, LS_LEG_FIG = 2.1;
+      var F_LEG_LBL = '400 34px ' + SANS;
+      var F_LEG_SUB = '300 26px ' + MONO, LS_LEG_SUB = 1.0;
+      var SW_W = 68, SW_H = 40;
+      var SUB_BUDGET = 1100; // max sub-text line width before wrapping
+
+      var maxLblW = 0, maxSubW = 0;
+      legend.forEach(function (row) {
+        maxLblW = Math.max(maxLblW, textW(row.lbl, F_LEG_LBL));
+        row.subLines = wrapToWidth(row.sub, F_LEG_SUB, LS_LEG_SUB, SUB_BUDGET, 3);
+        row.subLines.forEach(function (l) { maxSubW = Math.max(maxSubW, textW(l, F_LEG_SUB, LS_LEG_SUB)); });
+      });
+      var swOff  = PAD;
+      var lblOff = swOff + SW_W + 40;
+      var subOff = lblOff + Math.ceil(maxLblW) + 36;
+      var legendW = subOff + Math.ceil(maxSubW) + PAD;
+      var legendX = PAGE_W - M - legendW;
+
+      // Row centers: 96px per row plus 44px per extra wrapped sub line.
+      var yOff = 152;
+      legend.forEach(function (row) {
+        row.cy = yOff;
+        yOff += 96 + (row.subLines.length - 1) * 44;
+      });
+      var last = legend[legend.length - 1];
+      legendH = last.cy + (last.subLines.length - 1) * 44 + 64;
+
+      var header = document.querySelector('.legend .h');
+      var headerLbl = header ? text(header.querySelector('span')) : 'Legend';
+      var headerFig = header ? text(header.querySelector('.fig')) : (legend.length + ' states');
+      legendBody =
+        '<rect x="' + legendX + '" y="' + overlayY + '" width="' + legendW + '" height="' + legendH + '" fill="' + T.panelFill + '" fill-opacity="' + PANEL_OPACITY + '" stroke="' + T.line1 + '" rx="' + PANEL_RX + '"/>' +
+        '<text x="' + (legendX + PAD) + '" y="' + (overlayY + 80) + '" font-family="' + MONO + '" font-size="26" fill="' + T.fg2 + '" letter-spacing="4.2">' + xml(headerLbl.toUpperCase()) + '</text>' +
+        '<text x="' + (legendX + legendW - PAD) + '" y="' + (overlayY + 80) + '" text-anchor="end" font-family="' + MONO + '" font-size="26" font-weight="500" fill="' + T.fg1 + '" letter-spacing="2.1">' + xml(headerFig.toUpperCase()) + '</text>';
+      legend.forEach(function (row) {
+        var y = overlayY + row.cy;
+        var swX = legendX + swOff;
+        if (row.isSolid) {
+          legendBody += '<rect x="' + swX + '" y="' + (y - SW_H / 2) + '" width="' + SW_W + '" height="' + SW_H + '" rx="6" fill="' + T.nodeFill + '" stroke="' + T.fg1 + '"/>';
+        } else if (row.isDashed) {
+          legendBody += '<rect x="' + swX + '" y="' + (y - SW_H / 2) + '" width="' + SW_W + '" height="' + SW_H + '" rx="6" fill="transparent" stroke="' + T.fg2 + '" stroke-dasharray="8 6"/>';
+        } else if (row.isLegacy) {
+          legendBody += '<text x="' + (swX + SW_W / 2) + '" y="' + y + '" text-anchor="middle" font-family="' + SANS + '" font-size="30" font-style="italic" font-weight="300" fill="' + T.fg2 + '" dominant-baseline="middle">legacy</text>';
+        }
+        legendBody += '<text x="' + (legendX + lblOff) + '" y="' + y + '" font-family="' + SANS + '" font-size="34" fill="' + T.fg1 + '" dominant-baseline="middle">' + xml(row.lbl) + '</text>';
+        row.subLines.forEach(function (line, li) {
+          legendBody += '<text x="' + (legendX + subOff) + '" y="' + (y + li * 44) + '" font-family="' + MONO + '" font-size="26" font-weight="300" fill="' + T.fg2 + '" letter-spacing="1" dominant-baseline="middle">' + xml(line) + '</text>';
+        });
+      });
+    }
+
+    /* ---------- fit the diagram content ----------
+       The overlay panels are opaque enough that content running under them
+       reads as a collision, so the fit area starts BELOW the taller panel —
+       the diagram is centered in the clear band between panels and page
+       bottom. (Computed after the panels so their measured heights are known.) */
+    var panelBand = Math.max(cavH, legendH);
+    var diagTop = overlayY + (panelBand ? panelBand + 48 : 0);
+    var diagBot = PAGE_H - M, diagLeft = M, diagRight = PAGE_W - M;
+    var availW = diagRight - diagLeft, availH = diagBot - diagTop;
+    var scale = Math.min(availW / diagW, availH / diagH);
+    var sw = diagW * scale, sh = diagH * scale;
+    var sx = diagLeft + (availW - sw) / 2, sy = diagTop + (availH - sh) / 2;
+    content.setAttribute('transform', 'translate(' + sx + ' ' + sy + ') scale(' + scale + ')');
+
+    var serializer = new XMLSerializer();
+    var contentStr = serializer.serializeToString(content);
+
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="' + NS + '" width="' + PAGE_W + '" height="' + PAGE_H + '" viewBox="0 0 ' + PAGE_W + ' ' + PAGE_H + '">\n' +
+      '  <defs>\n' +
+      '    <linearGradient id="pageBg" x1="0%" y1="100%" x2="100%" y2="0%">\n' +
+      '      <stop offset="0%" stop-color="' + T.bgFrom + '"/>\n' +
+      '      <stop offset="100%" stop-color="' + T.bgTo + '"/>\n' +
+      '    </linearGradient>\n' +
+      '    <style>text { font-family: ' + SANS + '; }</style>\n' +
+      '  </defs>\n' +
+      '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
+      '  ' + headerSvg + '\n' +
+      '  ' + contentStr + '\n' +
+      '  ' + caveatSvg + '\n' +
+      '  ' + legendBody + '\n' +
+      '</svg>';
+  }
+
+  async function exportPNG(button) {
+    var T = resolveTheme();
+    var fullSvg = buildSvg(T);
+    if (!fullSvg) { alert('PNG export: diagram not ready.'); return; }
+
+    button.disabled = true;
+    var originalText = button.textContent;
+    button.textContent = '…';
+    try {
+      var img = new Image();
+      await new Promise(function (resolve, reject) {
+        img.onload = resolve;
+        img.onerror = function () { reject(new Error('SVG image load failed')); };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(fullSvg);
+      });
+
+      var cv = document.createElement('canvas');
+      cv.width = PAGE_W;
+      cv.height = PAGE_H;
+      cv.getContext('2d').drawImage(img, 0, 0, PAGE_W, PAGE_H);
+
+      var versionParts = getVersionParts();
+      var base = getFilenameBase().replace(/_source-v\d+_render-v\d+$/, '');
+      var filename = base + (versionParts.length ? '_' + versionParts.join('_') : '') + '-' + getThemeName() + '.png';
+
+      var blob = await new Promise(function (resolve) { cv.toBlob(resolve, 'image/png'); });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('PNG export failed: ' + err.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+
+  function injectButton() {
+    var hud = document.querySelector('.hud');
+    if (!hud) return;
+    if (document.getElementById('exportPng')) return;
+    var btn = document.createElement('button');
+    btn.id = 'exportPng';
+    btn.title = 'Export 3840×2880 PNG';
+    btn.textContent = 'PNG';
+    btn.style.width = 'auto';
+    btn.style.padding = '0 14px';
+    btn.style.fontSize = '11px';
+    btn.style.fontFamily = "'JetBrains Mono', monospace";
+    btn.style.letterSpacing = '0.06em';
+    btn.addEventListener('click', function () { exportPNG(btn); });
+    hud.appendChild(btn);
+  }
+
+  function checkAutoExport() {
+    var params = new URLSearchParams(location.search);
+    if (params.get('export') !== 'png') return;
+    var tryRun = function () {
+      var btn = document.getElementById('exportPng');
+      var svg = document.getElementById('svg');
+      if (!btn || !svg || !svg.getAttribute('width')) { setTimeout(tryRun, 50); return; }
+      btn.click();
+      setTimeout(function () { try { window.close(); } catch (e) {} }, 1800);
+    };
+    setTimeout(tryRun, 200);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { injectButton(); checkAutoExport(); });
+  } else {
+    injectButton();
+    checkAutoExport();
+  }
+})();
