@@ -39,7 +39,7 @@ This repo carries foundations and may carry static-artifact inheritance scaffold
 Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
 
 - **Class A** — system / architecture diagram templates, in two kinds:
-  - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade), **`diagram-static-V`** (vertical top→down centered spine), and **`diagram-static-SEQ`** (ordered top→down arrowed sequence — succession, not hierarchy) — structural; state-free.
+  - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade), **`diagram-static-V`** (vertical top→down centered spine), **`diagram-static-SEQ`** (ordered top→down arrowed sequence — succession, not hierarchy), and **`diagram-static-FLOW`** (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back) — structural; state-free.
   - **interactive:** **`diagram-interactive-spine`** — a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
 - **Class B** — project-output artifact templates.
 
@@ -70,6 +70,7 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 | `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
 | `patterns/diagram-static-V/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
 | `patterns/diagram-static-SEQ/` | Class A system / architecture diagram scaffold — ordered top→down sequence joined by arrows, left-aligned; for pipelines, workflows, lifecycles (succession, not hierarchy) |
+| `patterns/diagram-static-FLOW/` | Class A system / architecture diagram scaffold — convergence flow: many normative sources converging into one resolved spec, realized, evaluated against an evaluation bus, governed, and fed back; for source-resolution / realization-governance topologies |
 | `patterns/diagram-interactive-spine/` | Class A **interactive** diagram scaffold — navigable, stateful IA state surface (hover/click/inspector/pan-zoom). Consumes the Spectral State primitive for node color; state-bearing (unlike the static scaffolds) |
 
 ---
@@ -235,7 +236,7 @@ Consuming a pattern does not fork it. A consumer vendors a local pinned mirror (
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented, and public downstream repos consume them — see [`CONSUMERS.md`](CONSUMERS.md). No public production surface has been built on top yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
+- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production surface has been built on top yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
 
 ---
 
