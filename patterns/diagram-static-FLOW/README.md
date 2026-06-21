@@ -90,6 +90,16 @@ This pattern's `export-png.js` carries **two corrections** versus the `-H` / `-V
 
 Because both are backward-compatible, the same canonical `export-png.js` continues to serve the portrait siblings unchanged.
 
+### Theme by embedding surface
+
+Every diagram package generates and retains both theme variants (`-light` and `-dark`). The embedding surface selects the default:
+
+- **Repository documentation and operator-system diagrams default to dark.**
+- **Substack and other published long-form editorial diagrams default to light.**
+- A stated local exception may override the default for a specific figure.
+
+This rule selects which existing render is embedded. It does not suppress, rename, or replace the alternate-theme export.
+
 ## What to replace
 
 - All flow data in `diagram-static-FLOW.source.js` (carrier, rail, field nodes, converge, spine, evalEdges, futureCarrier — labels, shorts, statuses, details)

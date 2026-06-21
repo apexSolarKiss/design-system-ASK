@@ -60,6 +60,16 @@ That suffix is a property of **raw exporter output**, not of repo-committed arti
 
 Example: `asset-pipeline-ASK_discretion-chain.png` is a valid single chosen canonical (dark) raster; if both variants were ever committed they would be named `…-light.png` / `…-dark.png`.
 
+### Theme by embedding surface
+
+Every diagram package generates and retains both theme variants (`-light` and `-dark`). The embedding surface selects the default:
+
+- **Repository documentation and operator-system diagrams default to dark.**
+- **Substack and other published long-form editorial diagrams default to light.**
+- A stated local exception may override the default for a specific figure.
+
+This rule selects which existing render is embedded. It does not suppress, rename, or replace the alternate-theme export.
+
 ## What downstream must replace
 
 - All IA data in `diagram-interactive-spine.source.js` (states are inherited — keep the eight roles; author your own nodes)
