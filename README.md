@@ -225,6 +225,18 @@ When a UI absolutely needs an icon for affordance, treat it as an exception:
 
 ---
 
+## Theme by embedding surface
+
+Every diagram package generates and retains both theme variants (`-light` and `-dark`). The embedding surface selects the default:
+
+- **Repository documentation and operator-system diagrams default to dark.**
+- **Substack and other published long-form editorial diagrams default to light.**
+- A stated local exception may override the default for a specific figure.
+
+This rule selects which existing render is embedded. It does not suppress, rename, or replace the alternate-theme export.
+
+---
+
 ## Consumers
 
 Public downstream repos consume these patterns and tokens by reference, vendored at a pinned commit. The known public consumers are tracked in [`CONSUMERS.md`](CONSUMERS.md).
