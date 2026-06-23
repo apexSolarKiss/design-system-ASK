@@ -38,7 +38,7 @@ window.IA_STATE_SPINE = {
 
 ## Interactions
 
-Hover previews a node (its relationships + inspector); click locks it; click empty space clears. The inspector shows the node's state + meaning and its metadata. Pan (drag), zoom (wheel / HUD), fit (`⤢`). The `PNG` button exports a 3840×2880 poster with the resolved state colors baked in (theme-correct at click time).
+Hover previews a node (its relationships + inspector); click locks it; click empty space clears. The inspector shows the node's state + meaning and its metadata. Pan (drag), zoom (wheel / HUD), fit (`⤢`). The `PNG page` button exports a 3840×2880 poster with the resolved state colors baked in (theme-correct at click time); `PNG diagram` exports the spine canvas only (see PNG export below).
 
 ## How to use it
 
@@ -47,11 +47,22 @@ Hover previews a node (its relationships + inspector); click locks it; click emp
 3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
 4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
 5. Edit the HTML chrome (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`). Do not edit the canvas / inspector / legend / HUD / corner-tick structure.
-6. Open the HTML directly, or via static hosting. The `PNG` button (or `?export=png`) exports a poster in the resolved theme.
+6. Open the HTML directly, or via static hosting. The `PNG page` button (or `?export=png`) exports a poster in the resolved theme; `PNG diagram` (or `?export=png-diagram`) exports the canvas only.
 
-## PNG export artifact naming
+## PNG export
 
-The `PNG` button exports at the page's resolved theme, and the **exported filename carries that theme** — `<base>_source-vN_render-vN-light.png` or `…-dark.png` (theme resolved by the same precedence as the CSS: an explicit `data-theme` on `<html>` wins, otherwise the OS `prefers-color-scheme`). The suffix keeps a light and a dark export of the same spine from colliding in Downloads, scratch, review folders, or handoff contexts.
+### The two exports
+
+The HUD exposes two PNG exports, both rasterizing the live render through one path (`exportPng({ mode })`):
+
+- **`PNG page`** — the chromed poster: a 3840×2880 render with header, caption, and legend on the resolved gradient field. Auto-export route `?export=png`; filename carries the theme (see Artifact naming below). This is the existing export; its contract is unchanged.
+- **`PNG diagram`** — the spine canvas only: no header, HUD, caption, or legend, on the resolved gradient field, at the spine's natural (variable) aspect. Auto-export route `?export=png-diagram`; filename `<slug>-diagram-<theme>.png`.
+
+The diagram bounds are the **`#vp` content bounds** (the full edges + nodes subtree, the same bounds the page export uses), reset to the neutral resting frame, so nodes, connectors, and labels are preserved without clipping. `PNG diagram` replaces the old chrome-free `.clean.html` + Puppeteer two-build workaround — a clean diagram PNG now comes straight from the full diagram HTML.
+
+### Artifact naming
+
+The `PNG page` button exports at the page's resolved theme, and the **exported filename carries that theme** — `<base>_source-vN_render-vN-light.png` or `…-dark.png` (theme resolved by the same precedence as the CSS: an explicit `data-theme` on `<html>` wins, otherwise the OS `prefers-color-scheme`). The suffix keeps a light and a dark export of the same spine from colliding in Downloads, scratch, review folders, or handoff contexts.
 
 That suffix is a property of **raw exporter output**, not of repo-committed artifacts:
 

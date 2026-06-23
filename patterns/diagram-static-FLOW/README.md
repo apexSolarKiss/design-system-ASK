@@ -81,7 +81,12 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 ## PNG export
 
-Use the `PNG` button in the interactive shell's HUD to export a 3840×2880 render at the current resolved theme. The exported filename carries that theme — `<base>_source-vN_render-vN-light.png` or `…-dark.png` — so a light and a dark export of the same diagram never collide.
+The HUD exposes two PNG exports, both rasterizing the live render through one path (`exportPng({ mode })`):
+
+- **`PNG page`** — the chromed poster: a 3840×2880 render with header, legend, caption, and ticks on the resolved gradient field. Auto-export route `?export=png`. This is the existing export; its contract is unchanged.
+- **`PNG diagram`** — the diagram canvas only: no header, HUD, caption, legend, or ticks, on the resolved gradient field, at the diagram's natural (variable) aspect. Auto-export route `?export=png-diagram`; filename `<slug>-diagram-<theme>.png`.
+
+The diagram bounds are the **engine-authored SVG `width` / `height` / `viewBox`**, so the convergence trunk, eval-bus elbows, arrowheads, and the wide landscape geometry are preserved without clipping. `PNG diagram` replaces the old chrome-free `.clean.html` + Puppeteer two-build workaround — a clean diagram PNG now comes straight from the full diagram HTML. The `PNG page` filename carries the page's resolved theme — `<base>_source-vN_render-vN-light.png` or `…-dark.png` — so a light and a dark export never collide.
 
 This pattern's `export-png.js` carries **two corrections** versus the `-H` / `-V` / `-SEQ` baseline, both backward-compatible and now folded into the shared canonical exporter:
 
