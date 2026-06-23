@@ -380,25 +380,39 @@
      boxes, connectors, arrowheads, edge labels, the SEQ return-loop gutter, and any
      figure-specific landscape geometry. Trust that authored canvas as the diagram
      boundary — do NOT re-infer a tight getBBox, which would clip return loops,
-     arrowheads, or custom offshoots. Reproduce the proven clean-render recipe:
-     scale capped at 1.1 and at 1500 / longest-edge, even breathing room, 2× raster,
-     on the resolved gradient field. Header / caption / legend / HUD / ticks live
-     OUTSIDE #svg, so cloning only the diagram content groups excludes them. */
+     arrowheads, or custom offshoots.
+
+     Reproduce the proven clean-render recipe EXACTLY — it is a TWO-step sizing:
+       (1) size the viewport: viewport = round(svg × S) + 220, S capped at 1.1 and
+           at 1500 / longest-edge;
+       (2) rerun the engine's fit() into that viewport: 80px padding budget, scale
+           capped at 1.2×, content centered.
+     Earlier this collapsed to a single `S × raster` scale with flat padding, which
+     reproduced the OUTER dimensions but under-scaled and over-padded the diagram
+     WITHIN (v4 audit). The fit() step is what scales portrait figures up to fill.
+     Header / caption / legend / HUD / ticks live OUTSIDE #svg, so cloning only the
+     diagram content groups excludes them. */
   function buildDiagramSvg(T) {
     var svg = document.getElementById('svg');
     if (!svg) return null;
-    var diagW = +svg.getAttribute('width'), diagH = +svg.getAttribute('height');
-    if (!diagW || !diagH) return null;
+    var w = +svg.getAttribute('width'), h = +svg.getAttribute('height');
+    if (!w || !h) return null;
     var vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
     var minX = (vb.length === 4 && isFinite(vb[0])) ? vb[0] : 0;
     var minY = (vb.length === 4 && isFinite(vb[1])) ? vb[1] : 0;
 
-    var S = Math.min(1.1, 1500 / Math.max(diagW, diagH)); // proven viewport recipe
-    var RASTER = 2;                                        // deviceScaleFactor analog
-    var PAD = 110 * RASTER;                                // even breathing room per side (≈220/2 viewport px × raster)
-    var s = S * RASTER;
-    var outW = Math.round(diagW * s + PAD * 2);
-    var outH = Math.round(diagH * s + PAD * 2);
+    // (1) viewport sizing — the clean-shell recipe.
+    var S = Math.min(1.1, 1500 / Math.max(w, h));
+    var viewportW = Math.round(w * S) + 220;
+    var viewportH = Math.round(h * S) + 220;
+    // (2) engine fit() into that viewport: 80px padding budget, 1.2× cap, centered.
+    var fitScale = Math.min((viewportW - 80) / w, (viewportH - 80) / h, 1.2);
+    var RASTER = 2;
+    var outW = viewportW * RASTER;
+    var outH = viewportH * RASTER;
+    var scale = fitScale * RASTER;
+    var padX = ((viewportW - w * fitScale) / 2) * RASTER;
+    var padY = ((viewportH - h * fitScale) / 2) * RASTER;
 
     var content = document.createElementNS(NS, 'g');
     var liveGroups = svg.querySelectorAll(':scope > g');
@@ -407,7 +421,8 @@
       inlineStyles(liveGroups[i], clone);
       content.appendChild(clone);
     }
-    content.setAttribute('transform', 'translate(' + (PAD - minX * s) + ' ' + (PAD - minY * s) + ') scale(' + s + ')');
+    // offset by the viewBox origin so negative-origin (centered) content isn't clipped
+    content.setAttribute('transform', 'translate(' + (padX - minX * scale) + ' ' + (padY - minY * scale) + ') scale(' + scale + ')');
 
     var contentStr = new XMLSerializer().serializeToString(content);
     return {

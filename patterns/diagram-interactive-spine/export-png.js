@@ -207,24 +207,38 @@
      The interactive svg is CSS-sized with no width/height/viewBox, so the diagram
      bounds are the live content bounds of #vp — its full subtree (edges, nodes,
      labels, connectors), not a node-only box, the same bounds the page export uses.
-     Reproduce the clean-render recipe: scale capped at 1.1 and at 1500/longest-edge,
-     even breathing room, 2× raster, on the resolved gradient field. Header / caption
-     / legend / HUD live outside #edges/#nodes, so cloning only those excludes them.
-     neutralize() gives the stable resting frame; per-node semantic state (--st →
-     --state-*) is preserved by inlineStyles. */
+
+     Reproduce the proven clean-render recipe EXACTLY — it is a TWO-step sizing:
+       (1) size the viewport: viewport = round(bb × S) + 220, S capped at 1.1 and
+           at 1500 / longest-edge;
+       (2) rerun the engine's fit() into that viewport: 80px padding budget, scale
+           capped at 1.2×, content centered.
+     Earlier this collapsed to a single `S × raster` scale with flat padding, which
+     reproduced the OUTER dimensions but under-scaled and over-padded the diagram
+     WITHIN (v4 audit). The fit() step is what scales the diagram up to fill.
+     Header / caption / legend / HUD live outside #edges/#nodes, so cloning only
+     those excludes them. neutralize() gives the stable resting frame; per-node
+     semantic state (--st → --state-*) is preserved by inlineStyles. */
   function buildDiagramSvg() {
     var svg = document.getElementById('svg');
     neutralize(svg);
     var vp = svg.querySelector('#vp');
     var bb = vp.getBBox();
     if (!bb || !bb.width || !bb.height) return null;
+    var w = bb.width, h = bb.height;
 
-    var S = Math.min(1.1, 1500 / Math.max(bb.width, bb.height)); // proven viewport recipe
+    // (1) viewport sizing — the clean-shell recipe.
+    var S = Math.min(1.1, 1500 / Math.max(w, h));
+    var viewportW = Math.round(w * S) + 220;
+    var viewportH = Math.round(h * S) + 220;
+    // (2) engine fit() into that viewport: 80px padding budget, 1.2× cap, centered.
+    var fitScale = Math.min((viewportW - 80) / w, (viewportH - 80) / h, 1.2);
     var RASTER = 2;
-    var PAD = 110 * RASTER;                                       // even breathing room per side
-    var s = S * RASTER;
-    var outW = Math.round(bb.width * s + PAD * 2);
-    var outH = Math.round(bb.height * s + PAD * 2);
+    var outW = viewportW * RASTER;
+    var outH = viewportH * RASTER;
+    var scale = fitScale * RASTER;
+    var padX = ((viewportW - w * fitScale) / 2) * RASTER;
+    var padY = ((viewportH - h * fitScale) / 2) * RASTER;
 
     var content = document.createElementNS(NS, 'g');
     var live = svg.querySelectorAll('#edges, #nodes');
@@ -234,7 +248,7 @@
       inlineStyles(live[i], clone);
       content.appendChild(clone);
     }
-    content.setAttribute('transform', 'translate(' + PAD + ' ' + PAD + ') scale(' + s + ') translate(' + (-bb.x) + ' ' + (-bb.y) + ')');
+    content.setAttribute('transform', 'translate(' + padX + ' ' + padY + ') scale(' + scale + ') translate(' + (-bb.x) + ' ' + (-bb.y) + ')');
 
     var bgFrom = cssVar('--bg-from', '#D4C6E1');
     var bgTo = cssVar('--bg-to', '#E2D3F0');
