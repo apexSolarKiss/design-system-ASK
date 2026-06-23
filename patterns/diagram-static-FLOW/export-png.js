@@ -375,30 +375,93 @@
       '</svg>';
   }
 
-  async function exportPNG(button) {
-    var T = resolveTheme();
-    var fullSvg = buildSvg(T);
-    if (!fullSvg) { alert('PNG export: diagram not ready.'); return; }
+  /* ---------- diagram-only build (PNG diagram) ----------
+     The engine authors its own SVG width / height / viewBox to include the node
+     boxes, connectors, arrowheads, edge labels, the SEQ return-loop gutter, and any
+     figure-specific landscape geometry. Trust that authored canvas as the diagram
+     boundary — do NOT re-infer a tight getBBox, which would clip return loops,
+     arrowheads, or custom offshoots. Reproduce the proven clean-render recipe:
+     scale capped at 1.1 and at 1500 / longest-edge, even breathing room, 2× raster,
+     on the resolved gradient field. Header / caption / legend / HUD / ticks live
+     OUTSIDE #svg, so cloning only the diagram content groups excludes them. */
+  function buildDiagramSvg(T) {
+    var svg = document.getElementById('svg');
+    if (!svg) return null;
+    var diagW = +svg.getAttribute('width'), diagH = +svg.getAttribute('height');
+    if (!diagW || !diagH) return null;
+    var vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+    var minX = (vb.length === 4 && isFinite(vb[0])) ? vb[0] : 0;
+    var minY = (vb.length === 4 && isFinite(vb[1])) ? vb[1] : 0;
 
-    button.disabled = true;
-    var originalText = button.textContent;
-    button.textContent = '…';
+    var S = Math.min(1.1, 1500 / Math.max(diagW, diagH)); // proven viewport recipe
+    var RASTER = 2;                                        // deviceScaleFactor analog
+    var PAD = 110 * RASTER;                                // even breathing room per side (≈220/2 viewport px × raster)
+    var s = S * RASTER;
+    var outW = Math.round(diagW * s + PAD * 2);
+    var outH = Math.round(diagH * s + PAD * 2);
+
+    var content = document.createElementNS(NS, 'g');
+    var liveGroups = svg.querySelectorAll(':scope > g');
+    for (var i = 0; i < liveGroups.length; i++) {
+      var clone = liveGroups[i].cloneNode(true);
+      inlineStyles(liveGroups[i], clone);
+      content.appendChild(clone);
+    }
+    content.setAttribute('transform', 'translate(' + (PAD - minX * s) + ' ' + (PAD - minY * s) + ') scale(' + s + ')');
+
+    var contentStr = new XMLSerializer().serializeToString(content);
+    return {
+      svg: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<svg xmlns="' + NS + '" width="' + outW + '" height="' + outH + '" viewBox="0 0 ' + outW + ' ' + outH + '">\n' +
+        '  <defs>\n' +
+        '    <linearGradient id="pageBg" x1="0%" y1="100%" x2="100%" y2="0%">\n' +
+        '      <stop offset="0%" stop-color="' + T.bgFrom + '"/>\n' +
+        '      <stop offset="100%" stop-color="' + T.bgTo + '"/>\n' +
+        '    </linearGradient>\n' +
+        '  </defs>\n' +
+        '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
+        '  ' + contentStr + '\n' +
+        '</svg>',
+      w: outW, h: outH,
+    };
+  }
+
+  /* ---------- one rasterization path, page / diagram mode ---------- */
+  async function exportPng(opts) {
+    opts = opts || {};
+    var mode = opts.mode === 'diagram' ? 'diagram' : 'page';
+    var button = opts.button || null;
+    var T = resolveTheme();
+
+    var svgStr, OUT_W, OUT_H, slugTag;
+    if (mode === 'diagram') {
+      var built = buildDiagramSvg(T);
+      if (!built) { alert('PNG export: diagram not ready.'); return; }
+      svgStr = built.svg; OUT_W = built.w; OUT_H = built.h; slugTag = '-diagram-';
+    } else {
+      svgStr = buildSvg(T);
+      if (!svgStr) { alert('PNG export: diagram not ready.'); return; }
+      OUT_W = PAGE_W; OUT_H = PAGE_H; slugTag = '-';
+    }
+
+    var originalText = button ? button.textContent : '';
+    if (button) { button.disabled = true; button.textContent = '…'; }
     try {
       var img = new Image();
       await new Promise(function (resolve, reject) {
         img.onload = resolve;
         img.onerror = function () { reject(new Error('SVG image load failed')); };
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(fullSvg);
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
       });
 
       var cv = document.createElement('canvas');
-      cv.width = PAGE_W;
-      cv.height = PAGE_H;
-      cv.getContext('2d').drawImage(img, 0, 0, PAGE_W, PAGE_H);
+      cv.width = OUT_W;
+      cv.height = OUT_H;
+      cv.getContext('2d').drawImage(img, 0, 0, OUT_W, OUT_H);
 
       var versionParts = getVersionParts();
       var base = getFilenameBase().replace(/_source-v\d+_render-v\d+$/, '');
-      var filename = base + (versionParts.length ? '_' + versionParts.join('_') : '') + '-' + getThemeName() + '.png';
+      var filename = base + (versionParts.length ? '_' + versionParts.join('_') : '') + slugTag + getThemeName() + '.png';
 
       var blob = await new Promise(function (resolve) { cv.toBlob(resolve, 'image/png'); });
       var url = URL.createObjectURL(blob);
@@ -413,33 +476,39 @@
       console.error(err);
       alert('PNG export failed: ' + err.message);
     } finally {
-      button.disabled = false;
-      button.textContent = originalText;
+      if (button) { button.disabled = false; button.textContent = originalText; }
     }
   }
 
   function injectButton() {
     var hud = document.querySelector('.hud');
     if (!hud) return;
-    if (document.getElementById('exportPng')) return;
-    var btn = document.createElement('button');
-    btn.id = 'exportPng';
-    btn.title = 'Export 3840×2880 PNG';
-    btn.textContent = 'PNG';
-    btn.style.width = 'auto';
-    btn.style.padding = '0 14px';
-    btn.style.fontSize = '11px';
-    btn.style.fontFamily = "'JetBrains Mono', monospace";
-    btn.style.letterSpacing = '0.06em';
-    btn.addEventListener('click', function () { exportPNG(btn); });
-    hud.appendChild(btn);
+    var mkBtn = function (id, label, title, mode) {
+      if (document.getElementById(id)) return;
+      var btn = document.createElement('button');
+      btn.id = id;
+      btn.title = title;
+      btn.textContent = label;
+      btn.style.width = 'auto';
+      btn.style.padding = '0 14px';
+      btn.style.fontSize = '11px';
+      btn.style.fontFamily = "'JetBrains Mono', monospace";
+      btn.style.letterSpacing = '0.06em';
+      btn.addEventListener('click', function () { exportPng({ mode: mode, button: btn }); });
+      hud.appendChild(btn);
+    };
+    // id 'exportPng' retained for back-compat (the chromed page export).
+    mkBtn('exportPng', 'PNG page', 'Export 3840×2880 chromed page PNG', 'page');
+    mkBtn('exportPngDiagram', 'PNG diagram', 'Export diagram-only PNG — no chrome, natural aspect', 'diagram');
   }
 
   function checkAutoExport() {
     var params = new URLSearchParams(location.search);
-    if (params.get('export') !== 'png') return;
+    var p = params.get('export');
+    if (p !== 'png' && p !== 'png-diagram') return;          // 'png' retained for back-compat (page)
+    var id = p === 'png-diagram' ? 'exportPngDiagram' : 'exportPng';
     var tryRun = function () {
-      var btn = document.getElementById('exportPng');
+      var btn = document.getElementById(id);
       var svg = document.getElementById('svg');
       if (!btn || !svg || !svg.getAttribute('width')) { setTimeout(tryRun, 50); return; }
       btn.click();

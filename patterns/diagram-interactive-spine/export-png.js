@@ -203,28 +203,93 @@
       '</svg>';
   }
 
-  async function exportPNG(button) {
-    var fullSvg = buildSvg();
-    if (!fullSvg) { alert('PNG export: diagram not ready.'); return; }
+  /* ---------- diagram-only build (PNG diagram) ----------
+     The interactive svg is CSS-sized with no width/height/viewBox, so the diagram
+     bounds are the live content bounds of #vp — its full subtree (edges, nodes,
+     labels, connectors), not a node-only box, the same bounds the page export uses.
+     Reproduce the clean-render recipe: scale capped at 1.1 and at 1500/longest-edge,
+     even breathing room, 2× raster, on the resolved gradient field. Header / caption
+     / legend / HUD live outside #edges/#nodes, so cloning only those excludes them.
+     neutralize() gives the stable resting frame; per-node semantic state (--st →
+     --state-*) is preserved by inlineStyles. */
+  function buildDiagramSvg() {
+    var svg = document.getElementById('svg');
+    neutralize(svg);
+    var vp = svg.querySelector('#vp');
+    var bb = vp.getBBox();
+    if (!bb || !bb.width || !bb.height) return null;
 
-    button.disabled = true;
-    var originalText = button.textContent;
-    button.textContent = '…';
+    var S = Math.min(1.1, 1500 / Math.max(bb.width, bb.height)); // proven viewport recipe
+    var RASTER = 2;
+    var PAD = 110 * RASTER;                                       // even breathing room per side
+    var s = S * RASTER;
+    var outW = Math.round(bb.width * s + PAD * 2);
+    var outH = Math.round(bb.height * s + PAD * 2);
+
+    var content = document.createElementNS(NS, 'g');
+    var live = svg.querySelectorAll('#edges, #nodes');
+    for (var i = 0; i < live.length; i++) {
+      var clone = live[i].cloneNode(true);
+      clone.removeAttribute('transform');
+      inlineStyles(live[i], clone);
+      content.appendChild(clone);
+    }
+    content.setAttribute('transform', 'translate(' + PAD + ' ' + PAD + ') scale(' + s + ') translate(' + (-bb.x) + ' ' + (-bb.y) + ')');
+
+    var bgFrom = cssVar('--bg-from', '#D4C6E1');
+    var bgTo = cssVar('--bg-to', '#E2D3F0');
+    var contentStr = new XMLSerializer().serializeToString(content);
+    return {
+      svg: '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<svg xmlns="' + NS + '" width="' + outW + '" height="' + outH + '" viewBox="0 0 ' + outW + ' ' + outH + '">\n' +
+        '  <defs>\n' +
+        '    <linearGradient id="pageBg" x1="0%" y1="100%" x2="100%" y2="0%">\n' +
+        '      <stop offset="0%" stop-color="' + bgFrom + '"/>\n' +
+        '      <stop offset="100%" stop-color="' + bgTo + '"/>\n' +
+        '    </linearGradient>\n' +
+        '    <style>text { font-family: Inter, system-ui, sans-serif; }</style>\n' +
+        '  </defs>\n' +
+        '  <rect width="100%" height="100%" fill="url(#pageBg)"/>\n' +
+        '  ' + contentStr + '\n' +
+        '</svg>',
+      w: outW, h: outH,
+    };
+  }
+
+  /* ---------- one rasterization path, page / diagram mode ---------- */
+  async function exportPng(opts) {
+    opts = opts || {};
+    var mode = opts.mode === 'diagram' ? 'diagram' : 'page';
+    var button = opts.button || null;
+
+    var svgStr, OUT_W, OUT_H, slugTag;
+    if (mode === 'diagram') {
+      var built = buildDiagramSvg();
+      if (!built) { alert('PNG export: diagram not ready.'); return; }
+      svgStr = built.svg; OUT_W = built.w; OUT_H = built.h; slugTag = '-diagram-';
+    } else {
+      svgStr = buildSvg();
+      if (!svgStr) { alert('PNG export: diagram not ready.'); return; }
+      OUT_W = PAGE_W; OUT_H = PAGE_H; slugTag = '-';
+    }
+
+    var originalText = button ? button.textContent : '';
+    if (button) { button.disabled = true; button.textContent = '…'; }
     try {
       var img = new Image();
       await new Promise(function (resolve, reject) {
         img.onload = resolve;
         img.onerror = function () { reject(new Error('SVG image load failed')); };
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(fullSvg);
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
       });
 
       var cv = document.createElement('canvas');
-      cv.width = PAGE_W; cv.height = PAGE_H;
-      cv.getContext('2d').drawImage(img, 0, 0, PAGE_W, PAGE_H);
+      cv.width = OUT_W; cv.height = OUT_H;
+      cv.getContext('2d').drawImage(img, 0, 0, OUT_W, OUT_H);
 
       var parts = getStampParts();
       var base = getFilenameBase().replace(/_source-v\d+_render-v\d+$/, '');
-      var filename = base + (parts.length ? '_' + parts.join('_') : '') + '-' + getThemeName() + '.png';
+      var filename = base + (parts.length ? '_' + parts.join('_') : '') + slugTag + getThemeName() + '.png';
 
       var blob = await new Promise(function (resolve) { cv.toBlob(resolve, 'image/png'); });
       var url = URL.createObjectURL(blob);
@@ -236,30 +301,37 @@
       console.error(err);
       alert('PNG export failed: ' + err.message);
     } finally {
-      button.disabled = false;
-      button.textContent = originalText;
+      if (button) { button.disabled = false; button.textContent = originalText; }
     }
   }
 
   function injectButton() {
     var hud = document.querySelector('.hud');
-    if (!hud || document.getElementById('exportPng')) return;
-    var btn = document.createElement('button');
-    btn.id = 'exportPng';
-    btn.title = 'Export 3840×2880 PNG';
-    btn.textContent = 'PNG';
-    btn.style.width = 'auto';
-    btn.style.padding = '0 12px';
-    btn.style.fontSize = '11px';
-    btn.style.letterSpacing = '0.06em';
-    btn.addEventListener('click', function () { exportPNG(btn); });
-    hud.appendChild(btn);
+    if (!hud) return;
+    var mkBtn = function (id, label, title, mode) {
+      if (document.getElementById(id)) return;
+      var btn = document.createElement('button');
+      btn.id = id;
+      btn.title = title;
+      btn.textContent = label;
+      btn.style.width = 'auto';
+      btn.style.padding = '0 12px';
+      btn.style.fontSize = '11px';
+      btn.style.letterSpacing = '0.06em';
+      btn.addEventListener('click', function () { exportPng({ mode: mode, button: btn }); });
+      hud.appendChild(btn);
+    };
+    // id 'exportPng' retained for back-compat (the chromed page export).
+    mkBtn('exportPng', 'PNG page', 'Export 3840×2880 chromed page PNG', 'page');
+    mkBtn('exportPngDiagram', 'PNG diagram', 'Export diagram-only PNG — no chrome, natural aspect', 'diagram');
   }
 
   function checkAutoExport() {
-    if (new URLSearchParams(location.search).get('export') !== 'png') return;
+    var p = new URLSearchParams(location.search).get('export');
+    if (p !== 'png' && p !== 'png-diagram') return;          // 'png' retained for back-compat (page)
+    var id = p === 'png-diagram' ? 'exportPngDiagram' : 'exportPng';
     var tryRun = function () {
-      var btn = document.getElementById('exportPng');
+      var btn = document.getElementById(id);
       var svg = document.getElementById('svg');
       if (!btn || !svg || !svg.querySelector('#nodes')) { setTimeout(tryRun, 50); return; }
       btn.click();
