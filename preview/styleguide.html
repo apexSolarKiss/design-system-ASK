@@ -6,8 +6,9 @@
 <title>ASK Design System — canonical styleguide</title>
 
 <!-- Live-linked to the canonical token module. Reference/preview surface — NOT a
-     sealed Class B deliverable. Uses var() roles + computed-value labels only, so
-     it can never go stale: it always renders whatever colors_and_type.css currently is. -->
+     sealed Class B deliverable. Uses var() roles + computed-value labels, so token
+     values resolve live from colors_and_type.css; the styleguide remains a maintained
+     reference surface (specimen copy / coverage can still need maintenance). -->
 <link rel="stylesheet" href="../colors_and_type.css">
 
 <style>
@@ -48,7 +49,7 @@
   <div class="sg-head">
     <div>
       <h1 class="sg-title">ASK Design System</h1>
-      <p class="sg-sub">Canonical token review surface — live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so it always reflects the current canonical. Light mode is the default; toggle to verify dark. This is a reference/preview surface, not a sealed deliverable.</p>
+      <p class="sg-sub">Canonical token review surface — live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical. Light mode is the default; toggle to verify dark. This is a reference/preview surface, not a sealed deliverable.</p>
     </div>
     <button class="sg-toggle" id="toggle" aria-label="Toggle light / dark">◐ theme: <span id="mode">light</span></button>
   </div>
@@ -60,7 +61,7 @@
       <div>
         <div class="role">
           <div class="specimen" style="color: var(--fg-1); font-size: var(--fs-h2); font-weight: var(--fw-regular);">Default foreground</div>
-          <div style="color: var(--fg-1); font-size: var(--fs-body); font-weight: var(--fw-extralight);">The canonical light-mode foreground — the approved dark purple, across headings, body, captions, chips, footer.</div>
+          <div style="color: var(--fg-1); font-size: var(--fs-body); font-weight: var(--fw-extralight);">Primary foreground for headings, body, and primary interface text. Secondary and tertiary text use the approved purple foreground ramp.</div>
           <span class="lbl"><code>--fg-1</code> · <span data-fg="--fg-1"></span></span>
         </div>
         <div class="role">
@@ -76,7 +77,7 @@
         <div class="role reserved">
           <div style="color: var(--fg-high-contrast); font-size: var(--fs-body); font-weight: var(--fw-light);">High-contrast foreground — reserved backup.</div>
           <span class="lbl"><code>--fg-high-contrast</code> · <span data-fg="--fg-high-contrast"></span></span>
-          <p class="note">RESERVED / opt-in. No current approved surface uses it. Held for a future audience, accessibility, density, legal, or tabular context that explicitly needs more contrast — not a font-size rule.</p>
+          <p class="note">RESERVED / opt-in. No approved production or reference implementation relies on it; this styleguide displays it only as a reserved specimen. Held for a future audience, accessibility, density, legal, or tabular context that explicitly needs more contrast — not a font-size rule.</p>
         </div>
         <div class="role">
           <div class="row"><span style="font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-h3); color: var(--ask-white);">ASK</span><span class="meta">wordmark only</span></div>
@@ -95,7 +96,7 @@
       </div>
       <div class="card-solid">
         <div style="color: var(--fg-on-card); font-size: var(--fs-h3); font-weight: var(--fw-light);">On a solid surface</div>
-        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid/white-surface text role (unchanged this pass — pending a surface audit).</div>
+        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role — <code>--fg-on-card</code> now resolves to the canonical default foreground.</div>
         <span class="lbl"><code>--fg-on-card</code> · <span data-fg="--fg-on-card"></span> on <code>--surface-solid</code></span>
       </div>
     </div>
