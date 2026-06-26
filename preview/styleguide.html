@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASK Design System — canonical styleguide</title>
+
+<!-- Live-linked to the canonical token module. Reference/preview surface — NOT a
+     sealed Class B deliverable. Uses var() roles + computed-value labels, so token
+     values resolve live from colors_and_type.css; the styleguide remains a maintained
+     reference surface (specimen copy / coverage can still need maintenance). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+
+<style>
+  /* Styleguide layout — token-driven; no hardcoded color values anywhere. */
+  body { max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-6) var(--space-10); }
+  .sg-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-8); }
+  h1.sg-title { margin: 0; }
+  .sg-sub { color: var(--fg-2); font-size: var(--fs-small); font-weight: var(--fw-light); line-height: var(--lh-body); margin-top: var(--space-3); max-width: 64ch; }
+  .sg-toggle { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-4); cursor: pointer; white-space: nowrap; }
+  section { margin: var(--space-8) 0; }
+  .sg-h { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
+  .grid { display: grid; gap: var(--space-4); }
+  .cols-auto { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .card { background: var(--surface-glass); border: 1px solid var(--line-1); border-radius: var(--radius-lg); padding: var(--space-5); }
+  .card-solid { background: var(--surface-solid); border: 1px solid var(--line-inverse); border-radius: var(--radius-lg); padding: var(--space-5); }
+  .swatch { height: 60px; border-radius: var(--radius-md); border: 1px solid var(--line-1); }
+  .tok { font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--fg-2); margin-top: var(--space-2); display: flex; justify-content: space-between; gap: var(--space-3); }
+  .tok .val { color: var(--fg-3); }
+  .role { padding: var(--space-3) 0; border-top: 1px solid var(--line-2); }
+  .role:first-child { border-top: 0; }
+  .role .lbl { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
+  .note { font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--fg-3); }
+  .reserved { opacity: 0.9; }
+  .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
+  .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
+  .badge { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
+  .btn { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-small); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-5); border: 1px solid var(--line-1); cursor: pointer; margin: 0 var(--space-3) var(--space-3) 0; }
+  .btn-primary { background: var(--ask-ui-accent-1); color: var(--ask-white); border-color: transparent; }
+  .btn-ghost { background: transparent; color: var(--fg-1); }
+  .specimen { line-height: var(--lh-tight); }
+  .row { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); white-space: nowrap; }
+</style>
+</head>
+
+<body>
+  <div class="sg-head">
+    <div>
+      <h1 class="sg-title">ASK Design System</h1>
+      <p class="sg-sub">Canonical token review surface — live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical. Light mode is the default; toggle to verify dark. This is a reference/preview surface, not a sealed deliverable.</p>
+    </div>
+    <button class="sg-toggle" id="toggle" aria-label="Toggle light / dark">◐ theme: <span id="mode">light</span></button>
+  </div>
+
+  <!-- ============ FOREGROUND ROLES ============ -->
+  <section>
+    <p class="sg-h">Foreground — text roles (light-mode focus)</p>
+    <div class="grid cols-2">
+      <div>
+        <div class="role">
+          <div class="specimen" style="color: var(--fg-1); font-size: var(--fs-h2); font-weight: var(--fw-regular);">Default foreground</div>
+          <div style="color: var(--fg-1); font-size: var(--fs-body); font-weight: var(--fw-extralight);">Primary foreground for headings, body, and primary interface text. Secondary and tertiary text use the approved purple foreground ramp.</div>
+          <span class="lbl"><code>--fg-1</code> · <span data-fg="--fg-1"></span></span>
+        </div>
+        <div class="role">
+          <div style="color: var(--fg-2); font-size: var(--fs-small);">Secondary foreground — supporting text and labels.</div>
+          <span class="lbl"><code>--fg-2</code> · <span data-fg="--fg-2"></span></span>
+        </div>
+        <div class="role">
+          <div style="color: var(--fg-3); font-size: var(--fs-small);">Tertiary / hint foreground — the quietest tier.</div>
+          <span class="lbl"><code>--fg-3</code> · <span data-fg="--fg-3"></span></span>
+        </div>
+      </div>
+      <div>
+        <div class="role reserved">
+          <div style="color: var(--fg-high-contrast); font-size: var(--fs-body); font-weight: var(--fw-light);">High-contrast foreground — reserved backup.</div>
+          <span class="lbl"><code>--fg-high-contrast</code> · <span data-fg="--fg-high-contrast"></span></span>
+          <p class="note">RESERVED / opt-in. No approved production or reference implementation relies on it; this styleguide displays it only as a reserved specimen. Held for a future audience, accessibility, density, legal, or tabular context that explicitly needs more contrast — not a font-size rule.</p>
+        </div>
+        <div class="role">
+          <div class="row"><span style="font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-h3); color: var(--ask-white);">ASK</span><span class="meta">wordmark only</span></div>
+          <span class="lbl"><code>--ask-white</code> · <span data-fg="--ask-white"></span></span>
+          <p class="note">White is the light-mode WORDMARK (brand mark), never body text. Shown here against the lavender field.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="sg-h" style="margin-top: var(--space-7);">Foreground on surfaces</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div style="color: var(--fg-1); font-size: var(--fs-h3); font-weight: var(--fw-light);">On a glass card</div>
+        <div style="color: var(--fg-1); font-size: var(--fs-small);">Default foreground on the frosted surface — the approved card treatment.</div>
+        <span class="lbl"><code>--fg-1</code> on <code>--surface-glass</code></span>
+      </div>
+      <div class="card-solid">
+        <div style="color: var(--fg-on-card); font-size: var(--fs-h3); font-weight: var(--fw-light);">On a solid surface</div>
+        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role — <code>--fg-on-card</code> now resolves to the canonical default foreground.</div>
+        <span class="lbl"><code>--fg-on-card</code> · <span data-fg="--fg-on-card"></span> on <code>--surface-solid</code></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COLOR ============ -->
+  <section>
+    <p class="sg-h">Color — core + named</p>
+    <div class="grid cols-auto">
+      <div><div class="swatch" data-bg="--ask-white"></div><div class="tok"><code>--ask-white</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-lavender-light"></div><div class="tok"><code>--ask-lavender-light</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-lavender-ask"></div><div class="tok"><code>--ask-lavender-ask</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-fg-light"></div><div class="tok"><code>--ask-fg-light</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-ink-light"></div><div class="tok"><code>--ask-ink-light</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-ink-dark"></div><div class="tok"><code>--ask-ink-dark</code><span class="val"></span></div></div>
+    </div>
+    <p class="sg-h" style="margin-top: var(--space-6);">Color — surfaces + UI accents</p>
+    <div class="grid cols-auto">
+      <div><div class="swatch" data-bg="--ask-surface"></div><div class="tok"><code>--ask-surface</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-surface-hover"></div><div class="tok"><code>--ask-surface-hover</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-ui-accent-1"></div><div class="tok"><code>--ask-ui-accent-1</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-ui-accent-2"></div><div class="tok"><code>--ask-ui-accent-2</code><span class="val"></span></div></div>
+    </div>
+    <p class="sg-h" style="margin-top: var(--space-6);">Color — emphasis accents (sparing)</p>
+    <div class="grid cols-auto">
+      <div><div class="swatch" data-bg="--ask-emphasis-magenta"></div><div class="tok"><code>--ask-emphasis-magenta</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-emphasis-violet"></div><div class="tok"><code>--ask-emphasis-violet</code><span class="val"></span></div></div>
+      <div><div class="swatch" data-bg="--ask-emphasis-cyan"></div><div class="tok"><code>--ask-emphasis-cyan</code><span class="val"></span></div></div>
+    </div>
+  </section>
+
+  <!-- ============ TYPE ============ -->
+  <section>
+    <p class="sg-h">Type scale — contrast is weight, not size</p>
+    <div class="stack">
+      <div class="row"><span class="display">Display</span><span class="meta">.display · 96 / 200</span></div>
+      <div class="row"><h1 style="margin:0;">Heading one</h1><span class="meta">h1 · 48 / 400</span></div>
+      <div class="row"><h2 style="margin:0;">Heading two</h2><span class="meta">h2 · 36 / 400</span></div>
+      <div class="row"><h3 style="margin:0;">Heading three</h3><span class="meta">h3 · 28 / 300</span></div>
+      <div class="row"><p style="margin:0;">Body — the weight gap does the work; one idea per sentence.</p><span class="meta">body · 24 / 200</span></div>
+      <div class="row"><span class="small">Small supporting text.</span><span class="meta">.small · 18 / 300</span></div>
+      <div class="row"><span class="caption">Caption / overline</span><span class="meta">.caption · 14 / 400</span></div>
+    </div>
+    <p class="sg-h" style="margin-top: var(--space-7);">Type — Inter + JetBrains Mono</p>
+    <div class="grid cols-2">
+      <div class="card"><div style="font-family: var(--font-sans); font-size: var(--fs-h3); font-weight: var(--fw-light);">Inter — interface + display</div><div class="meta">--font-sans</div></div>
+      <div class="card"><div class="mono" style="font-size: var(--fs-small);">JetBrains Mono // code · tabular · `+` `&gt;&gt;` structure</div><div class="meta">--font-mono</div></div>
+    </div>
+  </section>
+
+  <!-- ============ SPACING + RADII ============ -->
+  <section>
+    <p class="sg-h">Spacing scale (4px base)</p>
+    <div class="stack">
+      <div class="row"><div class="bar" style="width: var(--space-2);"></div><span class="meta">--space-2 · 8</span></div>
+      <div class="row"><div class="bar" style="width: var(--space-4);"></div><span class="meta">--space-4 · 16</span></div>
+      <div class="row"><div class="bar" style="width: var(--space-5);"></div><span class="meta">--space-5 · 24</span></div>
+      <div class="row"><div class="bar" style="width: var(--space-6);"></div><span class="meta">--space-6 · 32</span></div>
+      <div class="row"><div class="bar" style="width: var(--space-7);"></div><span class="meta">--space-7 · 48</span></div>
+      <div class="row"><div class="bar" style="width: var(--space-8);"></div><span class="meta">--space-8 · 64</span></div>
+    </div>
+    <p class="sg-h" style="margin-top: var(--space-7);">Radii</p>
+    <div class="grid cols-auto">
+      <div><div class="rbox" style="border-radius: var(--radius-sm);"></div><div class="tok"><code>--radius-sm</code></div></div>
+      <div><div class="rbox" style="border-radius: var(--radius-md);"></div><div class="tok"><code>--radius-md</code></div></div>
+      <div><div class="rbox" style="border-radius: var(--radius-lg);"></div><div class="tok"><code>--radius-lg</code></div></div>
+      <div><div class="rbox" style="border-radius: var(--radius-xl);"></div><div class="tok"><code>--radius-xl</code></div></div>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section>
+    <p class="sg-h">Components</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3 style="margin-top:0;">Card</h3>
+        <p style="font-size: var(--fs-small); color: var(--fg-2); margin:0;">Frosted glass surface over the gradient — the canonical container.</p>
+      </div>
+      <div class="card">
+        <div style="margin-bottom: var(--space-3);"><button class="btn btn-primary">Primary</button><button class="btn btn-ghost">Ghost</button></div>
+        <div><span class="badge">badge</span><span class="badge">chip</span><span class="badge">tag</span></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>
+
+<script>
+  // Light/dark toggle
+  var root = document.documentElement, modeEl = document.getElementById('mode');
+  document.getElementById('toggle').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    modeEl.textContent = next;
+    paint();
+  });
+
+  // Computed-value labels — read live resolved tokens so labels can't go stale
+  function toHex(c) {
+    var m = c.match(/rgba?\(([^)]+)\)/);
+    if (!m) return c;
+    var p = m[1].split(',').map(function (x) { return x.trim(); });
+    var hex = '#' + p.slice(0, 3).map(function (n) { return ('0' + parseInt(n, 10).toString(16)).slice(-2); }).join('').toUpperCase();
+    var a = p[3] !== undefined ? parseFloat(p[3]) : 1;
+    return a < 1 ? hex + ' / ' + Math.round(a * 100) + '%' : hex;
+  }
+  function paint() {
+    document.querySelectorAll('[data-bg]').forEach(function (el) {
+      var cs = getComputedStyle(el).backgroundColor;
+      var v = el.parentElement.querySelector('.val'); if (v) v.textContent = toHex(cs);
+    });
+    document.querySelectorAll('[data-fg]').forEach(function (el) {
+      // probe the resolved value of the named token on a throwaway element
+      var probe = document.createElement('span');
+      probe.style.color = 'var(' + el.getAttribute('data-fg') + ')';
+      document.body.appendChild(probe);
+      el.textContent = toHex(getComputedStyle(probe).color);
+      document.body.removeChild(probe);
+    });
+  }
+  paint();
+</script>
+</body>
+</html>
