@@ -12,13 +12,13 @@
 
 /* ---------- Diagram-specific tokens (per theme state) ----------
 
-   colors_and_type.css resolves the foreground ramp (--fg-1/-2/-3) to WHITE —
-   correct for the dark gradient, but on the light lavender gradient the small
-   diagram TEXT needs dark ink to read, while the structural lines carry white
-   fine. So the diagram owns its own tokens (ink / muted / faint for text,
-   line / line-soft for strokes) and leaves the foundational --fg-* / --line-*
-   tokens untouched. Dark values equal the design-system dark foreground, so
-   dark mode is unchanged. */
+   The foundational foreground ramp (--fg-1/-2/-3) is the approved dark-purple
+   ramp (#6A637F / #827399 / tertiary) in light mode — readable on the light
+   lavender gradient. The diagram still owns scoped text tokens (ink / muted /
+   faint) carrying that same ramp, plus its own structural line tokens (line /
+   line-soft) which use stronger white strokes than the foundation hairlines.
+   The foundational --fg-* / --line-* tokens are left untouched. Dark values
+   equal the design-system dark foreground, so dark mode is unchanged. */
 
 :root {
   --node-fill: var(--ask-surface);
