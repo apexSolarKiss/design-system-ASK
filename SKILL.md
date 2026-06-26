@@ -13,15 +13,15 @@ Key files:
 - `colors_and_type.css` — drop-in CSS variables (light + dark) and base type rules
 - `fonts/InterVariable*.woff2` — Inter variable font (interface + display)
 - `fonts/JetBrainsMono*.woff2` — JetBrains Mono variable font (code + technical only)
-- `assets/logo-ASK.svg` — vector wordmark, **primary** (`fill: currentColor`, inherits mode text color)
+- `assets/logo-ASK.svg` — vector wordmark, **primary** (`fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing, not the body text color)
 - `assets/logo-ASK-white.png` — raster wordmark in `#FFFFFF` (light-mode pairing / fallback)
 - `assets/logo-ASK-lavender-ASK.png` — raster wordmark in lavender-ASK `#D4C6E1` (dark-mode pairing / fallback)
-- `preview/*.html` — small reference cards showing tokens in use (look at these before designing)
+- `preview/styleguide.html` — the live token styleguide (look at it before designing)
 
 Cardinal rules — do not break without explicit permission:
 1. **Type** — Inter everywhere interface-facing; JetBrains Mono only for code, technical, and tabular data. Headings at 400, body at 200 ExtraLight 24px. Contrast is weight, not size.
-2. **Backgrounds** — only the two diagonal gradients. Light: `linear-gradient(45deg, #D4C6E1 → #E2D3F0)` with white text. Dark: `linear-gradient(45deg, #201D26 → #0A090C)` with `#D4C6E1` text.
-3. **Color palette is closed** for brand surfaces, general UI, chrome, emphasis, and interaction state. Core 5 + surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`, sparing). Nothing else for these surfaces. The sole opt-in exception is the **ASK Spectral State** family (`spectral-state.css`) and its sanctioned profiles (e.g. `evidence-state.css` — Evidence State) — semantic state-color for encoding element or evidence state in data / architecture visualizations, not general UI color.
+2. **Backgrounds** — only the two diagonal gradients. Light: `linear-gradient(45deg, #D4C6E1 → #E2D3F0)` with `#6A637F` default foreground (`#FFFFFF` is the light-mode wordmark pairing only, never body text). Dark: `linear-gradient(45deg, #201D26 → #0A090C)` with `#D4C6E1` text.
+3. **Color palette is closed** for brand surfaces, general UI, chrome, emphasis, and interaction state. The core set (`#FFFFFF` wordmark · `#6A637F` default light foreground · `#E2D3F0` / `#D4C6E1` light gradient · `#201D26` / `#0A090C` dark gradient, with `#201D26` doubling as the reserved opt-in high-contrast foreground) + surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`, sparing). Nothing else for these surfaces. The sole opt-in exception is the **ASK Spectral State** family (`spectral-state.css`) and its sanctioned profiles (e.g. `evidence-state.css` — Evidence State) — semantic state-color for encoding element or evidence state in data / architecture visualizations, not general UI color.
 4. **Voice** for system surfaces is calm sentence-case, impersonal/declarative. No studio "we". No emoji in design-system surfaces. No marketing adjectives. Do not import ASK's personal "terminalcore" voice (slash-slash em dashes, plus-for-ampersand) — that's ASK's personal channels, not this system.
 5. **No icons by default.** If absolutely needed, stroke-only at 1.25 weight, `currentColor`. Never emoji as icons.
 6. **Scope is the meta-brand.** Sub-brand theming (production, builder, artist) layers elsewhere, not here.

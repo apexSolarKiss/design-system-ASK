@@ -45,7 +45,7 @@ Scaffolds are consumption patterns, not components. They are not a generator, no
 
 Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
-The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. The first is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color and the scaffolds above do not use it.
+The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. The first is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color, and the **static** scaffolds above do not use it; the interactive `diagram-interactive-spine` is the state-bearing member that does.
 
 A primitive may carry sanctioned **profiles** for adjacent semantic domains. The first is **ASK Evidence State** (`evidence-state.css`), an epistemic evidence-state vocabulary built on Spectral State: it reuses three Spectral State values by reference and adds two evidence-specific roles (`weakened`, `not-yet-testable`), leaving Spectral State's own vocabulary unchanged.
 
@@ -56,14 +56,14 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 | Path | What it is |
 | --- | --- |
 | `colors_and_type.css` | CSS variables — colors, type, spacing, radii, motion |
-| `spectral-state.css` + `spectral-state.md` + `spectral-state.html` | ASK Spectral State — specialized **opt-in** state-color primitive (eight neon `--state-*` roles on a 12-hue wheel), with a rendered visual key (`spectral-state.html`). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
+| `spectral-state.css` + `spectral-state.md` + `spectral-state.html` | ASK Spectral State — specialized **opt-in** state-color primitive (eight `--state-*` roles — seven neon signals plus `neutral`, which resolves to the theme foreground — on a 12-hue wheel), with a rendered visual key (`spectral-state.html`). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
 | `evidence-state.css` + `evidence-state.md` + `evidence-state.html` | ASK Evidence State — a sanctioned **profile** under Spectral State (epistemic evidence-state). `supported` / `partially-supported` / `unresolved` reuse Spectral State values by reference; **`weakened`** (muted 30° brown) and **`not-yet-testable`** (lavender-gray, dashed/hollow) are new roles. Rendered key in `evidence-state.html`. Layers on top of `spectral-state.css`; Spectral State's own vocabulary is unchanged. |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
 | `assets/logo-ASK-white.png` | Raster wordmark in `#FFFFFF`, on transparent (light-mode pairing / fallback) |
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
-| `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
+| `preview/styleguide.html` | Live token styleguide — the single canonical preview surface |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
 | `CONSUMERS.md` | Known **public** downstream repos that consume these patterns/tokens — transparency record, not a customer list (private consumers tracked operator-side) |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
@@ -249,7 +249,7 @@ Consuming a pattern does not fork it. A consumer vendors a local pinned mirror (
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production surface has been built on top yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
+- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production Class B output-artifact surface has used this scaffold end-to-end yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
 
 ---
 
