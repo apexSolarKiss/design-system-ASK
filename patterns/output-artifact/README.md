@@ -17,21 +17,21 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 ## Foreground is inherited — no local rebind
 
-The foundation (`colors_and_type.css`) styles base elements (`h1`–`h3`, `p`, `a`, `code`, `body`) bound to the `--fg-*` ramp, with light and dark resolved. Since the foundation light-mode foreground ramp landed (dark ink on the light lavender field), **prose reads correctly in both modes with no local foreground CSS**. This template therefore binds text to the foundation `--fg-*` and **does not** rebind `--fg-*` / `--line-*`. Do not reintroduce a local `--fg` rebind — it is no longer needed and would fork the foreground from the foundation.
+The foundation (`colors_and_type.css`) styles base elements (`h1`–`h3`, `p`, `a`, `code`, `body`) bound to the `--fg-*` ramp, with light and dark resolved. Since the foundation light-mode foreground ramp landed (the approved dark-purple foreground — `#6A637F` — on the light lavender field, not near-black ink), **prose reads correctly in both modes with no local foreground CSS**. This template therefore binds text to the foundation `--fg-*` and **does not** rebind `--fg-*` / `--line-*`. Do not reintroduce a local `--fg` rebind — it is no longer needed and would fork the foreground from the foundation.
 
 ## The one sanctioned Class B override — line intensity
 
 Report rules, borders, table lines, and dividers read too faint at the foundation hairline (white `.45` / `.22`) on the light lavender field. The template carries a **Class B-scoped** token — `--artifact-line` / `--artifact-line-soft` — that uses **stronger white lines in light mode** and inherits the foundation lavender lines in dark mode. It is applied to the artifact's **own structural elements** (meta strip, disclosure borders, tables, footer, `hr`) by class — never to base elements — so it cannot affect inherited prose color. This is the single legitimate token override for the class.
 
-This mirrors how **Class A diagrams** solve color: a scoped, class-targeted token layer (`--diagram-*`), not a base-token rebind. The rule across the family:
+This mirrors how **Class A diagrams** scope color: a class-targeted `--diagram-*` token layer whose **text roles alias the foundation `--fg-*` ramp** while its structural **stroke roles stay local** — not a base-token rebind. The rule across the family:
 
 | Class | Color is applied to… | So foreground binds to… |
 | --- | --- | --- |
-| **A** — diagrams | SVG elements via classes | scoped `--diagram-*` tokens (text + stroke semantics; a deliberate drift seam) |
+| **A** — diagrams | SVG elements via classes | foundation `--fg-*`, via aliased `--diagram-*` text roles; structural strokes use a local `--diagram-line*` overlay |
 | **B** — output artifacts | base elements (`p`/`h1`/`h2` read `--fg-*` directly) | foundation `--fg-*`, plus a class-scoped `--artifact-line*` overlay for structural lines |
 | future — interactive | TBD per artifact class | decided by where color is applied |
 
-A scoped container token cannot reach base-element rules, which is why Class B binds foreground to the foundation rather than a scoped layer. Same principle as Class A — opposite answer — because the two classes apply color differently.
+Both classes bind **text** to the foundation `--fg-*` ramp; they differ only in how color reaches the element — Class B styles base elements directly, while Class A routes through class-targeted diagram roles that alias the foundation (SVG elements need class-targeted fills, and the diagram speaks in diagram roles). Each keeps a single scoped overlay for **structural lines only** (`--diagram-line*` / `--artifact-line*`), never for foreground — so neither forks the foreground from the foundation.
 
 ## How to use it
 

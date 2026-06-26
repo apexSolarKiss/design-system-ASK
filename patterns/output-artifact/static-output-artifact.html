@@ -26,9 +26,10 @@
        token carries stronger white lines in light mode and inherits the
        foundation lavender lines in dark. This is scoped to the artifact's
        OWN structural elements (applied by class), never to base elements —
-       so it cannot affect inherited prose color. (Class A diagrams solve
-       color with their own scoped --diagram-* tokens for the same reason:
-       color is applied to class-targeted elements, not base elements.)
+       so it cannot affect inherited prose color. (Class A diagrams keep
+       their own scoped --diagram-* tokens — text roles aliasing the
+       foundation --fg-*, strokes local — for the same reason: color is
+       applied to class-targeted elements, not base elements.)
        ==================================================================== */
 
     :root {

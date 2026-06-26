@@ -17,7 +17,7 @@ A static output artifact fails design-system-ASK inheritance if any of the follo
 
 ## Color discipline fails
 
-- Any color outside the closed palette appears: Core 5 + surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`)
+- Any color outside the closed palette appears. The core set: the gradient stops (`#E2D3F0` / `#D4C6E1` light; `#201D26` / `#0A090C` dark), white (`#FFFFFF`, the wordmark pairing — not body text), and the default light-mode foreground `#6A637F` (the approved dark purple); `#201D26` doubles as the **reserved opt-in high-contrast foreground** (no approved surface uses it by default — do not apply by font size). Plus surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`)
 - A semantic green / red / yellow status system appears
 - Invented hex values appear in the artifact's overlay CSS
 - A local `--fg-*` / `--line-*` rebind appears (foreground must be inherited from the foundation ramp, not re-declared at the artifact layer). The **only** sanctioned token override is the Class B line-intensity overlay (`--artifact-line` / `--artifact-line-soft`): white at higher alpha in light mode, foundation lines in dark — white is in-palette and the override is scoped to structural lines, not foreground.
