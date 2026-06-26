@@ -1,6 +1,6 @@
 # Pattern // diagram-interactive-spine
 
-A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static `diagram-static-H` (horizontal cascade) and `diagram-static-V` (vertical centered spine).
+A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static members `diagram-static-H` (horizontal cascade), `diagram-static-V` (vertical centered spine), `diagram-static-SEQ` (ordered arrowed sequence), and `diagram-static-FLOW` (convergence flow).
 
 `diagram-interactive-spine` is **Class A — interactive**. It is *not* `diagram-static-V-interactive`: static-vs-interactive is the artifact-class distinction, encoded in the name.
 
@@ -107,7 +107,7 @@ design-system-ASK supplies Tier 1 + Tier 2 (and the Spectral State primitive). T
 
 ## Class A static vs interactive · Class B
 
-- **Class A — static:** `diagram-static-H`, `diagram-static-V` (structural; state-free).
+- **Class A — static:** `diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ`, `diagram-static-FLOW` (structural; state-free).
 - **Class A — interactive:** `diagram-interactive-spine` (this pattern; state-bearing; consumes Spectral State).
 - **Class B:** `patterns/output-artifact/` (project-output artifacts).
 

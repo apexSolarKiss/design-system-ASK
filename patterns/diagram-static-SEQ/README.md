@@ -108,4 +108,4 @@ The consuming project supplies its own Tier 3 identity, its own source-truth pos
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates), alongside `patterns/diagram-static-H/` and `patterns/diagram-static-V/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates), alongside `patterns/diagram-static-H/`, `patterns/diagram-static-V/`, and `patterns/diagram-static-FLOW/`, plus the interactive `patterns/diagram-interactive-spine/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.

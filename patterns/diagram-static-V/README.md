@@ -4,7 +4,7 @@ A reusable static-artifact scaffold for system / architecture diagrams whose nat
 
 This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. Its static siblings are `patterns/diagram-static-H/` (the horizontal, top-aligned left→right cascade — also a tree), `patterns/diagram-static-SEQ/` (ordered arrowed sequence — succession, not hierarchy), and `patterns/diagram-static-FLOW/` (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back). H / V / SEQ share the existing tree/sequence data grammar and export contract. FLOW is a distinct convergence-flow grammar (one shared source model, two render modes), but shares the same visual contract, PNG export discipline, and inheritance-by-reference posture.
 
-> **`diagram-static-V` is the *static* vertical pattern.** A future **interactive** IA spine is a *different artifact class* — also vertical, but not a static Class A scaffold. It is reserved in naming as `diagram-interactive-spine` (not yet built) and must **not** be called `diagram-static-V-interactive`. That is exactly why the taxonomy encodes static-vs-interactive, not just H/V.
+> **`diagram-static-V` is the *static* vertical pattern.** A future **interactive** IA spine is a *different artifact class* — also vertical, but not a static Class A scaffold. It is the separately-named `diagram-interactive-spine` (built — a landed Class A interactive scaffold) and must **not** be called `diagram-static-V-interactive`. That is exactly why the taxonomy encodes static-vs-interactive, not just H/V.
 
 ## When to use this vs `diagram-static-H` / `diagram-static-SEQ`
 
@@ -113,4 +113,4 @@ The consuming project supplies its own Tier 3 identity, its own source-truth pos
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates), alongside `patterns/diagram-static-H/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates), alongside its static siblings `patterns/diagram-static-H/`, `patterns/diagram-static-SEQ/`, and `patterns/diagram-static-FLOW/`, plus the interactive `patterns/diagram-interactive-spine/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
