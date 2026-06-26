@@ -60,7 +60,7 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 | `evidence-state.css` + `evidence-state.md` + `evidence-state.html` | ASK Evidence State — a sanctioned **profile** under Spectral State (epistemic evidence-state). `supported` / `partially-supported` / `unresolved` reuse Spectral State values by reference; **`weakened`** (muted 30° brown) and **`not-yet-testable`** (lavender-gray, dashed/hollow) are new roles. Rendered key in `evidence-state.html`. Layers on top of `spectral-state.css`; Spectral State's own vocabulary is unchanged. |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
-| `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`, inherits the mode's text color |
+| `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
 | `assets/logo-ASK-white.png` | Raster wordmark in `#FFFFFF`, on transparent (light-mode pairing / fallback) |
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `preview/*.html` | Design System tab cards, grouped Brand / Colors / Type / Spacing / Components |
@@ -77,14 +77,14 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 
 ## Logo placement
 
-**The wordmark's color is always the same as the text color for its mode, and it sits on the gradient — not on a fixed lavender-ASK block.**
+**The wordmark uses its own mode-specific brand pairing — it does not inherit the body text color — and it sits on the gradient, not on a fixed lavender-ASK block.**
 
-- **Light mode** — `#FFFFFF` wordmark on the light gradient (same as light-mode text).
-- **Dark mode** — `#D4C6E1` (lavender-ASK) wordmark on the dark gradient (same as dark-mode text).
+- **Light mode** — `#FFFFFF` wordmark on the light gradient (the wordmark's brand pairing — **not** the `#6A637F` light-mode text).
+- **Dark mode** — `#D4C6E1` (lavender-ASK) wordmark on the dark gradient (here it coincides with the `#D4C6E1` dark-mode text).
 
 In any UI surface — page, card, preview, component — the mark goes on the gradient. The fixed `#D4C6E1` lavender-ASK field is **only** for the standalone exported asset (the JPG/vector deliverable). It is not a UI background. Do not place the wordmark on a flat lavender-ASK block anywhere in the system.
 
-`logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so a single file inherits the correct mode's text color automatically. The two PNGs are raster pairings/fallbacks.
+`logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so one vector file can be used for both mode pairings when its container sets the correct wordmark color. The two PNGs are raster pairings/fallbacks.
 
 ---
 
@@ -112,7 +112,7 @@ ASK's *personal* writing voice is a separate convention (terminalcore — slash-
 **Yes**
 - *"The system uses Inter for interface, JetBrains Mono for code."*
 - *"State is expressed through weight, opacity, and motion."*
-- *"Two diagonal gradients. Five core colors."*
+- *"Two diagonal gradients. A tight core set."*
 
 **No**
 - ~~"We've built a revolutionary design system 🚀"~~
@@ -125,21 +125,22 @@ ASK's *personal* writing voice is a separate convention (terminalcore — slash-
 
 ### Color
 
-**Backgrounds — two diagonal gradients.** Both 45°, both with the lighter end at top-right.
+**Backgrounds — two diagonal gradients.** Both 45° (bottom-left → top-right); the lighter end is top-right in light, bottom-left in dark.
 
-- **Light** — `linear-gradient(45deg, #D4C6E1 → #E2D3F0)`. Text is `#FFFFFF`.
+- **Light** — `linear-gradient(45deg, #D4C6E1 → #E2D3F0)`. Text is `#6A637F` (the approved dark-purple foreground).
 - **Dark** — `linear-gradient(45deg, #201D26 → #0A090C)`. Text is `#D4C6E1`.
 
 The gradient is **fixed to the viewport** (`background-attachment: fixed`), so scrolling reveals one continuous field.
 
-**Core 5 — the named set.** Everything fundamental is built from these:
+**Core set — the named values.** Everything fundamental is built from these:
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| `--ask-white` | `#FFFFFF` | Light-mode text |
+| `--ask-fg-light` | `#6A637F` | **Default light-mode foreground** (body text — the approved dark purple) |
+| `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
 | `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
-| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left |
+| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; reserved opt-in high-contrast light foreground |
 | `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right |
 
 **Surface.** When a card or container needs a solid fill with more presence than a glass overlay:
