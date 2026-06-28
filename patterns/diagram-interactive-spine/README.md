@@ -98,7 +98,7 @@ This rule selects which existing render is embedded. It does not suppress, renam
 - **Color encodes state only.** Evidence depth, risk, mode coverage, repo pointers live in the inspector, never in hue.
 - **One state role per node.**
 - **Title by dimension, not the umbrella.** This surface depicts *state* (status / maturity) of the architecture — it is not "the" information architecture. Title it for its dimension, e.g. **"Information architecture — state"** (the placeholder default), not the bare "Information architecture". Structural diagrams name their axis (ontology, inheritance); this one names its dimension (state). Claiming the umbrella title would imply the other diagrams are sub-views of this one — they are peers.
-- **Consumer owns** source data + chrome; **design-system owns** engine / CSS / export.
+- **Consumer owns** source data, chrome, generation, sealing + the frozen artifact; **design-system owns** engine / CSS / export script.
 - **Offline / no CDN**; local pinned `_dsa-tokens` mirror. No Tier 3.
 
 ## Source-truth boundary

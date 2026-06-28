@@ -242,7 +242,7 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 Public downstream repos consume these patterns and tokens by reference, vendored at a pinned commit. The known public consumers are tracked in [`CONSUMERS.md`](CONSUMERS.md).
 
-Consuming a pattern does not fork it. A consumer vendors a local pinned mirror (`_dsa-tokens/`, no CDN), supplies its own Tier 3 identity and content, and re-syncs when an upstream pattern or token module changes. design-system-ASK owns the engine, CSS, and export; the consumer owns its source data and chrome.
+Consuming a pattern does not fork it. A consumer vendors a local pinned mirror (`_dsa-tokens/`, no CDN), supplies its own Tier 3 identity and content, and re-syncs when an upstream pattern or token module changes. design-system-ASK owns the engine, CSS, and export script; the consumer owns its source data, chrome, generation, sealing, and the frozen output artifact.
 
 ---
 

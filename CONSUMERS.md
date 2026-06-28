@@ -4,7 +4,7 @@ Known **public** downstream repos with **landed** consumption of design-system-A
 
 This file records **landed public consumption only** — which public repo already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
 
-Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each consumer owns its source data and chrome; design-system-ASK owns the engine, CSS, and export. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
+Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each consumer owns its source data, chrome, generation, sealing, and frozen artifact; design-system-ASK owns the engine, CSS, and export script. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
 
 ## Public consumers
 
