@@ -2,7 +2,7 @@
 
 ![design-system-ASK banner](design-system-ASK-banner.jpg)
 
-> Minimal design foundations for the ASK visual identity. Tokens remain irreducible; the repo may also carry static-artifact inheritance scaffolds that show downstream surfaces how to consume them without redefining them.
+> Minimal design foundations for the ASK visual identity. Tokens remain irreducible; the repo may also carry artifact inheritance scaffolds and opt-in semantic primitives that show downstream surfaces how to consume them without redefining them.
 >
 > **order from chaos // beauty in systems**
 

@@ -1,6 +1,6 @@
 ---
 name: design-system-ASK
-description: Use this skill to generate well-branded interfaces and assets for ASK, either for production or throwaway prototypes/mocks/etc. Contains essential design guidelines, colors, type, fonts, assets, and components for prototyping.
+description: Use this skill to generate well-branded interfaces and assets for ASK, either for production or throwaway prototypes/mocks/etc. Contains essential design guidelines, colors, type, fonts, assets, and artifact scaffolds / patterns for prototyping.
 user-invocable: true
 ---
 
