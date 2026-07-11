@@ -42,7 +42,7 @@ The engine **flattens the node tree depth-first into a linear run**, so the same
 ## How to use it
 
 1. Copy the six files in `patterns/diagram-static-SEQ/` into your consuming project (typically under `docs/diagrams/` or similar).
-2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css` and `./_dsa-tokens/fonts/*.woff2`), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
+2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-SEQ.html` and `diagram-static-SEQ.source.js` to match your project (e.g. `[your-project]_pipeline-chain.html` and `[your-project]_pipeline-chain.source.js`); update the `<script src>` reference in the HTML accordingly.
 4. Edit `diagram-static-SEQ.source.js`: replace the placeholder chain with your project's actual sequence, expressed as a single-child chain under a `root` node.
 5. Edit `diagram-static-SEQ.html` chrome: update `.mark`, `.title-block`, `.stamp`, `.caption`, `<title>`, and `<meta name="description">` to your project's values. Do not edit the canvas / HUD / corner-tick structure.

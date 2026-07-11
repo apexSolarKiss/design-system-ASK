@@ -67,6 +67,9 @@
 <script>
 window.IA_SPINE.render(window.IA_STATE_SPINE);
 </script>
+<!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://).
+     Must load BEFORE export-png.js. Regenerate via tools/gen-embedded-fonts.js. -->
+<script src="./_dsa-tokens/fonts-embedded.js"></script>
 <script src="export-png.js"></script>
 
 </body>

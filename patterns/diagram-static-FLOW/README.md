@@ -73,7 +73,7 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 ## How to use it
 
 1. Copy the files in `patterns/diagram-static-FLOW/` into your consuming project (typically under `docs/diagrams/` or similar).
-2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css` and `./_dsa-tokens/fonts/*.woff2`), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
+2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename the shells and `diagram-static-FLOW.source.js` to match your project; update the `<script src>` references accordingly.
 4. Edit `diagram-static-FLOW.source.js`: replace the generic fixture with your project's actual convergence flow.
 5. Edit the interactive shell chrome: update `.mark`, `.title-block`, `.stamp`, `.caption`, `<title>`, `<meta name="description">`, and the legend rows to your project's values. Do not edit the canvas / HUD / corner-tick / glass-panel structure.
