@@ -118,10 +118,18 @@ function main() {
     '   under file://. Load this BEFORE export-png.js. The exporter still fails\n' +
     '   CLOSED if this carrier is absent AND the fonts cannot be fetched. */\n';
 
+  // Integrity manifest — lets the exporter fail CLOSED on an incomplete carrier
+  // even under file://, where the page CSS is unreadable and so cannot serve as
+  // the expected set. requiredKeys are family|style|weight (matching the exporter's
+  // carrierCss key construction).
+  var requiredKeys = out.map(function (f) { return f.family + '|' + f.style + '|' + f.weight; });
+  var meta = { expectedCount: out.length, requiredKeys: requiredKeys };
+
   var body = banner +
     'window.DSA_EMBEDDED_FONTS = [\n' +
     entries.join(',\n') + '\n' +
-    '];\n';
+    '];\n' +
+    'window.DSA_EMBEDDED_FONTS_META = ' + JSON.stringify(meta) + ';\n';
 
   fs.writeFileSync(OUT_PATH, body);
 
