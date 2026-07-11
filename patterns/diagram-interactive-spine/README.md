@@ -43,7 +43,7 @@ Hover previews a node (its relationships + inspector); click locks it; click emp
 ## How to use it
 
 1. Copy the six files into your project (e.g. `docs/diagrams/interactive/`).
-2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs.
+2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts + `fonts-embedded.js` (the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server) — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs.
 3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
 4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
 5. Edit the HTML chrome (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`). Do not edit the canvas / inspector / legend / HUD / corner-tick structure.

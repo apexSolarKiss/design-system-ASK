@@ -74,6 +74,9 @@
 
 <script src="diagram-static-SEQ.source.js"></script>
 <script src="diagrams-static-SEQ-engine.js"></script>
+<!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://).
+     Must load BEFORE export-png.js. Regenerate via tools/gen-embedded-fonts.js. -->
+<script src="./_dsa-tokens/fonts-embedded.js"></script>
 <script src="export-png.js"></script>
 <script>
 window.DIAGRAMS.render(window.TREE_DIAGRAM);
