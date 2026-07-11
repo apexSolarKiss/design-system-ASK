@@ -53,8 +53,10 @@
      the raster resolves the same faces the boxes were measured for. Consumer-
      agnostic: it embeds whatever faces the page declares, from wherever it
      serves them. Requires the render context to fetch same-origin font files
-     (i.e. served over http, as the ?export= auto-route flow implies); if a
-     fetch fails it degrades to the prior name-only behavior, never throwing. */
+     (served over http). Under file:// — where Chromium blocks font fetches — or
+     any other incomplete embed, exportPng FAILS CLOSED: it blocks the export with
+     a "serve over http" warning rather than silently emitting a fallback-font
+     (clipped) PNG. */
   var _fontStyleCache = null;
   function collectFontFaces() {
     var faces = [], sheets = document.styleSheets;
@@ -94,7 +96,7 @@
   async function buildFontFaceStyle() {
     if (_fontStyleCache != null) return _fontStyleCache;
     var faces = collectFontFaces();
-    var css = '';
+    var css = '', embedded = 0;
     for (var i = 0; i < faces.length; i++) {
       var f = faces[i];
       try {
@@ -103,9 +105,10 @@
         var b64 = bufToBase64(await resp.arrayBuffer());
         css += '@font-face{font-family:' + f.family + ';font-style:' + f.style +
           ';font-weight:' + f.weight + ';src:url(data:font/woff2;base64,' + b64 + ') format("woff2");}';
+        embedded++;
       } catch (e) { /* one font failed to fetch — skip it, keep the rest */ }
     }
-    _fontStyleCache = css ? '<style>' + css + '</style>' : '';
+    _fontStyleCache = { css: css ? '<style>' + css + '</style>' : '', expected: faces.length, embedded: embedded };
     return _fontStyleCache;
   }
 
@@ -515,8 +518,22 @@
     opts = opts || {};
     var mode = opts.mode === 'diagram' ? 'diagram' : 'page';
     var button = opts.button || null;
+    // Fail closed: the SVG-as-image raster can only embed the diagram's @font-face
+    // fonts if it can fetch their woff2 files — impossible from a file:// page
+    // (Chromium blocks file:// fetch). Without the embed the raster silently falls
+    // back to a wider system font and clips. Block the export with guidance rather
+    // than shipping a broken PNG.
+    if (location.protocol === 'file:') {
+      alert('PNG export needs this diagram served over http so its local font files can be fetched and embedded.\n\nRun a local server, e.g.:\n  cd (this diagram’s folder)\n  python3 -m http.server 8432\nthen open  http://127.0.0.1:8432/' + (location.pathname.split('/').pop() || '') + '\nand export from there. (A file:// page cannot fetch its own font files.)');
+      return;
+    }
     var T = resolveTheme();
-    var fontStyle = await buildFontFaceStyle();
+    var fontInfo = await buildFontFaceStyle();
+    if (fontInfo.expected > 0 && fontInfo.embedded < fontInfo.expected) {
+      alert('PNG export aborted: only ' + fontInfo.embedded + ' of ' + fontInfo.expected + ' diagram fonts could be embedded, so the export would fall back to system fonts (clipped / off-brand text). Serve the diagram over http so the font files can be fetched (see the diagram README), then export.');
+      return;
+    }
+    var fontStyle = fontInfo.css;
 
     var svgStr, OUT_W, OUT_H, slugTag;
     if (mode === 'diagram') {
