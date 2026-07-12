@@ -16,7 +16,7 @@ This repo conforms to **`visual-identity-system.md`** in ASK's canonical context
 
 ## What this is
 
-A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. Interface and interaction state is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set. The one opt-in exception is semantic state in data and architecture visualizations, which may use the ASK Spectral State primitive (below) — not general UI color.
+A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. Interface and interaction state is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set. The opt-in exceptions are the ASK semantic-color primitives for data and architecture visualizations — Spectral State (element *state*) and Three Functions (structural *function*), below — not general UI color, and neither expands the palette.
 
 Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers on top of these tokens elsewhere; it does not live here.
 
@@ -49,6 +49,8 @@ The repo may also carry **specialized opt-in foundation primitives** beyond the 
 
 A primitive may carry sanctioned **profiles** for adjacent semantic domains. The first is **ASK Evidence State** (`evidence-state.css`), an epistemic evidence-state vocabulary built on Spectral State: it reuses three Spectral State values by reference and adds two evidence-specific roles (`weakened`, `not-yet-testable`), leaving Spectral State's own vocabulary unchanged.
 
+A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits **alongside** Spectral State on a different axis: where Spectral State encodes an element's *state*, Three Functions encodes its *function* — `legislative` / `executive` / `judicial`, the three separation-of-powers roles read as color. It is a **sibling** primitive, not a Spectral State profile, and it expands no palette: the three roles bind to existing ASK values (magenta, the neutral white / lavender-ASK, cyan).
+
 ---
 
 ## Index
@@ -58,6 +60,7 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 | `colors_and_type.css` | CSS variables — colors, type, spacing, radii, motion |
 | `spectral-state.css` + `spectral-state.md` + `spectral-state.html` | ASK Spectral State — specialized **opt-in** state-color primitive (eight `--state-*` roles — seven neon signals plus `neutral`, which resolves to the theme foreground — on a 12-hue wheel), with a rendered visual key (`spectral-state.html`). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
 | `evidence-state.css` + `evidence-state.md` + `evidence-state.html` | ASK Evidence State — a sanctioned **profile** under Spectral State (epistemic evidence-state). `supported` / `partially-supported` / `unresolved` reuse Spectral State values by reference; **`weakened`** (muted 30° brown) and **`not-yet-testable`** (lavender-gray, dashed/hollow) are new roles. Rendered key in `evidence-state.html`. Layers on top of `spectral-state.css`; Spectral State's own vocabulary is unchanged. |
+| `three-functions.css` + `three-functions.md` + `three-functions.html` | ASK Three Functions — specialized **opt-in** function-color primitive (three `--function-*` roles: `legislative` magenta / `executive` theme-neutral white·lavender-ASK / `judicial` cyan), a **sibling** to Spectral State on the function axis (not a profile). Binds existing ASK values to roles; no palette expansion. Rendered key in `three-functions.html`. Layers on top of `colors_and_type.css`. |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
