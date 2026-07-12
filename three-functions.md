@@ -46,16 +46,27 @@ Only `executive` flips per theme; the two emphasis accents already read on both 
 
 ## Rendering contract
 
-Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming surface keeps the restrained ASK field and marks function lightly:
+Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming surface keeps the restrained ASK field and marks function with **two fill intensities** — one for discrete objects, one for large fields:
 
 ```text
-role stroke        full role value
-role fill          role value at ~16% opacity  ·  color-mix(in srgb, <role> 16%, transparent)
-label              standard theme foreground (--fg-1) — never the role hue
-structural edges   neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
+role stroke              full role value
+discrete role object     fill at 30%  ·  color-mix(in srgb, <role> 30%, transparent)
+large role field / wash  fill at 12%  ·  color-mix(in srgb, <role> 12%, transparent)
+label                    standard theme foreground (--fg-1) — never the role hue
+structural edges         neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
 ```
 
-The fill is a restrained wash (14–18%; 16% is the canonical value), never a solid slab. Labels stay the theme foreground so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+A **discrete role-bearing object** — a labelled box, a candidate glyph, a selected node — carries a **30%** fill so it reads as clearly role-marked (a single 16% wash reads too weak, and lets a role box blur into a neutral one). A **large role field** — a container the role only *tints*, such as a realization chamber or a bounded region — carries a **12%** wash so it never becomes an opaque slab. Both take the full role value as stroke. Labels stay the theme foreground so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+
+These are two *intensities* of the same three role colors — **not** new tokens. The 30% / 12% split is the rendering contract, not a palette addition.
+
+## Non-function elements
+
+A consuming surface often contains consequential elements that are **not** functions — most commonly a **downstream governance** step that binds the accepted result. Represent these in the **existing neutral structural treatment**; they take no role color.
+
+When a legend or key enumerates the three functions, a prominent neutral element (a governance box, an output node) can be left unexplained. If so, key it in a **separated, explicitly-labelled group** — a dotted legend-only divider, then the neutral element under a label such as *"downstream — not a fourth function."* Show it as it actually appears on the surface (a neutral box, or a two-box chain), never as a fourth colored swatch.
+
+This creates **no fourth role and no fourth color.** There is no `--function-governance`. The separated row is explanatory: it teaches the reader that a consequential element sits *outside* the three functions — exactly the boundary the primitive holds.
 
 ## Coexistence with Spectral State and Evidence State
 
@@ -88,9 +99,12 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
 
    ```css
    /* example — consuming surface */
-   .part[data-function="legislative"] {
+   .part[data-function="legislative"] {              /* discrete role object → 30% */
      stroke: var(--function-legislative);
-     fill:   color-mix(in srgb, var(--function-legislative) 16%, transparent);
+     fill:   color-mix(in srgb, var(--function-legislative) 30%, transparent);
+   }
+   .field[data-function="executive"] {               /* large role field → 12% wash */
+     fill:   color-mix(in srgb, var(--function-executive) 12%, transparent);
    }
    ```
 

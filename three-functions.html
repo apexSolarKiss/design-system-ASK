@@ -31,10 +31,20 @@
   .part { width: 92px; height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3);
           display: flex; align-items: center; justify-content: center;
           font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
-  .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 16%, transparent); }
-  .exe { border-color: var(--function-executive);   background: color-mix(in srgb, var(--function-executive) 16%, transparent); }
-  .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 16%, transparent); }
+  .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 30%, transparent); }
+  .exe { border-color: var(--function-executive);   background: color-mix(in srgb, var(--function-executive) 30%, transparent); }
+  .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 30%, transparent); }
   /* .neu — neutral part: default --fg-3 hairline, no function color */
+  /* large role field — 12% wash containing 30% objects */
+  .field { display: inline-flex; align-items: center; gap: 14px; height: 62px; padding: 0 16px; border-radius: 8px;
+           border: 1.5px solid var(--function-executive); background: color-mix(in srgb, var(--function-executive) 12%, transparent); }
+  .field .g { width: 26px; height: 26px; border-radius: 4px; border: 1.5px solid var(--function-executive);
+              background: color-mix(in srgb, var(--function-executive) 30%, transparent); }
+  .field .flabel { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); margin-left: 4px; }
+  /* neutral non-function exemplar — governance chain (no role color) */
+  .gov { display: flex; align-items: center; gap: 10px; }
+  .gbox { height: 42px; border-radius: 6px; border: 1.5px solid var(--fg-3); background: transparent;
+          display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-1); }
   .chan { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   .chan .cell { width: 92px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
                 font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
@@ -54,7 +64,7 @@
 
   <div class="demo">
     <h2>Rendering contract</h2>
-    <p>role stroke + ~16% fill · label stays neutral · structure stays neutral</p>
+    <p>role stroke + 30% fill on discrete objects · 12% wash on large fields · label + structure stay neutral</p>
     <div class="parts">
       <div class="part leg">legislative</div>
       <div class="part exe">executive</div>
@@ -62,13 +72,29 @@
       <div class="part jud">judicial</div>
       <div class="part">neutral</div>
     </div>
+    <div class="parts" style="margin-top:18px">
+      <div class="field"><div class="g"></div><div class="g"></div><div class="g"></div><span class="flabel">large role field · 12% wash · 30% objects inside</span></div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <h2>Outside the three functions</h2>
+    <p>a consequential non-function element (downstream governance) stays neutral — not a fourth role, not a fourth color</p>
+    <div class="gov">
+      <div class="gbox">artifact governance</div>
+      <svg width="28" height="12" viewBox="0 0 28 12" aria-hidden="true">
+        <path d="M0 6 H21" stroke="var(--fg-3)" stroke-width="1.2" fill="none"/>
+        <path d="M21 2 L27 6 L21 10" stroke="var(--fg-3)" stroke-width="1.2" fill="none"/>
+      </svg>
+      <div class="gbox">governed artifact + record</div>
+    </div>
   </div>
 
   <div class="demo">
     <h2>Channel discipline</h2>
     <p>function ≠ state ≠ evidence · reused hue is not identity · labels stay mandatory</p>
     <div class="chan">
-      <div class="cell" style="background: color-mix(in srgb, var(--function-legislative) 16%, transparent);
+      <div class="cell" style="background: color-mix(in srgb, var(--function-legislative) 30%, transparent);
            border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
       <div class="legend">one element · three channels ·
         <b>fill</b> = function · <b>outline</b> = element state · <b>rail</b> = evidence state<br>
