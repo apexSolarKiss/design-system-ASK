@@ -16,6 +16,12 @@ Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no 
 | `control-surface` | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
 | `ASK` | public reference implementation (live: A-S-K.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of `design-system-ASK`. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
 
+## Vendoring granularity
+
+**Shared contract, selective renderer.** The diagram source grammar and the `window.DIAGRAMS.render(TREE)` interface are a *shared contract*, uniform across the static pattern family, so source data is portable between engines. The concrete pattern engines (`diagram-static-{H,V,SEQ,FLOW}`, `diagram-interactive-spine`) are *renderer capacity* — the code a consumer actually runs.
+
+Consumers vendor the complete canonical artifacts for the patterns/modules they **actually render**. Optional capabilities inside an adopted module travel with that module, even if unused, and must not be cherry-picked or locally forked. Unused pattern engines are **not** pre-vendored speculatively; a consumer adopts and vendors the *current* canonical engine when it first renders that pattern. Shared artifacts — the static exporter, the token mirror — remain whole shared artifacts, not split by dormant internal branches. The vendoring boundary traces the code seam: selective by pattern where engines diverge, whole where an artifact is genuinely shared — which keeps each consumer's re-sync obligation to exactly the patterns it exercises.
+
 ## What this file is not
 
 - **Not a customer or marketing list.** It records implementation relationships between public repos, nothing more.
