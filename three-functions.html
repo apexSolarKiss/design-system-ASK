@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Functions — key</title>
+<meta name="description" content="Visual key for the Three Functions semantic function-color system. Reads three-functions.css live.">
+<!-- Visual key for the Three Functions primitive (three-functions.css + three-functions.md).
+     Reads the foundation + the role tokens live; theme-aware (light default · dark via
+     prefers-color-scheme / [data-theme="dark"]). Open directly. -->
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="three-functions.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed;
+         color: var(--fg-1); font-family: var(--font-sans); font-weight: 200; padding: 48px 56px; }
+  h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+         color: var(--fg-2); margin-bottom: 36px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; max-width: 780px; }
+  .arc-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+               color: var(--fg-2); grid-column: 1 / -1; margin: 4px 0 0; }
+  .swatch { display: flex; align-items: center; gap: 12px; }
+  .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
+  .meta { display: flex; flex-direction: column; }
+  .role { font-family: var(--font-mono); font-size: 12px; color: var(--fg-1); }
+  .map  { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); letter-spacing: 0.04em; }
+  .demo { margin-top: 44px; }
+  .demo h2 { font-size: 14px; font-weight: 400; letter-spacing: 0.04em; margin: 0 0 6px; }
+  .demo p { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); margin: 0 0 16px; }
+  .parts { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .part { width: 92px; height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3);
+          display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
+  .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 30%, transparent); }
+  .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 30%, transparent); }
+  /* .neu — neutral part: default --fg-3 hairline, no function color */
+  /* executive is a FIELD, not a discrete object: 30% fill with variance as NEGATIVE cutouts */
+  .efield-row { display: flex; align-items: center; gap: 16px; }
+  .efield-wash { fill: color-mix(in srgb, var(--function-executive) 30%, transparent); }
+  .flabel { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+  /* neutral non-function exemplar — ONE pill, no topology / no chain */
+  .gov { display: flex; align-items: center; gap: 12px; }
+  .gpill { height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3); background: transparent;
+           display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-1); }
+  .chan { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .chan .cell { width: 92px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+                font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
+  .chan .legend { font-family: var(--font-mono); font-size: 10px; line-height: 1.7; color: var(--fg-2); }
+</style>
+</head>
+<body>
+  <h1>Three Functions</h1>
+  <div class="sub">v0.1 · function color on the ASK field</div>
+
+  <div class="grid">
+    <div class="arc-label">Three functions · one spine</div>
+    <div class="swatch"><div class="dot" style="background:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta · authors the rule</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--function-executive);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">function-executive</span><span class="map">neutral · realizes under it</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--function-judicial)"></div><div class="meta"><span class="role">function-judicial</span><span class="map">cyan · judges against it</span></div></div>
+  </div>
+
+  <div class="demo">
+    <h2>Rendering contract</h2>
+    <p>every role-bearing apparatus → 30% fill · field vs object is geometry + negative space, not opacity · labels + structure neutral</p>
+    <div class="parts">
+      <div class="part leg">legislative</div>
+      <div class="part jud">judicial</div>
+      <div class="part">neutral</div>
+    </div>
+    <div class="parts efield-row" style="margin-top:18px">
+      <svg width="260" height="62" viewBox="0 0 260 62" aria-hidden="true">
+        <defs><mask id="key-holes" maskUnits="userSpaceOnUse" x="0" y="0" width="260" height="62">
+          <rect x="0" y="0" width="260" height="62" rx="8" fill="#fff"/>
+          <rect x="28" y="21" width="20" height="20" rx="3" fill="#000"/>
+          <circle cx="96" cy="31" r="11" fill="#000"/>
+          <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="#000"/>
+          <circle cx="226" cy="31" r="10" fill="#000"/>
+        </mask></defs>
+        <rect class="efield-wash" x="0" y="0" width="260" height="62" rx="8" mask="url(#key-holes)"/>
+        <rect x="0" y="0" width="260" height="62" rx="8" fill="none" stroke="var(--function-executive)" stroke-width="1.5"/>
+        <rect x="28" y="21" width="20" height="20" rx="3" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <circle cx="96" cy="31" r="11" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <circle cx="226" cy="31" r="10" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+      </svg>
+      <span class="flabel">executive field · 30% fill · variance as negative cutouts</span>
+    </div>
+  </div>
+
+  <div class="demo">
+    <h2>Outside the three functions</h2>
+    <p>a consequential non-function element (downstream governance) is keyed by ONE neutral pill — its visual treatment, not the surface's topology</p>
+    <div class="gov">
+      <div class="gpill">artifact governance</div>
+      <span class="flabel">binds the accepted result · not a fourth role, not a fourth color</span>
+    </div>
+  </div>
+
+  <div class="demo">
+    <h2>Channel discipline</h2>
+    <p>function ≠ state ≠ evidence · reused hue is not identity · labels stay mandatory</p>
+    <div class="chan">
+      <div class="cell" style="background: color-mix(in srgb, var(--function-legislative) 30%, transparent);
+           border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
+      <div class="legend">one element · three channels ·
+        <b>fill</b> = function · <b>outline</b> = element state · <b>rail</b> = evidence state<br>
+        state + evidence shown schematic — they would carry Spectral State / Evidence State values</div>
+    </div>
+  </div>
+</body>
+</html>

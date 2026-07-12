@@ -34,7 +34,7 @@ Descriptive density lives in the side panel, never crammed into the figure. The 
 - A **continuation to a governed-result anchor**.
 - A **future-reference return lane + dotted return loop** that closes the governed result back as a potential carrier input.
 
-Tiers: `anchor` (heavier stroke) / `recede` (muted). Per-node `status: earned | held | legacy` (`held` renders **dashed**). **Hierarchy is weight / contrast / dash only — no new hue; this is NOT Spectral State or Evidence State** (those are the only opt-in state-color families, and they are not used here).
+Tiers: `anchor` (heavier stroke) / `recede` (muted). Per-node `status: earned | held | legacy` (`held` renders **dashed**). **Hierarchy is weight / contrast / dash only — no new hue; this is NOT Spectral State, Evidence State, or Three Functions** (the opt-in semantic-color primitives — element/evidence *state* and structural *function* — none used here; this scaffold is structural, and its resolve → realize → evaluate → govern topology is not a Three Functions surface).
 
 ## Data grammar
 
