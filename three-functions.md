@@ -51,20 +51,20 @@ Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming s
 ```text
 role stroke              full role value
 discrete role object     fill at 30%  ·  color-mix(in srgb, <role> 30%, transparent)
-large role field / wash  fill at 12%  ·  color-mix(in srgb, <role> 12%, transparent)
+large role field / wash  fill at 20%  ·  color-mix(in srgb, <role> 20%, transparent)
 label                    standard theme foreground (--fg-1) — never the role hue
 structural edges         neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
 ```
 
-A **discrete role-bearing object** — a labelled box, a candidate glyph, a selected node — carries a **30%** fill so it reads as clearly role-marked (a single 16% wash reads too weak, and lets a role box blur into a neutral one). A **large role field** — a container the role only *tints*, such as a realization chamber or a bounded region — carries a **12%** wash so it never becomes an opaque slab. Both take the full role value as stroke. Labels stay the theme foreground so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+A **discrete role-bearing object** — a labelled box, a selected node — carries a **30%** fill so it reads as clearly role-marked (a single 16% wash reads too weak, and lets a role box blur into a neutral one). A **large role field** — an apparatus the role tints as a whole, such as a realization chamber or a bounded region — carries a **20%** wash so it reads as a field without becoming an opaque slab. Both take the full role value as stroke. Labels stay the theme foreground so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
 
-These are two *intensities* of the same three role colors — **not** new tokens. The 30% / 12% split is the rendering contract, not a palette addition.
+**Semantic function color attaches to the role-bearing apparatus, not automatically to the artifacts produced inside it.** A function that *produces* things — an executive field emitting candidates — colors the **field**; the candidates it emits stay neutral content (render them as neutral outlines or **negative cutouts** through the wash, never a second role fill). These are two *intensities* of the same three role colors — **not** new tokens. The 30% / 20% split is the rendering contract, not a palette addition.
 
 ## Non-function elements
 
 A consuming surface often contains consequential elements that are **not** functions — most commonly a **downstream governance** step that binds the accepted result. Represent these in the **existing neutral structural treatment**; they take no role color.
 
-When a legend or key enumerates the three functions, a prominent neutral element (a governance box, an output node) can be left unexplained. If so, key it in a **separated, explicitly-labelled group** — a dotted legend-only divider, then the neutral element under a label such as *"downstream — not a fourth function."* Show it as it actually appears on the surface (a neutral box, or a two-box chain), never as a fourth colored swatch.
+When a legend or key enumerates the three functions, a prominent neutral element (a governance box, an output node) can be left unexplained. If so, key it with **one neutral exemplar** under a separated, explicitly-labelled heading — a dotted legend-only divider, then a single neutral swatch (matching the scale and grammar of the three function swatches) under a label such as *"downstream — not a fourth function."* The key identifies the element's **visual treatment**; it does **not** reproduce the consuming surface's topology (no process chain, no arrows), and it is never a fourth colored swatch.
 
 This creates **no fourth role and no fourth color.** There is no `--function-governance`. The separated row is explanatory: it teaches the reader that a consequential element sits *outside* the three functions — exactly the boundary the primitive holds.
 
@@ -94,7 +94,7 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
 
 ## How to use it
 
-1. Load `colors_and_type.css` first (Three Functions relies on its theme resolution + palette tokens), then `three-functions.css`.
+1. Load `colors_and_type.css` first (Three Functions relies on its theme resolution and palette tokens), then `three-functions.css`.
 2. On a consuming element, set the stroke from a single role token and a restrained translucent fill from the same value:
 
    ```css
@@ -103,8 +103,8 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
      stroke: var(--function-legislative);
      fill:   color-mix(in srgb, var(--function-legislative) 30%, transparent);
    }
-   .field[data-function="executive"] {               /* large role field → 12% wash */
-     fill:   color-mix(in srgb, var(--function-executive) 12%, transparent);
+   .field[data-function="executive"] {               /* large role field → 20% wash */
+     fill:   color-mix(in srgb, var(--function-executive) 20%, transparent);
    }
    ```
 
@@ -116,14 +116,14 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
 `method-ASK`'s bounded-generativity figure binds the three functions to its domain parts:
 
 - **legislative → the `grammar / brief` box** — it grants the aperture (authors the rule).
-- **executive → the realization chamber and its candidate glyphs** — generation fills the aperture, nonjudgmental (a faint neutral wash on the field, not one opaque slab).
-- **judicial → the selection ring and the ratified candidate** — evaluation, selection, closure.
+- **executive → the bounded-realization chamber** — the apparatus carries a 20% executive wash; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
+- **judicial → the selection ring and the candidate it ratifies** — evaluation, selection, closure. The ratified candidate is judicial's closed output, no longer neutral chamber variance — which is why it, alone among the glyphs, takes a role fill.
 
 Everything else stays **neutral**, and those exclusions are load-bearing:
 
 - **source of intent / normative apex** — coloring it legislative would collapse *source of intent* into the legislative function;
 - **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like an actor;
-- **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact + record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
+- **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
 
 Artifact governance stays downstream and outside the three-function palette — it is not a fourth color. This binding is **consumer-local**: the primitive is the three identity-free roles; the domain mapping and the neutral exclusions belong to the consuming figure.
 

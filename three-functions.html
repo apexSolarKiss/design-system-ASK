@@ -32,19 +32,16 @@
           display: flex; align-items: center; justify-content: center;
           font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
   .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 30%, transparent); }
-  .exe { border-color: var(--function-executive);   background: color-mix(in srgb, var(--function-executive) 30%, transparent); }
   .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 30%, transparent); }
   /* .neu — neutral part: default --fg-3 hairline, no function color */
-  /* large role field — 12% wash containing 30% objects */
-  .field { display: inline-flex; align-items: center; gap: 14px; height: 62px; padding: 0 16px; border-radius: 8px;
-           border: 1.5px solid var(--function-executive); background: color-mix(in srgb, var(--function-executive) 12%, transparent); }
-  .field .g { width: 26px; height: 26px; border-radius: 4px; border: 1.5px solid var(--function-executive);
-              background: color-mix(in srgb, var(--function-executive) 30%, transparent); }
-  .field .flabel { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); margin-left: 4px; }
-  /* neutral non-function exemplar — governance chain (no role color) */
-  .gov { display: flex; align-items: center; gap: 10px; }
-  .gbox { height: 42px; border-radius: 6px; border: 1.5px solid var(--fg-3); background: transparent;
-          display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-1); }
+  /* executive is a FIELD, not a discrete object: 20% wash with variance as NEGATIVE cutouts */
+  .efield-row { display: flex; align-items: center; gap: 16px; }
+  .efield-wash { fill: color-mix(in srgb, var(--function-executive) 20%, transparent); }
+  .flabel { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+  /* neutral non-function exemplar — ONE pill, no topology / no chain */
+  .gov { display: flex; align-items: center; gap: 12px; }
+  .gpill { height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3); background: transparent;
+           display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-1); }
   .chan { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   .chan .cell { width: 92px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
                 font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em; color: var(--fg-1); }
@@ -64,29 +61,38 @@
 
   <div class="demo">
     <h2>Rendering contract</h2>
-    <p>role stroke + 30% fill on discrete objects · 12% wash on large fields · label + structure stay neutral</p>
+    <p>discrete objects (legislative · judicial) → 30% fill · executive is a field → 20% wash · labels + structure neutral</p>
     <div class="parts">
       <div class="part leg">legislative</div>
-      <div class="part exe">executive</div>
-      <div class="part exe">executive</div>
       <div class="part jud">judicial</div>
       <div class="part">neutral</div>
     </div>
-    <div class="parts" style="margin-top:18px">
-      <div class="field"><div class="g"></div><div class="g"></div><div class="g"></div><span class="flabel">large role field · 12% wash · 30% objects inside</span></div>
+    <div class="parts efield-row" style="margin-top:18px">
+      <svg width="260" height="62" viewBox="0 0 260 62" aria-hidden="true">
+        <defs><mask id="key-holes" maskUnits="userSpaceOnUse" x="0" y="0" width="260" height="62">
+          <rect x="0" y="0" width="260" height="62" rx="8" fill="#fff"/>
+          <rect x="28" y="21" width="20" height="20" rx="3" fill="#000"/>
+          <circle cx="96" cy="31" r="11" fill="#000"/>
+          <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="#000"/>
+          <circle cx="226" cy="31" r="10" fill="#000"/>
+        </mask></defs>
+        <rect class="efield-wash" x="0" y="0" width="260" height="62" rx="8" mask="url(#key-holes)"/>
+        <rect x="0" y="0" width="260" height="62" rx="8" fill="none" stroke="var(--function-executive)" stroke-width="1.5"/>
+        <rect x="28" y="21" width="20" height="20" rx="3" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <circle cx="96" cy="31" r="11" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+        <circle cx="226" cy="31" r="10" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
+      </svg>
+      <span class="flabel">executive field · 20% wash · variance as negative cutouts</span>
     </div>
   </div>
 
   <div class="demo">
     <h2>Outside the three functions</h2>
-    <p>a consequential non-function element (downstream governance) stays neutral — not a fourth role, not a fourth color</p>
+    <p>a consequential non-function element (downstream governance) is keyed by ONE neutral pill — its visual treatment, not the surface's topology</p>
     <div class="gov">
-      <div class="gbox">artifact governance</div>
-      <svg width="28" height="12" viewBox="0 0 28 12" aria-hidden="true">
-        <path d="M0 6 H21" stroke="var(--fg-3)" stroke-width="1.2" fill="none"/>
-        <path d="M21 2 L27 6 L21 10" stroke="var(--fg-3)" stroke-width="1.2" fill="none"/>
-      </svg>
-      <div class="gbox">governed artifact + record</div>
+      <div class="gpill">artifact governance</div>
+      <span class="flabel">binds the accepted result · not a fourth role, not a fourth color</span>
     </div>
   </div>
 
