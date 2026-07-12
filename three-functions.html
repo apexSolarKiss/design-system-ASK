@@ -34,9 +34,9 @@
   .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 30%, transparent); }
   .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 30%, transparent); }
   /* .neu — neutral part: default --fg-3 hairline, no function color */
-  /* executive is a FIELD, not a discrete object: 20% wash with variance as NEGATIVE cutouts */
+  /* executive is a FIELD, not a discrete object: 30% fill with variance as NEGATIVE cutouts */
   .efield-row { display: flex; align-items: center; gap: 16px; }
-  .efield-wash { fill: color-mix(in srgb, var(--function-executive) 20%, transparent); }
+  .efield-wash { fill: color-mix(in srgb, var(--function-executive) 30%, transparent); }
   .flabel { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
   /* neutral non-function exemplar — ONE pill, no topology / no chain */
   .gov { display: flex; align-items: center; gap: 12px; }
@@ -61,7 +61,7 @@
 
   <div class="demo">
     <h2>Rendering contract</h2>
-    <p>discrete objects (legislative · judicial) → 30% fill · executive is a field → 20% wash · labels + structure neutral</p>
+    <p>every role-bearing apparatus → 30% fill · field vs object is geometry + negative space, not opacity · labels + structure neutral</p>
     <div class="parts">
       <div class="part leg">legislative</div>
       <div class="part jud">judicial</div>
@@ -83,7 +83,7 @@
         <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
         <circle cx="226" cy="31" r="10" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
       </svg>
-      <span class="flabel">executive field · 20% wash · variance as negative cutouts</span>
+      <span class="flabel">executive field · 30% fill · variance as negative cutouts</span>
     </div>
   </div>
 
