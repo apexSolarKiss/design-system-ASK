@@ -37,6 +37,14 @@
    symmetric: a border-less color chip stays fill-only (no phantom outline in the
    resolved text ink), a solid separator stays solid, and a mixed-case heading keeps
    its case.
+
+   Landscape placement (2026-07-12). The diagram body uses a tighter side margin
+   than the page chrome (DIAG_M < M), so it renders larger. Landscape diagrams
+   (wider than tall) are now anchored LOW — centered in the space *below* the corner
+   panels rather than floating in the middle of the full page — so the top panels
+   breathe and the page is not bottom-heavy with dead space. Scale still uses the
+   full band above, so a height-limited landscape is not shrunk; portrait diagrams
+   are unchanged.
 */
 (function () {
   'use strict';
@@ -614,18 +622,37 @@
 
     /* ---------- fit the diagram content ----------
        Tall/portrait diagrams fill the whole width, so their top edge would run
-       under the corner panels — they start BELOW the taller panel. LANDSCAPE
-       diagrams (wider than tall) have empty top corners, so they can start just
-       below the header and use near-full page height (bigger render) without
-       colliding with the corner panels. (Computed after the panels.) */
+       under the corner panels — they start BELOW the taller panel and center in
+       the space that remains. LANDSCAPE diagrams (wider than tall) have empty top
+       corners, so they start below the header and are anchored LOW (~lower third):
+       the top panels breathe above and the page is not bottom-heavy with dead space
+       below. The diagram body uses a tighter side margin than the page chrome (M),
+       so it renders larger; the header and corner panels keep the page margin M.
+       (Computed after the panels.) */
     var panelBand = Math.max(cavH, legendH);
     var landscape = diagW >= diagH;
+    var DIAG_M = 40;                                    // diagram-body side margin (< page M) → larger render
     var diagTop = overlayY + (landscape ? 120 : (panelBand ? panelBand + 48 : 0));
-    var diagBot = PAGE_H - M, diagLeft = M, diagRight = PAGE_W - M;
+    var diagBot = PAGE_H - M, diagLeft = DIAG_M, diagRight = PAGE_W - DIAG_M;
     var availW = diagRight - diagLeft, availH = diagBot - diagTop;
     var scale = Math.min(availW / diagW, availH / diagH);
     var sw = diagW * scale, sh = diagH * scale;
-    var sx = diagLeft + (availW - sw) / 2, sy = diagTop + (availH - sh) / 2;
+    var sx = diagLeft + (availW - sw) / 2;
+    var sy;
+    if (landscape) {
+      // Position low: CENTER the diagram in the space BELOW the corner panels, so
+      // the top panels breathe and the gaps above/below the diagram are balanced —
+      // rather than floating it in the middle of the full page (which left dead
+      // space below). Scale still uses the full band above, so a height-limited
+      // landscape is not shrunk. Fall back to full-band centering if it can't fit
+      // below the panels.
+      var bandTop = overlayY + panelBand + 48;
+      sy = (bandTop + sh <= diagBot)
+        ? bandTop + ((diagBot - bandTop) - sh) / 2
+        : diagTop + (availH - sh) / 2;
+    } else {
+      sy = diagTop + (availH - sh) / 2;
+    }
     // offset by the viewBox origin so negative-origin (centered) content isn't clipped
     content.setAttribute('transform', 'translate(' + (sx - minX * scale) + ' ' + (sy - minY * scale) + ') scale(' + scale + ')');
 
