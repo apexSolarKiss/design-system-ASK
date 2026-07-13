@@ -83,7 +83,7 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 The HUD exposes two PNG exports, both rasterizing the live render through one path (`exportPng({ mode })`):
 
-- **`PNG page`** — the chromed poster: a 3840×2880 render with header, legend, caption, and ticks on the resolved gradient field. Auto-export route `?export=png`. This is the existing export; its contract is unchanged.
+- **`PNG page`** — the chromed poster: a 3840×2880 render with header, legend, caption, and ticks on the resolved gradient field. Auto-export route `?export=png`. The legend is reproduced from the live DOM as an ordered list of rows, dividers, and group headings, with each swatch drawn from its **computed** presentation (fill, border color / width / style, radius) — so a consumer's semantic legend (colored role swatches, a downstream-group separator, a group heading) exports faithfully; a plain row-only legend lays out exactly as before.
 - **`PNG diagram`** — the diagram canvas only: no header, HUD, caption, legend, or ticks, on the resolved gradient field, at the diagram's natural (variable) aspect. Auto-export route `?export=png-diagram`; filename `<slug>-diagram-<theme>.png`.
 
 The diagram bounds are the **engine-authored SVG `width` / `height` / `viewBox`**, so the convergence trunk, eval-bus elbows, arrowheads, and the wide landscape geometry are preserved without clipping. `PNG diagram` replaces the old chrome-free `.clean.html` + Puppeteer two-build workaround — a clean diagram PNG now comes straight from the full diagram HTML. The `PNG page` filename carries the page's resolved theme — `<base>_source-vN_render-vN-light.png` or `…-dark.png` — so a light and a dark export never collide.

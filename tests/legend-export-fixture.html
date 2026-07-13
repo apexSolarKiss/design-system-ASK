@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // legend-export regression fixture</title>
+<meta name="description" content="Exporter regression fixture: a SEMANTIC legend (three differently-colored solid swatches, a dotted divider, a group heading, one neutral row). Guards export-png.js legend fidelity — the exported page PNG legend must match this live legend.">
+<!-- Foundations + the H pattern engine/exporter, referenced from the repo root
+     (serve from the repo root:  python3 -m http.server 8080  →  /tests/legend-export-fixture.html). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
+<!-- Three Functions — an opt-in semantic function-color primitive. A real consumer
+     vendors this; here it drives the colored swatches so the exporter is exercised
+     against resolved color-mix() values, not hand-fed hexes. -->
+<link rel="stylesheet" href="../three-functions.css">
+<style>
+  /* ===== A consumer's Three Functions legend consumption (mirrors a real consumer):
+     role stroke + 30% fill on the swatch; a dotted downstream divider; a group
+     heading. The exporter must reproduce ALL of this from computed style — it is
+     told none of the role names. ===== */
+  .legend .box-solid.fn-leg { background: color-mix(in srgb, var(--function-legislative) 30%, transparent); border-color: var(--function-legislative); }
+  .legend .box-solid.fn-exe { background: color-mix(in srgb, var(--function-executive) 30%, transparent); border-color: var(--function-executive); }
+  .legend .box-solid.fn-jud { background: color-mix(in srgb, var(--function-judicial) 30%, transparent); border-color: var(--function-judicial); }
+  .legend .fn-divider { border: none; border-top: 1px dotted var(--diagram-line); margin: 12px 0 9px; }
+  .legend .fn-down { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--diagram-muted); margin-bottom: 9px; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="bar">
+    <div class="mark">apexSolarKiss<span class="sep">/</span>design-system-ASK</div>
+    <div class="title-block">
+      <div class="t">Legend Export Fixture</div>
+      <div class="s">regression guard · semantic legend must survive the page export</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="stamp">
+      <div><span class="k">source-v1</span> // <span class="k">render-v1</span></div>
+      <div>2026-07-12</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="stage" id="stage">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="corner-tick tl"></div>
+    <div class="corner-tick tr"></div>
+    <div class="corner-tick bl"></div>
+    <div class="corner-tick br"></div>
+
+    <!-- The unit under test: rows with COLORED swatches, a dotted divider, a group
+         heading, then a NEUTRAL row. The exported page legend must reproduce each. -->
+    <div class="legend glass">
+      <div class="h"><span>Three functions</span><span class="fig">one spine</span></div>
+      <div class="row">
+        <div class="sw"><div class="box-solid fn-leg"></div></div>
+        <div><span class="lbl">legislative</span><span class="sub">grammar / brief · grants the aperture</span></div>
+      </div>
+      <div class="row">
+        <div class="sw"><div class="box-solid fn-exe"></div></div>
+        <div><span class="lbl">executive</span><span class="sub">realization · fills the aperture · nonjudgmental</span></div>
+      </div>
+      <div class="row">
+        <div class="sw"><div class="box-solid fn-jud"></div></div>
+        <div><span class="lbl">judicial</span><span class="sub">selection + closure · ratifies one candidate</span></div>
+      </div>
+      <hr class="fn-divider">
+      <div class="fn-down">downstream — not a fourth function</div>
+      <div class="row">
+        <div class="sw"><div class="box-solid"></div></div>
+        <div><span class="lbl">artifact governance</span><span class="sub">binds the accepted result</span></div>
+      </div>
+    </div>
+
+    <div class="hud glass">
+      <button id="zoomOut" title="Zoom out">−</button>
+      <div class="pct" id="zoomPct">100%</div>
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomFit" title="Fit">⤢</button>
+    </div>
+
+    <div class="caption glass">
+      <b>legend export fixture</b><br>
+      the exported page legend must match this live legend:<br>
+      three colored functions, a dotted divider, one neutral row.
+    </div>
+  </div>
+</div>
+
+<script>
+window.TREE_DIAGRAM = {
+  kind: 'root',
+  label: 'fixture-root',
+  note: 'minimal body — the legend is the unit under test',
+  children: [
+    { kind: 'section', label: 'left', children: [
+      { label: 'alpha', note: 'a note' },
+      { label: 'beta' },
+    ]},
+    { kind: 'section', label: 'right', children: [
+      { label: 'gamma' },
+      { label: 'delta', status: 'held', note: 'held' },
+    ]},
+  ],
+};
+</script>
+<script src="../patterns/diagram-static-H/diagrams-static-H-engine.js"></script>
+<!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://). -->
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-static-H/export-png.js"></script>
+<script>
+window.DIAGRAMS.render(window.TREE_DIAGRAM);
+</script>
+
+</body>
+</html>
