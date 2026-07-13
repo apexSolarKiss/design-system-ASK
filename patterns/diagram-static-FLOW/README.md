@@ -68,7 +68,7 @@ status: earned (default) | held | legacy.  ids default f0.. / converge / s0.. / 
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus the diagram-only token additions and `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to the `-H` / `-V` / `-SEQ` copies** — shared by convention, not a runtime import.
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to the `-H` / `-V` / `-SEQ` copies** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves all four patterns.
 
-The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific diagram. It is a starting point for downstream diagrams that consume design-system-ASK foundations.
+The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific diagram. It is a starting point for downstream diagrams that consume [design-system-ASK](../../README.md) foundations.
 
 ## How to use it
 

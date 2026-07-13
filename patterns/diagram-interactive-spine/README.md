@@ -15,7 +15,7 @@ A small consumption pattern. Six files:
 - `diagrams-interactive-spine.css` — the interactive style layer
 - `export-png.js` — 3840×2880 PNG export that bakes the resolved state colors inline
 
-It is **not** a component library, a generator, a build pipeline, or a project-specific surface. It is a starting point for a project's own interactive IA, building on design-system-ASK foundations.
+It is **not** a component library, a generator, a build pipeline, or a project-specific surface. It is a starting point for a project's own interactive IA, building on [design-system-ASK](../../README.md) foundations.
 
 ## It consumes Spectral State (unlike the static scaffolds)
 

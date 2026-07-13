@@ -6,7 +6,7 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 
 **Profiles.** Sanctioned *profiles* may build on this primitive for adjacent semantic domains. The first is [`evidence-state.md`](evidence-state.md) (epistemic evidence-state), which reuses three of the roles below by reference and adds two evidence-specific roles. Spectral State's own eight-role architectural-element vocabulary is unchanged by any profile.
 
-> **Status: v1.1 — restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — `asset-pipeline-ASK`'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
+> **Status: v1.1 — restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
 
 ## The eight roles
 
@@ -70,4 +70,4 @@ Per the foundation's theme model, the dark values appear in both the explicit `[
 ## What is upstream vs consumer-local
 
 - **Upstream (this repo):** the eight roles, the per-theme neon values, the wheel logic. General; family-reusable. Consumers **inherit by reference and do not mint a divergent palette.**
-- **Consumer-local (e.g. asset-pipeline-ASK):** which element gets which state, evidence-depth qualifiers, risk flags, substrate markers, mode coverage, and evidence pointers. Those are data and metadata, not part of this color system.
+- **Consumer-local (e.g. [asset-pipeline-ASK](https://github.com/apexSolarKiss/asset-pipeline-ASK)):** which element gets which state, evidence-depth qualifiers, risk flags, substrate markers, mode coverage, and evidence pointers. Those are data and metadata, not part of this color system.

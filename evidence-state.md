@@ -4,7 +4,7 @@ A semantic state-color **profile** under the Spectral State family. Where [`spec
 
 It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** Spectral State's eight-role architectural-element vocabulary is unchanged. This profile **reuses three Spectral State values by reference** and **adds two evidence-specific roles**.
 
-> **Status: v0.1 — first generalized profile.** Authorized by ASK source-of-intent (2026-06-18) as a reusable profile rather than a one-off. First consumer is `urban-observatory` (a domain-partner consumer, by reference). Provisional-but-reusable: the role list may firm up as the profile sees more use; the two new values are the stable, portable part.
+> **Status: v0.1 — first generalized profile.** Authorized by ASK source-of-intent (2026-06-18) as a reusable profile rather than a one-off. First consumer is [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory) (a domain-partner consumer, by reference). Provisional-but-reusable: the role list may firm up as the profile sees more use; the two new values are the stable, portable part.
 
 ## The five roles
 
@@ -68,4 +68,4 @@ Evidence State derivation
 ## What is upstream vs consumer-local
 
 - **Upstream (this repo):** the five role names, the two new per-theme values, the reuse-by-reference mapping, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
-- **Consumer-local (e.g. `urban-observatory`):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this color profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.
+- **Consumer-local (e.g. [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory)):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this color profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.

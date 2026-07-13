@@ -1,6 +1,6 @@
 # Hard-fail checklist // static output artifact
 
-A static output artifact fails design-system-ASK inheritance if any of the following are present. Treat each as a hard fail, not a stylistic preference.
+A static output artifact fails [design-system-ASK](../../README.md) inheritance if any of the following are present. Treat each as a hard fail, not a stylistic preference.
 
 ## Styling fails
 
