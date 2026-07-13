@@ -1,6 +1,6 @@
 # Pattern // static output artifact
 
-A reusable static-artifact scaffold for downstream project-output artifacts — review packets, reports, dashboards, and similar human-readable deliverables that inherit the design-system-ASK visual language.
+A reusable static-artifact scaffold for downstream project-output artifacts — review packets, reports, dashboards, and similar human-readable deliverables that inherit the [design-system-ASK](../../README.md) visual language.
 
 This is a **Class B** scaffold (project-output artifact templates), distinct from the **Class A** diagram patterns (the static `diagram-static-H` / `-V` / `-SEQ` / `-FLOW` and the interactive `diagram-interactive-spine`).
 

@@ -1,6 +1,6 @@
 # Pattern // diagram-static-SEQ
 
-A reusable static-artifact scaffold for diagrams whose natural topology is an **ordered, top-to-bottom sequence of steps joined by arrows** — pipelines, workflows, lifecycles, doctrine chains, and similar ASK-family process diagrams that inherit the design-system-ASK visual language. **`diagram-static-SEQ`** is the **sequence** Class A static pattern: succession, not hierarchy.
+A reusable static-artifact scaffold for diagrams whose natural topology is an **ordered, top-to-bottom sequence of steps joined by arrows** — pipelines, workflows, lifecycles, doctrine chains, and similar ASK-family process diagrams that inherit the [design-system-ASK](../../README.md) visual language. **`diagram-static-SEQ`** is the **sequence** Class A static pattern: succession, not hierarchy.
 
 This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. It sits alongside `patterns/diagram-static-H/` (horizontal left→right cascade), `patterns/diagram-static-V/` (vertical centered spine), and `patterns/diagram-static-FLOW/` (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back). H / V / SEQ share the existing tree/sequence data grammar and export contract. FLOW is a distinct convergence-flow grammar (one shared source model, two render modes), but shares the same visual contract, PNG export discipline, and inheritance-by-reference posture.
 

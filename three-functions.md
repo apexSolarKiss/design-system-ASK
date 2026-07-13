@@ -19,7 +19,7 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.1 — first authored, awaiting first-consumer proving.** Authorized by ASK source-of-intent (2026-07-12). The first consumer will be `method-ASK`'s bounded-generativity figure (by reference); `asset-pipeline-ASK` is the intended second consumer and the portability pressure test. Provisional-but-portable: the mappings are the stable, portable part; the role list is fixed at three.
+> **Status: v0.1 — first authored, awaiting first-consumer proving.** Authorized by ASK source-of-intent (2026-07-12). The first consumer will be [`method-ASK`](https://github.com/apexSolarKiss/method-ASK)'s bounded-generativity figure (by reference); [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK) is the intended second consumer and the portability pressure test. Provisional-but-portable: the mappings are the stable, portable part; the role list is fixed at three.
 
 ## The three roles
 
@@ -118,7 +118,7 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
 
 ## Worked example — the bounded-generativity figure (first consumer)
 
-`method-ASK`'s bounded-generativity figure binds the three functions to its domain parts:
+[`method-ASK`](https://github.com/apexSolarKiss/method-ASK)'s bounded-generativity figure binds the three functions to its domain parts:
 
 - **legislative → the `grammar / brief` box** — it grants the aperture (authors the rule).
 - **executive → the bounded-realization chamber** — the apparatus carries a 30% executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
@@ -135,4 +135,4 @@ Artifact governance stays downstream and outside the three-function palette — 
 ## What is upstream vs consumer-local
 
 - **Upstream (this repo):** the three role names, their ASK mappings, the per-theme executive resolution, the rendering contract, and the channel-coexistence rule. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
-- **Consumer-local (e.g. `method-ASK`, `asset-pipeline-ASK`):** which element performs which function, the domain vocabulary, the neutral exclusions, and the surface layout. Those are the application, not the color system.
+- **Consumer-local (e.g. [`method-ASK`](https://github.com/apexSolarKiss/method-ASK), [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)):** which element performs which function, the domain vocabulary, the neutral exclusions, and the surface layout. Those are the application, not the color system.
