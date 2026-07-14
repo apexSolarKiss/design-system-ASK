@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // defs-mask export regression fixture</title>
+<meta name="description" content="Exporter regression fixture: a direct SVG <defs> userSpaceOnUse mask punches negative cutouts through a positively-filled field, with neutral outlines redrawn above. Guards export-png.js — the exported PNG must carry the mask definition so cutouts resolve to the page field instead of filling solid. Serve from the repo root (python3 -m http.server 8080) → /tests/defs-mask-export-fixture.html.">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
+<!-- Three Functions drives the field fill through color-mix() so the exporter is
+     exercised against a resolved computed fill (as a real consumer would), not a
+     hand-fed hex — the fill must be inlined AND the mask def carried. -->
+<link rel="stylesheet" href="../three-functions.css">
+<style>
+  /* The field is positively filled from COMPUTED STYLE (class rule), and masked.
+     The exporter must inline this fill onto the clone AND carry the <defs> mask so
+     the cutouts punch through to the page field rather than the field filling solid. */
+  .field { fill: color-mix(in srgb, var(--function-executive) 30%, transparent); }
+  .mark-outline { fill: none; stroke: var(--diagram-line); stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="bar">
+    <div class="mark">apexSolarKiss<span class="sep">/</span>design-system-ASK</div>
+    <div class="title-block">
+      <div class="t">Defs-Mask Export Fixture</div>
+      <div class="s">regression guard · a userSpaceOnUse mask must survive PNG export</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="stamp">
+      <div><span class="k">source-v1</span> // <span class="k">render-v1</span></div>
+      <div>2026-07-13</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="stage" id="stage">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600"></svg>
+    </div>
+
+    <div class="corner-tick tl"></div>
+    <div class="corner-tick tr"></div>
+    <div class="corner-tick bl"></div>
+    <div class="corner-tick br"></div>
+
+    <div class="legend glass">
+      <div class="h"><span>mask fixture</span><span class="fig">one field</span></div>
+      <div class="row">
+        <div class="sw"><div class="box-solid fn-exe"></div></div>
+        <div><span class="lbl">field</span><span class="sub">positively filled · cutouts punch through to the page</span></div>
+      </div>
+    </div>
+
+    <div class="hud glass">
+      <button id="zoomOut" title="Zoom out">−</button>
+      <div class="pct" id="zoomPct">100%</div>
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomFit" title="Fit">⤢</button>
+    </div>
+
+    <div class="caption glass">
+      <b>defs-mask export fixture</b><br>
+      the exported PNG cutouts must show the page field (a hole),<br>
+      not a filled shape. Guards the exported-SVG defs-carry invariant.
+    </div>
+  </div>
+</div>
+
+<script>
+/* Build the masked SVG directly (no tree engine): a direct <defs> userSpaceOnUse mask
+   (white field shows, black glyphs punched as holes) applied to a CSS-filled field,
+   with the same glyphs redrawn as neutral outlines above. Mirrors the real
+   bounded-generativity executive chamber, minimally. */
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('svg');
+  var el = function (t, a) { var e = document.createElementNS(NS, t); for (var k in a) if (a[k] != null) e.setAttribute(k, a[k]); return e; };
+  var FX = 200, FY = 150, FW = 600, FH = 300;
+  var glyphs = [
+    { t: 'circle', cx: 360, cy: 300, r: 34 },
+    { t: 'rect',   x: 470, y: 262, width: 76, height: 76, rx: 6 },
+    { t: 'path',   d: 'M 640 340 L 680 262 L 720 340 Z' },
+  ];
+  var glyphEl = function (g, attrs) {
+    var a = {};
+    if (g.t === 'circle') { a.cx = g.cx; a.cy = g.cy; a.r = g.r; }
+    else if (g.t === 'rect') { a.x = g.x; a.y = g.y; a.width = g.width; a.height = g.height; a.rx = g.rx; }
+    else { a.d = g.d; }
+    for (var k in attrs) a[k] = attrs[k];
+    return el(g.t, a);
+  };
+  var defs = el('defs', {});
+  var mask = el('mask', { id: 'fixture-holes', maskUnits: 'userSpaceOnUse', x: FX - 4, y: FY - 4, width: FW + 8, height: FH + 8 });
+  mask.appendChild(el('rect', { x: FX, y: FY, width: FW, height: FH, rx: 10, fill: '#fff' }));
+  glyphs.forEach(function (g) { mask.appendChild(glyphEl(g, { fill: '#000' })); });
+  defs.appendChild(mask);
+  svg.appendChild(defs);
+
+  svg.appendChild(el('g', { class: 'edges' }));   // empty edges layer (parity with real figures)
+  var nodes = el('g', { class: 'nodes' });
+  nodes.appendChild(el('rect', { x: FX, y: FY, width: FW, height: FH, rx: 10, class: 'field', mask: 'url(#fixture-holes)' }));
+  glyphs.forEach(function (g) { nodes.appendChild(glyphEl(g, { class: 'mark-outline' })); });
+  svg.appendChild(nodes);
+})();
+</script>
+<!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://). -->
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-static-H/export-png.js"></script>
+
+</body>
+</html>
