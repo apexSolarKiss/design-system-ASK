@@ -10,6 +10,12 @@
      { kind: 'root'|'section'|'group'|'node', label, note?, tag?, status?, children? }
      kind defaults to 'node' if omitted
      status: 'earned' (default) | 'held' | 'legacy'
+
+   tag is SECTION-ONLY: only a `kind: 'section'` node renders `tag`, as its
+   `// <tag>` subtitle (measured for width, granted box height, emitted). The
+   engine does not read `tag` on root, group, or ordinary node records — a tag
+   there is inert (never measured, sized, or drawn). For secondary text beneath
+   a root, group, or ordinary node, use `note`, not `tag`.
 */
 
 window.TREE_DIAGRAM = {
