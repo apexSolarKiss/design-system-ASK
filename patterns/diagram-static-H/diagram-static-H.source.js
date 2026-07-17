@@ -22,7 +22,14 @@ window.TREE_DIAGRAM = {
       children: [
         { label: '[node-1]', note: '[note placeholder]' },
         { label: '[node-2]' },
-        { kind: 'group', label: 'group example', children: [
+        // REGRESSION GUARD (static-H engine, 2026-07): a group WITH a note — the mirror
+        // image of the section guard below. The group branch used to measure this note
+        // into the column width and take the taller note-bearing box, then never emit it:
+        // invisible text that still moved layout, and a label centered in a box sized for
+        // content that was not there. Unlike a section note, a group note IS part of the
+        // visual grammar and is authored across live packages, so it must RENDER. Keep
+        // this case so the note stays visible and keeps sizing its own column.
+        { kind: 'group', label: 'group example', note: '[group note — must render, and must size its own column]', children: [
           { label: '[child-a]' },
           { label: '[child-b]' },
           { label: '[child-c]', note: '[group child with note]' },

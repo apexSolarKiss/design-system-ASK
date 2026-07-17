@@ -234,9 +234,17 @@
           'fill-opacity': 0.5,
         }));
         nodeLayer.appendChild(el('text', {
-          x: n.x + BOX_PAD_X, y: n.centerY,
+          x: n.x + BOX_PAD_X,
+          y: n.hasNote ? n.y + 16 : n.centerY,
           class: 'node-label',
         }, [n.label]));
+        if (n.note) {
+          nodeLayer.appendChild(el('text', {
+            x: n.x + BOX_PAD_X,
+            y: n.y + n.boxH - 10,
+            class: 'node-note',
+          }, [n.note]));
+        }
         continue;
       }
 
