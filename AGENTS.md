@@ -13,7 +13,7 @@ Before changing this repo, read:
 - the relevant `patterns/*/README.md` for any scaffold change
 
 For ASK-control-surface work that touches shared foundations, consumers, or propagation, also read the operator-side consumer / propagation ledger:
-`design-system-ASK-EXTERNAL/design-system-ASK_consumer-ledger.md`.
+`ecology-ASK-EXTERNAL/design-system-ASK_consumer-ledger.md`.
 
 Public `CONSUMERS.md` is landed-public-only. It is not the complete propagation map.
 
