@@ -14,6 +14,8 @@ A small consumption pattern. Seven files:
 - `diagrams-interactive-spine-engine.js` — the layout + interaction engine (`window.IA_SPINE.render`)
 - `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* glass panels and, **only when the figure would actually collide with one**, centres it in the edge-safe region that remains. A placement that already clears the chrome is kept exactly as-is — reservation is overlap-gated, so a figure is never shrunk to avoid chrome it does not reach, so a wide, short figure no longer renders its top band underneath them. **This pattern's panel anatomy differs from the static siblings**, and the engine classifies each panel by the edge it actually *occupies* rather than by its vertical CSS anchor:
 
+**Zoom floor tracks Fit.** The ordinary zoom-out floor is this pattern's historical base scale, but the panel-aware fit can legitimately land below it on a constrained viewport. When it does, the live floor becomes the fitted scale, so zoom-out is a no-op at Fit rather than *increasing* the scale (which would reverse the control's direction). Fit itself is never clamped — clamping it would restore the panel collision the helper exists to avoid.
+
 ```text
 .inspector + .legend   right lane
 .hud                   left lane
