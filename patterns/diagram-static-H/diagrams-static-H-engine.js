@@ -14,6 +14,14 @@
    between columns on first paint. See renderWhenFontsReady at the bottom.
 */
 (function () {
+  /* FAIL-CLOSED on a partial re-vendor. diagrams-fit.js is a DS-owned support file that
+     must be copied alongside this engine and loaded immediately BEFORE it. A silent
+     legacy fallback is deliberately NOT provided: a consumer that vendored the engine
+     without the helper would then look current while keeping the old panel-collision
+     geometry. Fail visibly instead. */
+  if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
+    throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
+  }
   /* ---------- layout constants ---------- */
   const GAP_WITHIN  = 6;    // vertical gap between sibling boxes of the SAME parent (within a group)
   const GAP_BETWEEN = 18;   // vertical gap at a group / section boundary (parent change) — keeps groups distinct
@@ -289,13 +297,16 @@
       zoomPct.textContent = Math.round(scale * 100) + '%';
     }
     function fit() {
-      const rect = canvasWrap.getBoundingClientRect();
-      const padding = 80;
-      const sx = (rect.width - padding) / width;
-      const sy = (rect.height - padding) / height;
-      scale = Math.min(sx, sy, 1.2);
-      tx = (rect.width - width * scale) / 2;
-      ty = (rect.height - height * scale) / 2;
+      /* Shared DS fit contract (diagrams-fit.js): reserves the measured caption/legend
+         and HUD bands, then centres in the remainder. With no visible panels both bands
+         are 0 and this is arithmetically identical to the previous formula. clearance is
+         TOTAL (the value formerly subtracted from the viewport), not per-side padding. */
+      const f = window.DIAGRAM_FIT.compute({
+        wrap: canvasWrap,
+        bounds: { minX: 0, minY: 0, maxX: width, maxY: height },
+        clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26
+      });
+      scale = f.scale; tx = f.tx; ty = f.ty;
       apply();
     }
     fit();

@@ -16,12 +16,13 @@ They are separate patterns with separate placement engines on purpose: a centere
 
 ## What this pattern is
 
-A small consumption pattern. Six files:
+A small consumption pattern. Seven files:
 
 - `README.md` — this file
 - `diagram-static-V.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-static-V.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
 - `diagrams-static-V-engine.js` — **the vertical placement + pan/zoom engine** (the only file that genuinely differs from `diagram-static-H`). It measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and adds the CSS `letter-spacing` that `canvas.measureText` ignores, so labels never overflow their boxes. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
+- `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* caption / legend and HUD glass panels and, **only when the figure would actually collide with one**, centres it in the edge-safe region that remains. A placement that already clears the chrome is kept exactly as-is — reservation is overlap-gated, so a figure is never shrunk to avoid chrome it does not reach, so a wide, short figure no longer renders its top band underneath the corner panels. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the computed scale and translation are arithmetically identical to this pattern's previous fit.
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to the `diagram-static-H` / `diagram-static-SEQ` copies** — shared by convention, not a runtime import. The spine engine emits the same CSS classes, and centering is an SVG `text-anchor` attribute the engine sets, so no style change is needed.
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to the `diagram-static-H` / `diagram-static-SEQ` copies** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves all three patterns.
 
@@ -46,7 +47,7 @@ The horizontal placement uses leaf-packing with parents centered over children, 
 
 ## How to use it
 
-1. Copy the six files in `patterns/diagram-static-V/` into your consuming project (typically under `docs/diagrams/` or similar).
+1. Copy the seven files in `patterns/diagram-static-V/` into your consuming project (typically under `docs/diagrams/` or similar).
 2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-V.html` and `diagram-static-V.source.js` to match your project (e.g. `[your-project]_inheritance-spine.html` and `[your-project]_inheritance-spine.source.js`); update the `<script src>` reference in the HTML accordingly.
 4. Edit `diagram-static-V.source.js`: replace the placeholder tree with your project's actual structure. The tree shape is `{ kind, label, note?, tag?, status?, children? }`.
@@ -94,7 +95,8 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What not to edit
 
-- `diagrams-static-V-engine.js`, `diagrams.css`, `export-png.js` (the shared engine + style + export — modifications break inheritance)
+- `diagrams-static-V-engine.js`, `diagrams.css`, `export-png.js`, `diagrams-fit.js` (the shared engine + style + export — modifications break inheritance)
+- The script load order in the shell — `diagrams-fit.js` must load before the engine; the engine hard-fails if it is absent
 - The diagram-only token overlays (`--node-fill`, `--line-strong`) and Tier 1 + Tier 2 references inside `diagrams.css`
 - The canvas / HUD / corner-tick / glass-panel structure in the HTML
 - The light / dark theme model: explicit `data-theme="dark"`, explicit `data-theme="light"`, and `prefers-color-scheme` auto-resolve all need to keep working

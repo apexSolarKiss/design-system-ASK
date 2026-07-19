@@ -37,6 +37,14 @@
    status: earned (default) | held | legacy.  ids default f0.. / converge / s0.. / carrier.
 */
 (function () {
+  /* FAIL-CLOSED on a partial re-vendor. diagrams-fit.js is a DS-owned support file that
+     must be copied alongside this engine and loaded immediately BEFORE it. A silent
+     legacy fallback is deliberately NOT provided: a consumer that vendored the engine
+     without the helper would then look current while keeping the old panel-collision
+     geometry. Fail visibly instead. */
+  if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
+    throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
+  }
   /* ---------- constants ---------- */
   const PAGE_PAD = 84;                                   // canvas padding
   const BOX_PAD_X = 20, BOX_H = 40, BOX_H_NOTE = 48;    // BIGGER boxes / more padding (ASK)
@@ -323,7 +331,31 @@
     const wrap = document.getElementById('canvasWrap'), stage = document.getElementById('stage'), pct = document.getElementById('zoomPct');
     let tx = 0, ty = 0, scale = 1;
     function apply() { stage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; if (pct) pct.textContent = Math.round(scale * 100) + '%'; }
-    function fit() { const r = wrap.getBoundingClientRect(); const pad = 80; scale = Math.min((r.width - pad) / width, (r.height - pad) / height, 1.2); tx = (r.width - width * scale) / 2; ty = (r.height - height * scale) / 2; apply(); }
+    /* Shared DS fit contract (diagrams-fit.js). Origin is 0, not the viewBox origin:
+       the transform targets the stage div and the svg is sized width x height, so the
+       element box starts at 0 in CSS space and the viewBox origin never enters it. */
+    function fit() {
+      const f = window.DIAGRAM_FIT.compute({
+        wrap: wrap,
+        bounds: { minX: 0, minY: 0, maxX: width, maxY: height },
+        clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26,
+        /* The full-chrome shell carries an always-visible explanatory side panel
+           (.flow-panel) in addition to the HUD. It is anchored bottom-RIGHT with a fixed
+           300px width and a height that grows with its explanatory content, so it is a
+           RIGHT-SIDE EXCLUSION LANE, not a bottom band. Classifying it as bottom chrome
+           reserved a full-width strip as tall as the panel and collapsed the figure —
+           6.4x at a short viewport. As a right lane its fixed width bounds the cost, and
+           the panel's height growth no longer consumes page height.
+
+           One engine serves both shells: the chrome-free static shell contains none of
+           these elements, so no panel is found, no band is reserved, and its transform
+           is unchanged. */
+        bottomSelector: '.hud',
+        rightSelector: '.flow-panel'
+      });
+      scale = f.scale; tx = f.tx; ty = f.ty;
+      apply();
+    }
     fit(); window.addEventListener('resize', fit);
     const zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut'), zf = document.getElementById('zoomFit');
     if (zi) zi.onclick = () => { scale = Math.min(scale * 1.2, 4); apply(); };

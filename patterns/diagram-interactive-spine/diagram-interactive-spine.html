@@ -63,6 +63,8 @@
 <!-- DOWNSTREAM: rename the source file to your project, e.g. [project]_interactive-spine.source.js,
      and update this <script src> accordingly. Replace its data with your own IA. -->
 <script src="diagram-interactive-spine.source.js"></script>
+<!-- DS-owned shared fit contract — must load BEFORE the engine. Re-vendor byte-identical; do not hand-edit. -->
+<script src="diagrams-fit.js"></script>
 <script src="diagrams-interactive-spine-engine.js"></script>
 <script>
 window.IA_SPINE.render(window.IA_STATE_SPINE);
