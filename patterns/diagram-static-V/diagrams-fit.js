@@ -4,33 +4,53 @@
 
    WHY THIS EXISTS
    Every diagram engine independently computed fit from the full canvasWrap and reserved
-   no band for the top-corner caption / legend glass panels or the bottom HUD. A wide,
-   short figure therefore fit-scaled to width, centred vertically, and rendered its top
-   band underneath the panels. The collision is between SVG content and HTML chrome, so
-   no SVG bbox check sees it. Five engines carried the same defect because five
+   no room for the caption / legend / HUD glass panels or a pattern's own side chrome. A
+   wide, short figure therefore fit-scaled to width, centred vertically, and rendered its
+   top band underneath the panels. The collision is between SVG content and HTML chrome,
+   so no SVG bbox check sees it. Five engines carried the same defect because five
    independent fit implementations all treated the full wrap as available, without
    reserving the page chrome.
 
    WHAT THIS IS
-   A pure measurement + arithmetic function. It measures the visible chrome, computes the
-   remaining rectangle, and returns the scale + translation that centre the content in it.
+   A pure measurement + arithmetic function returning the scale + translation to place
+   the content. It runs in TWO PASSES:
+
+     1  LEGACY CANDIDATE — compute the caller's exact prior transform, bands all zero.
+        Derive the content rectangle it produces and test it against the visible chrome
+        (each panel inflated by `gutter`). If nothing intersects, RETURN THAT TRANSFORM
+        UNCHANGED and report `reserved: false`.
+
+     2  EDGE-AWARE RESERVED FIT — only on a demonstrated collision, reserve a band per
+        EDGE from the panels actually anchored there, and fit into the safe rectangle
+        that remains.
+
+   Reservation is therefore overlap-gated and edge-aware. This matters: a full-width band
+   can remove a collision by destroying legibility. A narrow right-hand side panel that a
+   figure overlaps by 18px must not cost 40% of that figure's scale, and a figure that
+   already clears every panel must not be shrunk at all.
 
    WHAT THIS IS NOT
    It installs no event handlers; owns no drag / wheel / zoom / resize state; never touches
    the stage, viewport group, or SVG; knows no H / V / SEQ / FLOW data grammar; owns no
    export composition. Each engine keeps its own interaction model and applies the result.
 
+   It is also NOT a layout solver. There is no maximal-empty-rectangle search, no arbitrary
+   obstacle avoidance, no iterative packing. The panel system is edge-anchored, so a
+   four-edge safe rectangle covers it while staying deterministic and inspectable.
+
    LEGACY EQUIVALENCE — the binding contract
-   With no visible panels both bands are 0 and each caller's prior fit formula is
-   preserved ALGEBRAICALLY. No intentional geometry change is introduced; equivalent
-   floating-point evaluation orders may differ only at machine precision. Two
-   caller-owned inputs carry the differences between engines, because this utility
-   normalizes none of them:
+   When the legacy candidate already clears the chrome, it is returned verbatim. Otherwise
+   each caller's prior fit formula is preserved ALGEBRAICALLY with the bands applied. No
+   intentional geometry change is introduced; equivalent floating-point evaluation orders
+   may differ only at machine precision. Three caller-owned inputs carry the differences
+   between engines, because this utility normalizes none of them:
      - `clearanceX/Y` is TOTAL clearance (the value previously subtracted from the
        viewport), not per-side padding. An engine that instead EXPANDED its content by a
        per-side margin expresses that margin as expanded `bounds` with zero clearance.
      - `viewport` overrides the measured border box for engines that historically sized
        themselves from clientWidth/clientHeight rather than getBoundingClientRect().
+     - the four edge selectors name each pattern's own chrome anatomy. Panel classes are
+       NOT uniform across patterns — see the per-adapter comments.
    Reserving the panel band is the only behavior this file is authorized to change.
 
    DISTRIBUTION
@@ -47,6 +67,8 @@
     gutter: 26,
     topSelector: '.caption, .legend',
     bottomSelector: '.hud',
+    leftSelector: null,
+    rightSelector: null,
     minAvailable: 120
   };
 
@@ -61,26 +83,34 @@
     return true;
   }
 
-  /* Panel offsets are always measured RELATIVE TO the wrap's own border box
-     (wrapRect.top), but the bottom band is expressed against the caller's chosen
-     viewport height — so an engine that owns an integer viewport measurement stays
-     internally consistent instead of mixing two coordinate scales. */
-  function measureBand(wrap, wrapRect, viewportHeight, selector, edge) {
-    if (!selector) return 0;
+  /* Visible panels for one selector, as rectangles in WRAP-LOCAL coordinates. */
+  function panelRects(wrap, wrapRect, selector) {
+    if (!selector) return [];
     var els;
-    try { els = wrap.querySelectorAll(selector); } catch (e) { return 0; }
-    var band = 0;
+    try { els = wrap.querySelectorAll(selector); } catch (e) { return []; }
+    var list = [];
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (!isVisible(el)) continue;
       var r = el.getBoundingClientRect();
       if (!(r.width > 0) || !(r.height > 0)) continue;
-      var depth = edge === 'top'
-        ? (r.bottom - wrapRect.top)
-        : (viewportHeight - (r.top - wrapRect.top));
-      if (isFinite(depth) && depth > band) band = depth;
+      list.push({
+        left:   r.left   - wrapRect.left,
+        top:    r.top    - wrapRect.top,
+        right:  r.right  - wrapRect.left,
+        bottom: r.bottom - wrapRect.top
+      });
     }
-    return band > 0 ? band : 0;
+    return list;
+  }
+
+  /* Strict rectangle intersection against a panel inflated by `gutter`.
+     BOUNDARY RULE: touching the inflated edge counts as CLEAR — the gutter has already
+     supplied the separation, so `<` / `>` rather than `<=` / `>=`. Applied consistently
+     to the gate here and to the band arithmetic below. */
+  function intersects(rect, p, g) {
+    return rect.left < (p.right + g) && rect.right  > (p.left - g)
+        && rect.top  < (p.bottom + g) && rect.bottom > (p.top  - g);
   }
 
   function num(v, fallback) {
@@ -88,9 +118,20 @@
     return isFinite(n) ? n : fallback;
   }
 
+  function place(availX, availY, availW, availH, cw, ch, minX, minY, clearanceX, clearanceY, maxScale) {
+    var scale = Math.min((availW - clearanceX) / cw, (availH - clearanceY) / ch, maxScale);
+    if (!isFinite(scale) || scale <= 0) scale = Math.min(1, maxScale);
+    return {
+      scale: scale,
+      tx: availX + (availW - cw * scale) / 2 - minX * scale,
+      ty: availY + (availH - ch * scale) / 2 - minY * scale
+    };
+  }
+
   /* compute({ wrap, viewport?:{width,height}, bounds:{minX,minY,maxX,maxY},
-               clearanceX, clearanceY, maxScale, gutter, topSelector, bottomSelector })
-     -> { scale, tx, ty, topBand, bottomBand } */
+               clearanceX, clearanceY, maxScale, gutter,
+               topSelector, bottomSelector, leftSelector, rightSelector })
+     -> { scale, tx, ty, topBand, bottomBand, leftBand, rightBand, reserved } */
   function compute(opts) {
     opts = opts || {};
     var wrap = opts.wrap;
@@ -99,7 +140,8 @@
     var clearanceY = num(opts.clearanceY, DEFAULTS.clearanceY);
     var gutter     = num(opts.gutter,     DEFAULTS.gutter);
 
-    var fallback = { scale: Math.min(1, maxScale), tx: 0, ty: 0, topBand: 0, bottomBand: 0 };
+    var fallback = { scale: Math.min(1, maxScale), tx: 0, ty: 0,
+                     topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0, reserved: false };
     if (!wrap || typeof wrap.getBoundingClientRect !== 'function') return fallback;
 
     var b = opts.bounds || {};
@@ -117,38 +159,73 @@
        one source for all of them would be an unrelated render-contract change. So the
        caller may supply its own measurement; absent it, the border box is the default. */
     var vp = opts.viewport;
-    var availW = (vp && isFinite(vp.width))  ? +vp.width  : rect.width;
+    var viewportWidth  = (vp && isFinite(vp.width))  ? +vp.width  : rect.width;
     var viewportHeight = (vp && isFinite(vp.height)) ? +vp.height : rect.height;
-    if (!(availW > 0) || !(viewportHeight > 0)) return fallback;
+    if (!(viewportWidth > 0) || !(viewportHeight > 0)) return fallback;
 
-    var topBand    = measureBand(wrap, rect, viewportHeight, opts.topSelector    !== undefined ? opts.topSelector    : DEFAULTS.topSelector,    'top');
-    var bottomBand = measureBand(wrap, rect, viewportHeight, opts.bottomSelector !== undefined ? opts.bottomSelector : DEFAULTS.bottomSelector, 'bottom');
-    if (topBand > 0)    topBand    += gutter;
-    if (bottomBand > 0) bottomBand += gutter;
+    /* ---------- pass 1: the caller's exact legacy transform ---------- */
+    var legacy = place(0, 0, viewportWidth, viewportHeight, cw, ch, minX, minY,
+                       clearanceX, clearanceY, maxScale);
+    var legacyRect = {
+      left:   minX * legacy.scale + legacy.tx,
+      top:    minY * legacy.scale + legacy.ty,
+      right:  (minX + cw) * legacy.scale + legacy.tx,
+      bottom: (minY + ch) * legacy.scale + legacy.ty
+    };
 
-    /* If the chrome would leave no usable room, reserving it would push content out of
-       view — worse than the defect. Degrade to legacy full-wrap geometry instead. */
-    if (viewportHeight - topBand - bottomBand < DEFAULTS.minAvailable) {
-      topBand = 0; bottomBand = 0;
+    var sel = function (k, d) { return opts[k] !== undefined ? opts[k] : d; };
+    var top    = panelRects(wrap, rect, sel('topSelector',    DEFAULTS.topSelector));
+    var bottom = panelRects(wrap, rect, sel('bottomSelector', DEFAULTS.bottomSelector));
+    var left   = panelRects(wrap, rect, sel('leftSelector',   DEFAULTS.leftSelector));
+    var right  = panelRects(wrap, rect, sel('rightSelector',  DEFAULTS.rightSelector));
+
+    var all = top.concat(bottom, left, right);
+    var collides = false;
+    for (var i = 0; i < all.length; i++) {
+      if (intersects(legacyRect, all[i], gutter)) { collides = true; break; }
     }
 
-    var availH = viewportHeight - topBand - bottomBand;
+    /* Already clear — the placement was never the problem. Return it untouched rather
+       than shrinking a figure to avoid chrome it does not reach. */
+    if (!collides) {
+      return { scale: legacy.scale, tx: legacy.tx, ty: legacy.ty,
+               topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0, reserved: false };
+    }
 
-    var scale = Math.min((availW - clearanceX) / cw, (availH - clearanceY) / ch, maxScale);
-    if (!isFinite(scale) || scale <= 0) scale = Math.min(1, maxScale);
+    /* ---------- pass 2: edge-aware reserved fit ---------- */
+    function deepest(list, fn) {
+      var d = 0;
+      for (var i = 0; i < list.length; i++) {
+        var v = fn(list[i]);
+        if (isFinite(v) && v > d) d = v;
+      }
+      return d;
+    }
+    var topBand    = deepest(top,    function (p) { return p.bottom; });
+    var bottomBand = deepest(bottom, function (p) { return viewportHeight - p.top; });
+    var leftBand   = deepest(left,   function (p) { return p.right; });
+    var rightBand  = deepest(right,  function (p) { return viewportWidth - p.left; });
 
-    /* Centre the content box in the available rectangle. Subtracting minX/minY*scale
-       supports non-zero-origin bounds when the transform target operates in that same
-       coordinate space — for example the interactive spine's inner SVG group.
-       Callers that transform a zero-origin element box pass zero-origin bounds, and
-       these terms vanish. NOTE: a negative viewBox on the SVG does NOT by itself mean
-       the origin should be passed; what decides it is which object receives the
-       transform. FLOW has a negative viewBox but transforms a stage div whose box
-       starts at 0 in CSS space, so it correctly passes a zero origin. */
-    var tx = (availW - cw * scale) / 2 - minX * scale;
-    var ty = topBand + (availH - ch * scale) / 2 - minY * scale;
+    if (topBand    > 0) topBand    += gutter;
+    if (bottomBand > 0) bottomBand += gutter;
+    if (leftBand   > 0) leftBand   += gutter;
+    if (rightBand  > 0) rightBand  += gutter;
 
-    return { scale: scale, tx: tx, ty: ty, topBand: topBand, bottomBand: bottomBand };
+    /* If reserving an axis would leave no usable room, reserving it would push content
+       out of view — worse than the collision. Degrade that axis to the full viewport.
+       Axes degrade independently: a crowded vertical stack must not discard a perfectly
+       usable horizontal reservation. */
+    if (viewportHeight - topBand - bottomBand < DEFAULTS.minAvailable) { topBand = 0; bottomBand = 0; }
+    if (viewportWidth  - leftBand - rightBand < DEFAULTS.minAvailable) { leftBand = 0; rightBand = 0; }
+
+    var out = place(leftBand, topBand,
+                    viewportWidth  - leftBand - rightBand,
+                    viewportHeight - topBand  - bottomBand,
+                    cw, ch, minX, minY, clearanceX, clearanceY, maxScale);
+
+    return { scale: out.scale, tx: out.tx, ty: out.ty,
+             topBand: topBand, bottomBand: bottomBand,
+             leftBand: leftBand, rightBand: rightBand, reserved: true };
   }
 
   window.DIAGRAM_FIT = { compute: compute, VERSION: 1 };

@@ -340,11 +340,18 @@
         bounds: { minX: 0, minY: 0, maxX: width, maxY: height },
         clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26,
         /* The full-chrome shell carries an always-visible explanatory side panel
-           (.flow-panel, bottom-right) in addition to the HUD. It is DS-owned chrome and
-           overlays the canvas, so it joins the bottom band. One engine serves both
-           shells: the chrome-free static shell contains neither element, so nothing is
-           found, both bands are 0, and its transform is unchanged. */
-        bottomSelector: '.hud, .flow-panel'
+           (.flow-panel) in addition to the HUD. It is anchored bottom-RIGHT with a fixed
+           300px width and a height that grows with its explanatory content, so it is a
+           RIGHT-SIDE EXCLUSION LANE, not a bottom band. Classifying it as bottom chrome
+           reserved a full-width strip as tall as the panel and collapsed the figure —
+           6.4x at a short viewport. As a right lane its fixed width bounds the cost, and
+           the panel's height growth no longer consumes page height.
+
+           One engine serves both shells: the chrome-free static shell contains none of
+           these elements, so no panel is found, no band is reserved, and its transform
+           is unchanged. */
+        bottomSelector: '.hud',
+        rightSelector: '.flow-panel'
       });
       scale = f.scale; tx = f.tx; ty = f.ty;
       apply();
