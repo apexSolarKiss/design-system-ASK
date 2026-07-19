@@ -197,14 +197,20 @@
          decision, not part of reserving the panel band, so the historical measurement is
          passed explicitly here. Do not drop `viewport` to "let the utility measure it". */
       var b = contentBounds(), legacyPad = 60;
-      var f = window.DIAGRAM_FIT.compute({
-        wrap: wrapEl,
-        viewport: { width: wrapEl.clientWidth, height: wrapEl.clientHeight },
-        bounds: {
-          minX: b.minX - legacyPad, minY: b.minY - legacyPad,
-          maxX: b.maxX + legacyPad, maxY: b.maxY + legacyPad
-        },
-        clearanceX: 0, clearanceY: 0, maxScale: 1.4, gutter: 26,
+      function fitWith(edges) {
+        var o = {
+          wrap: wrapEl,
+          viewport: { width: wrapEl.clientWidth, height: wrapEl.clientHeight },
+          bounds: {
+            minX: b.minX - legacyPad, minY: b.minY - legacyPad,
+            maxX: b.maxX + legacyPad, maxY: b.maxY + legacyPad
+          },
+          clearanceX: 0, clearanceY: 0, maxScale: 1.4, gutter: 26
+        };
+        for (var k in edges) o[k] = edges[k];
+        return window.DIAGRAM_FIT.compute(o);
+      }
+      var f = fitWith({
         /* PANEL ANATOMY DIFFERS FROM THE STATIC PATTERNS, and is classified by the edge
            each panel actually OCCUPIES rather than by its vertical CSS anchor:
 
@@ -224,6 +230,30 @@
         leftSelector: '.hud',
         rightSelector: '.inspector, .legend'
       });
+
+      /* NARROW-WIDTH FALLBACK. Side lanes are the better classification wherever they
+         fit, but at small widths they cannot: the inspector (320px) plus the HUD (329px)
+         alone consume 649px, so the horizontal safe region falls under minAvailable and
+         both lanes are discarded, leaving the placement obstructed. Measured transition
+         at this shell's chrome sizes: between 850px and 860px of canvas width.
+         Only in that case fall back to the panels' VERTICAL extent, which costs page
+         height but can still clear.
+
+         The trigger is an unresolved collision (`!clear`) together with a discarded
+         horizontal reservation (`degradedX`) — not degradation alone. A dropped
+         horizontal band whose vertical correction already cleared the chrome must keep
+         the more legible primary placement. If the fallback cannot clear either, the
+         primary result stands, since shrinking further would buy nothing. */
+      if (!f.clear && f.degradedX) {
+        var vertical = fitWith({
+          topSelector: '.inspector',
+          bottomSelector: '.hud, .legend, .caption',
+          leftSelector: null,
+          rightSelector: null
+        });
+        if (vertical.clear) f = vertical;
+      }
+
       sc = f.scale; tx = f.tx; ty = f.ty;
       applyVp();
     }

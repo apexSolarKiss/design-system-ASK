@@ -24,6 +24,12 @@
         EDGE from the panels actually anchored there, and fit into the safe rectangle
         that remains.
 
+     The result is then re-tested and reported as `clear`. Reserving is not the same as
+     succeeding: when a viewport is too cramped to hold a reservation, that reservation is
+     discarded (`degradedX` / `degradedY`) and the placement may still be obstructed. The
+     helper reports this rather than papering over it; choosing what to do about it is the
+     ADAPTER's call, since only the adapter knows its own alternative classifications.
+
    Reservation is therefore overlap-gated and edge-aware. This matters: a full-width band
    can remove a collision by destroying legibility. A narrow right-hand side panel that a
    figure overlaps by 18px must not cost 40% of that figure's scale, and a figure that
@@ -131,7 +137,11 @@
   /* compute({ wrap, viewport?:{width,height}, bounds:{minX,minY,maxX,maxY},
                clearanceX, clearanceY, maxScale, gutter,
                topSelector, bottomSelector, leftSelector, rightSelector })
-     -> { scale, tx, ty, topBand, bottomBand, leftBand, rightBand, reserved } */
+     -> { scale, tx, ty, topBand, bottomBand, leftBand, rightBand,
+           reserved,               // a band was applied (NOT a claim of success)
+           clear,                  // the returned placement intersects no visible chrome
+           degradedX, degradedY }  // a nonzero reservation was discarded under minAvailable
+     A caller that must clear the chrome checks `clear`, not `reserved`. */
   function compute(opts) {
     opts = opts || {};
     var wrap = opts.wrap;
@@ -140,15 +150,16 @@
     var clearanceY = num(opts.clearanceY, DEFAULTS.clearanceY);
     var gutter     = num(opts.gutter,     DEFAULTS.gutter);
 
-    var fallback = { scale: Math.min(1, maxScale), tx: 0, ty: 0,
-                     topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0, reserved: false };
-    if (!wrap || typeof wrap.getBoundingClientRect !== 'function') return fallback;
+    var bail = { scale: Math.min(1, maxScale), tx: 0, ty: 0,
+                 topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0,
+                 reserved: false, clear: true, degradedX: false, degradedY: false };
+    if (!wrap || typeof wrap.getBoundingClientRect !== 'function') return bail;
 
     var b = opts.bounds || {};
     var minX = num(b.minX, 0), minY = num(b.minY, 0);
     var cw = num(b.maxX, 0) - minX;
     var ch = num(b.maxY, 0) - minY;
-    if (!(cw > 0) || !(ch > 0)) return fallback;   // degenerate bounds — never NaN out
+    if (!(cw > 0) || !(ch > 0)) return bail;   // degenerate bounds — never NaN out
 
     var rect = wrap.getBoundingClientRect();
 
@@ -161,7 +172,7 @@
     var vp = opts.viewport;
     var viewportWidth  = (vp && isFinite(vp.width))  ? +vp.width  : rect.width;
     var viewportHeight = (vp && isFinite(vp.height)) ? +vp.height : rect.height;
-    if (!(viewportWidth > 0) || !(viewportHeight > 0)) return fallback;
+    if (!(viewportWidth > 0) || !(viewportHeight > 0)) return bail;
 
     /* ---------- pass 1: the caller's exact legacy transform ---------- */
     var legacy = place(0, 0, viewportWidth, viewportHeight, cw, ch, minX, minY,
@@ -189,7 +200,8 @@
        than shrinking a figure to avoid chrome it does not reach. */
     if (!collides) {
       return { scale: legacy.scale, tx: legacy.tx, ty: legacy.ty,
-               topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0, reserved: false };
+               topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0,
+               reserved: false, clear: true, degradedX: false, degradedY: false };
     }
 
     /* ---------- pass 2: edge-aware reserved fit ---------- */
@@ -214,18 +226,44 @@
     /* If reserving an axis would leave no usable room, reserving it would push content
        out of view — worse than the collision. Degrade that axis to the full viewport.
        Axes degrade independently: a crowded vertical stack must not discard a perfectly
-       usable horizontal reservation. */
-    if (viewportHeight - topBand - bottomBand < DEFAULTS.minAvailable) { topBand = 0; bottomBand = 0; }
-    if (viewportWidth  - leftBand - rightBand < DEFAULTS.minAvailable) { leftBand = 0; rightBand = 0; }
+       usable horizontal reservation.
+
+       The flags record only a DISCARDED nonzero reservation, so a caller can distinguish
+       "this axis had nothing to reserve" from "this axis could not fit what it needed". */
+    var degradedY = false, degradedX = false;
+    if (viewportHeight - topBand - bottomBand < DEFAULTS.minAvailable) {
+      degradedY = topBand > 0 || bottomBand > 0;
+      topBand = 0; bottomBand = 0;
+    }
+    if (viewportWidth - leftBand - rightBand < DEFAULTS.minAvailable) {
+      degradedX = leftBand > 0 || rightBand > 0;
+      leftBand = 0; rightBand = 0;
+    }
 
     var out = place(leftBand, topBand,
                     viewportWidth  - leftBand - rightBand,
                     viewportHeight - topBand  - bottomBand,
                     cw, ch, minX, minY, clearanceX, clearanceY, maxScale);
 
+    /* POST-PLACEMENT VALIDATION. `reserved: true` must not be read as "succeeded":
+       when an axis degrades, the reservation that would have cleared the chrome is the
+       one discarded, so the final placement can still be obstructed. Re-test it against
+       the same gutter-inflated inventory the gate used, and report the honest answer. */
+    var finalRect = {
+      left:   minX * out.scale + out.tx,
+      top:    minY * out.scale + out.ty,
+      right:  (minX + cw) * out.scale + out.tx,
+      bottom: (minY + ch) * out.scale + out.ty
+    };
+    var clear = true;
+    for (var j = 0; j < all.length; j++) {
+      if (intersects(finalRect, all[j], gutter)) { clear = false; break; }
+    }
+
     return { scale: out.scale, tx: out.tx, ty: out.ty,
              topBand: topBand, bottomBand: bottomBand,
-             leftBand: leftBand, rightBand: rightBand, reserved: true };
+             leftBand: leftBand, rightBand: rightBand,
+             reserved: true, clear: clear, degradedX: degradedX, degradedY: degradedY };
   }
 
   window.DIAGRAM_FIT = { compute: compute, VERSION: 1 };
