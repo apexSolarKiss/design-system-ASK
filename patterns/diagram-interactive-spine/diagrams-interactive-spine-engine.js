@@ -205,14 +205,24 @@
           maxX: b.maxX + legacyPad, maxY: b.maxY + legacyPad
         },
         clearanceX: 0, clearanceY: 0, maxScale: 1.4, gutter: 26,
-        /* PANEL ANATOMY DIFFERS FROM THE STATIC PATTERNS. There, .caption and .legend
-           are the two TOP corners and .hud is the bottom — which is what the utility
-           defaults to. Here the inspector is the only top panel, and the legend,
-           caption, and HUD all sit along the BOTTOM edge. Passing the defaults would
-           reserve a top band from bottom-anchored chrome and leave the inspector
-           unguarded, so the selectors are named explicitly for this pattern. */
-        topSelector: '.inspector',
-        bottomSelector: '.hud, .legend, .caption'
+        /* PANEL ANATOMY DIFFERS FROM THE STATIC PATTERNS, and is classified by the edge
+           each panel actually OCCUPIES rather than by its vertical CSS anchor:
+
+             .inspector  top-right,    fixed 320px wide   -> right lane
+             .legend     bottom-right                     -> right lane
+             .hud        bottom-left                       -> left lane
+             .caption    bottom-centre                     -> bottom band
+
+           The inspector and legend are side chrome. Reserving them as full-width top /
+           bottom bands would spend vertical space on panels that occupy a narrow column,
+           and both grow vertically with their content — the same over-reservation
+           corrected for FLOW's .flow-panel. As side lanes their measured left edge bounds
+           the cost by WIDTH, so a tall populated inspector costs no page height. Only the
+           caption, which sits in the centre of the horizontal working area, is a band. */
+        topSelector: null,
+        bottomSelector: '.caption',
+        leftSelector: '.hud',
+        rightSelector: '.inspector, .legend'
       });
       sc = f.scale; tx = f.tx; ty = f.ty;
       applyVp();
