@@ -6,12 +6,13 @@ A reusable scaffold for an **interactive information-architecture state surface*
 
 ## What this pattern is
 
-A small consumption pattern. Six files:
+A small consumption pattern. Seven files:
 
 - `README.md` — this file
 - `diagram-interactive-spine.html` — the shell page (bar, canvas, inspector, legend, HUD, caption)
 - `diagram-interactive-spine.source.js` — the IA data, as a single `window.IA_STATE_SPINE` literal (**consumer-owned**)
 - `diagrams-interactive-spine-engine.js` — the layout + interaction engine (`window.IA_SPINE.render`)
+- `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* glass panels and centres the spine in the region that remains, so a wide, short figure no longer renders its top band underneath them. **This pattern's panel anatomy differs from the static siblings** and the engine names its own selectors accordingly: the `.inspector` is the only TOP panel, while `.legend`, `.caption`, and `.hud` all sit along the BOTTOM edge. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the computed scale and translation are arithmetically identical to this pattern's previous fit: the engine expresses its long-standing 60px content margin as *expanded bounds* with zero subtractive clearance, which reproduces the prior arithmetic exactly.
 - `diagrams-interactive-spine.css` — the interactive style layer
 - `export-png.js` — 3840×2880 PNG export that bakes the resolved state colors inline
 
@@ -42,7 +43,7 @@ Hover previews a node (its relationships + inspector); click locks it; click emp
 
 ## How to use it
 
-1. Copy the six files into your project (e.g. `docs/diagrams/interactive/`).
+1. Copy the seven files into your project (e.g. `docs/diagrams/interactive/`).
 2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts + `fonts-embedded.js` (the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server) — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs.
 3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
 4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
@@ -89,7 +90,8 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What not to edit
 
-- `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js` (the shared engine + style + export — modifications break inheritance)
+- `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js`, `diagrams-fit.js` (the shared engine + style + export — modifications break inheritance)
+- The script load order in the shell — `diagrams-fit.js` must load before the engine; the engine hard-fails if it is absent
 - The Spectral State role vocabulary (the eight `--state-*` roles) — inherited; do not rename or recolor
 - The load order (`colors_and_type.css` → `spectral-state.css` → pattern CSS)
 

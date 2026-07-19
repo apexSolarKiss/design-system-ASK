@@ -16,6 +16,14 @@
 */
 (function () {
   'use strict';
+  /* FAIL-CLOSED on a partial re-vendor. diagrams-fit.js is a DS-owned support file that
+     must be copied alongside this engine and loaded immediately BEFORE it. A silent
+     legacy fallback is deliberately NOT provided: a consumer that vendored the engine
+     without the helper would then look current while keeping the old panel-collision
+     geometry. Fail visibly instead. */
+  if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
+    throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
+  }
   var NS = 'http://www.w3.org/2000/svg';
 
   function el(tag, attrs, parent) {
@@ -168,12 +176,45 @@
       return { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
     }
     function fit() {
-      var b = contentBounds(), pad = 60;
-      var vw = wrapEl.clientWidth, vh = wrapEl.clientHeight;
-      var cw = (b.maxX - b.minX) + pad * 2, ch = (b.maxY - b.minY) + pad * 2;
-      sc = Math.min(vw / cw, vh / ch, 1.4);
-      tx = (vw - (b.maxX + b.minX) * sc) / 2;
-      ty = (vh - (b.maxY + b.minY) * sc) / 2;
+      /* Shared DS fit contract (diagrams-fit.js).
+
+         TRANSFORM TARGET: the #vp group, in SVG user space — so the REAL content-bounds
+         origin is passed. (The static engines transform an element box that starts at 0
+         in CSS space and pass a zero origin instead. Transform target, not viewBox sign,
+         decides this.)
+
+         LEGACY PADDING: this pattern has always expanded the CONTENT by 60px per side
+         (cw = width + 120) rather than shrinking the viewport. Those are NOT equivalent
+         formulas. Expressing the margin as expanded bounds with zero subtractive
+         clearance reproduces the prior scale and translation exactly — the ±60 terms
+         cancel out of the centring arithmetic. Do not "simplify" this to clearance:120.
+
+         LEGACY VIEWPORT MEASUREMENT: this engine has always sized itself from
+         clientWidth/clientHeight (integer), while the static engines read
+         getBoundingClientRect() (fractional). On a fractional layout those differ — a
+         843.5px wrap reports clientHeight 844 — which would shift this pattern by a
+         quarter pixel. Adopting the other measurement is a separate render-contract
+         decision, not part of reserving the panel band, so the historical measurement is
+         passed explicitly here. Do not drop `viewport` to "let the utility measure it". */
+      var b = contentBounds(), legacyPad = 60;
+      var f = window.DIAGRAM_FIT.compute({
+        wrap: wrapEl,
+        viewport: { width: wrapEl.clientWidth, height: wrapEl.clientHeight },
+        bounds: {
+          minX: b.minX - legacyPad, minY: b.minY - legacyPad,
+          maxX: b.maxX + legacyPad, maxY: b.maxY + legacyPad
+        },
+        clearanceX: 0, clearanceY: 0, maxScale: 1.4, gutter: 26,
+        /* PANEL ANATOMY DIFFERS FROM THE STATIC PATTERNS. There, .caption and .legend
+           are the two TOP corners and .hud is the bottom — which is what the utility
+           defaults to. Here the inspector is the only top panel, and the legend,
+           caption, and HUD all sit along the BOTTOM edge. Passing the defaults would
+           reserve a top band from bottom-anchored chrome and leave the inspector
+           unguarded, so the selectors are named explicitly for this pattern. */
+        topSelector: '.inspector',
+        bottomSelector: '.hud, .legend, .caption'
+      });
+      sc = f.scale; tx = f.tx; ty = f.ty;
       applyVp();
     }
     function zoomAt(cx, cy, factor) {

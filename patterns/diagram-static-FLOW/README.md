@@ -60,11 +60,14 @@ status: earned (default) | held | legacy.  ids default f0.. / converge / s0.. / 
 
 ## Files
 
+Eight files:
+
 - `README.md` — this file
 - `diagram-static-FLOW.html` — the **chrome-free static export shell**: diagram only, on the gradient field. This is the article target.
 - `diagram-static-FLOW.interactive.html` — the **full-chrome interactive shell** (header, canvas, legend, HUD, caption, side panel). This is the repo-native explanatory artifact; it sets `window.FLOW_MODE = 'interactive'`.
 - `diagram-static-FLOW.source.js` — a **generic demo fixture** expressed as a single `window.FLOW_DIAGRAM` literal; illustrates the grammar only and is replaced downstream.
 - `diagrams-static-FLOW-engine.js` — **the convergence-flow placement + pan/zoom engine**. It measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and adds the CSS `letter-spacing` that `canvas.measureText` ignores, so labels never overflow their boxes. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
+- `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* caption / legend and HUD glass panels and centres the diagram in the region that remains, so a wide, short figure no longer renders its top band underneath the corner panels. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the computed scale and translation are arithmetically identical to this pattern's previous fit. (This engine transforms the stage container, whose box starts at the origin in CSS space, so it passes zero-origin bounds — the SVG's own viewBox origin never enters the transform.)
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus the diagram-only token additions and `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to the `-H` / `-V` / `-SEQ` copies** — shared by convention, not a runtime import.
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to the `-H` / `-V` / `-SEQ` copies** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves all four patterns.
 
@@ -114,7 +117,8 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What not to edit
 
-- `diagrams-static-FLOW-engine.js`, `diagrams.css`, `export-png.js` (the shared engine + style + export — modifications break inheritance)
+- `diagrams-static-FLOW-engine.js`, `diagrams.css`, `export-png.js`, `diagrams-fit.js` (the shared engine + style + export — modifications break inheritance)
+- The script load order in the shell — `diagrams-fit.js` must load before the engine; the engine hard-fails if it is absent
 - The diagram-only token overlays and Tier 1 + Tier 2 references inside `diagrams.css`
 - The canvas / HUD / corner-tick / glass-panel / side-panel structure in the HTML
 - The light / dark theme model: explicit `data-theme="dark"`, explicit `data-theme="light"`, and `prefers-color-scheme` auto-resolve all need to keep working

@@ -6,12 +6,13 @@ This is a **Class A static** diagram scaffold (system / architecture diagram tem
 
 ## What this pattern is
 
-A small consumption pattern. Six files:
+A small consumption pattern. Seven files:
 
 - `README.md` — this file
 - `diagram-static-H.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-static-H.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
 - `diagrams-static-H-engine.js` — shared layout + pan/zoom engine. When it computes column widths it (a) measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and (b) adds the CSS `letter-spacing` that `canvas.measureText` ignores (section labels carry `0.18em`). Both are required so first-level labels never bleed into the next column; columns stretch to fit the real rendered text. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
+- `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* caption / legend and HUD glass panels and centres the diagram in the region that remains, so a wide, short figure no longer renders its top band underneath the corner panels. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the computed scale and translation are arithmetically identical to this pattern's previous fit.
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens (which alias the foundation foreground ramp); **byte-identical to the `-V` / `-SEQ` / `-FLOW` copies**; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram
 
@@ -19,7 +20,7 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 ## How to use it
 
-1. Copy the six files in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar).
+1. Copy the seven files in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar).
 2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-H.html` and `diagram-static-H.source.js` to match your project (e.g. `[your-project]_architecture-tree.html` and `[your-project]_architecture-tree.source.js`); update the `<script src>` reference in the HTML accordingly.
 4. Edit `diagram-static-H.source.js`: replace the placeholder tree with your project's actual structure. The tree shape is `{ kind, label, note?, tag?, status?, children? }`. **`tag` is valid only on `kind: 'section'`** (it renders as the section's `// <tag>` subtitle); the engine does not read `tag` on `root`, `group`, or ordinary `node` records. For secondary text beneath a root, group, or ordinary node, use **`note`**.
@@ -67,7 +68,8 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What not to edit
 
-- `diagrams-static-H-engine.js`, `diagrams.css`, `export-png.js` (the shared engine + style + export — modifications break inheritance)
+- `diagrams-static-H-engine.js`, `diagrams.css`, `export-png.js`, `diagrams-fit.js` (the shared engine + style + export — modifications break inheritance)
+- The script load order in the shell — `diagrams-fit.js` must load before the engine; the engine hard-fails if it is absent
 - The diagram-only token overlays (`--node-fill`, `--line-strong`) and Tier 1 + Tier 2 references inside `diagrams.css`
 - The canvas / HUD / corner-tick / glass-panel structure in the HTML
 - The light / dark theme model: explicit `data-theme="dark"`, explicit `data-theme="light"`, and `prefers-color-scheme` auto-resolve all need to keep working
