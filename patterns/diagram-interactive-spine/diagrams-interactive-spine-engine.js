@@ -166,6 +166,17 @@
 
     // ---- pan / zoom ----
     var tx = 0, ty = 0, sc = 1;
+
+    /* Interaction floor. The ordinary zoom-out floor is this pattern's historical
+       BASE_MIN_SCALE (0.25 here — the spine's own floor, NOT the static patterns' 0.15;
+       each pattern keeps its own). The panel-aware fit can legitimately land BELOW it on
+       a constrained viewport, and a fixed floor above the fitted scale makes "zoom out"
+       INCREASE the scale — the control reverses direction. So the live floor is the lower
+       of the base floor and the most recent Fit. Fit itself is never clamped: clamping it
+       would restore the panel collision this engine exists to avoid. Both zoom buttons and
+       the wheel funnel through zoomAt, so that one clamp is the whole surface. */
+    var BASE_MIN_SCALE = 0.25;
+    var fittedMinScale = BASE_MIN_SCALE;
     var stage = document.getElementById('stage');
     var wrapEl = document.getElementById('canvasWrap');
     var pctEl = document.getElementById('zoomPct');
@@ -254,11 +265,14 @@
         if (vertical.clear) f = vertical;
       }
 
+      /* Set from the RESOLVED result, after the fallback has had its chance to replace
+         `f` — so the floor tracks whichever placement is actually applied. */
+      fittedMinScale = Math.min(BASE_MIN_SCALE, f.scale);
       sc = f.scale; tx = f.tx; ty = f.ty;
       applyVp();
     }
     function zoomAt(cx, cy, factor) {
-      var ns = Math.max(0.25, Math.min(3, sc * factor));
+      var ns = Math.max(fittedMinScale, Math.min(3, sc * factor));
       var k = ns / sc;
       tx = cx - (cx - tx) * k; ty = cy - (cy - ty) * k; sc = ns; applyVp();
     }

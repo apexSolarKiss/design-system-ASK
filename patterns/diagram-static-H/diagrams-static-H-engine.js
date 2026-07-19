@@ -292,6 +292,16 @@
     const stage = document.getElementById('stage');
     const zoomPct = document.getElementById('zoomPct');
     let tx = 0, ty = 0, scale = 1;
+
+    /* Interaction floor. The ordinary zoom-out floor is this pattern's historical
+       BASE_MIN_SCALE. But the panel-aware fit can legitimately land BELOW it on a
+       constrained viewport (a tall diagram that collides with the chrome fits smaller
+       than it used to), and a fixed floor above the fitted scale makes "zoom out"
+       INCREASE the scale — the control reverses direction. So the live floor is the
+       lower of the base floor and the most recent Fit. Fit itself is never clamped:
+       clamping it would restore the panel collision this engine exists to avoid. */
+    const BASE_MIN_SCALE = 0.15;
+    let fittedMinScale = BASE_MIN_SCALE;
     function apply() {
       stage.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
       zoomPct.textContent = Math.round(scale * 100) + '%';
@@ -306,6 +316,7 @@
         bounds: { minX: 0, minY: 0, maxX: width, maxY: height },
         clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26
       });
+      fittedMinScale = Math.min(BASE_MIN_SCALE, f.scale);
       scale = f.scale; tx = f.tx; ty = f.ty;
       apply();
     }
@@ -313,7 +324,7 @@
     window.addEventListener('resize', fit);
 
     document.getElementById('zoomIn').onclick  = () => { scale = Math.min(scale * 1.2, 4); apply(); };
-    document.getElementById('zoomOut').onclick = () => { scale = Math.max(scale / 1.2, 0.15); apply(); };
+    document.getElementById('zoomOut').onclick = () => { scale = Math.max(scale / 1.2, fittedMinScale); apply(); };
     document.getElementById('zoomFit').onclick = fit;
 
     let dragging = false, sx0, sy0, tx0, ty0;
@@ -339,7 +350,7 @@
       const rect = canvasWrap.getBoundingClientRect();
       const mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
       const factor = ev.deltaY > 0 ? 1 / 1.1 : 1.1;
-      const newScale = Math.max(0.15, Math.min(4, scale * factor));
+      const newScale = Math.max(fittedMinScale, Math.min(4, scale * factor));
       const k = newScale / scale;
       tx = mx - (mx - tx) * k;
       ty = my - (my - ty) * k;

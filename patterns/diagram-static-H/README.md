@@ -16,6 +16,8 @@ A small consumption pattern. Seven files:
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens (which alias the foundation foreground ramp); **byte-identical to the `-V` / `-SEQ` / `-FLOW` copies**; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram
 
+**Zoom floor tracks Fit.** The ordinary zoom-out floor is this pattern's historical base scale, but the panel-aware fit can legitimately land below it on a constrained viewport. When it does, the live floor becomes the fitted scale, so zoom-out is a no-op at Fit rather than *increasing* the scale (which would reverse the control's direction). Fit itself is never clamped — clamping it would restore the panel collision the helper exists to avoid.
+
 The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific diagram. It is a starting point for downstream diagrams that consume design-system-ASK foundations.
 
 ## How to use it

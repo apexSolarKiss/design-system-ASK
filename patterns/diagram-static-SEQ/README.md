@@ -26,6 +26,8 @@ A small consumption pattern. Seven files:
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus two diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror. **Byte-identical to the `diagram-static-H` / `diagram-static-V` copies** — shared by convention, not a runtime import. The sequence engine adds exactly one class to the shared vocabulary: `.edge-arrowhead`.
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram. **Byte-identical to the `diagram-static-H` / `diagram-static-V` copies** — it is geometry-agnostic (it serializes the rendered SVG and scales it into the export frame), so the same export serves all three patterns.
 
+**Zoom floor tracks Fit.** The ordinary zoom-out floor is this pattern's historical base scale, but the panel-aware fit can legitimately land below it on a constrained viewport. When it does, the live floor becomes the fitted scale, so zoom-out is a no-op at Fit rather than *increasing* the scale (which would reverse the control's direction). Fit itself is never clamped — clamping it would restore the panel collision the helper exists to avoid.
+
 The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific diagram. It is a starting point for downstream diagrams that consume design-system-ASK foundations.
 
 ## Placement model
