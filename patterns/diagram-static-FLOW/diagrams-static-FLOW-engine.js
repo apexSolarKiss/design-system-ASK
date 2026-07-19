@@ -338,7 +338,13 @@
       const f = window.DIAGRAM_FIT.compute({
         wrap: wrap,
         bounds: { minX: 0, minY: 0, maxX: width, maxY: height },
-        clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26
+        clearanceX: 80, clearanceY: 80, maxScale: 1.2, gutter: 26,
+        /* The full-chrome shell carries an always-visible explanatory side panel
+           (.flow-panel, bottom-right) in addition to the HUD. It is DS-owned chrome and
+           overlays the canvas, so it joins the bottom band. One engine serves both
+           shells: the chrome-free static shell contains neither element, so nothing is
+           found, both bands are 0, and its transform is unchanged. */
+        bottomSelector: '.hud, .flow-panel'
       });
       scale = f.scale; tx = f.tx; ty = f.ty;
       apply();

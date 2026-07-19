@@ -7,8 +7,9 @@
    no band for the top-corner caption / legend glass panels or the bottom HUD. A wide,
    short figure therefore fit-scaled to width, centred vertically, and rendered its top
    band underneath the panels. The collision is between SVG content and HTML chrome, so
-   no SVG bbox check sees it. Five engines carried the same defect because they carried
-   the same calculation five times.
+   no SVG bbox check sees it. Five engines carried the same defect because five
+   independent fit implementations all treated the full wrap as available, without
+   reserving the page chrome.
 
    WHAT THIS IS
    A pure measurement + arithmetic function. It measures the visible chrome, computes the
@@ -20,9 +21,11 @@
    export composition. Each engine keeps its own interaction model and applies the result.
 
    LEGACY EQUIVALENCE — the binding contract
-   With no visible panels both bands are 0 and the result is arithmetically identical to
-   that engine's previous formula. Two caller-owned inputs carry the differences between
-   engines, because this utility normalizes none of them:
+   With no visible panels both bands are 0 and each caller's prior fit formula is
+   preserved ALGEBRAICALLY. No intentional geometry change is introduced; equivalent
+   floating-point evaluation orders may differ only at machine precision. Two
+   caller-owned inputs carry the differences between engines, because this utility
+   normalizes none of them:
      - `clearanceX/Y` is TOTAL clearance (the value previously subtracted from the
        viewport), not per-side padding. An engine that instead EXPANDED its content by a
        per-side margin expresses that margin as expanded `bounds` with zero clearance.
@@ -135,9 +138,13 @@
     if (!isFinite(scale) || scale <= 0) scale = Math.min(1, maxScale);
 
     /* Centre the content box in the available rectangle. Subtracting minX/minY*scale
-       supports negative-origin content bounds (FLOW's viewBox origin, the interactive
-       spine's layout bounds); with a zero origin these terms vanish and the expression
-       reduces exactly to the legacy centring. */
+       supports non-zero-origin bounds when the transform target operates in that same
+       coordinate space — for example the interactive spine's inner SVG group.
+       Callers that transform a zero-origin element box pass zero-origin bounds, and
+       these terms vanish. NOTE: a negative viewBox on the SVG does NOT by itself mean
+       the origin should be passed; what decides it is which object receives the
+       transform. FLOW has a negative viewBox but transforms a stage div whose box
+       starts at 0 in CSS space, so it correctly passes a zero origin. */
     var tx = (availW - cw * scale) / 2 - minX * scale;
     var ty = topBand + (availH - ch * scale) / 2 - minY * scale;
 
