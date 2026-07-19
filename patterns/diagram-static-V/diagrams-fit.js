@@ -15,10 +15,11 @@
    A pure measurement + arithmetic function returning the scale + translation to place
    the content. It runs in TWO PASSES:
 
-     1  LEGACY CANDIDATE — compute the caller's exact prior transform, bands all zero.
-        Derive the content rectangle it produces and test it against the visible chrome
-        (each panel inflated by `gutter`). If nothing intersects, RETURN THAT TRANSFORM
-        UNCHANGED and report `reserved: false`.
+     1  BASE CANDIDATE — compute the caller's fit with all panel bands zero. In the
+        ordinary region this is the exact prior formula; on a constrained axis it uses the
+        continuous-clearance rule below. Derive the content rectangle it produces and test
+        it against the visible chrome (each panel inflated by `gutter`). If nothing
+        intersects, RETURN THE BASE CANDIDATE UNCHANGED and report `reserved: false`.
 
      2  EDGE-AWARE RESERVED FIT — only on a demonstrated collision, reserve a band per
         EDGE from the panels actually anchored there, and fit into the safe rectangle
@@ -44,12 +45,37 @@
    obstacle avoidance, no iterative packing. The panel system is edge-anchored, so a
    four-edge safe rectangle covers it while staying deterministic and inspectable.
 
-   LEGACY EQUIVALENCE — the binding contract
-   When the legacy candidate already clears the chrome, it is returned verbatim. Otherwise
-   each caller's prior fit formula is preserved ALGEBRAICALLY with the bands applied. No
-   intentional geometry change is introduced; equivalent floating-point evaluation orders
-   may differ only at machine precision. Three caller-owned inputs carry the differences
-   between engines, because this utility normalizes none of them:
+   LEGACY EQUIVALENCE — the binding contract, by region
+   Fit behaviour is preserved exactly in the ordinary case and degrades continuously only
+   where the old absolute-clearance model was itself broken:
+
+     ORDINARY REGION — each available axis is at least TWICE its requested total clearance.
+       The caller's prior fit formula is preserved exactly (`usable = avail - clearance`);
+       when the base candidate already clears the chrome it is returned verbatim. No
+       intentional geometry change; equivalent float evaluation orders may differ only at
+       machine precision.
+
+     CONSTRAINED-CLEARANCE REGION — an available axis is smaller than twice its clearance.
+       Absolute clearance is meaningless here: a canvas shorter than its clearance made
+       `avail - clearance` non-positive, which either tripped the degenerate-input guard
+       (scale rewritten to ~maxScale, content thrown off canvas) or, just above the
+       boundary, collapsed the scale toward zero. Both are broken. Total clearance therefore
+       DEGRADES continuously — it may consume at most HALF a positive available axis
+       (`effectiveClearance = min(clearance, avail/2)`), so content always keeps at least
+       half the axis. For fixed content, clearance, maxScale, other-axis inputs, and
+       panel-band classification, the per-axis scale contribution is monotonic: reducing an
+       available axis cannot increase that axis's contribution. (This is an axis-arithmetic
+       property, NOT a figure-level guarantee — `compute()` can still change the applied
+       scale across viewports by switching reservation mode, e.g. clear->reserved or
+       reserved->degraded.) Continuous at `avail == 2*clearance`, where both branches give
+       `usable = clearance`. It intentionally changes some previously-positive near-clearance
+       results, because those belonged to the same broken regime, not to healthy prior
+       behaviour.
+
+     PANEL-COLLISION REGION — overlap-gated edge reservation, as above.
+
+   Three caller-owned inputs carry the differences between engines, because this utility
+   normalizes none of them:
      - `clearanceX/Y` is TOTAL clearance (the value previously subtracted from the
        viewport), not per-side padding. An engine that instead EXPANDED its content by a
        per-side margin expresses that margin as expanded `bounds` with zero clearance.
@@ -57,7 +83,8 @@
        themselves from clientWidth/clientHeight rather than getBoundingClientRect().
      - the four edge selectors name each pattern's own chrome anatomy. Panel classes are
        NOT uniform across patterns — see the per-adapter comments.
-   Reserving the panel band is the only behavior this file is authorized to change.
+   This file changes fit geometry in exactly two ways: reserving the panel band, and
+   degrading clearance continuously on a constrained axis. Nothing else.
 
    DISTRIBUTION
    Self-contained by convention, like diagrams.css and export-png.js: a byte-identical copy
@@ -124,8 +151,37 @@
     return isFinite(n) ? n : fallback;
   }
 
+  /* Clearance is BREATHING ROOM INSIDE the available space, so it degrades continuously as
+     that space shrinks: it may consume at most HALF a positive available axis. Content
+     therefore always keeps at least half the axis, and the per-axis scale contribution is
+     monotonic (reducing an available axis cannot increase that axis's contribution) and
+     continuous.
+
+     Why this is needed. The prior model subtracted an ABSOLUTE clearance: `avail - clearance`.
+     On a canvas smaller than its clearance that turned non-positive, and the degenerate-input
+     guard below rewrote the scale to ~maxScale — throwing content off canvas. Observed on
+     method-ASK's bounded-generativity figure (clearanceY 90, content height 479): an 84px
+     canvas produced scale 1.0 and translate (-432, -197). Just ABOVE the boundary the same
+     model collapsed the scale toward zero instead (a 91px canvas fit at 0.002). Both are the
+     same broken regime — absolute clearance disproportionate to a tiny viewport.
+
+     The fix: `effectiveClearance = min(clearance, avail/2)`.
+       avail >= 2*clearance  ->  effectiveClearance = clearance   (EXACT prior formula)
+       avail  < 2*clearance  ->  effectiveClearance = avail/2      (usable = avail/2)
+       avail == 2*clearance  ->  both agree exactly (usable = clearance): continuous.
+     This intentionally changes some previously-positive results in [clearance, 2*clearance],
+     because those belonged to the broken regime, not to healthy prior behaviour. Every fit
+     on an axis with `avail >= 2*clearance` is arithmetically identical to before.
+
+     The guard below is retained for genuinely degenerate input (non-finite / zero content). */
+  function axisScale(avail, clearance, content) {
+    if (!(content > 0)) return Infinity;                    // let the other axis decide
+    var effectiveClearance = Math.min(clearance, avail / 2);
+    return (avail - effectiveClearance) / content;
+  }
+
   function place(availX, availY, availW, availH, cw, ch, minX, minY, clearanceX, clearanceY, maxScale) {
-    var scale = Math.min((availW - clearanceX) / cw, (availH - clearanceY) / ch, maxScale);
+    var scale = Math.min(axisScale(availW, clearanceX, cw), axisScale(availH, clearanceY, ch), maxScale);
     if (!isFinite(scale) || scale <= 0) scale = Math.min(1, maxScale);
     return {
       scale: scale,
@@ -174,14 +230,16 @@
     var viewportHeight = (vp && isFinite(vp.height)) ? +vp.height : rect.height;
     if (!(viewportWidth > 0) || !(viewportHeight > 0)) return bail;
 
-    /* ---------- pass 1: the caller's exact legacy transform ---------- */
-    var legacy = place(0, 0, viewportWidth, viewportHeight, cw, ch, minX, minY,
-                       clearanceX, clearanceY, maxScale);
-    var legacyRect = {
-      left:   minX * legacy.scale + legacy.tx,
-      top:    minY * legacy.scale + legacy.ty,
-      right:  (minX + cw) * legacy.scale + legacy.tx,
-      bottom: (minY + ch) * legacy.scale + legacy.ty
+    /* ---------- pass 1: zero-band base candidate ----------
+       Exact prior formula in the ordinary region; continuous-clearance arithmetic on a
+       constrained axis. Not necessarily the exact prior transform — see place(). */
+    var base = place(0, 0, viewportWidth, viewportHeight, cw, ch, minX, minY,
+                     clearanceX, clearanceY, maxScale);
+    var baseRect = {
+      left:   minX * base.scale + base.tx,
+      top:    minY * base.scale + base.ty,
+      right:  (minX + cw) * base.scale + base.tx,
+      bottom: (minY + ch) * base.scale + base.ty
     };
 
     var sel = function (k, d) { return opts[k] !== undefined ? opts[k] : d; };
@@ -193,13 +251,13 @@
     var all = top.concat(bottom, left, right);
     var collides = false;
     for (var i = 0; i < all.length; i++) {
-      if (intersects(legacyRect, all[i], gutter)) { collides = true; break; }
+      if (intersects(baseRect, all[i], gutter)) { collides = true; break; }
     }
 
-    /* Already clear — the placement was never the problem. Return it untouched rather
-       than shrinking a figure to avoid chrome it does not reach. */
+    /* Already clear — no panel reservation is needed. Return the base candidate unchanged
+       rather than shrinking a figure to avoid chrome it does not reach. */
     if (!collides) {
-      return { scale: legacy.scale, tx: legacy.tx, ty: legacy.ty,
+      return { scale: base.scale, tx: base.tx, ty: base.ty,
                topBand: 0, bottomBand: 0, leftBand: 0, rightBand: 0,
                reserved: false, clear: true, degradedX: false, degradedY: false };
     }
