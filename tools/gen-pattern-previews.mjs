@@ -52,21 +52,46 @@ const MARKER = (rel, dir) => `<!-- =============================================
      and parity-check (git diff --exit-code patterns/_preview/).
      ============================================================ -->`;
 
-fs.mkdirSync(OUT, { recursive: true });
-const results = [];
-for (const s of SHELLS) {
-  const srcPath = path.join(PATTERNS, s.src);
-  let html = fs.readFileSync(srcPath, 'utf8');
-  // rewrite every href="…" / src="…"
+// theme-from-hash init (owner-preview-only augmentation; the gallery opens a preview in a
+// chosen theme via #light / #dark or ?theme=…; data-theme wins over prefers-color-scheme per
+// the token CSS). It never touches the canonical template.
+const THEME_INIT = `<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
+
+// Deterministic transform: canonical shell -> preview HTML. Pure (no I/O side effects beyond
+// reading the canonical source), so `--check` can compute the expected set in memory.
+function render(s) {
+  let html = fs.readFileSync(path.join(PATTERNS, s.src), 'utf8');
   html = html.replace(/\b(href|src)="([^"]*)"/g, (m, attr, val) => `${attr}="${rewriteRef(val, s.dir)}"`);
-  // inject the owner-preview marker + a non-visual meta + a theme-from-hash init
-  // (so the gallery can open a preview in a chosen theme via #light / #dark or
-  // ?theme=…; data-theme wins over prefers-color-scheme per the token CSS). This
-  // is an owner-preview-only augmentation — it never touches the canonical template.
-  const THEME_INIT = `<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
   html = html.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${MARKER(s.out, s.dir)}\n<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/${s.dir}/">\n${THEME_INIT}`);
-  const outPath = path.join(OUT, s.out);
-  fs.writeFileSync(outPath, html);
-  results.push({ out: s.out, from: s.src, bytes: html.length });
+  return html;
 }
-console.log(JSON.stringify({ generated: results.length, files: results }, null, 2));
+
+const expected = new Map(SHELLS.map(s => [s.out, render(s)]));           // filename -> content
+const CHECK = process.argv.includes('--check');
+
+// The parity gate must catch BOTH content drift and SET drift (a retired/renamed canonical
+// shell leaving a stale orphan preview behind). So we always account for the full on-disk
+// *.html set, never just the expected files.
+const onDisk = fs.existsSync(OUT) ? fs.readdirSync(OUT).filter(f => f.endsWith('.html')) : [];
+
+if (CHECK) {
+  const missing = [], differing = [], unexpected = [];
+  for (const [name, content] of expected) {
+    const p = path.join(OUT, name);
+    if (!fs.existsSync(p)) missing.push(name);
+    else if (fs.readFileSync(p, 'utf8') !== content) differing.push(name);
+  }
+  for (const f of onDisk) if (!expected.has(f)) unexpected.push(f);   // orphan / stale preview
+  const clean = !missing.length && !differing.length && !unexpected.length;
+  console.log(JSON.stringify({ check: true, clean, expectedCount: expected.size, onDiskCount: onDisk.length, missing, differing, unexpected }, null, 2));
+  process.exit(clean ? 0 : 1);
+}
+
+// write mode: remove EVERY existing generated *.html first (so a retired shell cannot leave an
+// orphan), then write the expected set. `git diff --exit-code patterns/_preview/` then shows
+// content-drift; the orphan removal shows set-drift as a deletion in the same diff.
+fs.mkdirSync(OUT, { recursive: true });
+for (const f of onDisk) fs.rmSync(path.join(OUT, f));
+const results = [];
+for (const s of SHELLS) { fs.writeFileSync(path.join(OUT, s.out), expected.get(s.out)); results.push({ out: s.out, from: s.src, bytes: expected.get(s.out).length }); }
+console.log(JSON.stringify({ generated: results.length, removedBeforeWrite: onDisk.length, files: results }, null, 2));
