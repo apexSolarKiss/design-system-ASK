@@ -24,3 +24,13 @@ Public `CONSUMERS.md` is landed-public-only. It is not the complete propagation 
 - **Consumer ownership boundary.** `design-system-ASK` owns shared source files, engines, CSS, and export scripts. Consumers own their source data, artifact generation, sealing, committed rasters/PDFs/HTMLs, render stamps, and frozen artifacts.
 - **Public registry discipline.** `CONSUMERS.md` records landed public consumption relationships only. Do not add pins, private consumer names, future-state claims, or operator-only propagation details to public repo surfaces.
 - **Wall rule.** Private/firewalled payloads never enter this repo. Public surfaces may acknowledge a private operator-internal consumer only in the already-approved abstract form; details live operator-side.
+
+## Upstream propagation trigger
+
+design-system-ASK is the diagram/foundation **owner**, not a downstream consumer: it carries the propagation *trigger*, not a recipient grant. Recipient grants live in each consumer's own `AGENTS.md`.
+
+On a merged change to a vendored foundation, engine, helper, stylesheet, exporter, font carrier, semantic primitive, or scaffold contract, produce an **owner-delta manifest** and invoke the control-surface propagation-wave protocol (`control-surface/AGENTS.md` §Cross-Repo Propagation Waves and `control-surface/prompts/cross-repo-propagation-wave.md`).
+
+The owner-delta manifest names: the landed SHA; the changed files and their blobs; the affected pattern classes; the expected live-render impact; the expected export/raster impact; the known neutral classes; and the consumer classes requiring census.
+
+Record the manifest and propagation state **operator-side**, in `ecology-ASK-EXTERNAL/design-system-ASK_consumer-ledger.md` (already the propagation ledger per §Required reads), honoring the wall: no private pins, consumer names, or future-state on the public `CONSUMERS.md`, which stays landed-public-only. This extends the existing **Propagation caution** bullet under §Repo-specific rules (which already establishes the enumerate-affected-consumers-and-flag obligation) with the standing mechanism; it does not duplicate or supersede it. Consumer adaptation, sealing, stamps, and rasters remain under each consumer's governing contract.
