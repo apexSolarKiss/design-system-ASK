@@ -49,8 +49,14 @@
    (wider than tall) are now anchored LOW — centered in the space *below* the corner
    panels rather than floating in the middle of the full page — so the top panels
    breathe and the page is not bottom-heavy with dead space. Scale still uses the
-   full band above, so a height-limited landscape is not shrunk; portrait diagrams
-   are unchanged.
+   full band above, so a height-limited landscape is not shrunk.
+
+   Portrait page placement (2026-07-20). Portrait diagrams now use an overlap-gated
+   three-candidate fit: the full page region when it clears the corner panels, the
+   measured center lane for narrow trees, or the historical below-panel region as the
+   fallback. The largest collision-free candidate wins, so a portrait can only grow or
+   stay the same (the below-panel candidate reproduces the prior placement exactly).
+   Landscape placement remains unchanged.
 */
 (function () {
   'use strict';
@@ -634,14 +640,16 @@
     }
 
     /* ---------- fit the diagram content ----------
-       Tall/portrait diagrams fill the whole width, so their top edge would run
-       under the corner panels — they start BELOW the taller panel and center in
-       the space that remains. LANDSCAPE diagrams (wider than tall) have empty top
-       corners, so they start below the header and are anchored LOW (~lower third):
-       the top panels breathe above and the page is not bottom-heavy with dead space
-       below. The diagram body uses a tighter side margin than the page chrome (M),
-       so it renders larger; the header and corner panels keep the page margin M.
-       (Computed after the panels.) */
+       LANDSCAPE diagrams (wider than tall) retain the established low-anchored
+       composition: they start below the header, scale using the full band above, and
+       are anchored LOW so the top panels breathe and the page is not bottom-heavy.
+       PORTRAIT diagrams are fitted against the actual caveat and legend rectangles
+       (overlap-gated): a narrow portrait may rise through the clear center lane between
+       the corner panels, while a wider portrait falls back to the historical region
+       below the panel band — whichever collision-free candidate renders largest. The
+       diagram body uses a tighter side margin than the page chrome (M), so it renders
+       larger; the header and corner panels keep the page margin M. (Computed after the
+       panels.) */
     var panelBand = Math.max(cavH, legendH);
     var landscape = diagW >= diagH;
     var DIAG_M = 40;                                    // diagram-body side margin (< page M) → larger render
