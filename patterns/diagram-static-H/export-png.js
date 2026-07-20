@@ -645,26 +645,65 @@
     var panelBand = Math.max(cavH, legendH);
     var landscape = diagW >= diagH;
     var DIAG_M = 40;                                    // diagram-body side margin (< page M) → larger render
-    var diagTop = overlayY + (landscape ? 120 : (panelBand ? panelBand + 48 : 0));
     var diagBot = PAGE_H - M, diagLeft = DIAG_M, diagRight = PAGE_W - DIAG_M;
-    var availW = diagRight - diagLeft, availH = diagBot - diagTop;
-    var scale = Math.min(availW / diagW, availH / diagH);
-    var sw = diagW * scale, sh = diagH * scale;
-    var sx = diagLeft + (availW - sw) / 2;
-    var sy;
+    var GUT = 48;                                       // gutter between the diagram and the corner panels
+    var scale, sx, sy;
+
     if (landscape) {
-      // Position low: CENTER the diagram in the space BELOW the corner panels, so
-      // the top panels breathe and the gaps above/below the diagram are balanced —
-      // rather than floating it in the middle of the full page (which left dead
-      // space below). Scale still uses the full band above, so a height-limited
-      // landscape is not shrunk. Fall back to full-band centering if it can't fit
-      // below the panels.
+      // LANDSCAPE (unchanged): wide diagrams have empty top corners, so they start
+      // below the header, scale using the full band above, and are anchored LOW — the
+      // top panels breathe and the page is not bottom-heavy with dead space below.
+      var diagTop = overlayY + 120;
+      var availW = diagRight - diagLeft, availH = diagBot - diagTop;
+      scale = Math.min(availW / diagW, availH / diagH);
+      var sw = diagW * scale, sh = diagH * scale;
+      sx = diagLeft + (availW - sw) / 2;
       var bandTop = overlayY + panelBand + 48;
       sy = (bandTop + sh <= diagBot)
         ? bandTop + ((diagBot - bandTop) - sh) / 2
         : diagTop + (availH - sh) / 2;
     } else {
-      sy = diagTop + (availH - sh) / 2;
+      /* PORTRAIT (overlap-gated page fit). A tall / narrow tree must NOT be pushed
+         below a full-width band equal to the taller corner panel — it can rise through
+         the clear CENTRE LANE between the top-left caveat and top-right legend. Pick the
+         candidate that MAXIMISES scale without colliding with either panel (+gutter),
+         mirroring the live diagrams-fit.js overlap gate:
+           C  full region, page-centred      — when it already clears both panels
+           B  full height, clear-lane width  — a narrow tree rises between the panels
+           A  full width, below the band     — the prior behaviour (wide-enough trees)
+         Each candidate is collision-free by construction (B/A) or tested (C); A exactly
+         reproduces the previous portrait placement, so a tree too wide for the lane is
+         byte-unchanged. Landscape (above) is untouched. */
+      var cavRect = cavH > 0 ? { l: M, r: M + cavW, t: overlayY, b: overlayY + cavH } : null;
+      var legRect = legendH > 0 ? { l: legendX, r: legendX + legendW, t: overlayY, b: overlayY + legendH } : null;
+      var hitP = function (r, p) { return !!p && r.l < p.r + GUT && r.r > p.l - GUT && r.t < p.b + GUT && r.b > p.t - GUT; };
+      var fullW = diagRight - diagLeft, fullH = diagBot - overlayY, pageCx = (diagLeft + diagRight) / 2;
+
+      // C: full region, centred on the page
+      var cS = Math.min(fullW / diagW, fullH / diagH);
+      var cSw = diagW * cS, cSh = diagH * cS, cTop = overlayY + (fullH - cSh) / 2;
+      var cRect = { l: pageCx - cSw / 2, r: pageCx + cSw / 2, t: cTop, b: cTop + cSh };
+      var cClears = !hitP(cRect, cavRect) && !hitP(cRect, legRect);
+
+      // B: full height, width bounded by the clear lane between the panels
+      var laneL = cavRect ? cavRect.r + GUT : diagLeft;
+      var laneR = legRect ? legRect.l - GUT : diagRight;
+      var laneW = laneR - laneL;
+      var bS = laneW > 0 ? Math.min(laneW / diagW, fullH / diagH) : 0;
+
+      // A: full width, below the panel band (the prior portrait behaviour, byte-exact)
+      var aTop = overlayY + (panelBand ? panelBand + GUT : 0);
+      var aS = Math.min(fullW / diagW, (diagBot - aTop) / diagH);
+
+      if (cClears) {
+        scale = cS; sx = pageCx - diagW * scale / 2; sy = overlayY + (fullH - diagH * scale) / 2;
+      } else if (bS >= aS) {
+        scale = bS;
+        var laneCx = (laneL + laneR) / 2;
+        sx = laneCx - diagW * scale / 2; sy = overlayY + (fullH - diagH * scale) / 2;
+      } else {
+        scale = aS; sx = pageCx - diagW * scale / 2; sy = aTop + ((diagBot - aTop) - diagH * scale) / 2;
+      }
     }
     // offset by the viewBox origin so negative-origin (centered) content isn't clipped
     content.setAttribute('transform', 'translate(' + (sx - minX * scale) + ' ' + (sy - minY * scale) + ') scale(' + scale + ')');
