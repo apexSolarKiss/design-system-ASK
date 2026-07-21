@@ -1,0 +1,97 @@
+// gen-pattern-previews.mjs — OWNER-ONLY pattern preview generator.
+//
+// Produces patterns/_preview/*.html from the CANONICAL pattern templates by a
+// deterministic path rewrite, so a maintainer can double-click a preview from a
+// clean design-system-ASK clone and see each pattern render with no server and
+// no local `_dsa-tokens/` mirror. The previews consume the canonical pattern
+// files BY REFERENCE (`../<pattern-dir>/…`) and the DS-repo-root tokens/fonts
+// (`../../…`); they never copy them. This generator IS the parity mechanism:
+// re-run it and `git diff --exit-code patterns/_preview/` — any drift means a
+// canonical template changed and the preview must be regenerated.
+//
+// It changes NO canonical consumer template and adds NO downstream obligation.
+//
+// Usage: node tools/gen-pattern-previews.mjs   (run from the repo root)
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+const ROOT = process.cwd();
+const PATTERNS = path.join(ROOT, 'patterns');
+const OUT = path.join(PATTERNS, '_preview');
+
+// canonical shell → { dir, out preview filename }
+const SHELLS = [
+  { src: 'diagram-static-H/diagram-static-H.html',                 dir: 'diagram-static-H',           out: 'diagram-static-H.html' },
+  { src: 'diagram-static-V/diagram-static-V.html',                 dir: 'diagram-static-V',           out: 'diagram-static-V.html' },
+  { src: 'diagram-static-SEQ/diagram-static-SEQ.html',             dir: 'diagram-static-SEQ',         out: 'diagram-static-SEQ.html' },
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.html',           dir: 'diagram-static-FLOW',        out: 'diagram-static-FLOW-static.html' },
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html' },
+  { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
+  { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html' },
+];
+
+// Rewrite a src/href value from the canonical shell's perspective (patterns/<dir>/)
+// to the preview's perspective (patterns/_preview/).
+function rewriteRef(val, dir) {
+  if (/^(https?:|data:|#|mailto:)/.test(val)) return val;         // external / anchor — leave
+  if (val.startsWith('./_dsa-tokens/')) return '../../' + val.slice('./_dsa-tokens/'.length); // DS-root tokens/fonts
+  if (val.startsWith('_dsa-tokens/'))   return '../../' + val.slice('_dsa-tokens/'.length);
+  if (val.startsWith('../') || val.startsWith('/')) return val;   // already relative-up / absolute — leave
+  // bare pattern-local file (no slash) → reference the canonical pattern dir
+  if (!val.includes('/')) return `../${dir}/${val}`;
+  return val;
+}
+
+const MARKER = (rel, dir) => `<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/${path.basename(rel)}
+     GENERATED from patterns/${dir}/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../${dir}/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->`;
+
+// theme-from-hash init (owner-preview-only augmentation; the gallery opens a preview in a
+// chosen theme via #light / #dark or ?theme=…; data-theme wins over prefers-color-scheme per
+// the token CSS). It never touches the canonical template.
+const THEME_INIT = `<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>`;
+
+// Deterministic transform: canonical shell -> preview HTML. Pure (no I/O side effects beyond
+// reading the canonical source), so `--check` can compute the expected set in memory.
+function render(s) {
+  let html = fs.readFileSync(path.join(PATTERNS, s.src), 'utf8');
+  html = html.replace(/\b(href|src)="([^"]*)"/g, (m, attr, val) => `${attr}="${rewriteRef(val, s.dir)}"`);
+  html = html.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${MARKER(s.out, s.dir)}\n<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/${s.dir}/">\n${THEME_INIT}`);
+  return html;
+}
+
+const expected = new Map(SHELLS.map(s => [s.out, render(s)]));           // filename -> content
+const CHECK = process.argv.includes('--check');
+
+// The parity gate must catch BOTH content drift and SET drift (a retired/renamed canonical
+// shell leaving a stale orphan preview behind). So we always account for the full on-disk
+// *.html set, never just the expected files.
+const onDisk = fs.existsSync(OUT) ? fs.readdirSync(OUT).filter(f => f.endsWith('.html')) : [];
+
+if (CHECK) {
+  const missing = [], differing = [], unexpected = [];
+  for (const [name, content] of expected) {
+    const p = path.join(OUT, name);
+    if (!fs.existsSync(p)) missing.push(name);
+    else if (fs.readFileSync(p, 'utf8') !== content) differing.push(name);
+  }
+  for (const f of onDisk) if (!expected.has(f)) unexpected.push(f);   // orphan / stale preview
+  const clean = !missing.length && !differing.length && !unexpected.length;
+  console.log(JSON.stringify({ check: true, clean, expectedCount: expected.size, onDiskCount: onDisk.length, missing, differing, unexpected }, null, 2));
+  process.exit(clean ? 0 : 1);
+}
+
+// write mode: remove EVERY existing generated *.html first (so a retired shell cannot leave an
+// orphan), then write the expected set. `git diff --exit-code patterns/_preview/` then shows
+// content-drift; the orphan removal shows set-drift as a deletion in the same diff.
+fs.mkdirSync(OUT, { recursive: true });
+for (const f of onDisk) fs.rmSync(path.join(OUT, f));
+const results = [];
+for (const s of SHELLS) { fs.writeFileSync(path.join(OUT, s.out), expected.get(s.out)); results.push({ out: s.out, from: s.src, bytes: expected.get(s.out).length }); }
+console.log(JSON.stringify({ generated: results.length, removedBeforeWrite: onDisk.length, files: results }, null, 2));

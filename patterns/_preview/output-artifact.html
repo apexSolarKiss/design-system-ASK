@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/output-artifact.html
+     GENERATED from patterns/output-artifact/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../output-artifact/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->
+<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/output-artifact/">
+<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[Artifact title placeholder]</title>
+
+  <!-- design-system-ASK foundations — local mirror.
+       DOWNSTREAM: adjust path if your mirror lives elsewhere.
+       The foundation styles base elements (h1–h3, p, a, code, body) bound to
+       --fg-* with light/dark resolved. FOREGROUND IS INHERITED — this template
+       adds NO local --fg rebind. Do not reintroduce one. -->
+  <link rel="stylesheet" href="../../colors_and_type.css">
+
+  <style>
+    /* ====================================================================
+       Class B output-artifact overlay.
+
+       Foreground: inherited from the foundation --fg-* ramp (correct in
+       light and dark since the foundation light-mode ramp landed). This
+       overlay does NOT rebind --fg-* / --line-*.
+
+       The ONE sanctioned Class B override is LINE INTENSITY: report rules,
+       borders, table lines, and dividers read too faint at the foundation
+       hairline (white .45 / .22) on the light field, so a Class B-scoped
+       token carries stronger white lines in light mode and inherits the
+       foundation lavender lines in dark. This is scoped to the artifact's
+       OWN structural elements (applied by class), never to base elements —
+       so it cannot affect inherited prose color. (Class A diagrams keep
+       their own scoped --diagram-* tokens — text roles aliasing the
+       foundation --fg-*, strokes local — for the same reason: color is
+       applied to class-targeted elements, not base elements.)
+       ==================================================================== */
+
+    :root {
+      --artifact-line:      rgba(255, 255, 255, 0.90); /* report rules · borders · table lines (light) */
+      --artifact-line-soft: rgba(255, 255, 255, 0.55); /* fainter dividers (light) */
+    }
+    :root[data-theme="dark"] {
+      --artifact-line:      var(--line-1);             /* dark: foundation lavender lines read fine */
+      --artifact-line-soft: var(--line-2);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]):not([data-theme="dark"]) {
+        --artifact-line:      var(--line-1);
+        --artifact-line-soft: var(--line-2);
+      }
+    }
+
+    /* ---------- Layout shell ---------- */
+    .artifact {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: var(--space-7) var(--space-5);
+    }
+
+    /* ---------- Meta strip — orientation values, mono-cased ---------- */
+    .meta {
+      font-family: var(--font-mono);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-light);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--fg-2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-5);
+      margin: var(--space-5) 0 var(--space-6);
+      padding-bottom: var(--space-5);
+      border-bottom: 1px solid var(--artifact-line);
+    }
+    .meta dt { display: inline; opacity: 0.6; margin-right: 0.4em; }
+    .meta dd { display: inline; margin: 0; }
+    .meta > div { display: inline-block; }
+
+    /* ---------- Generic prose completion ----------
+       The foundation styles h1–h3, p, a, code. These are the report elements
+       it does NOT style, bound to tokens + the Class B line overlay. Generic
+       on purpose — replace the CONTENT, not these element rules. */
+    .artifact ul, .artifact ol { margin: 0 0 var(--space-4); padding-left: var(--space-5); color: var(--fg-1); }
+    .artifact li { margin: 0 0 var(--space-2); line-height: var(--lh-body); }
+    .artifact blockquote {
+      margin: 0 0 var(--space-4); padding: var(--space-2) 0 var(--space-2) var(--space-4);
+      border-left: 2px solid var(--artifact-line); color: var(--fg-2);
+    }
+    .artifact hr { border: 0; border-top: 1px solid var(--artifact-line-soft); margin: var(--space-6) 0; }
+    .artifact pre {
+      font-family: var(--font-mono); font-size: var(--fs-small); font-weight: var(--fw-light);
+      line-height: var(--lh-body); color: var(--fg-1);
+      border: 1px solid var(--artifact-line-soft); border-radius: var(--radius-sm);
+      padding: var(--space-4); overflow-x: auto; margin: 0 0 var(--space-4);
+    }
+    .artifact table {
+      width: 100%; border-collapse: collapse; margin: 0 0 var(--space-5);
+      font-size: var(--fs-small); font-weight: var(--fw-light);
+    }
+    .artifact th, .artifact td {
+      text-align: left; padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--artifact-line-soft); color: var(--fg-1);
+    }
+    .artifact thead th {
+      font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2);
+      border-bottom: 1px solid var(--artifact-line);
+    }
+
+    /* ---------- Sections — native progressive disclosure (no JS) ---------- */
+    details.disclosure {
+      border-top: 1px solid var(--artifact-line);
+      padding: var(--space-4) 0;
+    }
+    details.disclosure[open] { padding-bottom: var(--space-5); }
+    details.disclosure summary {
+      cursor: pointer;
+      list-style: none;
+      font-family: var(--font-sans);
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-light);
+      line-height: var(--lh-tight);
+      letter-spacing: var(--tracking-tight);
+      color: var(--fg-1);
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+    }
+    details.disclosure summary::-webkit-details-marker { display: none; }
+    details.disclosure summary::before {
+      content: '+';
+      font-family: var(--font-mono);
+      font-weight: var(--fw-light);
+      opacity: 0.5;
+      width: 1ch;
+    }
+    details.disclosure[open] summary::before { content: '−'; }
+
+    /* ---------- Provenance footer — visible source-truth metadata ---------- */
+    footer.provenance {
+      margin-top: var(--space-7);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--artifact-line);
+      font-family: var(--font-mono);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-light);
+      color: var(--fg-3);
+    }
+    footer.provenance dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-2) var(--space-4);
+      margin: 0;
+    }
+    footer.provenance dt { opacity: 0.6; }
+    footer.provenance dd { margin: 0; }
+
+    /* ====================================================================
+       TIER 3 OVERLAY SLOT — consuming project identity / chrome goes HERE.
+       DOWNSTREAM: add project-specific banners, status rails, review-status
+       strips, or branding as Tier 3 here. Keep minimal. Bind to foundation
+       tokens (--fg-*, --artifact-line, type tokens); do NOT redefine Tier 1/2
+       tokens, do NOT introduce hues outside the closed palette, and do NOT
+       propagate the design-system's own identity (logo-ASK / "ASK Design
+       System") unless your artifact is itself an ASK-instance surface.
+       This slot is intentionally empty in the shared pattern.
+       ==================================================================== */
+
+  </style>
+</head>
+<body>
+  <main class="artifact">
+
+    <!-- ==================================================================
+         Header — DOWNSTREAM: replace title + subtitle.
+         ================================================================== -->
+    <header>
+      <h1>[Artifact title]</h1>
+      <p class="small">[Artifact subtitle or one-line context.]</p>
+    </header>
+
+    <!-- ==================================================================
+         Meta strip — DOWNSTREAM: fill real values.
+         ================================================================== -->
+    <dl class="meta">
+      <div><dt>Project:</dt><dd>[consuming-project-name]</dd></div>
+      <div><dt>Artifact:</dt><dd>[artifact-id]</dd></div>
+      <div><dt>Render:</dt><dd>[YYYY-MM-DDTHH:MM:SSZ]</dd></div>
+      <div><dt>Template:</dt><dd>output-artifact v2</dd></div>
+    </dl>
+
+    <!-- ==================================================================
+         Sections — native progressive disclosure (no JS).
+         DOWNSTREAM: replace section names + bodies with content. The sample
+         list / table / code block below show the generic report elements the
+         pattern styles — replace them, don't restyle them.
+         ================================================================== -->
+    <section>
+      <details class="disclosure" open>
+        <summary>Section one</summary>
+        <p>Body text placeholder. The weight gap between heading and body does the work; size differences are minimal. One idea per sentence.</p>
+        <ul>
+          <li>List item placeholder.</li>
+          <li>Another item — lists, rules, and tables read in the Class B line intensity.</li>
+        </ul>
+      </details>
+
+      <details class="disclosure">
+        <summary>Section two</summary>
+        <p>Body text placeholder. Native <code>&lt;details&gt;</code> handles disclosure. No JavaScript required.</p>
+        <table>
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Placeholder row</td><td>tabular data uses mono</td></tr>
+            <tr><td>Another row</td><td>borders use the line overlay</td></tr>
+          </tbody>
+        </table>
+      </details>
+
+      <details class="disclosure">
+        <summary>Section three</summary>
+        <p>Body text placeholder. Mono is for code, technical, and tabular data — e.g. a reference like <code>file_path:42</code>.</p>
+        <pre>[code or technical block placeholder]</pre>
+      </details>
+    </section>
+
+    <!-- ==================================================================
+         Provenance footer — DOWNSTREAM: keep this. Values from MANIFEST.md.
+         ================================================================== -->
+    <footer class="provenance">
+      <dl>
+        <dt>design-system-ASK</dt>
+        <dd>commit <code>[upstream-short-sha]</code> · [upstream-commit-date]</dd>
+        <dt>Manifest</dt>
+        <dd>see <code>MANIFEST.md</code> for full provenance</dd>
+        <dt>Static freeze</dt>
+        <dd>frozen at render time; auditable against the recorded SHA</dd>
+      </dl>
+    </footer>
+
+  </main>
+</body>
+</html>
