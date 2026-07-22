@@ -141,9 +141,15 @@ function render(s) {
     html = html.replace(/(<script src="[^"]*diagrams-fit\.js"><\/script>)/i, (m) => `${m}\n${PREVIEW_FIT(s.previewFit)}`);
   }
   // FLOW static preview: drive the shared full-chrome shell into static mode (same chrome + camera as
-  // the interactive preview, no node interaction) and correct the interactive-only panel hint.
+  // the interactive preview, no node interaction) and correct the interactive-only panel hint. The
+  // FLOW_MODE replacement rewrites the WHOLE statement line — assignment AND its trailing comment —
+  // because the inherited comment describes the interactive canonical shell and would be false in this
+  // generated static artifact; matching the full line also strengthens the fail-closed precondition.
   if (s.flowMode) {
-    html = replaceOnce(html, /window\.FLOW_MODE\s*=\s*'[^']*'/, `window.FLOW_MODE = '${s.flowMode}'`, "FLOW_MODE assignment", s.out);
+    const modeComment = s.flowMode === 'static'
+      ? 'owner-preview static mode; full chrome retained, node inspection disabled'
+      : `owner-preview ${s.flowMode} mode`;
+    html = replaceOnce(html, /window\.FLOW_MODE\s*=\s*'[^']*';[^\n]*/, `window.FLOW_MODE = '${s.flowMode}';  // ${modeComment}`, "FLOW_MODE statement line", s.out);
     if (s.flowMode === 'static') {
       html = replaceOnce(html, /(<div class="fp-hint">)[\s\S]*?(<\/div>)/, `$1${STATIC_FLOW_HINT}$2`, "flow-panel hint", s.out);
     }
