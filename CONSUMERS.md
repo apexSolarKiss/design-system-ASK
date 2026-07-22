@@ -1,8 +1,8 @@
 # Consumers // design-system-ASK
 
-Known **public** downstream repos with **landed** consumption of [design-system-ASK](README.md) patterns and tokens.
+Known **landed** consumers of [design-system-ASK](README.md) patterns and tokens — the **public downstream repos** below, plus design-system-ASK's own **first-party same-repo** consumer (its pattern-preview gallery).
 
-This file records **landed public consumption only** — which public repo already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
+This file records **landed consumption only** — which repo or first-party surface already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
 
 Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each consumer owns its source data, chrome, generation, sealing, and frozen artifact; design-system-ASK owns the engine, CSS, and export script. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
 
@@ -15,6 +15,14 @@ Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no 
 | [`method-ASK`](https://github.com/apexSolarKiss/method-ASK) | method-surface diagram consumer | `diagram-static-H` · Three Functions | Static topology diagram (H). The bounded-generativity system-model figure (`docs/diagrams/method-ASK_bounded-generativity.*`) is a bespoke figure on the shared visual contract that **consumes the Three Functions primitive by reference** (vendors `three-functions.css`): legislative / executive / judicial function color at 30%, with candidate variance as negative cutouts through the executive chamber. **First Three Functions consumer.** |
 | [`control-surface`](https://github.com/apexSolarKiss/control-surface) | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
 | [`ASK`](https://github.com/apexSolarKiss/ASK) | public reference implementation (live: A-S-K.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of `design-system-ASK`. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
+
+## First-party consumers
+
+Same-repo consumers, distinct from the public downstream repos above: they consume the canonical bundles by **same-repo reference**, not a vendored `_dsa-tokens/` mirror. The lifecycle verb is **regenerate-and-reverify**, not re-vendor — no pin and no copied bundle, so they track repo `HEAD`. Operational currency (generator `--check`, generated-set parity, visual verification) is tracked operator-side, as for public consumers.
+
+| Consumer | Status | Consumes | Notes |
+| --- | --- | --- | --- |
+| design-system-ASK owner pattern-preview gallery (`patterns/`) | first-party same-repo consumer | all previewed Class A patterns + `output-artifact` | Generated shells under `patterns/_preview/`, consumed by same-repo reference (no `_dsa-tokens/` mirror). Regenerate with `tools/gen-pattern-previews.mjs` and pass `--check` + visual verification whenever an adopted pattern changes. Preview-only illustrative fit / theme composition — no canonical engine, CSS, or token change. |
 
 ## Vendoring granularity
 

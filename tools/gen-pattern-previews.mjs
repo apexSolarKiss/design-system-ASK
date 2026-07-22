@@ -20,13 +20,22 @@ const ROOT = process.cwd();
 const PATTERNS = path.join(ROOT, 'patterns');
 const OUT = path.join(PATTERNS, '_preview');
 
-// canonical shell → { dir, out preview filename }
+// FLOW previews declare all four chrome rectangles available (panels overlay instead of shrinking
+// the figure); a shared constant so the static + interactive FLOW previews get an IDENTICAL camera.
+const FLOW_PREVIEW_FIT = { dropSelectors: ['topSelector', 'bottomSelector', 'leftSelector', 'rightSelector'] };
+
+// canonical shell → { dir, out preview filename, previewFit?, flowMode? }
 const SHELLS = [
   { src: 'diagram-static-H/diagram-static-H.html',                 dir: 'diagram-static-H',           out: 'diagram-static-H.html' },
   { src: 'diagram-static-V/diagram-static-V.html',                 dir: 'diagram-static-V',           out: 'diagram-static-V.html' },
   { src: 'diagram-static-SEQ/diagram-static-SEQ.html',             dir: 'diagram-static-SEQ',         out: 'diagram-static-SEQ.html' },
-  { src: 'diagram-static-FLOW/diagram-static-FLOW.html',           dir: 'diagram-static-FLOW',        out: 'diagram-static-FLOW-static.html' },
-  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: { dropSelectors: ['topSelector', 'bottomSelector', 'leftSelector', 'rightSelector'] } },
+  // Both FLOW previews render the SAME full-chrome shell (diagram-static-FLOW.interactive.html) so the
+  // gallery's static + interactive cards share identical chrome, camera, and live-theme behaviour; the
+  // generator forces FLOW_MODE='static' for the static output. The canonical chrome-free export shell
+  // (diagram-static-FLOW.html) is intentionally NOT previewed — it owns the export/article role and
+  // hard-codes a light theme, so it is not the gallery's illustration of static mode.
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
   { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html' },
 ];
@@ -103,6 +112,23 @@ const PREVIEW_FIT = (cfg) => `<script>
 })();
 </script>`;
 
+// Inert panel hint for the forced-static FLOW preview. In static mode the engine installs no node
+// hit layer, so the interactive shell's "hover a node …" copy would be inaccurate; the panel keeps
+// its box + footprint and states the honest static affordance.
+const STATIC_FLOW_HINT = 'Static view — topology only. Open the interactive preview for node definitions.';
+
+// Fail-closed single replacement: throw unless the pattern matches EXACTLY once, so a changed
+// canonical shell can never silently emit the wrong artifact — e.g. an interactive page under the
+// static filename because the FLOW_MODE assignment moved. `--check` alone would otherwise accept
+// whatever the generator produced as its new expected output; this makes the transform assert its
+// own preconditions, consistent with the generated-set parity gate below.
+function replaceOnce(html, re, replacement, what, out) {
+  const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
+  const n = (html.match(g) || []).length;
+  if (n !== 1) throw new Error(`gen-pattern-previews: expected exactly one ${what} in ${out}, found ${n} — canonical shell changed; refusing to emit.`);
+  return html.replace(re, replacement);
+}
+
 // Deterministic transform: canonical shell -> preview HTML. Pure (no I/O side effects beyond
 // reading the canonical source), so `--check` can compute the expected set in memory.
 function render(s) {
@@ -113,6 +139,14 @@ function render(s) {
   // the engine's render()/fit() runs. Owner-preview-only; changes no canonical file.
   if (s.previewFit) {
     html = html.replace(/(<script src="[^"]*diagrams-fit\.js"><\/script>)/i, (m) => `${m}\n${PREVIEW_FIT(s.previewFit)}`);
+  }
+  // FLOW static preview: drive the shared full-chrome shell into static mode (same chrome + camera as
+  // the interactive preview, no node interaction) and correct the interactive-only panel hint.
+  if (s.flowMode) {
+    html = replaceOnce(html, /window\.FLOW_MODE\s*=\s*'[^']*'/, `window.FLOW_MODE = '${s.flowMode}'`, "FLOW_MODE assignment", s.out);
+    if (s.flowMode === 'static') {
+      html = replaceOnce(html, /(<div class="fp-hint">)[\s\S]*?(<\/div>)/, `$1${STATIC_FLOW_HINT}$2`, "flow-panel hint", s.out);
+    }
   }
   return html;
 }
