@@ -14,7 +14,6 @@
      OWNER PREVIEW ONLY // NOT part of any downstream vendor inventory.
      ============================================================ -->
 <link rel="stylesheet" href="../colors_and_type.css">
-<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <style>
   :root { --gap: 20px; }
   html, body { margin: 0; padding: 0; }
@@ -26,7 +25,7 @@
     min-height: 100vh;
   }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 32px 96px; }
-  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 8px; }
+  header { margin-bottom: 8px; }
   h1 { font-size: 22px; letter-spacing: 0.02em; margin: 0; font-weight: 600; }
   h1 .org { color: var(--fg-2); }
   .lede { color: var(--fg-2); font-size: 13px; line-height: 1.7; margin: 14px 0 4px; }
@@ -35,12 +34,6 @@
     color: var(--ask-emphasis-magenta, var(--fg-1)); border: 1px solid var(--line-1);
     border-radius: 999px; padding: 4px 12px; white-space: nowrap;
   }
-  .theme-toggle {
-    font: inherit; font-size: 11px; letter-spacing: 0.06em; cursor: pointer;
-    background: var(--surface-glass, transparent); color: var(--fg-1);
-    border: 1px solid var(--line-1); border-radius: 8px; padding: 6px 12px;
-  }
-  .theme-toggle:hover { background: var(--surface-hover, var(--surface-glass)); }
   hr { border: 0; border-top: 1px solid var(--line-1); margin: 28px 0 32px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--gap); }
   .card {
@@ -78,7 +71,6 @@
         <b>canonical</b> pattern bundle, with DS-root tokens/fonts.</p>
       <span class="badge-owner">owner preview // do not vendor</span>
     </div>
-    <button class="theme-toggle" id="themeToggle" title="Toggle light / dark">◐ theme</button>
   </header>
   <hr>
   <div class="grid">
@@ -168,18 +160,5 @@
     <code>--check</code> whenever an adopted pattern changes.
   </footer>
 </div>
-<script>
-  (function () {
-    var root = document.documentElement, btn = document.getElementById('themeToggle');
-    function cur() {
-      var d = root.getAttribute('data-theme');
-      if (d === 'light' || d === 'dark') return d;
-      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
-    }
-    btn.addEventListener('click', function () {
-      root.setAttribute('data-theme', cur() === 'dark' ? 'light' : 'dark');
-    });
-  })();
-</script>
 </body>
 </html>
