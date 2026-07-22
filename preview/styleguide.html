@@ -205,7 +205,8 @@
   }
   function paint() {
     document.querySelectorAll('[data-bg]').forEach(function (el) {
-      var cs = getComputedStyle(el).backgroundColor;
+      el.style.background = 'var(' + el.getAttribute('data-bg') + ')';   // apply the named token to the swatch…
+      var cs = getComputedStyle(el).backgroundColor;                     // …then read back its resolved value for the label
       var v = el.parentElement.querySelector('.val'); if (v) v.textContent = toHex(cs);
     });
     document.querySelectorAll('[data-fg]').forEach(function (el) {
