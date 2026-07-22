@@ -1,10 +1,10 @@
 # Consumers // design-system-ASK
 
-Known **public** downstream repos with **landed** consumption of [design-system-ASK](README.md) patterns and tokens.
+Known **landed** consumers of [design-system-ASK](README.md) patterns and tokens — the **public downstream repos** below, plus design-system-ASK's own **first-party same-repo** consumer (its pattern-preview gallery).
 
-This file records **landed public consumption only** — which public repo already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
+This file records **landed consumption only** — which repo or first-party surface already consumes which pattern or token module. It is a transparency record, not a customer list, not the full propagation ledger, and not a future-state plan. Queued, in-flight, or planned consumption, private/firewalled consumers, **vendored commit pins**, re-sync obligations, and pin drift are tracked operator-side, not here, by design — a pin is operational provenance and does not belong in the public registry.
 
-Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each consumer owns its source data, chrome, generation, sealing, and frozen artifact; design-system-ASK owns the engine, CSS, and export script. Re-sync is the consumer's responsibility when an upstream pattern or token module changes.
+Downstream pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no live hot-link; the ASK front door vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror (see its row below). Each downstream consumer owns its source data, chrome, generation, sealing, and frozen artifact; design-system-ASK owns the engine, CSS, and export script. Re-sync is the downstream consumer's responsibility when an upstream pattern or token module changes.
 
 ## Public consumers
 
@@ -16,16 +16,24 @@ Pattern consumers vendor a local, pinned mirror (`_dsa-tokens/`) — no CDN, no 
 | [`control-surface`](https://github.com/apexSolarKiss/control-surface) | protocol-surface diagram consumer | `diagram-static-H` | Architecture-tree diagram. |
 | [`ASK`](https://github.com/apexSolarKiss/ASK) | public reference implementation (live: A-S-K.studio) | `colors_and_type.css` (Tier 1 + Tier 2 tokens) · Inter + JetBrains Mono fonts · `logo-ASK` wordmark | The ASK meta-brand front door — a live static **reference implementation** of `design-system-ASK`. Vendors the canonical tokens, fonts, and wordmark directly (not the diagram `_dsa-tokens/` mirror), adds layout only, and carries **ASK's own Tier 3** — the one consumer that uses ASK's Tier 3 rather than supplying its own (it *is* ASK-the-entity). Not a Class A diagram / Spectral State consumer. |
 
+## First-party consumers
+
+Same-repo consumers, distinct from the public downstream repos above: they consume the canonical bundles by **same-repo reference**, not a vendored `_dsa-tokens/` mirror. The lifecycle verb is **regenerate-and-reverify**, not re-vendor. There is no vendored pin or copied bundle. Referenced canonical assets resolve at repo `HEAD`; generated-shell currency is maintained through regeneration and verification. Operational currency (generator `--check`, generated-set parity, visual verification) is tracked operator-side, as for public consumers.
+
+| Consumer | Status | Consumes | Notes |
+| --- | --- | --- | --- |
+| design-system-ASK owner pattern-preview gallery (`patterns/`) | first-party same-repo consumer | all previewed Class A patterns + `output-artifact` | Generated shells under `patterns/_preview/`, consumed by same-repo reference (no `_dsa-tokens/` mirror). Regenerate with `tools/gen-pattern-previews.mjs` and pass `--check` + visual verification whenever an adopted pattern changes. Preview-only illustrative fit / theme composition — no canonical engine, CSS, or token change. |
+
 ## Vendoring granularity
 
 **Shared contract, selective renderer.** The diagram source grammar and the `window.DIAGRAMS.render(TREE)` interface are a *shared contract*, uniform across the static pattern family, so source data is portable between engines. The concrete pattern engines (`diagram-static-{H,V,SEQ,FLOW}`, `diagram-interactive-spine`) are *renderer capacity* — the code a consumer actually runs.
 
-Consumers vendor the complete canonical artifacts for the patterns/modules they **actually render**. Optional capabilities inside an adopted module travel with that module, even if unused, and must not be cherry-picked or locally forked. Unused pattern engines are **not** pre-vendored speculatively; a consumer adopts and vendors the *current* canonical engine when it first renders that pattern. Shared artifacts — the static exporter, the token mirror — remain whole shared artifacts, not split by dormant internal branches. The vendoring boundary traces the code seam: selective by pattern where engines diverge, whole where an artifact is genuinely shared — which keeps each consumer's re-sync obligation to exactly the patterns it exercises.
+Downstream consumers vendor the complete canonical artifacts for the patterns/modules they **actually render**. Optional capabilities inside an adopted module travel with that module, even if unused, and must not be cherry-picked or locally forked. Unused pattern engines are **not** pre-vendored speculatively; a consumer adopts and vendors the *current* canonical engine when it first renders that pattern. Shared artifacts — the static exporter, the token mirror — remain whole shared artifacts, not split by dormant internal branches. The vendoring boundary traces the code seam: selective by pattern where engines diverge, whole where an artifact is genuinely shared — which keeps each consumer's re-sync obligation to exactly the patterns it exercises.
 
 ## What this file is not
 
-- **Not a customer or marketing list.** It records implementation relationships between public repos, nothing more.
+- **Not a customer or marketing list.** It records implementation relationships — public downstream repos and design-system-ASK's own first-party same-repo surface — nothing more.
 - **Not the full propagation ledger.** Queued / in-flight consumption, private/firewalled consumers, vendored commit pins, re-sync obligations, and pin drift are tracked operator-side, outside this public repo.
-- **Not a currency guarantee.** Listing a consumer here does not assert it tracks the latest upstream; a consumer may lag until it re-syncs. Specific vendored pins and currency are operator-side provenance, deliberately not published here.
+- **Not a currency guarantee.** Listing a consumer here does not assert it tracks the latest upstream; a downstream consumer may lag until it re-syncs, and the first-party gallery until it is regenerated-and-reverified. Specific vendored pins and currency are operator-side provenance, deliberately not published here.
 
 A private operator-internal consumer has also exercised the Class B `output-artifact` flow end-to-end; its contents remain firewalled and it is not listed here.
