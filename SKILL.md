@@ -36,6 +36,6 @@ For static artifacts, also:
 
 Static artifacts freeze inheritance at render time; production code may use a live dependency or import model if appropriate.
 
-If working on production code, copy the tokens into the host system's variable file under an `--ask-` namespace and read the rules here to become an expert in designing with this brand.
+If working on production code, inherit the canonical token carrier rather than transcribing its values: use a live import or a pinned vendored copy of `colors_and_type.css`, keeping the `--ask-` namespace intact. Where the host architecture requires semantic aliases, map them through an explicit adapter that resolves to the imported or pinned vendored canonical carrier. A transcription or adapter is not the canonical token source and does not establish ASK-family parity. Read the rules here to become an expert in designing with this brand.
 
 If the user invokes this skill without any other guidance, ask them what they want to build or design, ask some questions, and act as an expert designer who outputs HTML artifacts _or_ production code, depending on the need.
