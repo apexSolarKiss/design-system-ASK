@@ -1,0 +1,132 @@
+# Archive manifest // [consuming-project-name] / [archive-id]
+
+Provenance record for a sealed interactive archive rendered from the design-system-ASK Class B `message-archive` pattern.
+
+## Upstream design system
+
+- Repo: https://github.com/apexSolarKiss/design-system-ASK
+- Commit (full): `0000000000000000000000000000000000000000`
+- Commit (short): `0000000`
+- Commit date: `YYYY-MM-DDTHH:MM:SSZ`
+
+## Files copied into local mirror
+
+| File | Path in mirror | SHA-256 |
+| --- | --- | --- |
+| colors_and_type.css | `_dsa-tokens/colors_and_type.css` | `<sha256 here>` |
+| InterVariable.woff2 | `_dsa-tokens/fonts/InterVariable.woff2` | `<sha256 here>` |
+| InterVariable-Italic.woff2 | `_dsa-tokens/fonts/InterVariable-Italic.woff2` | `<sha256 here>` |
+| JetBrainsMono.woff2 | `_dsa-tokens/fonts/JetBrainsMono.woff2` | `<sha256 here>` |
+| JetBrainsMono-Italic.woff2 | `_dsa-tokens/fonts/JetBrainsMono-Italic.woff2` | `<sha256 here>` |
+
+## Consuming project
+
+- Project: `[consuming-project-name]`
+- Artifact path (relative to project root): `[path/to/archive.html]`
+- Template: `message-archive` (from `patterns/message-archive/` in upstream)
+
+## Archive timeline
+
+- Archive id: `[archive-id]`
+- Title: `[archive title]`
+- Source types: `[e.g. imessage, sms-rcs]`
+- Span: `[start_at]` → `[end_at]`
+- Message count: `[N]`
+
+### Source channels merged into this timeline
+
+| Channel id | Label | Source type | Notes |
+| --- | --- | --- | --- |
+| `[channel-1]` | `[label]` | `[source type]` | `[direct / group; participant set]` |
+| `[channel-2]` | `[label]` | `[source type]` | `[folded in; carries data-channel per message]` |
+
+Source threads are provenance inputs, not separate output files. The delivered object is the merged timeline.
+
+## Pattern input
+
+The exact template inherited, not merely the repository revision.
+
+| File | Upstream path | SHA-256 |
+| --- | --- | --- |
+| message-archive.template.html | `patterns/message-archive/message-archive.template.html` | `<sha256 here>` |
+
+## Renderer
+
+- Renderer / tool: `[...]`
+- Version or commit: `[...]`
+- Rendering configuration: `[...]`
+- Renderer source SHA-256, when not identified by an immutable commit: `[...]`
+
+## Sealed artifact
+
+- Artifact filename: `[...]`
+- Artifact SHA-256: `[...]`
+- Byte size: `[...]`
+
+## Assembly provenance
+
+How this timeline was produced. Generic and wall-safe — no private paths, identifiers, or payload.
+
+- Source acquisition / export method: `[...]`
+- Extractor / decoder and version: `[...]`
+- Identity-resolution method: `[...]`
+- Chronology and timezone normalization: `[...]`
+- Merge / deduplication method: `[...]`
+- Media-acquisition method: `[...]`
+- Known source or assembly gaps: `[...]`
+
+## Presentation
+
+- Flavor: `default-ASK` | `AA-compliant`
+- Party mode: `two-party` | `group`
+
+## Participant → role mapping (PERSISTENT)
+
+This mapping is **manifest-owned and stable across refreshes**. It is never frequency-derived. A re-render must reuse these exact assignments so a person is not recolored; reassignment happens only under explicit operator intent.
+
+| Stable sender id | Label | Archive role | Bound value |
+| --- | --- | --- | --- |
+| `[stable-id-author]` | `[label]` | `author` | author fill (light/dark per flavor) |
+| `[stable-id-1]` | `[label]` | `participant-default` | frosted |
+| `[stable-id-2]` | `[label]` | `participant-a` | `#ae87c2` |
+| `[stable-id-3]` | `[label]` | `participant-b` | `#bfb3d4` |
+| `[stable-id-4]` | `[label]` | `participant-c` | per flavor |
+| `[stable-id-5]` | `[label]` | `participant-d` | per flavor |
+| `[stable-id-6]` | `[label]` | `participant-e` | `#569dbd` |
+
+**Supported capacity: seven distinct participants total, including the author.** More than seven requires a future owner-approved overflow contract before rendering — the render must fail closed rather than cycle colors, reuse a role for two people, collapse overflow into the frosted role, invent further roles, or drop participants. This is a bounded initial capacity, not a permanent maximum.
+
+## Media fidelity
+
+- Profile: `embedded` | `referenced` | `mixed`
+
+| State | Count |
+| --- | --- |
+| `embedded` | `0` |
+| `referenced` | `0` |
+| `omitted-by-export` | `0` |
+| `bytes-unavailable` | `0` |
+
+Every attachment is represented in exactly one state. Nothing is dropped silently. If any count above is non-zero, the archive's provenance disclosure must state it.
+
+## Reactions
+
+- Reaction count: `[N]`
+- `reacted_at` available: `yes` | `no` (optional where the source does not carry it)
+
+## Render
+
+- Rendered at: `YYYY-MM-DDTHH:MM:SSZ`
+
+Tool identity, version and configuration are recorded once under **Renderer** above — do not restate them here.
+
+## Accessibility validation
+
+- Pattern built-in roles + default states: inherited from the selected flavor.
+- Consumer content / Tier 3 overlays / custom media: `[validated | not validated]` — the consumer validates the **final rendered archive**; the flavor's claim does not extend to supplied content.
+
+## Audit / freeze note
+
+This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The rendered HTML reads the local token mirror synced into the bundle (or tokens inlined at seal time), not a live upstream URL.
+
+To re-render against newer upstream tokens or a longer span, re-sync the mirror, record a new commit SHA, and regenerate — **reusing the participant → role mapping above**. The previous archive remains valid for audit at its recorded SHA. Regeneration produces a new artifact; supersession is history, not deletion.

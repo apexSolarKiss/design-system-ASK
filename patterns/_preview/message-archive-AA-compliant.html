@@ -1,0 +1,352 @@
+<!doctype html>
+<!-- FLAVOR SEAM — data-flavor selects the participant ramp + metadata treatment.
+     data-flavor="default-ASK"   the ASK-preferred visual default (template default)
+     data-flavor="AA-compliant"  the accessibility-tuned alternative
+     PARTY-MODE SEAM — data-party-mode selects two-party vs group presentation.
+     data-party-mode="group"     full-fill participant roles + legend + sender labels
+     data-party-mode="two-party" author right / frosted other left, no legend, no sender labels
+     There is ONE template, ONE DOM, ONE geometry, ONE script. Flavors differ only in the
+     pattern-local role variables below. Do not fork this file. -->
+<html lang="en" data-flavor="AA-compliant" data-party-mode="group">
+<head>
+<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/message-archive-AA-compliant.html
+     GENERATED from patterns/message-archive/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../message-archive/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->
+<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/message-archive/">
+<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>[Archive title placeholder] // [source] archive</title>
+
+<!-- design-system-ASK foundations — local mirror.
+     DOWNSTREAM: adjust path if your mirror lives elsewhere.
+     FOREGROUND IS INHERITED — this template adds no global --fg-* rebind. -->
+<link rel="stylesheet" href="../../colors_and_type.css">
+
+<style>
+/* ======================================================================
+   Class B // message-archive — sealed interactive archive.
+
+   Participant color is IDENTITY, never state. It answers "which person",
+   not urgency, evidence, status, approval, or emphasis. Muted foundation
+   roles lead; softened derivations of the emphasis hues appear only for
+   additional participants. The derived values are PATTERN-LOCAL: they are
+   not foundation tokens, are not general-purpose colors, and authorize no
+   use outside this pattern. No Spectral-State or Evidence-State hue is used.
+
+   Theme follows the foundation mechanism exactly (data-theme wins over
+   prefers-color-scheme). The participant ramp is theme-invariant; only the
+   author fill and the page-level AA foreground resolve per theme.
+   ====================================================================== */
+:root{
+  /* --- shared by both flavors ------------------------------------- */
+  --ma-author-dark:#6e5c86;                    /* pattern-local */
+  --ma-p-a:var(--ask-ui-accent-2);             /* foundation, by reference (#AE87C2) */
+  --ma-p-b:var(--ask-surface);                 /* foundation, by reference (#BFB3D4) */
+  --ma-p-e:#569dbd;                            /* pattern-local — softened cyan */
+  --ma-ink:var(--fg-high-contrast);            /* foundation opt-in high-contrast (#201D26) */
+
+  /* --- default-ASK (template default) ------------------------------ */
+  --ma-author-light:var(--ask-ui-accent-1);    /* foundation, by reference (#8B79A2) */
+  --ma-p-c:#c44fc4;                            /* pattern-local — softened magenta */
+  --ma-p-d:#a56bd4;                            /* pattern-local — softened violet */
+
+  /* default-ASK metadata treatment — the approved ASK-preferred rendering.
+     Intentionally low-contrast. Do NOT pull these toward AA. */
+  --ma-op-sender:.72; --ma-op-time:.5; --ma-op-att:.7; --ma-op-attstate:.65; --ma-op-chan:.4;
+  --ma-chrome-fg:var(--fg-2);
+  --ma-chrome-faint:var(--fg-3);
+
+  /* geometry — identical across flavors and party modes */
+  --ma-bubble-max:74%; --ma-bubble-pad:7px 12px; --ma-radius:16px; --ma-tail:5px;
+  --ma-body:15px; --ma-meta:10px; --ma-gap:3px;
+
+  /* default-ASK keeps the foundation's intentionally faint boundary + glass roles. */
+  --ma-ctrl-line:var(--line-1); --ma-ctrl-bg:var(--ma-card);
+  --ma-rx-line:currentColor;    --ma-rx-bg:transparent;   /* chip edge rides the bubble's own fg */
+  --ma-focus:var(--ma-chrome-fg);
+  --ma-author-fg:#ffffff;
+  --ma-frosted:rgba(255,255,255,.62);
+  --ma-frosted-fg:var(--fg-1);
+  --ma-card:rgba(255,255,255,.24);
+  --ma-bar:rgba(212,198,225,.58);
+}
+
+/* --- AA-compliant: participant values + information-bearing roles ---- */
+:root[data-flavor="AA-compliant"]{
+  --ma-author-light:#7f6b99;
+  --ma-p-c:#c95fc9;
+  --ma-p-d:#a870d6;
+  /* Bubble-local information-bearing text inherits currentColor at full opacity.
+     Hierarchy moves to size, weight, spacing and grouping — never to faint text. */
+  --ma-op-sender:1; --ma-op-time:1; --ma-op-att:1; --ma-op-attstate:1; --ma-op-chan:1;
+  --ma-chrome-fg:var(--ma-page-aa);
+  --ma-chrome-faint:var(--ma-page-aa);
+  --ma-title-fg:var(--ma-page-aa);             /* the archive title is page-level essential text */
+  --ma-page-aa:var(--fg-high-contrast);        /* canonical opt-in high-contrast role — light */
+  /* AA non-text roles: control boundaries, chip edges and focus rings must clear 3:1.
+     The foundation hairline/glass roles are deliberately faint and do not; these are
+     pattern-local AA-scoped replacements, measured in the evidence matrix. */
+  --ma-ctrl-line:rgba(32,29,38,.65);
+  --ma-ctrl-bg:rgba(255,255,255,.55);
+  --ma-rx-line:currentColor;
+  --ma-rx-bg:transparent;   /* chip edge rides the bubble's own fg */
+  --ma-focus:var(--fg-high-contrast);
+}
+
+/* --- theme resolution (mirrors the foundation's own mechanism) -------- */
+:root{ --ma-author:var(--ma-author-light); }
+:root[data-theme="dark"]{
+  --ma-author:var(--ma-author-dark);
+  --ma-author-fg:#f3ecfa;
+  --ma-frosted:rgba(212,198,225,.10);
+  --ma-frosted-fg:#e8def3;
+  --ma-card:rgba(212,198,225,.08);
+  --ma-bar:rgba(16,14,20,.72);
+}
+:root[data-theme="dark"][data-flavor="AA-compliant"]{
+  --ma-page-aa:var(--fg-1);                   /* canonical dark foreground role (lavender-ASK) */
+  --ma-ctrl-line:rgba(212,198,225,.65); --ma-ctrl-bg:rgba(212,198,225,.14);
+  --ma-rx-line:currentColor;            --ma-rx-bg:transparent;
+  --ma-focus:var(--fg-1);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --ma-author:var(--ma-author-dark);
+    --ma-author-fg:#f3ecfa;
+    --ma-frosted:rgba(212,198,225,.10);
+    --ma-frosted-fg:#e8def3;
+    --ma-card:rgba(212,198,225,.08);
+    --ma-bar:rgba(16,14,20,.72);
+  }
+  :root:not([data-theme="light"]):not([data-theme="dark"])[data-flavor="AA-compliant"]{
+    --ma-page-aa:var(--fg-1);
+    --ma-ctrl-line:rgba(212,198,225,.65); --ma-ctrl-bg:rgba(212,198,225,.14);
+    --ma-rx-line:currentColor;            --ma-rx-bg:transparent;
+    --ma-focus:var(--fg-1);
+  }
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-weight:200;line-height:1.45;-webkit-font-smoothing:antialiased}
+
+/* --- header ---------------------------------------------------------- */
+.ma-top{max-width:880px;margin:0 auto;padding:40px 20px 4px;text-align:center}
+.ma-ttl{font-size:25px;font-weight:400;letter-spacing:-.02em;margin:0;color:var(--ma-title-fg,inherit)}
+.ma-sub{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-weight:300;font-size:12px;letter-spacing:.03em;margin-top:7px}
+.ma-lgnd{max-width:760px;margin:12px auto 0;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center}
+.ma-lg{font-family:var(--font-mono);font-weight:300;font-size:11px;color:var(--ma-chrome-fg);display:inline-flex;align-items:center;gap:6px}
+.ma-sw{width:12px;height:12px;border-radius:3px;display:inline-block;background:currentColor;border:1px solid var(--line-1)}
+.ma-prov{max-width:760px;margin:12px auto 0;color:var(--ma-chrome-fg);font-size:13px;text-align:left}
+.ma-prov summary{cursor:pointer;text-align:center;letter-spacing:.08em;text-transform:uppercase;font-size:11px;font-family:var(--font-mono);font-weight:300;color:var(--ma-chrome-faint)}
+.ma-prov summary:focus-visible{outline:2px solid var(--ma-focus);outline-offset:3px;border-radius:4px}
+.ma-prov p{font-weight:300;line-height:1.5}
+.ma-prov .ma-warn{border-left:2px solid var(--ma-p-a);padding:6px 12px;margin:8px 0;font-size:12px}
+
+/* --- sticky control bar ---------------------------------------------- */
+.ma-bar{position:sticky;top:0;z-index:10;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  margin-top:16px;background:var(--ma-bar);border-top:1px solid var(--line-1);border-bottom:1px solid var(--line-1)}
+.ma-bar .ma-in{max-width:880px;margin:0 auto;padding:10px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ma-q{flex:1;min-width:180px;background:var(--ma-ctrl-bg);border:1px solid var(--ma-ctrl-line);color:var(--ma-chrome-fg);
+  font-family:var(--font-sans);font-size:15px;font-weight:300;padding:8px 14px;border-radius:999px;outline:none}
+.ma-q::placeholder{color:var(--ma-chrome-faint);opacity:1}
+.ma-q:focus-visible,.ma-yr:focus-visible{outline:2px solid var(--ma-focus);outline-offset:2px}
+.ma-yr{background:var(--ma-ctrl-bg);border:1px solid var(--ma-ctrl-line);color:var(--ma-chrome-fg);
+  font-family:var(--font-mono);font-weight:300;font-size:12px;padding:8px 12px;border-radius:999px;cursor:pointer}
+.ma-yr option{font-family:var(--font-mono);font-weight:300}
+.ma-cnt{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-weight:300;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+
+/* --- timeline -------------------------------------------------------- */
+.ma-main{max-width:880px;margin:0 auto;padding:8px 16px 120px}
+.ma-day{content-visibility:auto}
+.ma-dh{position:sticky;top:54px;z-index:5;text-align:center;margin:22px 0 12px}
+.ma-dh span{display:inline-block;background:var(--ma-card);border:1px solid var(--line-1);color:var(--ma-chrome-fg);
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;backdrop-filter:blur(8px)}
+
+.ma-m{max-width:var(--ma-bubble-max);margin:var(--ma-gap) 0;padding:var(--ma-bubble-pad);border-radius:var(--ma-radius);
+  font-size:var(--ma-body);font-weight:300;width:fit-content;clear:both;white-space:pre-wrap;word-wrap:break-word}
+/* Bubble-local metadata inherits currentColor — the bubble's own passing foreground. */
+.ma-m .ma-tm{font-family:var(--font-mono);font-size:var(--ma-meta);font-weight:300;opacity:var(--ma-op-time)}
+.ma-m .ma-sndr{display:block;font-family:var(--font-mono);font-size:var(--ma-meta);font-weight:500;margin-bottom:1px;
+  letter-spacing:.03em;opacity:var(--ma-op-sender)}
+.ma-m .ma-chan{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;margin-left:6px;opacity:var(--ma-op-chan)}
+.ma-m .ma-rx-glyph{color:currentColor;font-family:var(--font-sans)}
+.ma-m .ma-rx{display:inline-flex;align-items:center;gap:4px;margin-left:7px;padding:0 7px;
+ font-size:11px;line-height:1.7;border-radius:999px;vertical-align:middle;
+ background:var(--ma-rx-bg);border:1px solid var(--ma-rx-line)}
+.ma-m .ma-att{display:inline-block;margin-left:6px;font-family:var(--font-mono);font-size:11px;opacity:var(--ma-op-att)}
+.ma-m .ma-att .ma-st{opacity:var(--ma-op-attstate)}
+
+/* FIXED role bindings — author is always the plum bubble on the right and is never recolored. */
+.ma-m.ma-author{background:var(--ma-author);color:var(--ma-author-fg);border-bottom-right-radius:var(--ma-tail);float:right;text-align:left}
+.ma-m.ma-default{background:var(--ma-frosted);color:var(--ma-frosted-fg);border-bottom-left-radius:var(--ma-tail);float:left}
+/* Additional group participants — one distinct fill per person, dark ink on every colored fill. */
+.ma-m.ma-role-a,.ma-m.ma-role-b,.ma-m.ma-role-c,.ma-m.ma-role-d,.ma-m.ma-role-e{
+  color:var(--ma-ink);border-bottom-left-radius:var(--ma-tail);float:left}
+.ma-m.ma-role-a{background:var(--ma-p-a)} .ma-m.ma-role-b{background:var(--ma-p-b)}
+.ma-m.ma-role-c{background:var(--ma-p-c)} .ma-m.ma-role-d{background:var(--ma-p-d)}
+.ma-m.ma-role-e{background:var(--ma-p-e)}
+
+/* PARTY-MODE SEAM — one implementation, not a second template. */
+:root[data-party-mode="two-party"] .ma-lgnd{display:none}
+/* The author never shows a visible name; two-party suppresses all visible names.
+   In both cases the label stays in the accessibility tree. */
+.ma-m.ma-author .ma-sndr,
+:root[data-party-mode="two-party"] .ma-m .ma-sndr{
+ position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+ overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;display:block}
+
+/* Visually hidden but present for assistive technology. Two-party mode hides sender
+   NAMES visually; it must not remove who-said-what from the accessibility tree. */
+.ma-vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+ overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ma-hidden{display:none!important}
+.ma-day.ma-empty{display:none}
+.ma-clear{clear:both}
+mark{background:var(--ma-p-a);color:var(--ma-ink);border-radius:3px}
+</style>
+</head>
+<body>
+<!-- ======================================================================
+  UNIT: one archive TIMELINE per delivered file. A timeline may consume one OR
+  MORE source threads / channels merged chronologically, preserving per-message
+  channel, source, and fidelity provenance. A consumer's generator emits this
+  markup from the NORMALIZED ARCHIVE MODEL documented in README.md.
+
+  BUBBLE ROLES (data-role):
+    author         -> .ma-m.ma-author    right, plum, ALWAYS; never reassigned.
+                     Carries a .ma-sndr label that is ALWAYS visually hidden but present
+                     in the accessibility tree — the author is never visibly named, but
+                     assistive technology must still be able to say who spoke.
+    participant-default -> .ma-m.ma-default  left, frosted (two-party default)
+    participant-a..e    -> .ma-m.ma-role-*   left, distinct fill + sender label
+  Every message carries a stable participant id (data-pid) and archive role
+  (data-role). The participant -> role mapping is MANIFEST-OWNED and PERSISTENT;
+  it is never frequency-derived, so a refresh cannot recolor a person.
+
+  ATTACHMENT FIDELITY — four states, none silent (data-state):
+    embedded · referenced · omitted-by-export · bytes-unavailable
+====================================================================== -->
+<header class="ma-top">
+  <h1 class="ma-ttl">[Archive title] // [source] archive</h1>
+  <div class="ma-sub">[N] messages // [start] &rarr; [end] // source: [source note]</div>
+
+  <!-- LEGEND — group mode only; hidden automatically in two-party mode. -->
+  <div class="ma-lgnd">
+    <span class="ma-lg" style="color:var(--ma-author)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Author]</span></span>
+    <span class="ma-lg" style="color:var(--ma-frosted)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant default]</span></span>
+    <span class="ma-lg" style="color:var(--ma-p-a)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant A]</span></span>
+    <span class="ma-lg" style="color:var(--ma-p-b)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant B]</span></span>
+    <span class="ma-lg" style="color:var(--ma-p-c)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant C]</span></span>
+    <span class="ma-lg" style="color:var(--ma-p-d)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant D]</span></span>
+    <span class="ma-lg" style="color:var(--ma-p-e)"><i class="ma-sw"></i><span style="color:var(--ma-chrome-fg)">[Participant E]</span></span>
+  </div>
+
+  <details class="ma-prov"><summary>provenance &amp; caveats</summary>
+    <p>[What this timeline is, which source threads / channels it merges, and how it was assembled.]</p>
+    <p class="ma-warn">[Media-fidelity profile in use, plus counts for every referenced / omitted-by-export /
+      bytes-unavailable item, and any history held elsewhere. No attachment disappears silently.]</p>
+    <p>[Flavor in use: default-ASK or AA-compliant. Participant &rarr; role mapping is manifest-owned and persistent.]</p>
+  </details>
+</header>
+
+<div class="ma-bar"><div class="ma-in">
+  <label class="ma-cnt" for="ma-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search messages</label>
+  <input class="ma-q" id="ma-q" type="search" placeholder="Search messages&hellip;" autocomplete="off">
+  <label class="ma-cnt" for="ma-yr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Jump to year</label>
+  <select class="ma-yr" id="ma-yr"><option value="">Jump to year&hellip;</option><option value="2024">2024</option></select>
+  <span class="ma-cnt" id="ma-cnt" role="status" aria-live="polite">[N] messages</span>
+</div></div>
+
+<main class="ma-main">
+  <!-- One <section class="ma-day"> per calendar day; id="ma-y-YYYY" on each year's first section.
+       data-s = lowercased searchable text. Close each day with <div class="ma-clear"></div>. -->
+  <!-- WHITESPACE CONTRACT — .ma-m carries `white-space: pre-wrap` so message text keeps its own
+       line breaks. That means any newline or indentation between the opening tag and the first
+       child IS RENDERED. Every bubble below therefore closes its start tag on the content line
+       (`\n     ><span …>`), and no whitespace is introduced before the message text. A generator
+       emitting this markup must do the same: open tag, then content, with nothing between. -->
+  <section class="ma-day" id="ma-y-2024"><div class="ma-dh"><span>[Mon, Jan 8, 2024]</span></div>
+
+    <div class="ma-m ma-author" data-pid="[author-id]" data-role="author" data-channel="[channel-1]"
+         data-s="[author] [message text lowercased]"
+    ><span class="ma-sndr">[Author]</span><span class="ma-tm">09:14</span> [Author message text]</div>
+
+    <div class="ma-m ma-default" data-pid="[pid-default]" data-role="participant-default" data-channel="[channel-1]"
+         data-s="[participant default] [message text lowercased]"
+    ><span class="ma-sndr">[Participant default]</span><span class="ma-tm">09:15</span> [Message text]</div>
+
+    <!-- ATTACHMENT STATE 1 — EMBEDDED (bytes inlined as a data: URI under the embedded profile). -->
+    <div class="ma-m ma-role-a" data-pid="[pid-a]" data-role="participant-a" data-channel="[channel-1]"
+         data-s="[participant a] [message text lowercased]"
+    ><span class="ma-sndr">[Participant A]</span><span class="ma-tm">09:16</span> [Message text]<span class="ma-att" data-state="embedded">&#128206; [file-name] <span class="ma-st">&middot; embedded</span></span></div>
+
+    <!-- ATTACHMENT STATE 2 — REFERENCED by filename. -->
+    <div class="ma-m ma-role-b" data-pid="[pid-b]" data-role="participant-b" data-channel="[channel-1]"
+         data-s="[participant b] [message text lowercased]"
+    ><span class="ma-sndr">[Participant B]</span><span class="ma-tm">09:17</span> [Message text]<span class="ma-att" data-state="referenced">&#128206; [file-name] <span class="ma-st">&middot; referenced</span></span></div>
+
+    <!-- ATTACHMENT STATE 3 — OMITTED BY EXPORT (the source export carried no media). -->
+    <div class="ma-m ma-default" data-pid="[pid-default]" data-role="participant-default" data-channel="[channel-1]"
+         data-s="[participant default] image omitted"
+    ><span class="ma-sndr">[Participant default]</span><span class="ma-tm">09:18</span> <span class="ma-att" data-state="omitted-by-export">&#128206; image <span class="ma-st">&middot; omitted by export</span></span></div>
+
+    <!-- ATTACHMENT STATE 4 — BYTES UNAVAILABLE (row exists; media never downloaded to the source device). -->
+    <div class="ma-m ma-role-c" data-pid="[pid-c]" data-role="participant-c" data-channel="[channel-1]"
+         data-s="[participant c] voice message bytes unavailable"
+    ><span class="ma-sndr">[Participant C]</span><span class="ma-tm">09:19</span> <span class="ma-att" data-state="bytes-unavailable">&#128206; [file-name] <span class="ma-st">&middot; bytes unavailable</span></span></div>
+
+    <!-- MERGED-CHANNEL FLAG — folded in from another source thread (note the differing data-channel).
+         Optional REACTION chip; visually hidden text names the reaction type and actor. -->
+    <div class="ma-m ma-role-d" data-pid="[pid-d]" data-role="participant-d" data-channel="[channel-2]"
+         data-s="[participant d] [message text lowercased]"
+    ><span class="ma-sndr">[Participant D]</span><span class="ma-tm">09:20</span> [Message text]<span class="ma-chan">[channel-2 label]</span><span class="ma-rx"><span class="ma-rx-glyph" aria-hidden="true">&#9829;&#65038;</span><span class="ma-vh">Reaction: [reaction type] from [Author]</span></span></div>
+
+    <div class="ma-m ma-role-e" data-pid="[pid-e]" data-role="participant-e" data-channel="[channel-1]"
+         data-s="[participant e] [message text lowercased]"
+    ><span class="ma-sndr">[Participant E]</span><span class="ma-tm">09:21</span> [Message text]</div>
+
+    <div class="ma-clear"></div>
+  </section>
+</main>
+
+<script>
+/* Offline client-side search + year jump. No network, no dependency. The sealed artifact
+   still freezes for audit: interaction navigates fixed content, it does not fetch it. */
+(function(){
+  var q=document.getElementById('ma-q'),c=document.getElementById('ma-cnt'),
+      D=[].slice.call(document.querySelectorAll('.ma-day')),
+      T=document.querySelectorAll('.ma-m').length,t;
+  function label(n,word){return n.toLocaleString()+' '+word}
+  c.textContent=label(T,'messages');
+  q.addEventListener('input',function(){
+    clearTimeout(t);
+    t=setTimeout(function(){
+      var s=q.value.trim().toLowerCase();
+      if(!s){D.forEach(function(d){d.classList.remove('ma-empty');
+        d.querySelectorAll('.ma-m').forEach(function(m){m.classList.remove('ma-hidden')})});
+        c.textContent=label(T,'messages');return}
+      var n=0;
+      D.forEach(function(d){var any=false;
+        d.querySelectorAll('.ma-m').forEach(function(m){
+          var hit=(m.dataset.s||'').indexOf(s)!==-1;
+          m.classList.toggle('ma-hidden',!hit); if(hit){any=true;n++}});
+        d.classList.toggle('ma-empty',!any)});
+      c.textContent=label(n,'matches');
+    },200);
+  });
+  document.getElementById('ma-yr').addEventListener('change',function(e){
+    var el=document.getElementById('ma-y-'+e.target.value);
+    if(el)el.scrollIntoView({behavior:'smooth'});
+  });
+})();
+</script>
+</body>
+</html>

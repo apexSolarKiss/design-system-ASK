@@ -24,7 +24,7 @@ const OUT = path.join(PATTERNS, '_preview');
 // the figure); a shared constant so the static + interactive FLOW previews get an IDENTICAL camera.
 const FLOW_PREVIEW_FIT = { dropSelectors: ['topSelector', 'bottomSelector', 'leftSelector', 'rightSelector'] };
 
-// canonical shell → { dir, out preview filename, previewFit?, flowMode? }
+// canonical shell → { dir, out preview filename, previewFit?, flowMode?, flavor? }
 const SHELLS = [
   { src: 'diagram-static-H/diagram-static-H.html',                 dir: 'diagram-static-H',           out: 'diagram-static-H.html' },
   { src: 'diagram-static-V/diagram-static-V.html',                 dir: 'diagram-static-V',           out: 'diagram-static-V.html' },
@@ -38,6 +38,12 @@ const SHELLS = [
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
   { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html' },
+  // Both message-archive previews render the SAME canonical template off ONE source; the generator
+  // sets data-flavor on the <html> tag so the gallery can show the two ratified flavors side by side
+  // without a second template, duplicated markup, or a flavor-specific geometry branch. Same pattern
+  // as the FLOW pair above: one canonical shell, two deterministic generated views.
+  { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html',  flavor: 'default-ASK' },
+  { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-AA-compliant.html', flavor: 'AA-compliant' },
 ];
 
 // Rewrite a src/href value from the canonical shell's perspective (patterns/<dir>/)
@@ -153,6 +159,13 @@ function render(s) {
     if (s.flowMode === 'static') {
       html = replaceOnce(html, /(<div class="fp-hint">)[\s\S]*?(<\/div>)/, `$1${STATIC_FLOW_HINT}$2`, "flow-panel hint", s.out);
     }
+  }
+  // message-archive flavor selection. The attribute is matched INSIDE the <html> tag specifically —
+  // the template's header comment documents both flavor values, so a bare data-flavor="…" pattern
+  // would match more than once and (correctly) trip the fail-closed guard. Anchoring to the open tag
+  // keeps replaceOnce's precondition meaningful: exactly one live flavor seam per document.
+  if (s.flavor) {
+    html = replaceOnce(html, /(<html\b[^>]*\bdata-flavor=")[^"]*(")/i, `$1${s.flavor}$2`, "html data-flavor attribute", s.out);
   }
   return html;
 }

@@ -22,7 +22,7 @@ Same-repo consumers, distinct from the public downstream repos above: they consu
 
 | Consumer | Status | Consumes | Notes |
 | --- | --- | --- | --- |
-| design-system-ASK owner pattern-preview gallery (`patterns/`) | first-party same-repo consumer | all previewed Class A patterns + `output-artifact` | Generated shells under `patterns/_preview/`, consumed by same-repo reference (no `_dsa-tokens/` mirror). Regenerate with `tools/gen-pattern-previews.mjs` and pass `--check` + visual verification whenever an adopted pattern changes. Preview-only illustrative fit / theme composition — no canonical engine, CSS, or token change. |
+| design-system-ASK owner pattern-preview gallery (`patterns/`) | first-party same-repo consumer | all previewed Class A patterns + `output-artifact` + `message-archive` (both flavors) | Generated shells under `patterns/_preview/`, consumed by same-repo reference (no `_dsa-tokens/` mirror). Regenerate with `tools/gen-pattern-previews.mjs` and pass `--check` + visual verification whenever an adopted pattern changes. Preview-only illustrative fit / theme composition — no canonical engine, CSS, or token change. |
 
 ## Vendoring granularity
 

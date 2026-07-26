@@ -29,9 +29,9 @@ This mirrors how **Class A diagrams** scope color: a class-targeted `--diagram-*
 | --- | --- | --- |
 | **A** — diagrams | SVG elements via classes | foundation `--fg-*`, via aliased `--diagram-*` text roles; structural strokes use a local `--diagram-line*` overlay |
 | **B** — output artifacts | base elements (`p`/`h1`/`h2` read `--fg-*` directly) | foundation `--fg-*`, plus a class-scoped `--artifact-line*` overlay for structural lines |
-| future — interactive | TBD per artifact class | decided by where color is applied |
+| **B** — message archive | bubble elements via role classes | **role-scoped bubble foregrounds** — `--fg-high-contrast` on colored participant fills, the author / frosted role foregrounds elsewhere; no global `--fg-*` rebind |
 
-Both classes bind **text** to the foundation `--fg-*` ramp; they differ only in how color reaches the element — Class B styles base elements directly, while Class A routes through class-targeted diagram roles that alias the foundation (SVG elements need class-targeted fills, and the diagram speaks in diagram roles). Each keeps a single scoped overlay for **structural lines only** (`--diagram-line*` / `--artifact-line*`), never for foreground — so neither forks the foreground from the foundation.
+The two document-and-diagram classes bind **text** to the foundation `--fg-*` ramp; they differ only in how color reaches the element — Class B styles base elements directly, while Class A routes through class-targeted diagram roles that alias the foundation (SVG elements need class-targeted fills, and the diagram speaks in diagram roles). Each keeps a single scoped overlay for **structural lines only** (`--diagram-line*` / `--artifact-line*`), never for foreground — so neither forks the foreground from the foundation. The Class B **`message-archive`** is the one implemented case where bubble text does **not** read `--fg-*`: its foregrounds are role-scoped per participant fill (identity, not state). It still adds no global rebind — the role colors are applied by class to the bubbles' own elements, so inherited prose is untouched.
 
 ## How to use it
 
