@@ -142,10 +142,10 @@ body{font-weight:200;line-height:1.45;-webkit-font-smoothing:antialiased}
 .ma-ttl{font-size:25px;font-weight:400;letter-spacing:-.02em;margin:0;color:var(--ma-title-fg,inherit)}
 .ma-sub{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-weight:300;font-size:12px;letter-spacing:.03em;margin-top:7px}
 .ma-lgnd{max-width:760px;margin:12px auto 0;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center}
-.ma-lg{font-family:var(--font-mono);font-size:11px;color:var(--ma-chrome-fg);display:inline-flex;align-items:center;gap:6px}
+.ma-lg{font-family:var(--font-mono);font-weight:300;font-size:11px;color:var(--ma-chrome-fg);display:inline-flex;align-items:center;gap:6px}
 .ma-sw{width:12px;height:12px;border-radius:3px;display:inline-block;background:currentColor;border:1px solid var(--line-1)}
 .ma-prov{max-width:760px;margin:12px auto 0;color:var(--ma-chrome-fg);font-size:13px;text-align:left}
-.ma-prov summary{cursor:pointer;text-align:center;letter-spacing:.08em;text-transform:uppercase;font-size:11px;font-family:var(--font-mono);color:var(--ma-chrome-faint)}
+.ma-prov summary{cursor:pointer;text-align:center;letter-spacing:.08em;text-transform:uppercase;font-size:11px;font-family:var(--font-mono);font-weight:300;color:var(--ma-chrome-faint)}
 .ma-prov summary:focus-visible{outline:2px solid var(--ma-focus);outline-offset:3px;border-radius:4px}
 .ma-prov p{font-weight:300;line-height:1.5}
 .ma-prov .ma-warn{border-left:2px solid var(--ma-p-a);padding:6px 12px;margin:8px 0;font-size:12px}
@@ -159,8 +159,9 @@ body{font-weight:200;line-height:1.45;-webkit-font-smoothing:antialiased}
 .ma-q::placeholder{color:var(--ma-chrome-faint);opacity:1}
 .ma-q:focus-visible,.ma-yr:focus-visible{outline:2px solid var(--ma-focus);outline-offset:2px}
 .ma-yr{background:var(--ma-ctrl-bg);border:1px solid var(--ma-ctrl-line);color:var(--ma-chrome-fg);
-  font-family:var(--font-mono);font-size:12px;padding:8px 12px;border-radius:999px;cursor:pointer}
-.ma-cnt{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;white-space:nowrap}
+  font-family:var(--font-mono);font-weight:300;font-size:12px;padding:8px 12px;border-radius:999px;cursor:pointer}
+.ma-yr option{font-family:var(--font-mono);font-weight:300}
+.ma-cnt{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-weight:300;font-size:11px;letter-spacing:.04em;white-space:nowrap}
 
 /* --- timeline -------------------------------------------------------- */
 .ma-main{max-width:880px;margin:0 auto;padding:8px 16px 120px}
@@ -176,6 +177,7 @@ body{font-weight:200;line-height:1.45;-webkit-font-smoothing:antialiased}
 .ma-m .ma-sndr{display:block;font-family:var(--font-mono);font-size:var(--ma-meta);font-weight:500;margin-bottom:1px;
   letter-spacing:.03em;opacity:var(--ma-op-sender)}
 .ma-m .ma-chan{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;margin-left:6px;opacity:var(--ma-op-chan)}
+.ma-m .ma-rx-glyph{color:currentColor;font-family:var(--font-sans)}
 .ma-m .ma-rx{display:inline-flex;align-items:center;gap:4px;margin-left:7px;padding:0 7px;
  font-size:11px;line-height:1.7;border-radius:999px;vertical-align:middle;
  background:var(--ma-rx-bg);border:1px solid var(--ma-rx-line)}
@@ -305,7 +307,7 @@ mark{background:var(--ma-p-a);color:var(--ma-ink);border-radius:3px}
          Optional REACTION chip; title names who reacted. -->
     <div class="ma-m ma-role-d" data-pid="[pid-d]" data-role="participant-d" data-channel="[channel-2]"
          data-s="[participant d] [message text lowercased]"
-    ><span class="ma-sndr">[Participant D]</span><span class="ma-tm">09:20</span> [Message text]<span class="ma-chan">[channel-2 label]</span><span class="ma-rx"><span aria-hidden="true">&#10084;&#65039;</span><span class="ma-vh">Reaction: [reaction type] from [Author]</span></span></div>
+    ><span class="ma-sndr">[Participant D]</span><span class="ma-tm">09:20</span> [Message text]<span class="ma-chan">[channel-2 label]</span><span class="ma-rx"><span class="ma-rx-glyph" aria-hidden="true">&#9829;&#65038;</span><span class="ma-vh">Reaction: [reaction type] from [Author]</span></span></div>
 
     <div class="ma-m ma-role-e" data-pid="[pid-e]" data-role="participant-e" data-channel="[channel-1]"
          data-s="[participant e] [message text lowercased]"

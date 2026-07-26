@@ -75,6 +75,8 @@ Run before sealing. Any item below fails the artifact.
 - The author's messages carry no sender identification at all, visible or assistive
 - The archive title is not a real heading element
 - A focus indicator or control boundary falls below 3:1 in the `AA-compliant` flavor
+- The **visible reaction glyph or label** falls below the applicable contrast threshold against its bubble fill — audit the rendered glyph, not only the chip container's computed color
+- The reaction uses a **forced emoji-presentation** sequence (e.g. `U+2764 U+FE0F`), which paints a fixed colour and ignores `currentColor`; use a text-presentation glyph (`U+2665 U+FE0E`) or a textual label
 
 ## Theme inheritance fails
 
