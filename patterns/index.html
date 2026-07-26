@@ -64,8 +64,8 @@
   <header>
     <div>
       <h1><span class="org">apexSolarKiss</span> / design-system-ASK <span style="color:var(--fg-3)">// pattern previews</span></h1>
-      <p class="lede">Live, owner-facing previews of every Class A diagram pattern + the Class B output-artifact
-        template. Each opens directly via <code>file://</code> from this clone // no server, no local
+      <p class="lede">Live, owner-facing previews of every Class A diagram pattern + the Class B output-artifact and message-archive
+        templates. Each opens directly via <code>file://</code> from this clone // no server, no local
         <code>_dsa-tokens</code> mirror. Each preview is a generated shell kept in parity with its canonical
         template // its source, helper, engine, styles, and exporter are consumed directly from the
         <b>canonical</b> pattern bundle, with DS-root tokens/fonts.</p>
@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <div class="group-label">Class B // output artifact</div>
+    <div class="group-label">Class B // project-output artifacts</div>
 
     <div class="card">
       <div class="cls">Class B // document</div>
@@ -145,6 +145,24 @@
       <div class="actions">
         <a href="_preview/output-artifact.html">preview</a>
         <a class="readme" href="output-artifact/README.md">README</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cls">Class B // sealed interactive archive</div>
+      <h2>message-archive</h2>
+      <p>One sealed, self-contained archive per merged conversation timeline: two-party and group bubble modes,
+         four explicit attachment states, offline search + year jump. Participant color encodes <b>identity</b>,
+         never state. Both previews render the SAME canonical template off one source // they differ only in
+         the pattern-local role values.</p>
+      <div class="variant">default-ASK (the ASK-preferred visual default) //</div>
+      <div class="actions">
+        <a href="_preview/message-archive-default-ASK.html">preview // default-ASK</a>
+      </div>
+      <div class="variant">AA-compliant (accessibility-tuned roles + chrome) //</div>
+      <div class="actions">
+        <a href="_preview/message-archive-AA-compliant.html">preview // AA-compliant</a>
+        <a class="readme" href="message-archive/README.md">README</a>
       </div>
     </div>
 

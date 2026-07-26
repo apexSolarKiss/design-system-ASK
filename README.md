@@ -16,7 +16,7 @@ This repo conforms to **`visual-identity-system.md`** in ASK's canonical context
 
 ## What this is
 
-A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. Interface and interaction state is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set. The opt-in exceptions are the ASK semantic-color primitives for data and architecture visualizations — Spectral State (element *state*) and Three Functions (structural *function*), below — not general UI color, and neither expands the palette.
+A foundational design system for **ASK** — a meta-brand expressed through a single wordmark, two diagonal gradients, and a deliberately small set of colors and weights. The system is reductive on purpose. Interface and interaction state is expressed through **weight, opacity, and motion** — never by introducing a hue outside the named set. The **foundation-level** opt-in exceptions are the ASK semantic-color primitives for data and architecture visualizations — Spectral State (element *state*) and Three Functions (structural *function*), below — not general UI color, and neither expands the palette. A separate **pattern-local participant-identity vocabulary** exists only inside `message-archive`; it is not a foundation primitive and does not open the unrestricted general palette.
 
 Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers on top of these tokens elsewhere; it does not live here.
 
@@ -31,21 +31,23 @@ Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers 
 
 ## Scope
 
-This repo carries foundations and may carry static-artifact inheritance scaffolds:
+This repo carries foundations and may carry artifact-inheritance scaffolds:
 
 1. **Foundations** — tokens, type, color, assets, and visual rules. The irreducible expression of the system and the inheritance source for other ASK-family surfaces.
-2. **Static-artifact inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them.
+2. **Artifact-inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them. A scaffold may be wholly static, or may carry self-contained client-side navigation and still freeze for audit; either way it inherits at generation time and seals.
 
 Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
 
 - **Class A** — system / architecture diagram templates, in two kinds:
   - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade), **`diagram-static-V`** (vertical top→down centered spine), **`diagram-static-SEQ`** (ordered top→down arrowed sequence — succession, not hierarchy), and **`diagram-static-FLOW`** (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back) — structural; state-free.
   - **interactive:** **`diagram-interactive-spine`** — a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
-- **Class B** — project-output artifact templates.
+- **Class B** — project-output artifact templates: **`output-artifact`** (static document) and **`message-archive`** (sealed interactive archive — offline search + navigation over frozen content). Client-side navigation over embedded content does not make an artifact Class A and does not earn a new class.
 
-Static artifacts inherit at generation time and freeze for audit. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
+Artifact scaffolds inherit at generation time and freeze for audit. A sealed interactive artifact may retain client-side navigation over embedded content; it introduces no live data dependency. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
-The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. The first is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color, and the **static** scaffolds above do not use it; the interactive `diagram-interactive-spine` is the state-bearing member that does.
+The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. These are the *foundation-level* bounded exceptions; a **pattern-level** bounded vocabulary also exists (see below). The first foundation primitive is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color, and the **static** scaffolds above do not use it; the interactive `diagram-interactive-spine` is the state-bearing member that does.
+
+Bounded color exceptions sit on three distinct axes, and none of them opens the general palette: **semantic state** — Spectral State and its sanctioned profiles (e.g. Evidence State); **structural function** — Three Functions; and **participant identity** — the Class B `message-archive` participant ramp. The first two are opt-in *foundation primitives*; the third is **pattern-local** — it lives inside `patterns/message-archive/`, is not a foundation token, and authorizes no use outside that pattern. No other values are available as unrestricted general-purpose colors.
 
 A primitive may carry sanctioned **profiles** for adjacent semantic domains. The first is **ASK Evidence State** (`evidence-state.css`), an epistemic evidence-state vocabulary built on Spectral State: it reuses three Spectral State values by reference and adds two evidence-specific roles (`weakened`, `not-yet-testable`), leaving Spectral State's own vocabulary unchanged.
 
@@ -70,6 +72,7 @@ A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
 | `CONSUMERS.md` | Known **public** downstream repos that consume these patterns/tokens — transparency record, not a customer list (private consumers tracked operator-side) |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
+| `patterns/message-archive/` | Class B sealed interactive archive scaffold — one template, two flavors, two-party/group modes, offline search and year navigation |
 | `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
 | `patterns/diagram-static-V/` | Class A system / architecture diagram scaffold — vertical top→down centered spine; for inheritance chains and one-axis information-architecture diagrams |
 | `patterns/diagram-static-SEQ/` | Class A system / architecture diagram scaffold — ordered top→down sequence joined by arrows, left-aligned; for pipelines, workflows, lifecycles (succession, not hierarchy) |
@@ -143,7 +146,7 @@ The gradient is **fixed to the viewport** (`background-attachment: fixed`), so s
 | `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
 | `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
-| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; reserved opt-in high-contrast light foreground |
+| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; opt-in high-contrast light foreground (first approved bounded use: the `message-archive` participant ramp) |
 | `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right |
 
 **Surface.** When a card or container needs a solid fill with more presence than a glass overlay:

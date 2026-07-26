@@ -113,7 +113,7 @@
   --fg-2: #827399;                                    /* secondary text */
   --fg-3: rgba(130, 115, 153, 0.62);                  /* tertiary / hint */
   --fg-on-card: var(--fg-1);                          /* text on solid/white surfaces — the approved default foreground (#6A637F) */
-  --fg-high-contrast: var(--ask-ink-light);           /* RESERVED opt-in high-contrast backup (#201D26); not reached by any approved surface — opt in explicitly, do not apply by font size */
+  --fg-high-contrast: var(--ask-ink-light);           /* OPT-IN high-contrast role (#201D26). First approved bounded use: the Class B message-archive participant ramp (dark ink on colored participant bubbles). Not the default foreground — opt in explicitly, do not apply by font size */
 
   --line-1: rgba(255, 255, 255, 0.45);                /* hairline divider */
   --line-2: rgba(255, 255, 255, 0.22);                /* fainter rule */
