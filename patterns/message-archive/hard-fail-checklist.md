@@ -53,7 +53,7 @@ Run before sealing. Any item below fails the artifact.
 
 ## Reaction-fidelity fails
 
-- A **source-native reaction message** — one the source exports as an ordinary message record — is dropped, or silently remodelled into `reactions[]`
+- A reaction exported as an ordinary message record **without a deterministic source-recorded target relationship** is dropped, or remodelled into `reactions[]` — the narrowly permitted transformation is the one the *source itself* supplies
 - A **target relation is inferred** from quoted text, proximity, matching prose, or other heuristic evidence and presented as source truth
 - The archive's **message count changes** merely to force reaction normalization
 - The manifest **omits the reaction representation mode or its counts**
@@ -72,10 +72,11 @@ Run before sealing. Any item below fails the artifact.
 - The delivered archive is **not self-contained**: it requires the network, a sibling stylesheet, or a sidecar font
 - An external `<link>` / `@import` / live raw-URL stylesheet reference survives into the delivered artifact
 - A relative or external font URL resolving outside the artifact survives into the delivered artifact — **inlining the token CSS alone does not seal the fonts**
-- The manifest **omits the font-sealing mode** (`embedded-data-uri` | `fallback-stacks`) — the mode is not inferable from the delivered bytes
-- `embedded-data-uri` is claimed but a font payload is **not self-contained**, or cannot be bound to the recorded input file and its SHA-256
+- The manifest **omits the font-sealing mode**, the canonical-font-files-carried answer, or the typography-guaranteed answer — the mechanical mode is inspectable in the bytes, but **input-file provenance and a deliberate downgrade are not**
+- `embedded-data-uri` is claimed but a font payload is **not self-contained**, or its decoded `data:` bytes **do not hash to the input SHA-256** recorded in *Files copied into local mirror*
+- The font-sealing section **restates** input paths or hashes instead of referencing the canonical mirror table — one provenance record must not carry two editable copies of the same hash
 - `fallback-stacks` is used but an `@font-face` block, or a broken font URL, survives into the delivered artifact
-- `fallback-stacks` is used and the artifact or manifest **claims canonical typeface fidelity** — a fallback-rendered archive is a documented downgrade, not typography parity
+- `fallback-stacks` is used and the artifact or manifest **claims canonical font bytes are embedded, or that exact typography is guaranteed** — the downgrade is about what the artifact *carries*, so an archive that happens to render Inter on a machine with Inter installed is **not** a failure
 - Search or year navigation fetches anything at runtime
 - An unreplaced template marker (`[placeholder]`, `0000000`) appears in the delivered artifact
 

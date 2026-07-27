@@ -220,9 +220,11 @@ Where the consumer deliberately chooses not to embed font bytes:
 - **remove** the `@font-face` declarations entirely;
 - retain the existing `--font-sans` / `--font-mono` fallback stacks so font *roles* survive;
 - leave no relative or external font URL anywhere in the delivered artifact;
-- record in the manifest that **canonical ASK typeface fidelity is not preserved** and that system fallbacks will render the archive.
+- record in the manifest that **canonical font files are not carried by the artifact** and that **exact typography is not guaranteed** by it.
 
-This is a legitimate sealed-output option. It is **not** typography parity — do not present a fallback-rendered archive as equivalent to embedded Inter + JetBrains Mono.
+Be precise about what this mode does and does not determine. The retained stacks still *begin* with `'Inter'` and `'JetBrains Mono'`, so rendering is **environment-dependent**: a viewing system with those families installed locally may resolve them; another falls through to the later generic entries. The invariant is not a prediction about which family appears — it is that the artifact **carries no canonical font bytes and therefore cannot guarantee typography across environments**.
+
+This is a legitimate sealed-output option. It is **not** typography parity — do not present a fallback-mode archive as equivalent to one with embedded Inter + JetBrains Mono, and do not claim guaranteed typography on the strength of a machine that happens to have the fonts installed.
 
 Prior sealed archives remain valid at their recorded SHA. This clarification records how to seal correctly going forward; it **creates no retrofit obligation** (see below).
 

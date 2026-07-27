@@ -65,27 +65,30 @@ The exact template inherited, not merely the repository revision.
 
 ## Font sealing
 
-Not inferable from the delivered bytes alone — declare it.
+The mechanical mode can be inspected in the delivered bytes — data-backed `@font-face` rules are either present or absent. What those bytes cannot establish is the **input-file provenance**, the recorded hashes, or whether a fidelity downgrade was **deliberate**. Declare all three.
 
 - Font sealing mode: `embedded-data-uri` | `fallback-stacks`
-- Canonical typefaces preserved: `yes` | `no`
+- Canonical font files carried by artifact: `yes` | `no`
+- Typography fidelity guaranteed by artifact: `yes` | `no`
 
 **For `embedded-data-uri`:**
 
-| Embedded font file | Input path in mirror | Input SHA-256 | `data:` URI present + validated |
-| --- | --- | --- | --- |
-| InterVariable.woff2 | `_dsa-tokens/fonts/InterVariable.woff2` | `<sha256 here>` | `yes` |
-| InterVariable-Italic.woff2 | `_dsa-tokens/fonts/InterVariable-Italic.woff2` | `<sha256 here>` | `yes` |
-| JetBrainsMono.woff2 | `_dsa-tokens/fonts/JetBrainsMono.woff2` | `<sha256 here>` | `yes` |
-| JetBrainsMono-Italic.woff2 | `_dsa-tokens/fonts/JetBrainsMono-Italic.woff2` | `<sha256 here>` | `yes` |
+Input paths and hashes are owned once, by **Files copied into local mirror** above. Do not restate them here — one provenance record must not carry two editable copies of the same hash.
 
-Each embedded payload is bound to the copied mirror file above and its recorded hash.
+| Font file | Input hash source | Decoded `data:` payload hashes to the recorded input SHA-256 |
+| --- | --- | --- |
+| InterVariable.woff2 | *Files copied into local mirror*, row above | `yes` |
+| InterVariable-Italic.woff2 | *Files copied into local mirror*, row above | `yes` |
+| JetBrainsMono.woff2 | *Files copied into local mirror*, row above | `yes` |
+| JetBrainsMono-Italic.woff2 | *Files copied into local mirror*, row above | `yes` |
+
+Validation means **decode the embedded `data:` URI and hash its bytes**, then compare to the input SHA-256 in the canonical table. Confirming that a `data:` string merely exists is not validation.
 
 **For `fallback-stacks`:**
 
 - `@font-face` declarations removed: `yes`
 - Relative / external font URLs remaining: `0`
-- Fallback downgrade disclosed: **canonical ASK typeface fidelity is not preserved; system fallbacks render this archive.**
+- Downgrade disclosed: **canonical font files are not carried by this artifact.** Rendering is **environment-dependent** — a viewing system with Inter / JetBrains Mono installed locally may resolve those families from the retained stacks; another will fall through to the later generic entries. **Exact ASK typography is not guaranteed by the artifact.**
 
 ## Assembly provenance
 
@@ -138,7 +141,7 @@ Every attachment is represented in exactly one state. Nothing is dropped silentl
 - Reaction representation: `none` | `structured-targeted` | `message-records` | `mixed`
 - Structured targeted reaction count (in `reactions[]`): `[N]`
 - Source-native reaction-message count (retained in `messages[]`): `[N]`
-- Records transformed between representations: `[N]` — `0` unless a deterministic source relationship supported it
+- Records transformed between representations: `[N]` — **`0` unless the source itself supplies the deterministic target relationship.** Where nonzero, record that relationship and how each record's sender, timestamp, and provenance were preserved. Heuristic target matching is never a warrant.
 - Unresolved structured reaction count: `[N]`
 - `reacted_at` available: `yes` | `no` (optional where the source does not carry it)
 - Transformation / preservation policy: `[...]`
@@ -158,6 +161,6 @@ Tool identity, version and configuration are recorded once under **Renderer** ab
 
 ## Audit / freeze note
 
-This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The rendered HTML reads the local token mirror synced into the bundle (or tokens inlined at seal time), not a live upstream URL.
+This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The **editable template** reads the pinned local token mirror; the **sealed HTML** inlines the token CSS and applies the declared font-sealing mode, reading no sibling stylesheet, no font sidecar, and no live upstream URL.
 
 To re-render against newer upstream tokens or a longer span, re-sync the mirror, record a new commit SHA, and regenerate — **reusing the participant → role mapping above**. The previous archive remains valid for audit at its recorded SHA. Regeneration produces a new artifact; supersession is history, not deletion.
