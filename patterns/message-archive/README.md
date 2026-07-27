@@ -199,7 +199,7 @@ The bubble **foregrounds** and translucent chrome fills are implementation-local
 
 The editable template **links** `./_dsa-tokens/colors_and_type.css` as a build input. A delivered single-file archive must carry **no sibling stylesheet and no font dependency** — and inlining the token CSS alone does not achieve that: `colors_and_type.css` declares four `@font-face` blocks whose `src` values are **relative** (`fonts/InterVariable.woff2` and siblings). Inlined unchanged, those URLs resolve against the archive's own location and break.
 
-Two sealing modes are valid. **Declare which one the artifact used in its manifest** — the choice is not inferable from the bytes alone.
+Two sealing modes are valid. **Declare which one the artifact used in its manifest.** The mechanical mode can be inspected in the delivered bytes; input-file provenance, recorded hashes, and whether a fidelity downgrade was deliberate cannot be established from those bytes alone.
 
 ### `embedded-data-uri` — preferred, full fidelity
 
