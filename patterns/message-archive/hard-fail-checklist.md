@@ -51,6 +51,14 @@ Run before sealing. Any item below fails the artifact.
 - Provenance omits the media-fidelity profile, or omits counts for omitted / unavailable items
 - The archive claims completeness it does not have
 
+## Reaction-fidelity fails
+
+- A **source-native reaction message** — one the source exports as an ordinary message record — is dropped, or silently remodelled into `reactions[]`
+- A **target relation is inferred** from quoted text, proximity, matching prose, or other heuristic evidence and presented as source truth
+- The archive's **message count changes** merely to force reaction normalization
+- The manifest **omits the reaction representation mode or its counts**
+- A source that genuinely carries **both** representations is collapsed into one without disclosure
+
 ## Source-data safety fails
 
 - A source-derived text node or attribute value is emitted **unescaped**
@@ -63,7 +71,11 @@ Run before sealing. Any item below fails the artifact.
 
 - The delivered archive is **not self-contained**: it requires the network, a sibling stylesheet, or a sidecar font
 - An external `<link>` / `@import` / live raw-URL stylesheet reference survives into the delivered artifact
-- A relative font URL resolving outside the artifact survives into the delivered artifact
+- A relative or external font URL resolving outside the artifact survives into the delivered artifact — **inlining the token CSS alone does not seal the fonts**
+- The manifest **omits the font-sealing mode** (`embedded-data-uri` | `fallback-stacks`) — the mode is not inferable from the delivered bytes
+- `embedded-data-uri` is claimed but a font payload is **not self-contained**, or cannot be bound to the recorded input file and its SHA-256
+- `fallback-stacks` is used but an `@font-face` block, or a broken font URL, survives into the delivered artifact
+- `fallback-stacks` is used and the artifact or manifest **claims canonical typeface fidelity** — a fallback-rendered archive is a documented downgrade, not typography parity
 - Search or year navigation fetches anything at runtime
 - An unreplaced template marker (`[placeholder]`, `0000000`) appears in the delivered artifact
 

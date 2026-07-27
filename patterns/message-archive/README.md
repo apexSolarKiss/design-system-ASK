@@ -41,6 +41,23 @@ reactions[]
   type · actor_id · target_message_id · reacted_at   // reacted_at optional where unavailable
 ```
 
+## Reaction fidelity — two valid source representations
+
+`reactions[]` is a **destination, not a mandate.** Sources represent reactions in more than one way, and forcing every reaction-like record into that array can destroy source truth rather than normalize it.
+
+**Structured targeted reaction** — manifest mode `structured-targeted`. Use `reactions[]` only where the source carries a **deterministic target relationship** — enough to populate `target_message_id` without speculative association.
+
+**Source-native reaction message** — manifest mode `message-records`. Where the source itself exports a reaction as an **ordinary message record**, with its own sender and timestamp, and supplies no deterministic target relationship, preserve it 1:1 in `messages[]`:
+
+- keep its source provenance and its place in the ordinary message count;
+- **do not infer a target** from quoted text, proximity, matching prose, or any other heuristic evidence;
+- do not delete the message merely to populate `reactions[]`;
+- do not reduce the archive's message count to force a different model.
+
+A source that genuinely contains both representations is `mixed`, and mixed is valid. A source carrying neither is `none`. What is not valid is collapsing one representation into the other silently.
+
+The distinction the manifest must preserve is between a **relationship the source recorded** and one the **consumer inferred**. An inferred association presented as source truth is a fidelity failure even when the guess is good — and a heuristic that resolves most records still strands the remainder in a different representation from their siblings.
+
 ## Attachment fidelity — four states, none silent
 
 ```text
@@ -169,7 +186,7 @@ The bubble **foregrounds** and translucent chrome fills are implementation-local
 
 ## How to use it
 
-1. Copy `message-archive.template.html` into the consuming project and sync a local `_dsa-tokens/` mirror (or inline the tokens at seal time).
+1. Copy `message-archive.template.html` into the consuming project and sync a local `_dsa-tokens/` mirror. For the **editable template** the mirror is a linked build input; for the **delivered archive** it is inlined and sealed away — see *Seal-time font handling* below, because inlining the token CSS alone does **not** seal the fonts.
 2. Emit the message markup from your normalized model. Preserve `data-pid`, `data-role`, `data-channel`, and `data-s`.
 3. Set `data-flavor` and `data-party-mode` on the root element.
 4. Replace every `[placeholder]`.
@@ -177,6 +194,37 @@ The bubble **foregrounds** and translucent chrome fills are implementation-local
 6. Run `hard-fail-checklist.md` before sealing.
 
 **Whitespace contract:** `.ma-m` carries `white-space: pre-wrap` so message text keeps its own line breaks. A generator must emit the opening tag and the first child with **nothing between them** — any newline or indentation there is rendered as literal leading whitespace inside the bubble.
+
+## Seal-time font handling
+
+The editable template **links** `./_dsa-tokens/colors_and_type.css` as a build input. A delivered single-file archive must carry **no sibling stylesheet and no font dependency** — and inlining the token CSS alone does not achieve that: `colors_and_type.css` declares four `@font-face` blocks whose `src` values are **relative** (`fonts/InterVariable.woff2` and siblings). Inlined unchanged, those URLs resolve against the archive's own location and break.
+
+Two sealing modes are valid. **Declare which one the artifact used in its manifest** — the choice is not inferable from the bytes alone.
+
+### `embedded-data-uri` — preferred, full fidelity
+
+For a single delivered HTML:
+
+- inline `colors_and_type.css`;
+- **preserve** the `@font-face` declarations;
+- replace every relative font URL with a **base64 `data:` URI generated from the copied WOFF2 bytes**;
+- preserve Inter and JetBrains Mono;
+- record the input font files, their SHA-256, and the sealing mode in the manifest.
+
+Bind each embedded payload to the **copied mirror file and its recorded hash**. Base64-encoding an arbitrary local font that merely shares a name is not this mode.
+
+### `fallback-stacks` — permitted, documented downgrade
+
+Where the consumer deliberately chooses not to embed font bytes:
+
+- **remove** the `@font-face` declarations entirely;
+- retain the existing `--font-sans` / `--font-mono` fallback stacks so font *roles* survive;
+- leave no relative or external font URL anywhere in the delivered artifact;
+- record in the manifest that **canonical ASK typeface fidelity is not preserved** and that system fallbacks will render the archive.
+
+This is a legitimate sealed-output option. It is **not** typography parity — do not present a fallback-rendered archive as equivalent to embedded Inter + JetBrains Mono.
+
+Prior sealed archives remain valid at their recorded SHA. This clarification records how to seal correctly going forward; it **creates no retrofit obligation** (see below).
 
 ## Snapshot / retention doctrine
 
