@@ -63,6 +63,33 @@ The exact template inherited, not merely the repository revision.
 - Artifact SHA-256: `[...]`
 - Byte size: `[...]`
 
+## Font sealing
+
+The mechanical mode can be inspected in the delivered bytes — data-backed `@font-face` rules are either present or absent. What those bytes cannot establish is the **input-file provenance**, the recorded hashes, or whether a fidelity downgrade was **deliberate**. Declare all three.
+
+- Font sealing mode: `embedded-data-uri` | `fallback-stacks`
+- Canonical font files carried by artifact: `yes` | `no`
+- Typography fidelity guaranteed by artifact: `yes` | `no`
+
+**For `embedded-data-uri`:**
+
+Input paths and hashes are owned once, by **Files copied into local mirror** above. Do not restate them here — one provenance record must not carry two editable copies of the same hash.
+
+| Font file | Input hash source | Decoded `data:` payload hashes to the recorded input SHA-256 |
+| --- | --- | --- |
+| InterVariable.woff2 | *Files copied into local mirror*, row above | `yes` |
+| InterVariable-Italic.woff2 | *Files copied into local mirror*, row above | `yes` |
+| JetBrainsMono.woff2 | *Files copied into local mirror*, row above | `yes` |
+| JetBrainsMono-Italic.woff2 | *Files copied into local mirror*, row above | `yes` |
+
+Validation means **decode the embedded `data:` URI and hash its bytes**, then compare to the input SHA-256 in the canonical table. Confirming that a `data:` string merely exists is not validation.
+
+**For `fallback-stacks`:**
+
+- `@font-face` declarations removed: `yes`
+- Relative / external font URLs remaining: `0`
+- Downgrade disclosed: **canonical font files are not carried by this artifact.** Rendering is **environment-dependent** — a viewing system with Inter / JetBrains Mono installed locally may resolve those families from the retained stacks; another will fall through to the later generic entries. **Exact ASK typography is not guaranteed by the artifact.**
+
 ## Assembly provenance
 
 How this timeline was produced. Generic and wall-safe — no private paths, identifiers, or payload.
@@ -111,8 +138,15 @@ Every attachment is represented in exactly one state. Nothing is dropped silentl
 
 ## Reactions
 
-- Reaction count: `[N]`
+- Reaction representation: `none` | `structured-targeted` | `message-records` | `mixed`
+- Structured targeted reaction count (in `reactions[]`): `[N]`
+- Source-native reaction-message count (retained in `messages[]`): `[N]`
+- Records transformed between representations: `[N]` — **`0` unless the source itself supplies the deterministic target relationship.** Where nonzero, record that relationship and how each record's sender, timestamp, and provenance were preserved. Heuristic target matching is never a warrant.
+- Unresolved structured reaction count: `[N]`
 - `reacted_at` available: `yes` | `no` (optional where the source does not carry it)
+- Transformation / preservation policy: `[...]`
+
+State plainly which relationships the **source recorded** and which, if any, the **consumer inferred**. A source-native reaction message stays in `messages[]` and in the message count; it is never remodelled into `reactions[]` on heuristic evidence.
 
 ## Render
 
@@ -127,6 +161,6 @@ Tool identity, version and configuration are recorded once under **Renderer** ab
 
 ## Audit / freeze note
 
-This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The rendered HTML reads the local token mirror synced into the bundle (or tokens inlined at seal time), not a live upstream URL.
+This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The **editable template** reads the pinned local token mirror; the **sealed HTML** inlines the token CSS and applies the declared font-sealing mode, reading no sibling stylesheet, no font sidecar, and no live upstream URL.
 
 To re-render against newer upstream tokens or a longer span, re-sync the mirror, record a new commit SHA, and regenerate — **reusing the participant → role mapping above**. The previous archive remains valid for audit at its recorded SHA. Regeneration produces a new artifact; supersession is history, not deletion.
