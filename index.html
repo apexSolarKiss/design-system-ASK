@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK — public surfaces</title>
+<meta name="description" content="design-system-ASK. Minimal design foundations for the ASK visual identity. Style guide and pattern previews.">
+<meta name="color-scheme" content="light dark">
+<!-- ============================================================
+     PUBLIC NAVIGATION SHELL — design-system-ASK/index.html
+     Navigation only. This is not a documentation surface: README.md
+     remains the repo's prose, preview/styleguide.html the canonical
+     token-review surface, and patterns/index.html the owner pattern
+     gallery. Do not grow this file into a third description of the
+     design system.
+     The wordmark references the canonical mode pairings in assets/;
+     path data is never duplicated here. Interaction follows the
+     README's hover/press/focus contract. Links are relative so this
+     shell works from the public deployment and by double-click from a
+     clean clone; the clean routes (/styleguide/, /patterns/) are
+     supplied by vercel.json for external linking.
+     ============================================================ -->
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-gradient, var(--surface-solid));
+    color: var(--fg-1);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 72px 32px 96px; }
+  /* Mode pairings per README (Logo placement): #FFFFFF on the light gradient,
+     lavender-ASK on the dark gradient. Two canonical assets toggled by CSS
+     rather than <picture>/srcset, because srcset selection is not re-evaluated
+     when the color scheme changes after load — a CSS media query is. */
+  .mark { width: 132px; height: auto; display: block; }
+  .mark-dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    .mark-light { display: none; }
+    .mark-dark { display: block; }
+  }
+  h1 { font-size: 20px; letter-spacing: 0.02em; margin: 28px 0 0; font-weight: 600; }
+  h1 .org { color: var(--fg-2); }
+  .lede {
+    color: var(--fg-2); font-size: 13px; line-height: 1.75; margin: 14px 0 0;
+    font-family: Inter, system-ui, sans-serif; max-width: 62ch;
+  }
+  hr { border: 0; border-top: 1px solid var(--line-1); margin: 32px 0; }
+  .routes { display: flex; flex-direction: column; gap: 10px; }
+  a.route {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+    text-decoration: none; color: var(--fg-1);
+    background: var(--surface-glass-2); border: 1px solid var(--line-1);
+    border-radius: 12px; padding: 16px 18px;
+    transition:
+      border-color var(--dur-2) var(--ease-out),
+      opacity var(--dur-2) var(--ease-out),
+      transform var(--dur-1) var(--ease-out),
+      box-shadow var(--dur-2) var(--ease-out);
+  }
+  /* Interaction contract (README, Hover/press/focus): hover drops opacity to
+     0.92 with no color shift — the border is left alone, because in light mode
+     --line-1 is translucent white and currentColor is #6A637F, so overriding it
+     would change hue rather than brighten. Press is scale(0.97) at --dur-1
+     (120ms); focus is the white glow, never the browser default. */
+  a.route:hover { opacity: 0.92; }
+  a.route:active { transform: scale(0.97); }
+  a.route:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+  }
+  a.route .name { font-size: 14px; font-weight: 600; letter-spacing: 0.01em; }
+  a.route .what {
+    color: var(--fg-2); font-size: 12.5px; font-family: Inter, system-ui, sans-serif;
+  }
+  footer {
+    margin-top: 36px; color: var(--fg-3); font-size: 11px; line-height: 1.7;
+    font-family: Inter, system-ui, sans-serif;
+  }
+  footer code { font-family: 'JetBrains Mono', ui-monospace, monospace; color: var(--fg-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <img class="mark mark-light" src="assets/logo-ASK-white.png" alt="ASK" width="2160" height="974">
+  <img class="mark mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+
+  <h1><span class="org">apexSolarKiss</span> / design-system-ASK</h1>
+  <p class="lede">Minimal design foundations for the ASK visual identity. Tokens remain irreducible. The repo
+    also carries artifact inheritance scaffolds and opt-in semantic primitives that show downstream surfaces
+    how to consume them without redefining them.</p>
+
+  <hr>
+
+  <div class="routes">
+    <a class="route" href="preview/styleguide.html">
+      <span class="name">style guide</span>
+      <span class="what">Canonical token review surface: color, type, spacing, and roles.</span>
+    </a>
+    <a class="route" href="patterns/index.html">
+      <span class="name">pattern previews</span>
+      <span class="what">Owner-facing gallery of Class A diagram patterns and Class B artifact templates.</span>
+    </a>
+    <a class="route" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">
+      <span class="name">repository</span>
+      <span class="what">github.com/apexSolarKiss/design-system-ASK</span>
+    </a>
+  </div>
+
+  <footer>
+    These surfaces render live from this repository. A change here updates them on deployment, with no
+    downstream copy to re-synchronize. Both also open directly via <code>file://</code> from a clean clone.
+  </footer>
+
+</div>
+</body>
+</html>
