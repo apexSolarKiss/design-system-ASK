@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/surface-shell.html
+     GENERATED from patterns/surface-shell/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../surface-shell/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->
+<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/surface-shell/">
+<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[consuming-project] — [surface name]</title>
+<meta name="description" content="[one-line description of this surface]">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference at generation time">
+<meta name="color-scheme" content="light dark">
+
+<!-- design-system-ASK foundations — local mirror.
+     DOWNSTREAM: adjust path if your mirror lives elsewhere.
+     The foundation styles base elements (html, body, h1-h3, p, a, code) and
+     paints the gradient field. The shell itself defines no body rule and
+     rebinds no foundation role. A consuming surface MAY add a deliberate,
+     token-based payload or instance default on body — a mono-default page,
+     say. It may NOT redefine a Tier-1 or Tier-2 role, and duplicating a
+     foundation binding with no purpose is noise, not a default. -->
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="../surface-shell/surface-shell.css">
+
+<style>
+  /* Payload styling belongs to the consuming surface, not to the shell.
+     These few rules exist so the specimen shows a payload under the rule;
+     replace them wholesale. */
+  .payload { display: flex; flex-direction: column; gap: var(--space-4); }
+  .payload-block {
+    background: var(--surface-glass-2);
+    border: 1px solid var(--line-1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-2);
+  }
+  /* The control slot's occupant is skinned by the consuming surface, never by
+     the shell. This rule exists only so the specimen shows a plausibly sized
+     control rather than raw body text. Replace it with your own control. */
+  .slot-demo { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); }
+</style>
+</head>
+<body>
+
+<div class="surface">
+
+  <!-- LANDMARKS. header / main / footer are part of the shell contract, not a
+       styling choice: they give this page its one banner, one main, and one
+       contentinfo landmark, which is how a nonvisual reader skips straight to
+       the payload. Every selector below is class-based, so restyling never
+       depends on the element — but substituting a <div> silently deletes a
+       landmark. -->
+  <header class="surface-head">
+    <div class="surface-head-main">
+
+      <!-- IDENTITY MARK — consumer-owned. The shell owns the slot's width and
+           alignment; the mark inside it is your project's own Tier 3. This
+           pattern ships no organization's wordmark, and the placeholder pair
+           below is a specimen: replace both children wholesale.
+
+           The accessible name lives on the WRAPPER and nowhere else, so it
+           holds through a mode change. A name on the light mark would vanish
+           with that element in dark mode, leaving the visible mark unnamed.
+
+           Two children give you a light/dark pairing; the shell shows exactly
+           one per resolved mode. A single responsive SVG or <img> is equally
+           valid — drop one child and both modifier classes. -->
+      <div class="surface-mark" role="img" aria-label="[consuming organization]">
+        <svg class="surface-mark-light" viewBox="0 0 216 97" aria-hidden="true" focusable="false">
+          <rect x="1" y="1" width="214" height="95" rx="10" fill="none"
+                stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 5"/>
+          <text x="108" y="55" text-anchor="middle" font-size="16"
+                fill="currentColor" fill-opacity="0.7">[light mark]</text>
+        </svg>
+        <svg class="surface-mark-dark" viewBox="0 0 216 97" aria-hidden="true" focusable="false">
+          <rect x="1" y="1" width="214" height="95" rx="10" fill="none"
+                stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 5"/>
+          <text x="108" y="55" text-anchor="middle" font-size="16"
+                fill="currentColor" fill-opacity="0.7">[dark mark]</text>
+        </svg>
+      </div>
+
+      <!-- Surface identity. The .org span carries the owning organization and
+           the .page span the payload name within the surface family; the
+           middle segment is the surface itself. A single-surface consumer
+           omits the .page span. -->
+      <h1 class="surface-title"><span class="org">[org]</span> / [repo] <span class="page">// [surface name]</span></h1>
+
+      <p class="surface-lede">[One or two sentences stating what this surface is and what a reader
+        will find below. Plain present tense. The lede describes the surface, not the project.]</p>
+
+      <!-- OPTIONAL status pill. Omit the element when the surface carries no
+           standing classification. -->
+      <span class="surface-badge">[optional status]</span>
+
+    </div>
+
+    <!-- OPTIONAL control slot, for a payload-specific control such as a
+         preview mode selector. Omit the whole element when unused; the shell
+         reserves no space for an absent control. The control's own behavior
+         and styling belong to the consuming surface. -->
+    <div class="surface-head-aside"><span class="slot-demo">[optional control]</span></div>
+
+  </header>
+
+  <hr class="surface-rule">
+
+  <!-- The payload landmark. The shell requires <main> and styles nothing
+       inside it; .surface-payload is a hook for your own layout. -->
+  <main class="surface-payload payload">
+    <div class="payload-block">[payload]</div>
+    <div class="payload-block">[payload]</div>
+  </main>
+
+  <!-- Footer. Right-aligned by the shell — the reading path ends here. Content
+       is the consuming surface's own; the alignment is not a local choice. -->
+  <footer class="surface-footer">
+    <a href="#">[link]</a>
+    <a href="#">[link]</a>
+    <a href="#">[link]</a>
+  </footer>
+
+</div>
+
+</body>
+</html>

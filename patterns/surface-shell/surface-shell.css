@@ -1,0 +1,198 @@
+/* =========================================================================
+   surface-shell — canonical implementation.
+
+   The shared page shell for a family of public surfaces: an identity mark,
+   surface identity, title, lede, an optional status badge, an optional
+   payload control slot, the rule that opens the payload, and the footer that
+   closes the page. The shell owns the chrome around the payload. It owns no
+   payload.
+
+   This is a canonical pattern, vendored downstream at a pinned commit. It
+   carries no organization's identity: a consuming project supplies its own
+   Tier 3 — the same boundary the output-artifact pattern already draws.
+
+   It composes existing var() roles and introduces no token and no palette
+   color. The single literal value is the focus glow's translucent white,
+   which the repo README's hover/press/focus contract specifies verbatim and
+   for which no token exists; adding any other raw value here is a defect.
+
+   Because it frames a whole page, this pattern owns that page's landmark
+   structure, and the required elements are part of the contract, not a
+   styling preference: <header class="surface-head">, <main
+   class="surface-payload">, <footer class="surface-footer">. One banner, one
+   main, one contentinfo per surface. Selectors below are class-based, so
+   restyling never depends on the element — but substituting a <div> for any
+   of the three removes a landmark a nonvisual reader navigates by.
+
+   Required markup, slots, and the vendoring contract: README.md in this
+   directory. Rendered specimen: patterns/_preview/surface-shell.html.
+   ========================================================================= */
+
+/* ---------- Page container ---------- */
+.surface {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-10);
+}
+
+/* The payload landmark. The shell requires the <main> element — it is the
+   page's one main landmark — and declares no layout for it, because payload
+   layout is the consuming surface's. The class exists as a stable hook for
+   that surface to target; the shell deliberately leaves it unstyled. */
+
+/* ---------- Header ---------- */
+.surface-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+.surface-head-main { min-width: 0; }
+
+/* Optional right-hand control slot. A surface that needs no control omits the
+   element entirely, so nothing is reserved and the header does not shift. */
+.surface-head-aside { flex-shrink: 0; }
+
+/* ---------- Identity mark ----------
+   A SLOT, not a mark. The shell owns the width, the alignment, and the
+   optional mode-pairing mechanism. The consuming surface owns everything
+   inside it: the asset or inline SVG, whether there is a per-mode pairing,
+   and the accessible name.
+
+   The accessible name belongs on the WRAPPER — role="img" plus aria-label —
+   and never on a child. A name carried by the light mark disappears with
+   that element when dark mode hides it, leaving the visible mark unnamed.
+   The wrapper's name is mode-independent, so it survives every mode.
+
+   One mark or two: a single responsive SVG or <img> needs neither modifier
+   class and is always shown. A surface wanting a per-mode pairing supplies
+   both children, and the shell shows exactly one per resolved mode.
+
+   Why CSS and not <picture>/srcset: a <picture> does react to environment
+   changes — the HTML standard requires it — but its media queries can only
+   see the ENVIRONMENT. They cannot see this design system's explicit DOM
+   theme state, which is how a consumer forces a mode. CSS sees both. */
+.surface-mark {
+  display: block;
+  width: 116px;
+  margin-bottom: var(--space-5);
+}
+.surface-mark > * { display: block; width: 100%; height: auto; }
+
+/* Optional per-mode pairing. It must track EVERY dark path the foundation
+   defines, or a consumer gets dark tokens under a light mark. As of
+   colors_and_type.css there are exactly three, and all three are mirrored
+   below in the foundation's own order:
+
+     @media (prefers-color-scheme: dark)   OS, under the no-override guard
+     :root[data-theme="dark"]              explicit attribute
+     .theme-dark                           explicit class
+
+   Adding a fourth path to the foundation without adding it here is a defect.
+   These follow the base rule above deliberately: at equal specificity the
+   later declaration wins, which is what hides the dark mark by default. */
+.surface-mark-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .surface-mark-light { display: none; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .surface-mark-dark { display: block; }
+}
+:root[data-theme="dark"] .surface-mark-light { display: none; }
+:root[data-theme="dark"] .surface-mark-dark { display: block; }
+.theme-dark .surface-mark-light { display: none; }
+.theme-dark .surface-mark-dark { display: block; }
+
+/* ---------- Identity ---------- */
+/* The structural identity line. Mono and compact — it is a locator, not a
+   display heading. The weight is the foundation's, not a local choice: the
+   repo README puts H1 and H2 at 400 and calls the light weights deliberate,
+   and the foundation already binds h1 to --fw-regular. A vendorable pattern
+   that shipped 600 would push a heavier title into every downstream consumer
+   than the design system it inherits from allows. */
+.surface-title {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  font-weight: var(--fw-regular);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+.surface-title .org { color: var(--fg-2); }   /* owning organization */
+.surface-title .page { color: var(--fg-3); }  /* payload name within the surface family */
+
+.surface-lede {
+  color: var(--fg-2);
+  font-size: 13px;
+  line-height: 1.75;
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-sans);
+  max-width: 68ch;
+}
+
+/* Optional status pill beneath the lede — classification, environment, or
+   another short standing fact about the surface. */
+.surface-badge {
+  display: inline-block;
+  margin-top: var(--space-4);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ask-emphasis-magenta, var(--fg-1));
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.surface-rule {
+  border: 0;
+  border-top: 1px solid var(--line-1);
+  margin: var(--space-6) 0 var(--space-7);
+}
+
+/* ---------- Footer ----------
+   Right-aligned, always. The reader's eye travels top-left to bottom-right,
+   so the footer sits where the reading path ends — the mirror of the
+   flush-left header above. This is the shell's rule, not a per-surface
+   choice: a left-aligned footer restarts the eye at a column the page has
+   already finished with. The foundation underlines anchors; the footer
+   softens that to --line-2 so a row of links reads as one quiet band. */
+.surface-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-5);
+  margin-top: var(--space-9);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-wide);
+  color: var(--fg-2);
+}
+
+/* Interaction — the repo README's hover/press/focus contract, which the shell
+   must carry rather than leave to each consumer. Hover takes the contract's
+   opacity limb, not its border-brightening limb: the softened --line-2
+   underline above is a deliberate base state, and in light mode the line
+   roles are translucent white while currentColor is a purple, so brightening
+   to currentColor would shift hue rather than brighten. display:inline-block
+   is load-bearing — transform does not apply to a non-replaced inline box,
+   so without it the press state is silently inert wherever a consumer wraps
+   these links in anything that is not the flex row itself. */
+.surface-footer a {
+  color: var(--fg-2);
+  border-bottom-color: var(--line-2);
+  display: inline-block;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.surface-footer a:hover { opacity: 0.92; }
+.surface-footer a:active { transform: scale(0.97); }
+.surface-footer a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 640px) {
+  .surface-head { flex-direction: column; }
+  .surface-head-aside { align-self: flex-start; }
+}
