@@ -44,6 +44,11 @@ const SHELLS = [
   // as the FLOW pair above: one canonical shell, two deterministic generated views.
   { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html',  flavor: 'default-ASK' },
   { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-AA-compliant.html', flavor: 'AA-compliant' },
+  // The surface-shell specimen. Unlike the diagram and artifact templates this one carries no engine and
+  // no data — the canonical markup IS the pattern — so the generic path rewrite is the whole transform.
+  // The gallery page CONSUMES this same pattern for its own chrome; previewing it here is the separate
+  // catalog relationship, not that consumption. See CONSUMERS.md.
+  { src: 'surface-shell/surface-shell.template.html',              dir: 'surface-shell',              out: 'surface-shell.html' },
 ];
 
 // Rewrite a src/href value from the canonical shell's perspective (patterns/<dir>/)

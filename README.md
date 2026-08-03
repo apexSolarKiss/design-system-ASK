@@ -31,19 +31,23 @@ Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers 
 
 ## Scope
 
-This repo carries foundations and may carry artifact-inheritance scaffolds:
+This repo carries three kinds of material:
 
 1. **Foundations** — tokens, type, color, assets, and visual rules. The irreducible expression of the system and the inheritance source for other ASK-family surfaces.
-2. **Artifact-inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them. A scaffold may be wholly static, or may carry self-contained client-side navigation and still freeze for audit; either way it inherits at generation time and seals.
+2. **Artifact-inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them. A scaffold may be wholly static, or may carry self-contained client-side navigation and still freeze for audit; either way it **inherits at generation time and seals**.
+3. **Surface patterns** — page-shell contracts for **live deployed surfaces**. They frame a page that stays live, and they **do not seal**: a consumer references or vendors the pattern and re-syncs when it changes, rather than freezing an output for audit. `surface-shell` is the one instance.
 
-Scaffolds are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. Two artifact classes are kept distinct:
+The distinction in 2 versus 3 is the lifecycle, and it is load-bearing. An artifact scaffold produces something finished and frozen. A surface pattern produces something that keeps running. Do not apply sealing, freezing, or generation-time inheritance rules to a surface pattern.
+
+These are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. The catalog holds **two artifact classes plus one separate surface-pattern group**:
 
 - **Class A** — system / architecture diagram templates, in two kinds:
   - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade), **`diagram-static-V`** (vertical top→down centered spine), **`diagram-static-SEQ`** (ordered top→down arrowed sequence — succession, not hierarchy), and **`diagram-static-FLOW`** (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back) — structural; state-free.
   - **interactive:** **`diagram-interactive-spine`** — a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
 - **Class B** — project-output artifact templates: **`output-artifact`** (static document) and **`message-archive`** (sealed interactive archive — offline search + navigation over frozen content). Client-side navigation over embedded content does not make an artifact Class A and does not earn a new class.
+- **Surface patterns** — the separate group, not a third artifact class: **`surface-shell`** (the shared header, control slot, and flush-right footer that make a family of surfaces read as one artifact family with different payloads). It frames a live page and seals nothing, so it is neither a diagram nor a sealed output artifact. **It is not "Class C"** — one instance does not earn a taxonomy, and this is a named group rather than a class.
 
-Artifact scaffolds inherit at generation time and freeze for audit. A sealed interactive artifact may retain client-side navigation over embedded content; it introduces no live data dependency. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
+Artifact scaffolds — Class A and Class B only — inherit at generation time and freeze for audit. A sealed interactive artifact may retain client-side navigation over embedded content; it introduces no live data dependency. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
 The repo may also carry **specialized opt-in foundation primitives** beyond the core tokens — small, identity-free systems a surface loads only when it needs them. These are the *foundation-level* bounded exceptions; a **pattern-level** bounded vocabulary also exists (see below). The first foundation primitive is **ASK Spectral State** (`spectral-state.css`), a semantic state-color system for surfaces that encode element *state*. It is not general UI color, and the **static** scaffolds above do not use it; the interactive `diagram-interactive-spine` is the state-bearing member that does.
 
@@ -69,8 +73,10 @@ A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits
 | `assets/logo-ASK-white.png` | Raster wordmark in `#FFFFFF`, on transparent (light-mode pairing / fallback) |
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `preview/styleguide.html` | Live token styleguide — the single canonical preview surface |
+| `styleguide-theme-control.js` | The style guide's forced-mode selector (auto / light / dark). **Style-guide-only; not vendored, and not part of `surface-shell`.** An inspection surface needs to hold a mode fixed; ordinary public surfaces follow the operating system and load nothing. |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
 | `CONSUMERS.md` | Known **public** downstream repos that consume these patterns/tokens — transparency record, not a customer list (private consumers tracked operator-side) |
+| `patterns/surface-shell/` | Surface pattern — the shared page shell for a family of surfaces: identity-mark **slot**, surface identity, lede, optional status badge, optional control slot, and a flush-right footer carrying the hover/press/focus contract. Header flush left, footer flush right; the shell owns the chrome, never the payload. **Tier-3-neutral, not ASK-neutral** — it inherits Tier 1 + Tier 2 and ships the slot rather than a mark, so a consumer supplies only its own Tier 3 |
 | `patterns/output-artifact/` | Class B project-output artifact scaffold — consumption pattern for review packets, reports, dashboards |
 | `patterns/message-archive/` | Class B sealed interactive archive scaffold — one template, two flavors, two-party/group modes, offline search and year navigation |
 | `patterns/diagram-static-H/` | Class A system / architecture diagram scaffold — horizontal left→right cascade; for architecture trees, topology maps, source-of-truth maps |
@@ -255,7 +261,7 @@ Consuming a pattern does not fork it. A downstream **pattern consumer** vendors 
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production Class B output-artifact surface has used this scaffold end-to-end yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
+- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. The surface pattern (`patterns/surface-shell/`) is implemented and consumed by this repo's own three public surfaces; it has no downstream vendored consumer yet. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production Class B output-artifact surface has used this scaffold end-to-end yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
 
 ---
 
