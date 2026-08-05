@@ -252,16 +252,21 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## Consumers
 
-Public downstream repos consume these patterns and tokens by reference, vendored at a pinned commit. The known public consumers are tracked in [`CONSUMERS.md`](CONSUMERS.md).
+Public downstream repos consume these patterns and tokens by reference. The known public consumers are tracked in [`CONSUMERS.md`](CONSUMERS.md).
 
-Consuming a pattern does not fork it. A downstream **pattern consumer** vendors a local pinned mirror (`_dsa-tokens/`, no CDN), supplies its own Tier 3 identity and content, and re-syncs when an upstream pattern or token module changes. (The ASK front door is the exception recorded in [`CONSUMERS.md`](CONSUMERS.md): it vendors the foundations — tokens, fonts, wordmark — directly rather than via a `_dsa-tokens/` mirror, and carries ASK's own Tier 3.) design-system-ASK owns the engine, CSS, and export script; the consumer owns its source data, chrome, generation, sealing, and the frozen output artifact.
+Consuming a pattern does not fork it. The two material kinds do not share a lifecycle:
+
+- **Artifact-inheritance scaffolds.** A downstream consumer vendors the applicable canonical artifacts at a pinned commit, supplies its own Tier 3 identity and content, and generates, seals, stamps where the pattern requires, and freezes its output for audit. design-system-ASK owns the engine, CSS, and export script; that consumer owns its source data, chrome, generation, sealing, and the frozen output artifact.
+- **Surface patterns.** These frame live deployed surfaces. A consumer takes one by same-repo reference or as a pinned local vendored copy, and nothing seals — Tier 3, payload, deployment, and local adaptations stay with the consumer, and it re-syncs when the owner contract changes. design-system-ASK owns the shared pattern contract and its canonical CSS.
+
+Neither route uses a CDN or a runtime hot-link. Ordinary downstream artifact consumers take the foundations through a local pinned `_dsa-tokens/` mirror; the ASK front door is the exception recorded in [`CONSUMERS.md`](CONSUMERS.md) — it vendors the foundations (tokens, fonts, wordmark) directly rather than via a `_dsa-tokens/` mirror, and carries ASK's own Tier 3.
 
 ---
 
 ## Caveats / known gaps
 
 - The `.ai` vector working source lives operator-side, not in this repo (production assets only). The repo carries the primary vector at `assets/logo-ASK.svg` (`fill: currentColor`) and two PNG pairings.
-- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. The surface pattern (`patterns/surface-shell/`) is implemented and consumed by this repo's own three public surfaces; it has no downstream vendored consumer yet. Landed public consumers are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production Class B output-artifact surface has used this scaffold end-to-end yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
+- Foundations are present. The Class A diagram scaffolds (horizontal `patterns/diagram-static-H/`, vertical `patterns/diagram-static-V/`, sequence `patterns/diagram-static-SEQ/`, convergence-flow `patterns/diagram-static-FLOW/`, and interactive `patterns/diagram-interactive-spine/`) and the Class B project-output scaffold (`patterns/output-artifact/`) are implemented. The surface pattern (`patterns/surface-shell/`) is implemented and consumed by this repo's own three public surfaces. Landed public consumers, downstream and first-party alike, are recorded in [`CONSUMERS.md`](CONSUMERS.md). No public production Class B output-artifact surface has used this scaffold end-to-end yet. A private operator-internal consumer has exercised the Class B output-artifact flow end-to-end; contents remain firewalled.
 
 ---
 
