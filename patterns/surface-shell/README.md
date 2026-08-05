@@ -71,6 +71,11 @@ it. Vendor this directory's two files.
 </div>
 ```
 
+The `.surface-mark` wrapper above is the **non-interactive** form. Where the mark
+is also navigation, the wrapper itself becomes the link —
+`<a class="surface-mark" href="…" aria-label="…">`, with no `role="img"`. Both
+forms are specified under §The identity mark.
+
 The `.org` span carries the owning organization and the `.page` span the payload
 name within the family. A consumer with a single public surface omits the
 `.page` span.
@@ -100,6 +105,7 @@ alignment, and the optional mode-pairing mechanism. You own what goes in it:
 | --- | --- |
 | Slot width and alignment | The mark itself — image asset or inline SVG |
 | The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode |
+| Nothing about the wrapper's semantics | The wrapper element and its role — a non-interactive `<div role="img">`, or a native `<a>` when the mark is navigation |
 | Nothing about identity | The accessible name, and the Tier 3 identity it names |
 
 This pattern ships **no organization's wordmark**. A consuming project supplies
@@ -109,8 +115,11 @@ its own Tier 3 — the same boundary
 
 **The accessible name goes on the wrapper, never on a child.** A name carried by
 the light mark disappears with that element when dark mode hides it, leaving the
-visible mark unnamed — so `role="img"` plus `aria-label` on `.surface-mark`, and
-decorative children:
+visible mark unnamed. Which wrapper carries it depends on whether the mark is
+also navigation, and the two forms are not interchangeable.
+
+**A — a non-interactive identity mark.** The wrapper is a `<div>` carrying
+`role="img"` and the name; every child is decorative:
 
 ```html
 <!-- One mark, any mode -->
@@ -124,6 +133,31 @@ decorative children:
   <img class="surface-mark-dark"  src="…" alt="" aria-hidden="true">
 </div>
 ```
+
+**B — a mark that is also navigation.** The wrapper *is* the link. Do not put
+`role="img"` on it, and do not nest a link inside a `role="img"` wrapper:
+
+```html
+<a class="surface-mark" href="/" aria-label="[destination or purpose]">
+  <img class="surface-mark-light" src="…" alt="" aria-hidden="true">
+  <img class="surface-mark-dark"  src="…" alt="" aria-hidden="true">
+</a>
+```
+
+`role="img"` makes its descendants presentational, so an interactive descendant
+inside one is pruned from the accessibility tree — a wordmark link that looks
+and clicks correctly while being unreachable to a screen reader. The image role
+must therefore neither contain nor be applied to an interactive element. Name
+the anchor for where it goes rather than for what it depicts: "Back to
+example.com", not "example".
+
+Both forms share one rule: the accessible name belongs on the semantic wrapper,
+never on a child. The consuming surface owns that wrapper element,
+its native semantics, its accessible name, and the Tier 3 mark; the shell owns
+the slot geometry and the optional mode-pairing mechanism.
+
+The specimen in `surface-shell.template.html` and the `role="img"` note in
+`surface-shell.css` both describe **variant A**, the non-interactive form.
 
 A single responsive SVG is a first-class implementation — a vector that paints
 with `fill: currentColor` covers both modes from one file, and needs neither
@@ -199,10 +233,19 @@ of this pattern and is not vendored with it.
 
 ## Consuming this pattern
 
-**Same-repo surfaces** reference the canonical file directly. There is no pin
-and no copied bundle; currency is maintained by regeneration and verification.
-design-system-ASK's own root, style guide, and pattern gallery consume the shell
-this way.
+**Live same-repo surfaces** reference the canonical file directly.
+design-system-ASK's own root, style guide, and pattern gallery page consume the
+shell this way: no copied bundle, no pin, resolving the canonical owner file at
+repo `HEAD`. When the shell contract changes, verify their rendering, landmarks,
+interaction, and behavior. They are hand-maintained pages, and they are not
+regenerated merely because the stylesheet they reference changed.
+
+**The generated owner preview is a distinct artifact.**
+`patterns/_preview/surface-shell.html` is regenerated from
+`surface-shell.template.html` through the owner generator, and it takes the
+generated-artifact treatment: generator `--check`, generated-set parity, and
+visual verification. The gallery page consuming the shell for its own chrome is
+a separate relationship from the gallery cataloguing that generated specimen.
 
 **Downstream repos** vendor a local pinned copy of `surface-shell.css` alongside
 the foundation mirror, with no CDN and no live hot-link to a design-system

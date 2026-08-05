@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[consuming-project] — [surface name]</title>
 <meta name="description" content="[one-line description of this surface]">
-<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference at generation time">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 through the surface-shell pattern">
 <meta name="color-scheme" content="light dark">
 
 <!-- design-system-ASK foundations — local mirror.
@@ -73,7 +73,16 @@
 
            Two children give you a light/dark pairing; the shell shows exactly
            one per resolved mode. A single responsive SVG or <img> is equally
-           valid — drop one child and both modifier classes. -->
+           valid — drop one child and both modifier classes.
+
+           THIS SPECIMEN IS THE NON-INTERACTIVE MARK. Where your mark is also
+           navigation, replace the wrapper itself with a native anchor —
+           <a class="surface-mark" href="/" aria-label="...">, pointing wherever
+           your surface's home is — omit role="img" on that anchor, and keep the
+           child mark assets decorative. Never place a link beneath a role="img"
+           wrapper: the image role makes descendants presentational, so the link
+           is pruned from the accessibility tree. Both forms are specified in
+           patterns/surface-shell/README.md, §The identity mark. -->
       <div class="surface-mark" role="img" aria-label="[consuming organization]">
         <svg class="surface-mark-light" viewBox="0 0 216 97" aria-hidden="true" focusable="false">
           <rect x="1" y="1" width="214" height="95" rx="10" fill="none"
