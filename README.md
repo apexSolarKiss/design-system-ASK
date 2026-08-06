@@ -152,7 +152,7 @@ The gradient is **fixed to the viewport** (`background-attachment: fixed`), so s
 | `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
 | `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
-| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; opt-in high-contrast light foreground (first approved bounded use: the `message-archive` participant ramp) |
+| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; opt-in high-contrast foreground. Two approved bounded uses: the `message-archive` participant ramp, and `--fg-on-card` — text on the fixed `--surface-solid` fill, which does not flip with the theme and so takes a foreground that does not either. Still not the default foreground, and never selected by font size |
 | `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right |
 
 **Surface.** When a card or container needs a solid fill with more presence than a glass overlay:

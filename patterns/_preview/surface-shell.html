@@ -98,12 +98,28 @@
         </svg>
       </div>
 
-      <!-- Surface identity. The .org span carries the owning organization and
-           the .page span the payload name within the surface family; the
-           middle segment is the surface itself. A single-surface consumer
-           omits the .page span. -->
-      <h1 class="surface-title"><span class="org">[org]</span> / [repo] <span class="page">// [surface name]</span></h1>
-
+      <!-- Surface identity. The .org span carries the owning organization; the
+           optional .page span carries the payload name within the surface family.
+           The specimen below is the two-segment root form, so it omits .page. -->
+      <!-- STRUCTURAL TITLE. Two variants — README.md §The structural title.
+           ROOT-LEVEL surface: a plain <h1>, no navigation landmark, because there is
+           no navigable ancestor to put in one. Shown here.
+           BREADCRUMBED subpage: wrap this <h1> in
+           <nav class="surface-breadcrumb" aria-label="Breadcrumb"> and mark the
+           current segment <span class="page" aria-current="page">.
+           Linkability is decided by DESTINATION, not by segment class: link a
+           segment that is a real ancestor or home, leave a segment with no
+           destination of its own static, and never invent a destination to make
+           a breadcrumb. [org] is static in THIS example because the example's
+           organization has no page; a consumer whose org segment is its own home
+           links it instead.
+           Every structural separator is `//`, never a single slash, and each is a
+           decorative <span class="sep" aria-hidden="true">. -->
+      <h1 class="surface-title"><span class="org">[org]</span> <span class="sep" aria-hidden="true">//</span> [repo]</h1>
+      <!-- LEDE. One or two calm declarative sentences about this surface. The shell
+           sets Caption size at Light weight and imposes NO measure, so the lede uses
+           the full header width; a per-surface measure is the consumer's call.
+           Implementation detail belongs in the payload, not here. -->
       <p class="surface-lede">[One or two sentences stating what this surface is and what a reader
         will find below. Plain present tense. The lede describes the surface, not the project.]</p>
 

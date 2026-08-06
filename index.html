@@ -43,7 +43,7 @@
   a.route {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
     text-decoration: none; color: var(--fg-1);
-    background: var(--surface-glass-2); border: 1px solid var(--line-1);
+    background: var(--surface-glass-2); border: 1px solid var(--line-2);
     border-radius: 12px; padding: 16px 18px;
     transition:
       border-color var(--dur-2) var(--ease-out),
@@ -51,12 +51,13 @@
       transform var(--dur-1) var(--ease-out),
       box-shadow var(--dur-2) var(--ease-out);
   }
-  /* Interaction contract (README, Hover/press/focus): hover drops opacity to
-     0.92 with no color shift — the border is left alone, because in light mode
-     --line-1 is translucent white and currentColor is #6A637F, so overriding it
-     would change hue rather than brighten. Press is scale(0.97) at --dur-1
-     (120ms); focus is the white glow, never the browser default. */
-  a.route:hover { opacity: 0.92; }
+  /* Interaction contract (README, Hover/press/focus). Hover takes both approved
+     limbs: the opacity drop to 0.92, plus a real --line-2 -> --line-1 border
+     brightening. No hue shift — the two line roles are the same translucent
+     value at different strengths, so this brightens the border rather than
+     recoloring it. Press is scale(0.97) at --dur-1 (120ms); focus is the white
+     glow, never the browser default. */
+  a.route:hover { opacity: 0.92; border-color: var(--line-1); }
   a.route:active { transform: scale(0.97); }
   a.route:focus-visible {
     outline: none;
@@ -80,11 +81,11 @@
 
   <header class="surface-head">
     <div class="surface-head-main">
-      <div class="surface-mark" role="img" aria-label="ASK">
+      <a class="surface-mark" href="index.html" aria-label="design-system-ASK home">
         <img class="surface-mark-light" src="assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
         <img class="surface-mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
-      </div>
-      <h1 class="surface-title"><span class="org">apexSolarKiss</span> / design-system-ASK</h1>
+      </a>
+      <h1 class="surface-title"><span class="org">apexSolarKiss</span> <span class="sep" aria-hidden="true">//</span> design-system-ASK</h1>
       <p class="surface-lede">Minimal design foundations for the ASK visual identity. Tokens remain irreducible. The repo
         also carries artifact inheritance scaffolds and opt-in semantic primitives that show downstream surfaces
         how to consume them without redefining them.</p>

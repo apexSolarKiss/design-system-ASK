@@ -25,6 +25,12 @@
   .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
   .card { background: var(--surface-glass); border: 1px solid var(--line-1); border-radius: var(--radius-lg); padding: var(--space-5); }
   .card-solid { background: var(--surface-solid); border: 1px solid var(--line-inverse); border-radius: var(--radius-lg); padding: var(--space-5); }
+  /* The label sits on the same FIXED fill as the card's text, so it takes the same
+     fixed foreground. Left to inherit --fg-1 it flipped with the theme against a
+     surface that does not, and failed contrast against that fill in BOTH modes.
+     Colour only — this element matches no other .lbl rule, and its typography is
+     deliberately left as it was rather than changed under a contrast fix. */
+  .card-solid .lbl { color: var(--fg-on-card); }
   .swatch { height: 60px; border-radius: var(--radius-md); border: 1px solid var(--line-1); }
   .tok { font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--fg-2); margin-top: var(--space-2); display: flex; justify-content: space-between; gap: var(--space-3); }
   .tok .val { color: var(--fg-3); }
@@ -78,11 +84,13 @@
   <div class="surface">
   <header class="surface-head">
     <div class="surface-head-main">
-      <div class="surface-mark" role="img" aria-label="ASK">
+      <a class="surface-mark" href="../index.html" aria-label="design-system-ASK home">
         <img class="surface-mark-light" src="../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
         <img class="surface-mark-dark" src="../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
-      </div>
-      <h1 class="surface-title"><span class="org">apexSolarKiss</span> / design-system-ASK <span class="page">// style guide</span></h1>
+      </a>
+      <nav class="surface-breadcrumb" aria-label="Breadcrumb">
+        <h1 class="surface-title"><span class="org">apexSolarKiss</span> <span class="sep" aria-hidden="true">//</span> <a href="../index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">style guide</span></h1>
+      </nav>
       <p class="surface-lede">Canonical token review surface, live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical. Theme follows the system by default; select light or dark to verify a fixed mode. This is a reference/preview surface, not a sealed deliverable.</p>
     </div>
     <div class="surface-head-aside">
@@ -123,7 +131,7 @@
         <div class="role reserved">
           <div style="color: var(--fg-high-contrast); font-size: var(--fs-body); font-weight: var(--fw-light);">High-contrast foreground — opt-in role.</div>
           <span class="lbl"><code>--fg-high-contrast</code> · <span data-fg="--fg-high-contrast"></span></span>
-          <p class="note">OPT-IN. First approved bounded use: the Class B <code>message-archive</code> participant ramp. It is not the default foreground and is not selected by font size. Use it only where an explicit accessibility, density, legal, tabular, or comparable context requires more contrast.</p>
+          <p class="note">OPT-IN. Two approved bounded uses: the Class B <code>message-archive</code> participant ramp, and <code>--fg-on-card</code>, the text role on the fixed <code>--surface-solid</code> fill. It is not the default foreground and is not selected by font size. Use it only where an explicit accessibility, density, legal, tabular, or comparable context requires more contrast.</p>
         </div>
         <div class="role">
           <div class="row"><span style="font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-h3); color: var(--ask-white);">ASK</span><span class="meta">wordmark only</span></div>
@@ -142,7 +150,7 @@
       </div>
       <div class="card-solid">
         <div style="color: var(--fg-on-card); font-size: var(--fs-h3); font-weight: var(--fw-light);">On a solid surface</div>
-        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role — <code>--fg-on-card</code> now resolves to the canonical default foreground.</div>
+        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role. <code>--surface-solid</code> is a fixed lavender fill in both themes, so <code>--fg-on-card</code> is a fixed high-contrast foreground rather than one that flips with the theme — the second approved bounded use of <code>--fg-high-contrast</code>.</div>
         <span class="lbl"><code>--fg-on-card</code> · <span data-fg="--fg-on-card"></span> on <code>--surface-solid</code></span>
       </div>
     </div>

@@ -47,7 +47,11 @@
   justify-content: space-between;
   gap: var(--space-5);
 }
-.surface-head-main { min-width: 0; }
+/* Grows into the width the optional control slot does not take. min-width: 0 is
+   load-bearing beside flex-grow: without it a flex item's automatic minimum size
+   is its content, so a long unbreakable title would push the header wider than
+   the container instead of letting the lede wrap inside it. */
+.surface-head-main { flex: 1 1 auto; min-width: 0; }
 
 /* Optional right-hand control slot. A surface that needs no control omits the
    element entirely, so nothing is reserved and the header does not shift. */
@@ -59,10 +63,13 @@
    inside it: the asset or inline SVG, whether there is a per-mode pairing,
    and the accessible name.
 
-   The accessible name belongs on the WRAPPER — role="img" plus aria-label —
-   and never on a child. A name carried by the light mark disappears with
-   that element when dark mode hides it, leaving the visible mark unnamed.
-   The wrapper's name is mode-independent, so it survives every mode.
+   The accessible name belongs on the WRAPPER and never on a child. A name
+   carried by the light mark disappears with that element when dark mode hides
+   it, leaving the visible mark unnamed; the wrapper's name is mode-independent,
+   so it survives every mode. Two wrapper forms are valid, and which one applies
+   depends on whether the mark is also navigation: a non-interactive
+   <div role="img" aria-label>, or a native <a href aria-label> with NO
+   role="img" on it. See README.md §The identity mark.
 
    One mark or two: a single responsive SVG or <img> needs neither modifier
    class and is always shown. A surface wanting a per-mode pairing supplies
@@ -78,6 +85,28 @@
   margin-bottom: var(--space-5);
 }
 .surface-mark > * { display: block; width: 100%; height: auto; }
+
+/* A LINKED mark. The mark slot has two valid wrapper forms (README §The identity
+   mark): a non-interactive <div role="img">, or — where the mark is also home
+   navigation — a native <a> carrying the accessible name, with no role="img" on
+   it, because the image role makes descendants presentational and would prune
+   the link from the accessibility tree. The shell owns the anchor's chrome so
+   every consumer inherits it rather than re-deriving it: the foundation
+   underlines anchors, which reads as a rule under the wordmark, and the
+   interaction limbs are the repo README's contract. */
+a.surface-mark {
+  border-bottom: none;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+a.surface-mark:hover { opacity: 0.92; }
+a.surface-mark:active { transform: scale(0.97); }
+a.surface-mark:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
 
 /* Optional per-mode pairing. It must track EVERY dark path the foundation
    defines, or a consumer gets dark tokens under a light mark. As of
@@ -118,13 +147,52 @@
 .surface-title .org { color: var(--fg-2); }   /* owning organization */
 .surface-title .page { color: var(--fg-3); }  /* payload name within the surface family */
 
+/* Breadcrumb grammar. Every structural separator is `//` — never a single
+   slash — and the separator is a decorative span, so the glyph is uniform while
+   segment color stays free to express hierarchy: those are separate decisions.
+   Linkability is decided by destination, not by segment class: a segment with a
+   real ancestor or home destination is a link, a segment with no destination of
+   its own stays static, and the current segment is inert and carries
+   aria-current="page". An organization segment may be either, depending on the
+   consuming surface's own topology. The separators are aria-hidden because the
+   crumb structure is conveyed by the nav landmark, not by punctuation read
+   aloud between every segment. */
+.surface-breadcrumb { display: block; }
+.surface-title .sep { color: var(--fg-3); }
+.surface-title a {
+  color: inherit;
+  border-bottom-color: var(--line-2);
+  display: inline-block;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.surface-title a:hover { opacity: 0.92; }
+.surface-title a:active { transform: scale(0.97); }
+.surface-title a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
+/* The lede sits on the foundation's Caption size step and takes Light weight.
+   Both are deliberate. The former 13px was off the named scale entirely, and
+   the former weight was the foundation's 200 inherited from `p` — which put an
+   identical string two steps quieter here than the same words rendered in a
+   consuming surface's own payload. The repo README's rule is that contrast is
+   weight rather than size, so the legibility is bought at 300 rather than by
+   inflating a header descriptor toward the 18px supporting-body step.
+
+   No max-width. The lede uses the full header-main width, which the flex rule
+   above grows into whatever the optional control slot leaves. A per-surface
+   measure is the consuming surface's call, not the shell's. */
 .surface-lede {
   color: var(--fg-2);
-  font-size: 13px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
   line-height: 1.75;
   margin: var(--space-3) 0 0;
   font-family: var(--font-sans);
-  max-width: 68ch;
 }
 
 /* Optional status pill beneath the lede — classification, environment, or
@@ -192,7 +260,18 @@
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
+/* Narrow viewports. The header stacks, and the mark stops being a fixed 116px
+   token in a wide column and becomes the column: at 375px a 116px mark reads as
+   an icon beside full-width prose, where the same identity on a wide viewport
+   reads as a mark. The 460px ceiling is this rule's own bound, not a value
+   established elsewhere in the repo: it stops the mark growing without limit as
+   the stacked column widens toward the breakpoint. Rendered HEIGHT is the
+   consumer's, since the child keeps its own aspect ratio — a square mark is
+   taller here than a wide wordmark. .surface-head-main takes the full width
+   because a stacked column has no aside to share it with. */
 @media (max-width: 640px) {
   .surface-head { flex-direction: column; }
+  .surface-head-main { width: 100%; }
   .surface-head-aside { align-self: flex-start; }
+  .surface-mark { width: min(100%, 460px); }
 }
