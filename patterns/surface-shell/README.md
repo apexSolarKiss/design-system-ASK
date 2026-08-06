@@ -58,7 +58,7 @@ it. Vendor this directory's two files.
   <header class="surface-head">
     <div class="surface-head-main">
       <div class="surface-mark" role="img" aria-label="[org]">…your mark…</div>
-      <h1 class="surface-title"><span class="org">[org]</span> / [repo] <span class="page">// [surface]</span></h1>
+      <h1 class="surface-title"><span class="org">[org]</span> <span class="sep" aria-hidden="true">//</span> [repo]</h1>
       <p class="surface-lede">…</p>
     </div>
   </header>
@@ -76,9 +76,64 @@ is also navigation, the wrapper itself becomes the link —
 `<a class="surface-mark" href="…" aria-label="…">`, with no `role="img"`. Both
 forms are specified under §The identity mark.
 
-The `.org` span carries the owning organization and the `.page` span the payload
-name within the family. A consumer with a single public surface omits the
-`.page` span.
+### The structural title, and its two variants
+
+The title is a locator, not a display heading, and every structural separator is
+`//` — never a single slash. Each separator is a decorative
+`<span class="sep" aria-hidden="true">`, so the glyph stays uniform while segment
+color remains free to express hierarchy. Those are separate decisions.
+
+**Root-level surface — a plain heading.** A surface with no navigable ancestor
+takes a bare `<h1 class="surface-title">`. Do not wrap it in a navigation
+landmark: a `nav` whose contents are all inert navigates nowhere.
+
+**Subpage — a breadcrumbed title.** Where a navigable ancestor exists, wrap the
+same `<h1>` in a breadcrumb landmark. Linkability is decided by **destination,
+not by segment class** — the class names what a segment *is*, never whether it
+has somewhere to go:
+
+| segment | treatment |
+| --- | --- |
+| a real ancestor or home destination | linked |
+| structural context with no destination of its own | static |
+| the current segment | unlinked, with `aria-current="page"` |
+
+Never invent a destination to make a segment interactive.
+
+The example below is design-system-ASK's own topology, in which `apexSolarKiss`
+is an organization name with no page of its own and therefore stays static. A
+consumer whose organization segment *is* a real home — `ASK` resolving to the
+ASK front door, say — links that segment instead. Both are conformant; the
+difference is topology, not class:
+
+```html
+<nav class="surface-breadcrumb" aria-label="Breadcrumb">
+  <h1 class="surface-title">
+    <span class="org">[org]</span>
+    <span class="sep" aria-hidden="true">//</span>
+    <a href="../index.html">[repo]</a>
+    <span class="sep" aria-hidden="true">//</span>
+    <span class="page" aria-current="page">[surface]</span>
+  </h1>
+</nav>
+```
+
+The `nav` wraps the title only — never the mark, never the lede. `nav` inside
+`<h1>` would be invalid, since a heading takes phrasing content; wrapping is the
+valid arrangement and keeps the heading exposed as a heading.
+
+The `.org` span carries the owning organization; the `.page` span carries the
+current segment and takes `aria-current="page"`. The root variant omits `.page`
+because it has no navigable ancestor, not because the consumer has one surface.
+Either of `.org` and the repo segment may be a link or static — apply the
+destination test above to each, per surface.
+
+### The lede
+
+One or two calm declarative sentences about the surface. The shell sets the
+Caption size step at Light weight and imposes **no measure**, so the lede uses
+the full header width that `.surface-head-main` grows into. A per-surface measure
+is the consuming surface's call. Implementation detail belongs in the payload.
 
 ### Landmarks are part of the contract
 
@@ -103,7 +158,7 @@ alignment, and the optional mode-pairing mechanism. You own what goes in it:
 
 | The shell owns | The consuming surface owns |
 | --- | --- |
-| Slot width and alignment | The mark itself — image asset or inline SVG |
+| Slot width and alignment, including the narrow-viewport width | The mark itself — image asset or inline SVG |
 | The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode |
 | Nothing about the wrapper's semantics | The wrapper element and its role — a non-interactive `<div role="img">`, or a native `<a>` when the mark is navigation |
 | Nothing about identity | The accessible name, and the Tier 3 identity it names |
@@ -156,8 +211,9 @@ never on a child. The consuming surface owns that wrapper element,
 its native semantics, its accessible name, and the Tier 3 mark; the shell owns
 the slot geometry and the optional mode-pairing mechanism.
 
-The specimen in `surface-shell.template.html` and the `role="img"` note in
-`surface-shell.css` both describe **variant A**, the non-interactive form.
+The rendered specimen in `surface-shell.template.html` is **variant A**, the
+non-interactive form; the prose in both that template and `surface-shell.css`
+documents both variants and how to switch between them.
 
 A single responsive SVG is a first-class implementation — a vector that paints
 with `fill: currentColor` covers both modes from one file, and needs neither
@@ -232,6 +288,13 @@ of this pattern and is not vendored with it.
 ---
 
 ## Consuming this pattern
+
+The mark is a fixed 116px on wide viewports. Below the shell's 640px breakpoint
+the header stacks and the mark becomes `min(100%, 460px)`, filling the content
+column rather than sitting in it as an icon. The 460px ceiling stops the mark
+growing without bound as the stacked column widens toward the breakpoint. That
+width is the shell's, not a per-surface choice; a consumer whose mark is square
+rather than a wide wordmark should check the resulting height at 375px.
 
 **Live same-repo surfaces** reference the canonical file directly.
 design-system-ASK's own root, style guide, and pattern gallery page consume the
