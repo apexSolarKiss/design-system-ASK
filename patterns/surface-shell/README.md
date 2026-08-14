@@ -122,6 +122,94 @@ The `nav` wraps the title only — never the mark, never the lede. `nav` inside
 `<h1>` would be invalid, since a heading takes phrasing content; wrapping is the
 valid arrangement and keeps the heading exposed as a heading.
 
+**Ancestor links wrap, so their press is non-geometric.** The repo's default
+press is `transform: scale(0.97)`, which needs a transformable box. Giving a
+breadcrumb link that box makes it shrink-to-fit: an ancestor wider than the
+content column stops breaking into inline fragments, fills the whole column,
+wraps inside itself, adds a line to the header, and draws its underline across
+the column rather than under the words. So these links keep ordinary inline
+wrapping and take the non-geometric limbs — opacity and underline — instead:
+
+| State | Opacity | Underline |
+| --- | --- | --- |
+| rest | 1 | `--line-2` |
+| hover | 1 | `--line-1` |
+| active | 0.92 | `--line-1` |
+
+Hover spends the border-brightening limb; press adds the opacity drop on top of
+the already-bright underline. Both `:hover` declarations are overrides: the
+foundation binds `a:hover { border-bottom-color: currentColor; opacity: 0.92 }`,
+whose opacity would otherwise make hover and press compute identically, and
+whose `currentColor` would shift the underline's hue rather than brighten it.
+Declaring both inside `.surface-title` settles each on specificity rather than
+on stylesheet order. The foundation rule itself is unchanged.
+
+No state changes display, box construction, line breaking, measured width, or
+fragment count.
+
+**Focus is a text-decoration underline here, because this link fragments.**
+Anything drawn around the *box* fails on fragmented inline text. A `box-shadow`
+ring sliced — the default — is drawn around the unbroken box and then cut, so it
+opens on the cut edges. Cloned, each fragment closes, but the fragment boxes
+already overlap at this line-height, so the rings overlap each other. A
+rectangular outline is a single shape only where consecutive fragments overlap
+horizontally, which is a property of where the text happens to break, not of the
+treatment: at a 256px column the break is `asymptotic` / `system key` and it is
+one shape; at 311px it is `asymptotic system` / `key` and it splits into one ring
+per line. All three were rendered before the rule was chosen.
+
+A text decoration is fragment-native — it follows each line's own text — so the
+indicator is:
+
+```css
+.surface-title a:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--fg-1);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+```
+
+`border-bottom-color: transparent` clears the 1px rest underline so it does not
+sit beneath the indicator. That clear is transitioned along with the rest of
+`border-bottom-color`, so the border fades out over `--dur-2`: at steady state
+one underline renders, and during the transition both do briefly. The border's
+*width* is untouched, so nothing reflows. `--fg-1` is the existing
+theme-resolving default foreground role: no new token, no `--fg-high-contrast`
+registration, and the same treatment on the quieter `.org` home link as on an
+ordinary ancestor.
+
+Two properties are worth naming so they are not mistaken for defects.
+`text-decoration-skip-ink` stays at its initial `auto`, so the underline breaks
+around descenders — per-glyph typographic clearance, not a contour opening at a
+line break. And `:focus-visible` is last among the equal-specificity state
+rules, so while a link is focused its underline *is* the focus indicator and the
+hover and active border limbs are suppressed; active still dims the whole
+element, because the focus rule sets no opacity.
+
+Measured at 320 / 360 / 375 / 393 / 414px in both themes:
+
+| Property | Result |
+| --- | --- |
+| every fragment carries the indicator | yes, at every width |
+| indicator pixels landing on neighboring glyph ink | 0 |
+| contrast against the light gradient stops | 3.50:1 · 4.00:1 |
+| contrast against the dark gradient stops | 10.25:1 · 12.26:1 |
+| fragment count, line breaks, width, title and header height, page overflow | identical focused and unfocused |
+
+The mark and the footer links do not fragment and keep the box-shadow glow.
+
+This is a surface-pattern exception for wrapping text, not a general retirement
+of press feedback. The identity mark is a block-level slot and the footer links
+declare `display: inline-block`, so both are boxes a transform can act on rather
+than inline text that fragments; both keep the scale press. The footer's
+`inline-block` is load-bearing in its own right — `surface-shell.css` records
+why above `.surface-footer a` — and is not merely a consequence of the flex row.
+
 The `.org` span carries the owning organization; the `.page` span carries the
 current segment and takes `aria-current="page"`. The root variant omits `.page`
 because it has no navigable ancestor, not because the consumer has one surface.

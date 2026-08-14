@@ -131,7 +131,7 @@
         <div class="role reserved">
           <div style="color: var(--fg-high-contrast); font-size: var(--fs-body); font-weight: var(--fw-light);">High-contrast foreground — opt-in role.</div>
           <span class="lbl"><code>--fg-high-contrast</code> · <span data-fg="--fg-high-contrast"></span></span>
-          <p class="note">OPT-IN. Two approved bounded uses: the Class B <code>message-archive</code> participant ramp, and <code>--fg-on-card</code>, the text role on the fixed <code>--surface-solid</code> fill. It is not the default foreground and is not selected by font size. Use it only where an explicit accessibility, density, legal, tabular, or comparable context requires more contrast.</p>
+          <p class="note">OPT-IN. It never rebinds the general gradient-surface foreground ramp; a bounded element or region may opt into it only once registered. It is not the default foreground and is not selected by font size. Density, legal, tabular, accessibility, or a comparable context may justify <em>proposing</em> a use — none of them authorizes one. Approved uses are registered in the repo README, under <b>High-contrast foreground — registered uses</b>; a new one requires measured need, explicit ASK authorization, and registration there before merge.</p>
         </div>
         <div class="role">
           <div class="row"><span style="font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-h3); color: var(--ask-white);">ASK</span><span class="meta">wordmark only</span></div>
@@ -150,7 +150,7 @@
       </div>
       <div class="card-solid">
         <div style="color: var(--fg-on-card); font-size: var(--fs-h3); font-weight: var(--fw-light);">On a solid surface</div>
-        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role. <code>--surface-solid</code> is a fixed lavender fill in both themes, so <code>--fg-on-card</code> is a fixed high-contrast foreground rather than one that flips with the theme — the second approved bounded use of <code>--fg-high-contrast</code>.</div>
+        <div style="color: var(--fg-on-card); font-size: var(--fs-small);">Solid-surface text role. <code>--surface-solid</code> is a fixed lavender fill in both themes, so <code>--fg-on-card</code> is a fixed high-contrast foreground rather than one that flips with the theme — a registered use of <code>--fg-high-contrast</code>.</div>
         <span class="lbl"><code>--fg-on-card</code> · <span data-fg="--fg-on-card"></span> on <code>--surface-solid</code></span>
       </div>
     </div>

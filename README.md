@@ -152,8 +152,20 @@ The gradient is **fixed to the viewport** (`background-attachment: fixed`), so s
 | `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
 | `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
-| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; opt-in high-contrast foreground. Two approved bounded uses: the `message-archive` participant ramp, and `--fg-on-card` — text on the fixed `--surface-solid` fill, which does not flip with the theme and so takes a foreground that does not either. Still not the default foreground, and never selected by font size |
+| `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; also the opt-in high-contrast foreground role (`--fg-high-contrast`). Approved uses are registered below — see **High-contrast foreground — registered uses** |
 | `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right |
+
+**High-contrast foreground — registered uses.** `--fg-high-contrast` binds `--ask-ink-light` as an **opt-in** foreground role, and this list is its registry: a use is approved only if it appears here. The role never rebinds the default gradient-surface foreground ramp — `--fg-1` / `--fg-2` / `--fg-3` stay as approved — it is never the default foreground, and it is never selected by font size. A bounded element or region may opt in where the ordinary roles do not carry enough contrast, and only by registration below. The list order is organizational, not chronological.
+
+1. `message-archive` pattern roles — one bounded use with two limbs:
+   - participant ink and search-highlight text on the sanctioned colored fills;
+   - in the AA-compliant **light** theme, essential page chrome, the archive title, and the focus indicator, where the ordinary foreground roles fail. In dark those page-level roles return to the normal dark foreground role.
+2. `--fg-on-card` — text on the fixed `--surface-solid` role, which does not flip with the theme and so takes a foreground that does not either.
+3. The ASK homepage positioning band on the light gradient, where the ordinary foreground roles fail normal-text contrast.
+
+A new use requires all three of the following before merge: measured evidence that the ordinary foreground roles are insufficient for the exact bounded element or region; explicit ASK source-of-intent authorization; and registration in this list. Density, legal, tabular, accessibility, or a comparable context may create the pressure that justifies *proposing* a use — none of them authorizes one on its own.
+
+A canonical inspection specimen may render the role to display and measure it. Inspection is not an additional registered application.
 
 **Surface.** When a card or container needs a solid fill with more presence than a glass overlay:
 
@@ -211,8 +223,8 @@ Contrast is **weight, not size** — headings sit at 400, body at 200. The 200-u
 
 ### Hover, press, focus
 - **Hover** — opacity drops 1.0 → 0.92, or border brightens. No color shifts.
-- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill.
-- **Focus** — `0 0 0 1px white, 0 0 0 4px rgba(white, 0.25)` glow. Never the browser default.
+- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. Such links press without geometry: hover brightens the underline and holds opacity at 1, so on them the 0.92 drop reads as press rather than as hover. `patterns/surface-shell/README.md` carries the state model.
+- **Focus** — `0 0 0 1px white, 0 0 0 4px rgba(white, 0.25)` glow. Never the browser default. **Same exception: inline text that wraps.** Anything drawn around the box fails on fragmented inline text — sliced it opens at the cuts, cloned the rings overlap, and a rectangular outline is one shape only where the fragments happen to overlap horizontally. Such links take a fragment-native indicator instead: a 2px `--fg-1` underline, which each fragment carries in its own right. `patterns/surface-shell/README.md` records the measurements.
 
 ### Motion
 - Easing — `cubic-bezier(0.22, 1, 0.36, 1)` for entries; `cubic-bezier(0.65, 0, 0.35, 1)` for cross-fades.

@@ -42,7 +42,9 @@ Run before sealing. Any item below fails the artifact.
 - Any colour outside the closed palette plus this pattern's ratified participant ramp appears **in pattern-owned presentation**
 - A global `--fg-*` / `--line-*` rebind appears (foreground must be inherited, not re-declared)
 - Invented hex values appear in the archive's overlay CSS
-- `#201d26` is applied as a general default foreground rather than as the opt-in role on colored participant fills
+- `#201d26` is applied as a general default foreground rather than through this pattern's registered high-contrast roles
+- `--fg-high-contrast` reaches a role outside the registered set: participant ink and search-highlight text on the sanctioned colored fills, plus — in the AA-compliant **light** theme only — `--ma-page-aa` page chrome / archive title and the `--ma-focus` indicator
+- A use of `--fg-high-contrast` appears that is not registered in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**
 
 ## Attachment-honesty fails
 

@@ -144,7 +144,12 @@ It does **not** claim that every downstream archive is compliant regardless of c
 
 ## Foreground is inherited — no global rebind
 
-The template adds no global `--fg-*` rebind. Bubble foregrounds are role-scoped and applied by class, so they cannot leak into inherited prose. `#201d26` is used here as the foundation's **opt-in high-contrast role**, exercised deliberately on colored participant fills; it does not become the default foreground anywhere.
+The template adds no global `--fg-*` rebind. Every foreground is role-scoped and applied by class, so none can leak into inherited prose. `#201d26` reaches this pattern only as the foundation's **opt-in high-contrast role** (`--fg-high-contrast`), and it does so through two distinct limbs — not one:
+
+- **participant ink** (`--ma-ink`) — bubble text on the sanctioned colored fills, and the search-highlight text that rides those same fills;
+- **AA-compliant page-level roles, light theme only** — `--ma-page-aa`, which carries essential page chrome and the archive title, and `--ma-focus`, the AA focus indicator, where the ordinary foreground roles do not clear the applicable threshold.
+
+In **dark**, `--ma-page-aa` and `--ma-focus` resolve to `var(--fg-1)`, the normal dark foreground role: the high-contrast role is a light-theme measure here, not a permanent substitution. Both limbs are registered together as one bounded pattern use in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**. The role does not become the default foreground anywhere.
 
 ## Source data is untrusted — escaping contract
 
