@@ -66,6 +66,16 @@
    inside it: the asset or inline SVG, whether there is a per-mode pairing,
    and the accessible name.
 
+   The width is FIXED at every breakpoint. The same 116px on a 320px phone and
+   a 1280px desktop is what makes the mark read as the same object across a
+   fleet of surfaces; the narrow-viewport rule at the foot of this file
+   restacks the header, it does not rescale this. Rendered HEIGHT is the
+   consumer's, since the child keeps its own aspect ratio — a square mark is
+   taller here than a wide wordmark. A surface that wants its wordmark to
+   become the content column at a narrow viewport is describing a different
+   composition, and it owns that composition outside this generic shell rather
+   than redefining the slot.
+
    The accessible name belongs on the WRAPPER and never on a child. A name
    carried by the light mark disappears with that element when dark mode hides
    it, leaving the visible mark unnamed; the wrapper's name is mode-independent,
@@ -244,22 +254,28 @@ a.surface-mark:focus-visible {
   text-underline-offset: 2px;
 }
 
-/* The lede sits on the foundation's Caption size step and takes Light weight.
-   Both are deliberate. The former 13px was off the named scale entirely, and
-   the former weight was the foundation's 200 inherited from `p` — which put an
-   identical string two steps quieter here than the same words rendered in a
-   consuming surface's own payload. The repo README's rule is that contrast is
-   weight rather than size, so the legibility is bought at 300 rather than by
-   inflating a header descriptor toward the 18px supporting-body step.
+/* The lede is the foundation's SMALL supporting-text role: 18px / 300. It is
+   supporting prose a reader is meant to read, not a label, so it sits on the
+   Small step rather than the Caption step — Caption is the 14px uppercase
+   role. The footer below is not an instantiation of that role either: it
+   shares three of Caption's tokens — --fs-caption, --tracking-wide, --fg-2 —
+   but sets its own mono family, inherits its weight, and is never uppercased.
+   The lede's weight stays at Light: the repo
+   README's rule is that contrast is weight rather than size, and 300 is where
+   Small is defined.
+
+   `--lh-body` is the tokenized line-height nearest the README's 18 / 1.40
+   figure; the repo defines no 1.40 token, and the `.small` utility declares no
+   line-height of its own.
 
    No max-width. The lede uses the full header-main width, which the flex rule
    above grows into whatever the optional control slot leaves. A per-surface
    measure is the consuming surface's call, not the shell's. */
 .surface-lede {
   color: var(--fg-2);
-  font-size: var(--fs-caption);
+  font-size: var(--fs-small);
   font-weight: var(--fw-light);
-  line-height: 1.75;
+  line-height: var(--lh-body);
   margin: var(--space-3) 0 0;
   font-family: var(--font-sans);
 }
@@ -329,18 +345,15 @@ a.surface-mark:focus-visible {
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
-/* Narrow viewports. The header stacks, and the mark stops being a fixed 116px
-   token in a wide column and becomes the column: at 375px a 116px mark reads as
-   an icon beside full-width prose, where the same identity on a wide viewport
-   reads as a mark. The 460px ceiling is this rule's own bound, not a value
-   established elsewhere in the repo: it stops the mark growing without limit as
-   the stacked column widens toward the breakpoint. Rendered HEIGHT is the
-   consumer's, since the child keeps its own aspect ratio — a square mark is
-   taller here than a wide wordmark. .surface-head-main takes the full width
-   because a stacked column has no aside to share it with. */
+/* Narrow viewports. What changes here is the header's ARRANGEMENT, not the
+   identity mark's scale: the head stacks and .surface-head-main takes the full
+   width because a stacked column has no aside to share it with. The mark stays
+   at its fixed 116px — see §The identity mark. A consuming surface that wants
+   the wordmark to become the column at a narrow viewport is describing a
+   different composition, and it owns that composition outside this generic
+   shell rather than redefining the shell's slot. */
 @media (max-width: 640px) {
   .surface-head { flex-direction: column; }
   .surface-head-main { width: 100%; }
   .surface-head-aside { align-self: flex-start; }
-  .surface-mark { width: min(100%, 460px); }
 }
