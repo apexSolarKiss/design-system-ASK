@@ -63,9 +63,30 @@
     outline: none;
     box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
   }
-  a.route .name { font-size: 14px; font-weight: 600; letter-spacing: 0.01em; }
+  /* Both spans sit on ONE size step — the foundation's Small supporting-text
+     role — and the hierarchy is carried by weight and foreground, per the
+     repo README's "contrast is weight, not size". The route name was 14px and
+     its description 12.5px, which made supporting copy smaller than the system
+     has a role for. */
+  a.route .name {
+    font-size: var(--fs-small);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.01em;
+  }
+  /* The repository route's description is a bare URL with no break
+     opportunity. Measured at a 320px viewport: at 12.5px it rendered 218px
+     wide and fit; on the Small step it wants 283px and pushed the page 14px
+     wider. `anywhere` gives the URL somewhere to break, and unlike
+     `break-word` it also lowers the min-content contribution, so the flex item
+     stops demanding its full content width — a separate min-width:0 measured
+     as unnecessary. This touches no size step, weight, or route copy. */
   a.route .what {
-    color: var(--fg-2); font-size: 12.5px; font-family: Inter, system-ui, sans-serif;
+    color: var(--fg-2);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-light);
+    line-height: var(--lh-body);
+    font-family: Inter, system-ui, sans-serif;
+    overflow-wrap: anywhere;
   }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
      below it, right-aligned. */

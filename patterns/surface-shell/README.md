@@ -219,9 +219,21 @@ destination test above to each, per surface.
 ### The lede
 
 One or two calm declarative sentences about the surface. The shell sets the
-Caption size step at Light weight and imposes **no measure**, so the lede uses
-the full header width that `.surface-head-main` grows into. A per-surface measure
-is the consuming surface's call. Implementation detail belongs in the payload.
+foundation's **Small supporting-text role — 18px / 300** — and imposes **no
+measure**, so the lede uses the full header width that `.surface-head-main`
+grows into. A per-surface measure is the consuming surface's call.
+Implementation detail belongs in the payload.
+
+The lede is **not** Caption text. Caption is the 14px uppercase label role: the
+`.caption` utility sets 400 weight, wide tracking, and uppercase over the
+foundation's inherited Inter. The lede is prose a reader reads, so it sits on
+the supporting-text step instead.
+
+The shell **footer** is not an instantiation of that role either. It shares
+three of Caption's tokens — `--fs-caption`, `--tracking-wide`, `--fg-2` — but
+sets its own mono family, inherits its weight, and is never uppercased. Do not
+"conform" it to Caption by uppercasing it, changing its family, or raising its
+weight.
 
 ### Landmarks are part of the contract
 
@@ -246,7 +258,7 @@ alignment, and the optional mode-pairing mechanism. You own what goes in it:
 
 | The shell owns | The consuming surface owns |
 | --- | --- |
-| Slot width and alignment, including the narrow-viewport width | The mark itself — image asset or inline SVG |
+| Slot width — a fixed 116px at every breakpoint — and its alignment | The mark itself — image asset or inline SVG |
 | The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode |
 | Nothing about the wrapper's semantics | The wrapper element and its role — a non-interactive `<div role="img">`, or a native `<a>` when the mark is navigation |
 | Nothing about identity | The accessible name, and the Tier 3 identity it names |
@@ -377,12 +389,18 @@ of this pattern and is not vendored with it.
 
 ## Consuming this pattern
 
-The mark is a fixed 116px on wide viewports. Below the shell's 640px breakpoint
-the header stacks and the mark becomes `min(100%, 460px)`, filling the content
-column rather than sitting in it as an icon. The 460px ceiling stops the mark
-growing without bound as the stacked column widens toward the breakpoint. That
-width is the shell's, not a per-surface choice; a consumer whose mark is square
-rather than a wide wordmark should check the resulting height at 375px.
+The mark is a **fixed 116px at every breakpoint**. Below the shell's 640px
+breakpoint the header stacks and `.surface-head-main` takes the full width, but
+that changes the header's arrangement, not the identity mark's scale — the same
+116px on a 320px phone and a 1280px desktop is what makes the mark read as the
+same object across a fleet of surfaces. That width is the shell's, not a
+per-surface choice; a consumer whose mark is square rather than a wide wordmark
+should check the resulting height, since the child keeps its own aspect ratio.
+
+A surface that wants its wordmark to become the content column at a narrow
+viewport is describing a **different composition**, not a shell parameter. It
+owns that composition outside this generic shell rather than redefining the
+slot — the way a front-door homepage owns its own hero.
 
 **Live same-repo surfaces** reference the canonical file directly.
 design-system-ASK's own root, style guide, and pattern gallery page consume the
