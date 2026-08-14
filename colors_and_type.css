@@ -113,7 +113,7 @@
   --fg-2: #827399;                                    /* secondary text */
   --fg-3: rgba(130, 115, 153, 0.62);                  /* tertiary / hint */
   --fg-on-card: var(--fg-high-contrast);              /* fixed high-contrast foreground for the FIXED --surface-solid fill. Theme-invariant on purpose: --surface-solid does not flip, so a foreground that did would fail against it in one mode */
-  --fg-high-contrast: var(--ask-ink-light);           /* OPT-IN high-contrast role (#201D26). Approved bounded uses: (1) the Class B message-archive participant ramp — dark ink on colored participant bubbles; (2) --fg-on-card, i.e. text on the fixed --surface-solid role. Not the default foreground — opt in explicitly, do not apply by font size, and do not use it to revise the approved gradient-surface foregrounds */
+  --fg-high-contrast: var(--ask-ink-light);           /* OPT-IN high-contrast role (#201D26). It never rebinds the general gradient-surface foreground roles — --fg-1/-2/-3 stay as approved — is never the default foreground, and is never selected by font size. A bounded element or region may opt in only once registered: approved uses are listed in README.md under "High-contrast foreground — registered uses", and a new one requires measured need, explicit ASK authorization, and registration there before merge */
 
   --line-1: rgba(255, 255, 255, 0.45);                /* hairline divider */
   --line-2: rgba(255, 255, 255, 0.22);                /* fainter rule */

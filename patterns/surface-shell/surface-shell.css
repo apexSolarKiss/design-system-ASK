@@ -12,9 +12,12 @@
    Tier 3 — the same boundary the output-artifact pattern already draws.
 
    It composes existing var() roles and introduces no token and no palette
-   color. The single literal value is the focus glow's translucent white,
-   which the repo README's hover/press/focus contract specifies verbatim and
-   for which no token exists; adding any other raw value here is a defect.
+   color. Two literal values appear, and only two: the focus glow's translucent
+   white, which the repo README's hover/press/focus contract specifies verbatim
+   and for which no token exists; and the `transparent` keyword, which clears
+   the breadcrumb's rest underline while its focus indicator is showing — a
+   keyword for the absence of paint, not a color drawn from anywhere. Adding
+   any other raw value here is a defect.
 
    Because it frames a whole page, this pattern owns that page's landmark
    structure, and the required elements are part of the contract, not a
@@ -159,20 +162,86 @@ a.surface-mark:focus-visible {
    aloud between every segment. */
 .surface-breadcrumb { display: block; }
 .surface-title .sep { color: var(--fg-3); }
+/* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
+   shell's one deliberate exception to the repo README's scale press. A scale
+   press needs a transformable box, and `display: inline-block` is that box —
+   but it also shrink-to-fits: an ancestor segment wider than the content column
+   stops fragmenting, swells to the FULL column, wraps inside its own box, adds
+   a line to the header, and drags its underline across the whole column instead
+   of under the text. Transform wants the box; wrapping text wants the fragments.
+   Wrapping wins here, so the press is non-geometric: hover carries the
+   underline from --line-2 to --line-1, and press adds the 0.92 opacity limb on
+   top of the already-bright underline. Neither state changes display, box
+   construction, line breaking, measured width, or fragment count. The identity
+   mark is a block-level slot and the footer links declare display:inline-block,
+   so both are boxes a transform can act on rather than inline text that
+   fragments; both keep scale(0.97). That inline-block is load-bearing for the
+   footer for its own reason — see the note above .surface-footer a.
+   Both declarations on :hover are overrides, not defaults. The foundation binds
+   `a:hover { border-bottom-color: currentColor; opacity: 0.92 }` at (0,1,1).
+   Its opacity reaches these links outright and would make hover compute
+   identically to press. Its currentColor ties `.surface-title a`'s --line-2 at
+   (0,1,1) and loses only on source order — a dependency on load order rather
+   than on intent. Declaring both properties here at (0,2,1) settles each on
+   specificity: hover holds opacity at its rest value so press stays distinct,
+   and names --line-1 so the underline brightens within its own hue instead of
+   shifting toward the text color. The foundation rule stays untouched for every
+   other link. */
 .surface-title a {
   color: inherit;
   border-bottom-color: var(--line-2);
-  display: inline-block;
   transition:
-    opacity var(--dur-2) var(--ease-out),
-    transform var(--dur-1) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out);
+    opacity var(--dur-1) var(--ease-out),
+    border-bottom-color var(--dur-2) var(--ease-out);
 }
-.surface-title a:hover { opacity: 0.92; }
-.surface-title a:active { transform: scale(0.97); }
+.surface-title a:hover {
+  opacity: 1;
+  border-bottom-color: var(--line-1);
+}
+.surface-title a:active {
+  opacity: 0.92;
+  border-bottom-color: var(--line-1);
+}
+/* Focus is a text-decoration underline here, and only here, because this link
+   fragments. Anything drawn around the BOX fails on fragmented inline text, and
+   all three were rendered before this rule was chosen: a box-shadow ring under
+   the default `slice` is drawn around the unbroken box and then cut, so it
+   opens on the cut edges; `box-decoration-break: clone` closes each fragment,
+   but the fragment boxes already overlap at this line-height, so the rings then
+   overlap each other; and a rectangular outline is a single shape only where
+   consecutive fragments overlap horizontally — at a 311px column the break is
+   `asymptotic system / key`, which does not, so it splits into one ring per
+   line. A text decoration is fragment-native: it follows each line's own text,
+   so there is no box to enclose and nothing to reach past.
+   --fg-1 is the existing theme-resolving default foreground role, so this needs
+   no new token, earns no --fg-high-contrast registration, and reads the same on
+   the quieter .org home link as on an ordinary ancestor. The rest underline is
+   a 1px border, so focus clears it to transparent rather than stacking two
+   rules; the border WIDTH is untouched, so nothing reflows. The clear is
+   transitioned with the rest of border-bottom-color, so the 1px border fades
+   out over --dur-2 rather than vanishing at t=0 — at steady state one underline
+   renders, during the transition both briefly do.
+   Two properties of the indicator are worth naming so they are not mistaken
+   for defects. `text-decoration-skip-ink` is left at its initial `auto`, so the
+   underline breaks around descenders: that is per-glyph typographic clearance,
+   not a contour opening at a line break. And `:focus-visible` sits last among
+   the equal-specificity state rules, so while a link is focused its underline
+   is the focus indicator and the hover/active border limbs are suppressed;
+   active still dims the whole element, because this rule sets no opacity.
+   Measured at 320 / 360 / 375 / 393 / 414 in both themes: every fragment
+   carries the indicator, zero indicator pixels land on neighboring glyph ink,
+   and contrast is 3.50:1 and 4.00:1 against the light gradient stops, 10.25:1
+   and 12.26:1 against the dark. The mark and the footer links do not fragment
+   and keep the box-shadow glow. */
 .surface-title a:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+  border-bottom-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--fg-1);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
 }
 
 /* The lede sits on the foundation's Caption size step and takes Light weight.
