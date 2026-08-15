@@ -149,18 +149,25 @@ a.surface-mark:focus-visible {
 .theme-dark .surface-mark-dark { display: block; }
 
 /* ---------- Identity ---------- */
-/* The structural identity line. Mono and compact — it is a locator, not a
-   display heading. The weight is the foundation's, not a local choice: the
-   repo README puts H1 and H2 at 400 and calls the light weights deliberate,
-   and the foundation already binds h1 to --fw-regular. A vendorable pattern
-   that shipped 600 would push a heavier title into every downstream consumer
-   than the design system it inherits from allows. */
+/* The structural identity line, on the family's shared PRIMARY-LABEL ROLE:
+   mono, Body size, light weight, heading line-height, tight tracking. Those
+   five declarations are one object. Conforming consumers apply the same role
+   to panel titles, named primitives, and route labels, so a primary label
+   reads as one thing wherever it appears. A title is a locator rather than a
+   display heading, which is why it sits on Body and not on an H-step; it is
+   still a title, which is why it does not sit on the supporting step its own
+   lede occupies.
+
+   Light weight is deliberate and is the foundation's, not a local choice: the
+   repo README calls the light weights deliberate, and a vendorable pattern
+   that shipped a heavier title would push it into every downstream consumer. */
 .surface-title {
-  font-size: var(--fs-small);
-  letter-spacing: 0.02em;
-  font-weight: var(--fw-regular);
-  margin: 0;
   font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
 }
 .surface-title .org { color: var(--fg-2); }   /* owning organization */
 .surface-title .page { color: var(--fg-3); }  /* payload name within the surface family */
@@ -301,6 +308,14 @@ a.surface-mark:focus-visible {
    losing it. The `//` inside a payload string is the author's, not this
    rule's — the shell prefixes, it never rewrites.
 
+   The marker takes `color: inherit`, so it is the same ink as the words it
+   opens. Giving it its own quieter foreground built a second hierarchy inside
+   a single short note, and it broke the one thing a consumer's color-only
+   override should be able to do: recolor the note whole. Inheriting means the
+   design system's gallery reads magenta throughout, and a consumer that sets
+   the note to a quieter foreground gets the marker at that foreground too,
+   with no page-specific exception anywhere.
+
    `white-space: normal` is declared, not merely left undeclared. The property
    inherits, so dropping the old `nowrap` would only mean "whatever the
    consuming page happens to impose" — and a surface that nests this slot under
@@ -316,7 +331,7 @@ a.surface-mark:focus-visible {
   color: var(--ask-emphasis-magenta, var(--fg-1));
   white-space: normal;
 }
-.surface-badge::before { content: "/// "; color: var(--fg-3); }
+.surface-badge::before { content: "/// "; color: inherit; }
 @supports (content: "a" / "b") {
   .surface-badge::before { content: "/// " / ""; }
 }
@@ -338,9 +353,15 @@ a.surface-mark:focus-visible {
    The footer sits on the Small supporting-text step, the same size the lede
    carries at the top of the page. The two are the surface's supporting voice
    at its open and its close, so they read at one size; the footer stays
-   distinct through its mono family, its tracking, and its alignment rather
-   than through being smaller. It is still not Caption — it is never
-   uppercased and it does not take Caption's weight. */
+   distinct through its mono family, its foreground, its right alignment, and
+   its terminal position rather than through being smaller. It is still not
+   Caption — it is never uppercased and it does not take Caption's weight.
+
+   Tracking is NORMAL, not wide. At this step wide tracking adds 1.44px between
+   letters, and mono's fixed advances are already wider than the lede's
+   proportional Inter; together they made a footer that measures the same size
+   as the lede read visibly larger than it. The family carries the distinction
+   on its own. */
 .surface-footer {
   display: flex;
   flex-wrap: wrap;
@@ -349,7 +370,7 @@ a.surface-mark:focus-visible {
   margin-top: var(--space-9);
   font-family: var(--font-mono);
   font-size: var(--fs-small);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-normal);
   color: var(--fg-2);
 }
 

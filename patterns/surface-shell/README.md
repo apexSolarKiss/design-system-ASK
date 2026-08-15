@@ -83,6 +83,15 @@ The title is a locator, not a display heading, and every structural separator is
 `<span class="sep" aria-hidden="true">`, so the glyph stays uniform while segment
 color remains free to express hierarchy. Those are separate decisions.
 
+**It carries the family's shared title role** — mono, `--fs-body`,
+`--fw-light`, `--lh-heading`, `--tracking-tight`. Those five declarations are
+one object, and they are what a primary label looks like across ASK-family
+surfaces: a consuming home page's panel titles resolve to the same role, so a
+reader moving between surfaces meets one thing rather than two dialects. Being
+a locator is why the title sits on Body rather than an H-step; being a title is
+why it does not sit on the supporting step its own lede occupies. The pair
+separates on size — 24 against 18 — not on weight.
+
 **Root-level surface — a plain heading.** A surface with no navigable ancestor
 takes a bare `<h1 class="surface-title">`. Do not wrap it in a navigation
 landmark: a `nav` whose contents are all inert navigates nowhere.
@@ -231,9 +240,15 @@ the supporting-text step instead.
 
 The shell **footer** sits on that same Small step. The lede and the footer are
 the surface's supporting voice at its open and its close, so they read at one
-size; the footer stays distinct through its mono family, its `--tracking-wide`
-tracking, its `--fg-2` foreground, and its right alignment rather than through
+size; the footer stays distinct through its mono family, its `--fg-2`
+foreground, its right alignment, and its terminal position rather than through
 being smaller than the text it closes under.
+
+Its tracking is `--tracking-normal`, and that is a correction rather than an
+omission. Wide tracking adds 1.44px between letters at this step, and mono's
+fixed advances are already wider than the lede's proportional Inter; together
+they made a footer measuring the same size as the lede read visibly larger than
+it. The family carries the distinction without help.
 
 It is still **not** Caption. It is never uppercased and it does not take
 Caption's weight. Do not "conform" it to Caption by uppercasing it, changing
@@ -367,6 +382,12 @@ nothing to keep in sync across a fleet. Where the browser supports the
 `content: "…" / ""` alt syntax the marker is drawn but not announced, so the
 note reads as its own words to a screen reader; where it does not, the fallback
 declaration draws the marker with its slashes rather than losing it.
+
+**The marker inherits the note's color.** It is the same ink as the words it
+opens, so a short note carries one hierarchy rather than two — and a consuming
+surface that recolors the note recolors the marker with it. That is what makes
+a color-only instance override sufficient: set `color` on `.surface-badge` and
+the whole note follows, with no page-specific exception anywhere.
 
 The note takes the Caption size in the mono family, uppercased, and it wraps.
 Its payload is the consuming surface's, verbatim — a `//` or `>>` inside that

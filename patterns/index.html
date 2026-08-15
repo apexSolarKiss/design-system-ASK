@@ -20,6 +20,7 @@
      style guide alone, and this page loads no theme script.
      ============================================================ -->
 <link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
 <link rel="stylesheet" href="surface-shell/surface-shell.css">
 <style>
   :root { --gap: 20px; }
@@ -35,30 +36,24 @@
     min-height: 100vh;
   }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--gap); }
-  .card {
-    background: var(--surface-glass-2); border: 1px solid var(--line-1);
-    border-radius: 14px; padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px;
-  }
-  /* Every size on this page resolves through the foundation's type scale, and
-     the choice between its two supporting steps is made by role, not by which
-     number the old value sat nearer. The card title is the card's own heading
-     and takes Small; the class label, the description, the variant line, and
-     the action buttons are label, supporting, and control text, and take
-     Caption. Title and description therefore separate on weight — 600 against
-     the foundation's inherited paragraph 200 — which is the repo README's rule
-     for this exact case. The description declares no weight and is not given
-     one here: that is a rendered value, and moving it does not belong in a
-     type-size conformance pass. */
+  /* The card chrome and its column rhythm now resolve from the shared
+     surface-panel contract; only what that contract deliberately leaves to the
+     consuming surface stays here. Two values changed in adopting it: the fill
+     moves from the lifted --surface-glass-2 to --surface-glass, and the radius
+     and padding take the tokenised --radius-lg / --space-6 in place of the
+     local 14px / 22px 22px 18px. */
+  /* Card metadata, variants and actions stay on Caption; the title and its
+     description take the shared panel roles. */
   .card .cls { font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-  .card h2 { font-size: var(--fs-small); margin: 0; font-weight: 600; letter-spacing: 0.01em; }
-  .card p { margin: 0; color: var(--fg-2); font-size: var(--fs-caption); line-height: 1.65;
-            font-family: var(--font-sans); }
+
+  /* Foreground only — the supporting type role is the shared contract's. */
+  .card p { color: var(--fg-2); }
   .card .variant { color: var(--fg-3); font-size: var(--fs-caption); margin: 2px 0 -2px; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
   .actions a {
     text-decoration: none; font-size: var(--fs-caption); letter-spacing: 0.03em;
     color: var(--fg-1); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 11px;
-    background: var(--surface-glass, transparent); white-space: nowrap;
+    background: var(--surface-glass-2); white-space: nowrap;
     transition:
       border-color var(--dur-2) var(--ease-out),
       opacity var(--dur-2) var(--ease-out),
@@ -106,40 +101,40 @@
 
     <div class="group-label">Class A // diagram patterns</div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class A // static</div>
-      <h2>diagram-static-H</h2>
-      <p>Horizontal cascade tree: a root fans right into sections, then nodes // group boxes + held + legacy states.</p>
+      <h2 class="surface-panel-title">diagram-static-H</h2>
+      <p class="surface-panel-support">Horizontal cascade tree: a root fans right into sections, then nodes // group boxes + held + legacy states.</p>
       <div class="actions">
         <a href="_preview/diagram-static-H.html">preview</a>
         <a class="readme" href="diagram-static-H/README.md">README</a>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class A // static</div>
-      <h2>diagram-static-V</h2>
-      <p>Vertical centered spine: a top-anchored trunk drops through centered stages // for linear top-down structure.</p>
+      <h2 class="surface-panel-title">diagram-static-V</h2>
+      <p class="surface-panel-support">Vertical centered spine: a top-anchored trunk drops through centered stages // for linear top-down structure.</p>
       <div class="actions">
         <a href="_preview/diagram-static-V.html">preview</a>
         <a class="readme" href="diagram-static-V/README.md">README</a>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class A // static</div>
-      <h2>diagram-static-SEQ</h2>
-      <p>Sequence / stepped chain: an ordered left-to-right progression of stages with per-step notes.</p>
+      <h2 class="surface-panel-title">diagram-static-SEQ</h2>
+      <p class="surface-panel-support">Sequence / stepped chain: an ordered left-to-right progression of stages with per-step notes.</p>
       <div class="actions">
         <a href="_preview/diagram-static-SEQ.html">preview</a>
         <a class="readme" href="diagram-static-SEQ/README.md">README</a>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class A // static</div>
-      <h2>diagram-static-FLOW</h2>
-      <p>Convergence flow: fields converge into a resolved slot, realization reconverges into conformance. Both
+      <h2 class="surface-panel-title">diagram-static-FLOW</h2>
+      <p class="surface-panel-support">Convergence flow: fields converge into a resolved slot, realization reconverges into conformance. Both
          previews render the same full-chrome shell off one source model // static is topology-only, interactive
          adds node inspection + pinning.</p>
       <div class="variant">static (full chrome, topology only) //</div>
@@ -153,10 +148,10 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class A // interactive</div>
-      <h2>diagram-interactive-spine</h2>
-      <p>Interactive IA state spine: a pan/zoom spine whose nodes carry an inspector + Spectral State color // color
+      <h2 class="surface-panel-title">diagram-interactive-spine</h2>
+      <p class="surface-panel-support">Interactive IA state spine: a pan/zoom spine whose nodes carry an inspector + Spectral State color // color
          encodes state only.</p>
       <div class="actions">
         <a href="_preview/diagram-interactive-spine.html">preview</a>
@@ -166,10 +161,10 @@
 
     <div class="group-label">Class B // project-output artifacts</div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class B // document</div>
-      <h2>output-artifact</h2>
-      <p>The Class B output-artifact document template: title + metadata + weighted sections + provenance footer //
+      <h2 class="surface-panel-title">output-artifact</h2>
+      <p class="surface-panel-support">The Class B output-artifact document template: title + metadata + weighted sections + provenance footer //
          line-intensity typographic system.</p>
       <div class="actions">
         <a href="_preview/output-artifact.html">preview</a>
@@ -177,10 +172,10 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Class B // sealed interactive archive</div>
-      <h2>message-archive</h2>
-      <p>One sealed, self-contained archive per merged conversation timeline: two-party and group bubble modes,
+      <h2 class="surface-panel-title">message-archive</h2>
+      <p class="surface-panel-support">One sealed, self-contained archive per merged conversation timeline: two-party and group bubble modes,
          four explicit attachment states, offline search + year jump. Participant color encodes <b>identity</b>,
          never state. Both previews render the SAME canonical template off one source // they differ only in
          the pattern-local role values.</p>
@@ -197,10 +192,10 @@
 
     <div class="group-label">Surface patterns</div>
 
-    <div class="card">
+    <div class="card surface-panel">
       <div class="cls">Surface // page shell</div>
-      <h2>surface-shell</h2>
-      <p>Shared page shell for a family of public surfaces: an identity-mark <b>slot</b>, surface identity,
+      <h2 class="surface-panel-title">surface-shell</h2>
+      <p class="surface-panel-support">Shared page shell for a family of public surfaces: an identity-mark <b>slot</b>, surface identity,
          lede, an optional status badge, an optional control slot, the rule that closes the header, and the
          flush-right footer that closes the page. Header left, footer right — the reading path opens and
          closes where the eye does. It owns the chrome around the payload and never the payload. It inherits
