@@ -40,7 +40,7 @@
     border-radius: var(--radius-lg);
     padding: var(--space-5);
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: var(--fs-caption);
     color: var(--fg-2);
   }
   /* The control slot's occupant is skinned by the consuming surface, never by
@@ -124,8 +124,9 @@
       <p class="surface-lede">[One or two sentences stating what this surface is and what a reader
         will find below. Plain present tense. The lede describes the surface, not the project.]</p>
 
-      <!-- OPTIONAL status pill. Omit the element when the surface carries no
-           standing classification. -->
+      <!-- OPTIONAL status note. Omit the element when the surface carries no
+           standing classification. The shell supplies the leading `///`; write
+           only your own words here. -->
       <span class="surface-badge">[optional status]</span>
 
     </div>

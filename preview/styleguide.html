@@ -32,22 +32,22 @@
      deliberately left as it was rather than changed under a contrast fix. */
   .card-solid .lbl { color: var(--fg-on-card); }
   .swatch { height: 60px; border-radius: var(--radius-md); border: 1px solid var(--line-1); }
-  .tok { font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--fg-2); margin-top: var(--space-2); display: flex; justify-content: space-between; gap: var(--space-3); }
+  .tok { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.5; color: var(--fg-2); margin-top: var(--space-2); display: flex; justify-content: space-between; gap: var(--space-3); }
   .tok .val { color: var(--fg-3); }
   .role { padding: var(--space-3) 0; border-top: 1px solid var(--line-2); }
   .role:first-child { border-top: 0; }
-  .role .lbl { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
-  .note { font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--fg-3); }
+  .role .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
+  .note { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
-  .badge { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
+  .badge { display: inline-block; font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
   .btn { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-small); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-5); border: 1px solid var(--line-1); cursor: pointer; margin: 0 var(--space-3) var(--space-3) 0; }
   .btn-primary { background: var(--ask-ui-accent-1); color: var(--ask-white); border-color: transparent; }
   .btn-ghost { background: transparent; color: var(--fg-1); }
   .specimen { line-height: var(--lh-tight); }
   .row { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
-  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); white-space: nowrap; }
+  .meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); white-space: nowrap; }
 
   /* Mode selector — this surface's own control, occupying the shell's optional
      header slot. It is style-guide-only, so it is styled here rather than in the

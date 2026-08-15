@@ -68,7 +68,14 @@
      repo README's "contrast is weight, not size". The route name was 14px and
      its description 12.5px, which made supporting copy smaller than the system
      has a role for. */
+  /* The family is declared, not inherited. This page sets a mono payload
+     default on body, which the route name would otherwise pick up — leaving
+     the design system's own front door naming its routes in a face the ASK
+     surfaces name theirs in sans. The description below already declared sans
+     for the same reason; this makes the pair deliberate rather than half
+     corrected. */
   a.route .name {
+    font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: var(--fw-semibold);
     letter-spacing: 0.01em;
@@ -85,16 +92,16 @@
     font-size: var(--fs-small);
     font-weight: var(--fw-light);
     line-height: var(--lh-body);
-    font-family: Inter, system-ui, sans-serif;
+    font-family: var(--font-sans);
     overflow-wrap: anywhere;
   }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
      below it, right-aligned. */
   .page-note {
-    margin: 36px 0 0; color: var(--fg-3); font-size: 11px; line-height: 1.7;
-    font-family: Inter, system-ui, sans-serif;
+    margin: 36px 0 0; color: var(--fg-3); font-size: var(--fs-caption); line-height: 1.7;
+    font-family: var(--font-sans);
   }
-  .page-note code { font-family: 'JetBrains Mono', ui-monospace, monospace; color: var(--fg-2); }
+  .page-note code { font-family: var(--font-mono); color: var(--fg-2); }
 </style>
 </head>
 <body>

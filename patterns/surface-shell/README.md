@@ -229,11 +229,15 @@ The lede is **not** Caption text. Caption is the 14px uppercase label role: the
 foundation's inherited Inter. The lede is prose a reader reads, so it sits on
 the supporting-text step instead.
 
-The shell **footer** is not an instantiation of that role either. It shares
-three of Caption's tokens — `--fs-caption`, `--tracking-wide`, `--fg-2` — but
-sets its own mono family, inherits its weight, and is never uppercased. Do not
-"conform" it to Caption by uppercasing it, changing its family, or raising its
-weight.
+The shell **footer** sits on that same Small step. The lede and the footer are
+the surface's supporting voice at its open and its close, so they read at one
+size; the footer stays distinct through its mono family, its `--tracking-wide`
+tracking, its `--fg-2` foreground, and its right alignment rather than through
+being smaller than the text it closes under.
+
+It is still **not** Caption. It is never uppercased and it does not take
+Caption's weight. Do not "conform" it to Caption by uppercasing it, changing
+its family, or raising its weight.
 
 ### Landmarks are part of the contract
 
@@ -348,6 +352,25 @@ the failure this mirroring prevents.
 
 Do not emit an empty slot element to hold space. An absent slot must be absent
 from the markup.
+
+### The status note
+
+`.surface-badge` is a **note, not a control.** It is inert on every surface that
+uses it, so it carries no button geometry — the repo README puts pills on
+interactive elements only, and a bordered capsule around inert text offers an
+affordance the element cannot honor. The shell opens the row with a decorative
+`///` instead, which marks it as an aside without implying it can be pressed.
+
+The marker is generated content the shell supplies, so **a consuming surface
+writes only its own words** — no markup changes to receive the marker, and
+nothing to keep in sync across a fleet. Where the browser supports the
+`content: "…" / ""` alt syntax the marker is drawn but not announced, so the
+note reads as its own words to a screen reader; where it does not, the fallback
+declaration draws the marker with its slashes rather than losing it.
+
+The note takes the Caption size in the mono family, uppercased, and it wraps.
+Its payload is the consuming surface's, verbatim — a `//` or `>>` inside that
+string is the author's own separator. The shell prefixes; it never rewrites.
 
 The control inside `.surface-head-aside` belongs to the consuming surface — its
 behavior, its styling, and its script. The shell positions the slot and stops
