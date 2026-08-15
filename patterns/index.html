@@ -39,14 +39,24 @@
     background: var(--surface-glass-2); border: 1px solid var(--line-1);
     border-radius: 14px; padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 12px;
   }
-  .card .cls { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-  .card h2 { font-size: 15px; margin: 0; font-weight: 600; letter-spacing: 0.01em; }
-  .card p { margin: 0; color: var(--fg-2); font-size: 12.5px; line-height: 1.65;
-            font-family: Inter, system-ui, sans-serif; }
-  .card .variant { color: var(--fg-3); font-size: 11px; margin: 2px 0 -2px; }
+  /* Every size on this page resolves through the foundation's type scale, and
+     the choice between its two supporting steps is made by role, not by which
+     number the old value sat nearer. The card title is the card's own heading
+     and takes Small; the class label, the description, the variant line, and
+     the action buttons are label, supporting, and control text, and take
+     Caption. Title and description therefore separate on weight — 600 against
+     the foundation's inherited paragraph 200 — which is the repo README's rule
+     for this exact case. The description declares no weight and is not given
+     one here: that is a rendered value, and moving it does not belong in a
+     type-size conformance pass. */
+  .card .cls { font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+  .card h2 { font-size: var(--fs-small); margin: 0; font-weight: 600; letter-spacing: 0.01em; }
+  .card p { margin: 0; color: var(--fg-2); font-size: var(--fs-caption); line-height: 1.65;
+            font-family: var(--font-sans); }
+  .card .variant { color: var(--fg-3); font-size: var(--fs-caption); margin: 2px 0 -2px; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
   .actions a {
-    text-decoration: none; font-size: 11px; letter-spacing: 0.03em;
+    text-decoration: none; font-size: var(--fs-caption); letter-spacing: 0.03em;
     color: var(--fg-1); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 11px;
     background: var(--surface-glass, transparent); white-space: nowrap;
     transition:
@@ -63,11 +73,11 @@
   .actions a:active { transform: scale(0.97); }
   .actions a:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255,255,255,0.25); }
   .actions a.readme { color: var(--fg-2); }
-  .group-label { grid-column: 1 / -1; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  .group-label { grid-column: 1 / -1; font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase;
                  color: var(--fg-3); margin: 8px 0 -6px; }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
      below it, right-aligned. */
-  .page-note { margin: 40px 0 0; color: var(--fg-3); font-size: 11px; line-height: 1.7; }
+  .page-note { margin: 40px 0 0; color: var(--fg-3); font-size: var(--fs-caption); line-height: 1.7; }
   .page-note code { color: var(--fg-2); }
 </style>
 </head>
@@ -85,7 +95,7 @@
       <p class="surface-lede">Live, owner-facing previews of every pattern in the catalog — the Class A
           diagram family, the Class B artifact templates, and the surface-shell page pattern this gallery
           itself consumes.</p>
-      <span class="surface-badge">owner preview // do not vendor</span>
+      <span class="surface-badge">owner preview &gt;&gt; do not vendor</span>
     </div>
   </header>
 

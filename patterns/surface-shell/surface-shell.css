@@ -12,12 +12,17 @@
    Tier 3 — the same boundary the output-artifact pattern already draws.
 
    It composes existing var() roles and introduces no token and no palette
-   color. Two literal values appear, and only two: the focus glow's translucent
-   white, which the repo README's hover/press/focus contract specifies verbatim
-   and for which no token exists; and the `transparent` keyword, which clears
-   the breadcrumb's rest underline while its focus indicator is showing — a
-   keyword for the absence of paint, not a color drawn from anywhere. Adding
-   any other raw value here is a defect.
+   color. Two literal COLOR values appear, and only two: the focus glow's
+   translucent white, which the repo README's hover/press/focus contract
+   specifies verbatim and for which no token exists; and the `transparent`
+   keyword, which clears the breadcrumb's rest underline while its focus
+   indicator is showing — a keyword for the absence of paint, not a color drawn
+   from anywhere. Adding any other raw color value here is a defect.
+
+   That assertion governs color, and only color. Geometry, tracking, and border
+   widths do carry raw values where no token expresses them. Text size is the
+   one dimension held absolutely: every font-size in this file resolves through
+   the foundation's type scale, and a raw numeric size here is a defect.
 
    Because it frames a whole page, this pattern owns that page's landmark
    structure, and the required elements are part of the contract, not a
@@ -151,7 +156,7 @@ a.surface-mark:focus-visible {
    that shipped 600 would push a heavier title into every downstream consumer
    than the design system it inherits from allows. */
 .surface-title {
-  font-size: 20px;
+  font-size: var(--fs-small);
   letter-spacing: 0.02em;
   font-weight: var(--fw-regular);
   margin: 0;
@@ -280,19 +285,40 @@ a.surface-mark:focus-visible {
   font-family: var(--font-sans);
 }
 
-/* Optional status pill beneath the lede — classification, environment, or
-   another short standing fact about the surface. */
+/* Optional status note beneath the lede — classification, environment, or
+   another short standing fact about the surface.
+
+   It carries no button geometry, because it is not a button: the repo README
+   puts pills on interactive elements only, and this slot is inert on every
+   surface that uses it. A decorative `///` opens the row instead, marking it
+   as a note rather than a control.
+
+   The marker is generated content, so no consuming surface edits its markup to
+   receive it. It is drawn with empty alt text where the browser supports the
+   `content: "…" / ""` alt syntax, so the note is announced as its own words
+   and not as three slashes; the plain declaration below it is the fallback for
+   browsers that do not, which take the marker with its slashes rather than
+   losing it. The `//` inside a payload string is the author's, not this
+   rule's — the shell prefixes, it never rewrites.
+
+   `white-space: normal` is declared, not merely left undeclared. The property
+   inherits, so dropping the old `nowrap` would only mean "whatever the
+   consuming page happens to impose" — and a surface that nests this slot under
+   an inherited `nowrap` would still refuse to wrap while the contract claimed
+   otherwise. A vendorable pattern owns the behavior it documents. */
 .surface-badge {
-  display: inline-block;
+  display: block;
   margin-top: var(--space-4);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--ask-emphasis-magenta, var(--fg-1));
-  border: 1px solid var(--line-1);
-  border-radius: var(--radius-pill);
-  padding: 4px 12px;
-  white-space: nowrap;
+  white-space: normal;
+}
+.surface-badge::before { content: "/// "; color: var(--fg-3); }
+@supports (content: "a" / "b") {
+  .surface-badge::before { content: "/// " / ""; }
 }
 
 .surface-rule {
@@ -307,7 +333,14 @@ a.surface-mark:focus-visible {
    flush-left header above. This is the shell's rule, not a per-surface
    choice: a left-aligned footer restarts the eye at a column the page has
    already finished with. The foundation underlines anchors; the footer
-   softens that to --line-2 so a row of links reads as one quiet band. */
+   softens that to --line-2 so a row of links reads as one quiet band.
+
+   The footer sits on the Small supporting-text step, the same size the lede
+   carries at the top of the page. The two are the surface's supporting voice
+   at its open and its close, so they read at one size; the footer stays
+   distinct through its mono family, its tracking, and its alignment rather
+   than through being smaller. It is still not Caption — it is never
+   uppercased and it does not take Caption's weight. */
 .surface-footer {
   display: flex;
   flex-wrap: wrap;
@@ -315,7 +348,7 @@ a.surface-mark:focus-visible {
   gap: var(--space-5);
   margin-top: var(--space-9);
   font-family: var(--font-mono);
-  font-size: var(--fs-caption);
+  font-size: var(--fs-small);
   letter-spacing: var(--tracking-wide);
   color: var(--fg-2);
 }
