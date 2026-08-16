@@ -21,6 +21,7 @@
      ============================================================ -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-action.css">
 <link rel="stylesheet" href="surface-shell/surface-shell.css">
 <style>
   :root { --gap: 20px; }
@@ -49,25 +50,29 @@
   /* Foreground only — the supporting type role is the shared contract's. */
   .card p { color: var(--fg-2); }
   .card .variant { color: var(--fg-3); font-size: var(--fs-caption); margin: 2px 0 -2px; }
+  /* The action ROW is this page's: where the controls sit in the card, how they
+     wrap, and the rhythm above them. The controls themselves are the shared
+     surface-action contract, and every declaration that used to sit here — the
+     family, size, weight, tracking, padding, radius, fill, border, foreground,
+     and the whole hover/press/focus contract — now resolves from
+     surface-action.css. What is gone is duplication, not behavior.
+
+     What adoption changes, in full:
+
+       - radius moves from a local 8px to the canonical --radius-pill;
+       - padding moves from a local 6px 11px to --space-2 --space-3;
+       - tracking moves from a raw 0.03em to --tracking-normal;
+       - family and weight become explicit — mono at 300, where before both
+         were inherited and the weight landed on the body's 200;
+       - line-height becomes explicit at --lh-tight, so the control's height
+         stops depending on this page's mono body default;
+       - `white-space` becomes normal, replacing the local `nowrap`.
+
+     What adoption does NOT change: the row's own layout, its 8px gap, its
+     `margin-top: auto` bottom-anchoring, and its 6px lead-in all stay here,
+     because the shared contract deliberately owns the controls and not the
+     composition around them. */
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
-  .actions a {
-    text-decoration: none; font-size: var(--fs-caption); letter-spacing: 0.03em;
-    color: var(--fg-1); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 11px;
-    background: var(--surface-glass-2); white-space: nowrap;
-    transition:
-      border-color var(--dur-2) var(--ease-out),
-      opacity var(--dur-2) var(--ease-out),
-      transform var(--dur-1) var(--ease-out),
-      box-shadow var(--dur-2) var(--ease-out);
-  }
-  /* Hover uses the approved limbs only: the opacity drop plus a real --line-2 ->
-     --line-1 border brightening, the same treatment the repo root gives its route
-     rows. The former rule changed BOTH border and text to an accent hue, which the
-     repo README rules out — hover never shifts color. */
-  .actions a:hover { opacity: 0.92; border-color: var(--line-1); }
-  .actions a:active { transform: scale(0.97); }
-  .actions a:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255,255,255,0.25); }
-  .actions a.readme { color: var(--fg-2); }
   .group-label { grid-column: 1 / -1; font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase;
                  color: var(--fg-3); margin: 8px 0 -6px; }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
@@ -106,8 +111,8 @@
       <h2 class="surface-panel-title">diagram-static-H</h2>
       <p class="surface-panel-support">Horizontal cascade tree: a root fans right into sections, then nodes // group boxes + held + legacy states.</p>
       <div class="actions">
-        <a href="_preview/diagram-static-H.html">preview</a>
-        <a class="readme" href="diagram-static-H/README.md">README</a>
+        <a class="surface-action" href="_preview/diagram-static-H.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="diagram-static-H/README.md">README</a>
       </div>
     </div>
 
@@ -116,8 +121,8 @@
       <h2 class="surface-panel-title">diagram-static-V</h2>
       <p class="surface-panel-support">Vertical centered spine: a top-anchored trunk drops through centered stages // for linear top-down structure.</p>
       <div class="actions">
-        <a href="_preview/diagram-static-V.html">preview</a>
-        <a class="readme" href="diagram-static-V/README.md">README</a>
+        <a class="surface-action" href="_preview/diagram-static-V.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="diagram-static-V/README.md">README</a>
       </div>
     </div>
 
@@ -126,8 +131,8 @@
       <h2 class="surface-panel-title">diagram-static-SEQ</h2>
       <p class="surface-panel-support">Sequence / stepped chain: an ordered left-to-right progression of stages with per-step notes.</p>
       <div class="actions">
-        <a href="_preview/diagram-static-SEQ.html">preview</a>
-        <a class="readme" href="diagram-static-SEQ/README.md">README</a>
+        <a class="surface-action" href="_preview/diagram-static-SEQ.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="diagram-static-SEQ/README.md">README</a>
       </div>
     </div>
 
@@ -139,12 +144,12 @@
          adds node inspection + pinning.</p>
       <div class="variant">static (full chrome, topology only) //</div>
       <div class="actions">
-        <a href="_preview/diagram-static-FLOW-static.html">preview // static</a>
+        <a class="surface-action" href="_preview/diagram-static-FLOW-static.html">preview // static</a>
       </div>
       <div class="variant">interactive (full chrome + node inspection) //</div>
       <div class="actions">
-        <a href="_preview/diagram-static-FLOW-interactive.html">preview // interactive</a>
-        <a class="readme" href="diagram-static-FLOW/README.md">README</a>
+        <a class="surface-action" href="_preview/diagram-static-FLOW-interactive.html">preview // interactive</a>
+        <a class="surface-action surface-action--secondary" href="diagram-static-FLOW/README.md">README</a>
       </div>
     </div>
 
@@ -154,8 +159,8 @@
       <p class="surface-panel-support">Interactive IA state spine: a pan/zoom spine whose nodes carry an inspector + Spectral State color // color
          encodes state only.</p>
       <div class="actions">
-        <a href="_preview/diagram-interactive-spine.html">preview</a>
-        <a class="readme" href="diagram-interactive-spine/README.md">README</a>
+        <a class="surface-action" href="_preview/diagram-interactive-spine.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="diagram-interactive-spine/README.md">README</a>
       </div>
     </div>
 
@@ -167,8 +172,8 @@
       <p class="surface-panel-support">The Class B output-artifact document template: title + metadata + weighted sections + provenance footer //
          line-intensity typographic system.</p>
       <div class="actions">
-        <a href="_preview/output-artifact.html">preview</a>
-        <a class="readme" href="output-artifact/README.md">README</a>
+        <a class="surface-action" href="_preview/output-artifact.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="output-artifact/README.md">README</a>
       </div>
     </div>
 
@@ -181,12 +186,12 @@
          the pattern-local role values.</p>
       <div class="variant">default-ASK (the ASK-preferred visual default) //</div>
       <div class="actions">
-        <a href="_preview/message-archive-default-ASK.html">preview // default-ASK</a>
+        <a class="surface-action" href="_preview/message-archive-default-ASK.html">preview // default-ASK</a>
       </div>
       <div class="variant">AA-compliant (accessibility-tuned roles + chrome) //</div>
       <div class="actions">
-        <a href="_preview/message-archive-AA-compliant.html">preview // AA-compliant</a>
-        <a class="readme" href="message-archive/README.md">README</a>
+        <a class="surface-action" href="_preview/message-archive-AA-compliant.html">preview // AA-compliant</a>
+        <a class="surface-action surface-action--secondary" href="message-archive/README.md">README</a>
       </div>
     </div>
 
@@ -203,8 +208,8 @@
          own mark. This gallery, the repo root, and the style guide all consume it — the preview is its
          Tier-3-neutral specimen. Not Class A and not Class B.</p>
       <div class="actions">
-        <a href="_preview/surface-shell.html">preview</a>
-        <a class="readme" href="surface-shell/README.md">README</a>
+        <a class="surface-action" href="_preview/surface-shell.html">preview</a>
+        <a class="surface-action surface-action--secondary" href="surface-shell/README.md">README</a>
       </div>
     </div>
 
