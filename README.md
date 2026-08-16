@@ -67,6 +67,7 @@ A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits
 | `spectral-state.css` + `spectral-state.md` + `spectral-state.html` | ASK Spectral State — specialized **opt-in** state-color primitive (eight `--state-*` roles — seven neon signals plus `neutral`, which resolves to the theme foreground — on a 12-hue wheel), with a rendered visual key (`spectral-state.html`). For surfaces that encode element *state*; not general UI color. Layers on top of `colors_and_type.css`. |
 | `evidence-state.css` + `evidence-state.md` + `evidence-state.html` | ASK Evidence State — a sanctioned **profile** under Spectral State (epistemic evidence-state). `supported` / `partially-supported` / `unresolved` reuse Spectral State values by reference; **`weakened`** (muted 30° brown) and **`not-yet-testable`** (lavender-gray, dashed/hollow) are new roles. Rendered key in `evidence-state.html`. Layers on top of `spectral-state.css`; Spectral State's own vocabulary is unchanged. |
 | `three-functions.css` + `three-functions.md` + `three-functions.html` | ASK Three Functions — specialized **opt-in** function-color primitive (three `--function-*` roles: `legislative` magenta / `executive` theme-neutral white·lavender-ASK / `judicial` cyan), a **sibling** to Spectral State on the function axis (not a profile). Binds existing ASK values to roles; no palette expansion. Rendered key in `three-functions.html`. Layers on top of `colors_and_type.css`. |
+| `surface-panel.css` | **Opt-in live-surface visual rule** — the shared visual contract for live content panels: chrome (`.surface-panel`), primary label (`.surface-panel-title`), supporting copy (`.surface-panel-support`), and the interaction contract for a panel that is *itself* a link (`a.surface-panel`). It owns **presentation only** — no markup, no semantics, no template, no generated preview. Two semantic forms can share this appearance without sharing structure or behavior: a full-panel native link, and an inert panel containing consumer-owned links or actions. It deliberately does **not** own support-copy foreground, and it assigns no interaction to inert panels. Not a component, not a surface pattern, not an artifact scaffold |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
@@ -191,9 +192,15 @@ A canonical inspection specimen may render the role to display and measure it. I
 
 ### Type
 
-**Inter for interface and display. JetBrains Mono for code, technical, and tabular data.** Inter leads everywhere interface-facing; mono enters only where structure or precision matters. Both are loaded locally as variable webfonts in `fonts/` (OFL).
+**Inter is the default for interface prose, supporting copy, and display. JetBrains Mono is used for code, technical and tabular data, and the explicit structural primary-label role.** Mono is never a generic body or support-copy substitute, and nothing becomes mono merely for being interface-facing — it enters where structure or precision matters, and the primary-label role below is the one bounded structural exception. Both are loaded locally as variable webfonts in `fonts/` (OFL).
 
-Contrast is **weight, not size** — headings sit at 400, body at 200. The 200-unit weight gap does the work. Light weights are deliberate. No thick typefaces.
+Type hierarchy is **role-driven**. The defined scale steps distinguish semantic roles; do not invent an ad-hoc size merely to add emphasis. Within a role, weight and foreground carry contrast.
+
+Generic H1/H2 display roles use 400. H3 and the structural primary-label role use 300. Body uses 200; Small uses 300; Caption uses 400. Light weights are deliberate. No thick typefaces.
+
+**Element name does not override the explicit role:** an `h1` or `h2` carrying `.surface-title` or `.surface-panel-title` remains a structural primary label at 300, and conforming it to the generic heading weight is a defect rather than a repair.
+
+The **24px primary label over 18px supporting copy** pair is a sanctioned distinction between two defined roles — not ad-hoc sizing, and not a case where a weight difference should be substituted for the size step. Both sit at 300, and the pair separates on role.
 
 | Role | Family | Weight | Size / line-height | Tracking |
 | --- | --- | --- | --- | --- |
@@ -204,8 +211,11 @@ Contrast is **weight, not size** — headings sit at 400, body at 200. The 200-u
 | Body | Inter | 200 | 24 / 1.45 | 0 |
 | Small | Inter | 300 | 18 / 1.40 | 0 |
 | Caption | Inter | 400 | 14, UPPERCASE | 0.14em |
+| **Primary label / structural locator** | **JetBrains Mono** | **300** | **24 / 1.12** | **-0.02em** |
 | Code / inline-code | JetBrains Mono | 300 | 0.9× host | 0 |
 | Tabular numerals | JetBrains Mono | inherit | inherit | 0 |
+
+The **primary-label role** is a structural locator, not display type: it names a thing the system has — a surface, a route, a panel, a named primitive — rather than setting prose. `.surface-title` in the `surface-shell` pattern and `.surface-panel-title` in `surface-panel.css` are its canonical implementations. Supporting copy under such a label stays on the Small Inter step, so the pair separates on size rather than weight. `colors_and_type.css` is unchanged by this role: its generic `.mono` utility remains for code, technical and tabular use, and the structural exception is applied only through those explicit canonical selectors.
 
 ### Spacing & layout
 - 4-px base unit. Tokens at 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128.

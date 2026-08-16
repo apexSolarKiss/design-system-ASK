@@ -26,6 +26,7 @@
      supplied by vercel.json for external linking.
      ============================================================ -->
 <link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="surface-panel.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
   /* Local body delta — the intentional difference from the foundation, and
@@ -39,60 +40,31 @@
     font-family: var(--font-mono);
     min-height: 100vh;
   }
+  /* The stack between panels is this page's; the panels themselves are the
+     shared surface-panel contract, and every declaration that used to sit here
+     — the column arrangement, the glass, border, radius, padding, the whole
+     interaction contract — now resolves from surface-panel.css. What is gone
+     is duplication, not behavior. What adoption changes, in full:
+
+       - the former wrapping row becomes a vertical panel stack carrying the
+         canonical 12px internal rhythm;
+       - the support line, previously arranged INLINE beside its label by
+         `align-items: baseline`, now sits below it;
+       - title and support take the canonical 24px mono / 18px Inter roles;
+       - fill, backdrop blur, radius, padding and shadow take the canonical
+         panel values.
+
+     What adoption does NOT change: the panel remains a native link, and its
+     hover, press and focus semantics are preserved. */
   .routes { display: flex; flex-direction: column; gap: 10px; }
-  a.route {
-    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
-    text-decoration: none; color: var(--fg-1);
-    background: var(--surface-glass-2); border: 1px solid var(--line-2);
-    border-radius: 12px; padding: 16px 18px;
-    transition:
-      border-color var(--dur-2) var(--ease-out),
-      opacity var(--dur-2) var(--ease-out),
-      transform var(--dur-1) var(--ease-out),
-      box-shadow var(--dur-2) var(--ease-out);
-  }
-  /* Interaction contract (README, Hover/press/focus). Hover takes both approved
-     limbs: the opacity drop to 0.92, plus a real --line-2 -> --line-1 border
-     brightening. No hue shift — the two line roles are the same translucent
-     value at different strengths, so this brightens the border rather than
-     recoloring it. Press is scale(0.97) at --dur-1 (120ms); focus is the white
-     glow, never the browser default. */
-  a.route:hover { opacity: 0.92; border-color: var(--line-1); }
-  a.route:active { transform: scale(0.97); }
-  a.route:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
-  }
-  /* Both spans sit on ONE size step — the foundation's Small supporting-text
-     role — and the hierarchy is carried by weight and foreground, per the
-     repo README's "contrast is weight, not size". The route name was 14px and
-     its description 12.5px, which made supporting copy smaller than the system
-     has a role for. */
-  /* The family is declared, not inherited. This page sets a mono payload
-     default on body, which the route name would otherwise pick up — leaving
-     the design system's own front door naming its routes in a face the ASK
-     surfaces name theirs in sans. The description below already declared sans
-     for the same reason; this makes the pair deliberate rather than half
-     corrected. */
-  a.route .name {
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
-    font-weight: var(--fw-semibold);
-    letter-spacing: 0.01em;
-  }
-  /* The repository route's description is a bare URL with no break
-     opportunity. Measured at a 320px viewport: at 12.5px it rendered 218px
-     wide and fit; on the Small step it wants 283px and pushed the page 14px
-     wider. `anywhere` gives the URL somewhere to break, and unlike
-     `break-word` it also lowers the min-content contribution, so the flex item
-     stops demanding its full content width — a separate min-width:0 measured
-     as unnecessary. This touches no size step, weight, or route copy. */
+
+  /* Two declarations the shared contract deliberately does NOT own: the
+     supporting foreground, which each surface keeps, and the URL break. The
+     repository route's description is a bare URL with no break opportunity;
+     `anywhere` gives it one and also lowers its min-content contribution, so
+     the panel stops demanding the URL's full width at a narrow viewport. */
   a.route .what {
     color: var(--fg-2);
-    font-size: var(--fs-small);
-    font-weight: var(--fw-light);
-    line-height: var(--lh-body);
-    font-family: var(--font-sans);
     overflow-wrap: anywhere;
   }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
@@ -125,17 +97,17 @@
   <main class="surface-payload">
 
   <div class="routes">
-    <a class="route" href="preview/styleguide.html">
-      <span class="name">style guide</span>
-      <span class="what">Canonical token review surface: color, type, spacing, and roles.</span>
+    <a class="route surface-panel" href="preview/styleguide.html">
+      <span class="name surface-panel-title">style guide</span>
+      <span class="what surface-panel-support">Canonical token review surface: color, type, spacing, and roles.</span>
     </a>
-    <a class="route" href="patterns/index.html">
-      <span class="name">pattern previews</span>
-      <span class="what">Owner-facing gallery of Class A diagram patterns, Class B artifact templates, and the surface-shell page pattern.</span>
+    <a class="route surface-panel" href="patterns/index.html">
+      <span class="name surface-panel-title">pattern previews</span>
+      <span class="what surface-panel-support">Owner-facing gallery of Class A diagram patterns, Class B artifact templates, and the surface-shell page pattern.</span>
     </a>
-    <a class="route" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">
-      <span class="name">repository</span>
-      <span class="what">github.com/apexSolarKiss/design-system-ASK</span>
+    <a class="route surface-panel" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">
+      <span class="name surface-panel-title">repository</span>
+      <span class="what surface-panel-support">github.com/apexSolarKiss/design-system-ASK</span>
     </a>
   </div>
 
