@@ -85,11 +85,34 @@
                     the box model that promise depends on.
 
    Hover, press and focus are one contract, inherited by every consumer, and
-   follow the repo README: hover drops opacity and brightens --line-2 to
-   --line-1 with NO color shift, press is scale(0.97), focus is the white glow
-   rather than the browser default. The foundation underlines anchors, so
-   text-decoration is held off at rest and on hover — a compact control reads
-   as a control, not as running text.
+   they live here rather than on any consuming surface. Press is scale(0.97);
+   focus is the white glow rather than the browser default.
+
+   HOVER RESOLVES THE BORDER TO `currentColor`, and that is deliberate. A
+   compact control is small, and its rest border is --line-2 — the faintest
+   line the system has. A hover that only brightened it to --line-1, still
+   translucent, is barely perceptible at this scale. Resolving to the control's
+   OWN governed foreground makes the outline legible: primary follows --fg-1,
+   the --secondary variant follows --fg-2, and a consumer that recolors a
+   control for its context gets a matching hover border for free.
+
+   This ALIGNS compact actions with the foundation's generic-anchor treatment,
+   which already hovers to `border-bottom-color: currentColor`. It is not an
+   exception carved out of a line-role norm — the line-role cases are the ones
+   that are specific, and they are named: FULL-PANEL LINKS (a.surface-panel)
+   take the --line-2 -> --line-1 brightening, and WRAPPING BREADCRUMB LINKS
+   (.surface-title a) take their own underline treatment. Mark and footer roles
+   change opacity only and leave their border alone. Do not conform any of them
+   to this rule, or this rule to them.
+
+   State it accurately: in light mode this visibly moves the border from a
+   translucent white to the foreground purple. That IS a color transition. What
+   the repo README forbids is introducing an ARBITRARY new hue, and this
+   introduces none — the border becomes a color the control is already
+   painted in.
+
+   The foundation underlines anchors, so text-decoration is held off at rest
+   and on hover — a compact control reads as a control, not as running text.
 
    Requires colors_and_type.css. Layers on top of it and rebinds no token.
    ============================================================ */
@@ -141,7 +164,7 @@ button.surface-action {
    that happens to be nearby. */
 .surface-action--secondary { color: var(--fg-2); }
 
-.surface-action:hover { opacity: 0.92; border-color: var(--line-1); text-decoration: none; }
+.surface-action:hover { opacity: 0.92; border-color: currentColor; text-decoration: none; }
 .surface-action:active { transform: scale(0.97); }
 .surface-action:focus-visible {
   outline: none;

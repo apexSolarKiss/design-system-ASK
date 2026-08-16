@@ -236,7 +236,16 @@ The **compact-action role** is the label on a small control — a chip, a route 
 - **Glass cards** — the preferred container on the gradient field. White at 14% opacity, 1px hairline at 32%, 20px backdrop blur, `radius-lg (22)`, `shadow-lg`. The gradient shows through.
 
 ### Hover, press, focus
-- **Hover** — opacity drops 1.0 → 0.92, or border brightens. No color shifts.
+- **Hover** — opacity drops 1.0 → 0.92, and/or the border changes. **No arbitrary new hue is introduced**: where a border changes color, it resolves to something the element already carries. The treatment is **role-driven**, and the roles genuinely differ — do not conform one to another:
+
+  | role | hover treatment |
+  | --- | --- |
+  | generic anchors (foundation `a`) and **compact actions** (`.surface-action`) | **foreground-bound** — the border resolves to `currentColor` |
+  | **full-panel links** (`a.surface-panel`) | the explicit `--line-2` → `--line-1` line-role brightening |
+  | **wrapping breadcrumb links** (`.surface-title a`) | their own line-role treatment — underline to `--line-1`, opacity held at 1 so the 0.92 drop reads as press |
+  | **mark and footer roles** (`a.surface-mark`, `.surface-footer a`) | declared opacity only; the border does not change |
+
+  A compact action is small, and its rest border is `--line-2` — the faintest line the system has. Resolving it to the control's own governed foreground (`--fg-1`, or `--fg-2` on the `--secondary` variant) is what makes the outline legible at that scale, and it puts compact actions in step with the foundation's generic anchor rather than making them an exception.
 - **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. Such links press without geometry: hover brightens the underline and holds opacity at 1, so on them the 0.92 drop reads as press rather than as hover. `patterns/surface-shell/README.md` carries the state model.
 - **Focus** — `0 0 0 1px white, 0 0 0 4px rgba(white, 0.25)` glow. Never the browser default. **Same exception: inline text that wraps.** Anything drawn around the box fails on fragmented inline text — sliced it opens at the cuts, cloned the rings overlap, and a rectangular outline is one shape only where the fragments happen to overlap horizontally. Such links take a fragment-native indicator instead: a 2px `--fg-1` underline, which each fragment carries in its own right. `patterns/surface-shell/README.md` records the measurements.
 
