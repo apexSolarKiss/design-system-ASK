@@ -240,9 +240,11 @@ the supporting-text step instead.
 
 The shell **footer** sits on that same Small step. The lede and the footer are
 the surface's supporting voice at its open and its close, so they read at one
-size; the footer stays distinct through its mono family, its `--fg-2`
-foreground, its right alignment, and its terminal position rather than through
-being smaller than the text it closes under.
+size — and at one foreground: both carry `--fg-2`. That shared foreground is
+continuity, not a distinction, and recoloring either one to manufacture a
+distinction would be a defect. The footer stays distinct through its mono
+family, its right alignment, and its terminal position rather than through being
+smaller or darker than the text it closes under.
 
 Its tracking is `--tracking-normal`, and that is a correction rather than an
 omission. Wide tracking adds 1.44px between letters at this step, and mono's
