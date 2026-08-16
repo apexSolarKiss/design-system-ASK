@@ -10,6 +10,12 @@
      values resolve live from colors_and_type.css; the styleguide remains a maintained
      reference surface (specimen copy / coverage can still need maintenance). -->
 <link rel="stylesheet" href="../colors_and_type.css">
+<!-- The canonical compact-action contract, loaded so the specimen below RENDERS
+     from the real module rather than a local re-derivation. The specimen loads
+     the real module, so the module-owned control styling resolves from the
+     canonical contract. Consumer-owned specimen framing and descriptive copy
+     remain maintained and may require conformance when the contract changes. -->
+<link rel="stylesheet" href="../surface-action.css">
 <!-- Page chrome: the canonical surface-shell pattern, consumed by same-repo
      reference. The mode selector below is NOT part of that pattern — it is this
      inspection surface's own control, styled here and driven by
@@ -38,6 +44,22 @@
   .role:first-child { border-top: 0; }
   .role .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
   .note { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
+  /* Specimen framing for the two interactive roles. Layout only — no control
+     value is restated in CSS, so the rendered compact-action specimen resolves
+     from surface-action.css. The prose beside it does restate values and is
+     maintained copy. `spec-actions-narrow` constrains the row, and
+     `spec-actions-fixed` gives both forms one explicit width, so the wrapping
+     and box-model cases the contract permits are actually exercised. */
+  .spec-role { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-small); font-weight: var(--fw-light); }
+  .spec-role-meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); font-weight: var(--fw-light); }
+  .spec-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-start; }
+  .spec-actions-narrow { max-width: 210px; }
+  /* One EXPLICIT width on both semantic forms. A parent max-width only
+     constrains the row; giving each control the same declared width is what
+     actually exercises the box model, since an anchor and a button do not
+     resolve a declared width the same way unless the contract owns
+     box-sizing. */
+  .spec-actions-fixed .surface-action { width: 190px; }
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
@@ -184,7 +206,8 @@
 
   <!-- ============ TYPE ============ -->
   <section>
-    <p class="sg-h">Type scale — contrast is weight, not size</p>
+    <p class="sg-h">Type roles — role-driven hierarchy</p>
+    <p class="note" style="margin: 0 0 var(--space-4);">The defined scale steps distinguish semantic roles, and within a role weight and foreground carry contrast. Two defined roles may sit on different steps — a 24px primary label over 18px supporting copy is a role distinction, not ad-hoc sizing. Inventing a size merely for emphasis remains prohibited.</p>
     <div class="stack">
       <div class="row"><span class="display">Display</span><span class="meta">.display · 96 / 200</span></div>
       <div class="row"><h1 style="margin:0;">Heading one</h1><span class="meta">h1 · 48 / 400</span></div>
@@ -197,7 +220,7 @@
     <p class="sg-h" style="margin-top: var(--space-7);">Type — Inter + JetBrains Mono</p>
     <div class="grid cols-2">
       <div class="card"><div style="font-family: var(--font-sans); font-size: var(--fs-h3); font-weight: var(--fw-light);">Inter — interface + display</div><div class="meta">--font-sans</div></div>
-      <div class="card"><div class="mono" style="font-size: var(--fs-small);">JetBrains Mono // code · tabular · `+` `&gt;&gt;` structure</div><div class="meta">--font-mono</div></div>
+      <div class="card"><div class="mono" style="font-size: var(--fs-small);">JetBrains Mono // code · technical + tabular · structural primary labels · compact actions</div><div class="meta">--font-mono · the two role exceptions apply only through their canonical selectors, never the generic <code>.mono</code> utility</div></div>
     </div>
   </section>
 
@@ -234,6 +257,34 @@
         <div><span class="badge">badge</span><span class="badge">chip</span><span class="badge">tag</span></div>
       </div>
     </div>
+
+    <!-- Two interactive roles, shown together so the boundary between them is
+         visible on the surface designers are told to read before designing.
+         They are NOT variants of one another: the CTA is 18px Inter and is
+         styled locally here; the compact action is 14px mono and resolves from
+         the canonical surface-action.css. Conforming either to the other is the
+         mismatch this section exists to prevent. -->
+    <h3 class="spec-role" id="compact-action">Compact action <span class="spec-role-meta">14px JetBrains Mono 300 · tracking 0 · canonical <code>.surface-action</code></span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">The label on a small control — a chip, a route action, a repo link. Caption-<em>sized</em>, not the Caption role: sentence-cased, zero tracking, weight 300. The contract styles a native anchor and a native button identically, so the consumer keeps whichever element the job actually calls for.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="spec-actions">
+          <a class="surface-action" href="#compact-action">primary action</a>
+          <button type="button" class="surface-action surface-action--secondary">secondary action</button>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">Left: native <code>&lt;a&gt;</code>. Right: native <code>&lt;button&gt;</code> on the secondary foreground. Same geometry, same type — secondary changes foreground only.</p>
+      </div>
+      <div class="card">
+        <div class="spec-actions spec-actions-narrow spec-actions-fixed">
+          <a class="surface-action" href="#compact-action">all sketches // p5.js collections &gt;&gt;</a>
+          <button type="button" class="surface-action">all sketches // p5.js collections &gt;&gt;</button>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">The same two forms at one <em>explicit</em> width, which is the case that motivates both <code>white-space: normal</code> and <code>box-sizing: border-box</code>. A long label wraps <em>inside</em> the control, and the anchor and button hold the same outer width, line count, height and alignment.</p>
+      </div>
+    </div>
+
+    <h3 class="spec-role">CTA <span class="spec-role-meta">18px Inter 400 · a SEPARATE role — not a compact action</span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">The Primary / Ghost pair above. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. It is not governed by <code>surface-action.css</code> and must not be conformed to it.</p>
   </section>
 
   <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>
