@@ -68,12 +68,26 @@
   box-shadow: var(--shadow-md);
 }
 
-/* The primary label, on the family's shared title role — the same five
-   declarations the surface-shell's structural title carries. A reader moving
-   between surfaces should meet one object rather than several dialects. */
+/* The panel primary label — Inter, on the primary-label METRIC the
+   surface-shell's structural title also carries: the same size, weight,
+   line-height and tracking. The FAMILY is where the two part, and it is owned
+   by the SELECTOR, allocated per role: `.surface-panel-title` is Inter, the
+   foundation's default interface and display family; `.surface-title` is the
+   mono structural locator, in both of the shell's title forms.
+   `.surface-action` is a third role and a separate mono exception — not this
+   one.
+
+   The allocation holds regardless of what a panel label says. A panel title
+   may name something technical or structural, and may contain `//` or any
+   other terminalcore grammar, and it stays Inter, because the selector owns
+   the role. Nothing here licenses reading a payload string to pick a family.
+   The four shared metric declarations are what still make a primary label read
+   as one object across surfaces.
+
+   Do not conform either implementation to the other. */
 .surface-panel-title {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--fs-body);
   font-weight: var(--fw-light);
   line-height: var(--lh-heading);

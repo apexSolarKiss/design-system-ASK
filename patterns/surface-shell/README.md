@@ -83,13 +83,20 @@ The title is a locator, not a display heading, and every structural separator is
 `<span class="sep" aria-hidden="true">`, so the glyph stays uniform while segment
 color remains free to express hierarchy. Those are separate decisions.
 
-**It carries the family's shared title role** — mono, `--fs-body`,
-`--fw-light`, `--lh-heading`, `--tracking-tight`. Those five declarations are
-one object, and they are what a primary label looks like across ASK-family
-surfaces: a consuming home page's panel titles resolve to the same role, so a
-reader moving between surfaces meets one thing rather than two dialects. Being
-a locator is why the title sits on Body rather than an H-step; being a title is
-why it does not sit on the supporting step its own lede occupies. The pair
+**It carries the structural-locator role** — mono, plus the four metric
+declarations `--fs-body`, `--fw-light`, `--lh-heading`, `--tracking-tight`.
+Those four are the primary-label object, and a consuming home page's panel
+titles resolve to exactly them, so a reader moving between surfaces meets one
+thing rather than two dialects. **The family is this role's own**, and it
+covers **both** title variants below: the root-level plain heading and the
+breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
+two forms differ in landmark and linkability, never in family. A panel primary
+label (`.surface-panel-title`) takes Inter on the identical metric, whatever
+the panel is called. The allocation is per selector, never read off an
+instance's copy. Shared metric, different family, deliberately — do not conform
+either to the other. Being a locator is why the title sits on Body rather than
+an H-step; being a title is why it does not sit on the supporting step its own
+lede occupies. The pair
 separates on size — 24 against 18 — not on weight.
 
 **Root-level surface — a plain heading.** A surface with no navigable ancestor

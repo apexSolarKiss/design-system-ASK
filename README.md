@@ -193,13 +193,13 @@ A canonical inspection specimen may render the role to display and measure it. I
 
 ### Type
 
-**Inter is the default for interface prose, supporting copy, and display. JetBrains Mono is used for code, technical and tabular data, and two explicit bounded roles — the structural primary label and the compact action.** Mono is never a generic body or support-copy substitute, and nothing becomes mono merely for being interface-facing — it enters where structure or precision matters. The two roles below are the bounded exceptions, and they are bounded because each names its canonical selectors; a third does not follow from them. Both families are loaded locally as variable webfonts in `fonts/` (OFL).
+**Inter is the default for interface prose, supporting copy, and display. JetBrains Mono is used for code, technical and tabular data, and two explicit bounded roles — the structural locator and the compact action.** Mono is never a generic body or support-copy substitute, and nothing becomes mono merely for being interface-facing — it enters where structure or precision matters. The two **mono** roles below — the structural locator and the compact action — are the bounded exceptions, and they are bounded because each names its canonical selectors; a third does not follow from them. The panel primary label sits between them in the table because it shares the locator's metric exactly, not because it is a third mono role: it is Inter. Both families are loaded locally as variable webfonts in `fonts/` (OFL).
 
 Type hierarchy is **role-driven**. The defined scale steps distinguish semantic roles; do not invent an ad-hoc size merely to add emphasis. Within a role, weight and foreground carry contrast.
 
-Generic H1/H2 display roles use 400. H3 and the structural primary-label role use 300. Body uses 200; Small uses 300; Caption uses 400. Light weights are deliberate. No thick typefaces.
+Generic H1/H2 display roles use 400. H3 and both primary-label implementations use 300. Body uses 200; Small uses 300; Caption uses 400. Light weights are deliberate. No thick typefaces.
 
-**Element name does not override the explicit role:** an `h1` or `h2` carrying `.surface-title` or `.surface-panel-title` remains a structural primary label at 300, and conforming it to the generic heading weight is a defect rather than a repair.
+**Element name does not override the explicit role:** an `h1` or `h2` carrying `.surface-title` or `.surface-panel-title` remains a primary label at 300, and conforming it to the generic heading weight is a defect rather than a repair.
 
 The **24px primary label over 18px supporting copy** pair is a sanctioned distinction between two defined roles — not ad-hoc sizing, and not a case where a weight difference should be substituted for the size step. Both sit at 300, and the pair separates on role.
 
@@ -212,12 +212,17 @@ The **24px primary label over 18px supporting copy** pair is a sanctioned distin
 | Body | Inter | 200 | 24 / 1.45 | 0 |
 | Small | Inter | 300 | 18 / 1.40 | 0 |
 | Caption | Inter | 400 | 14, UPPERCASE | 0.14em |
-| **Primary label / structural locator** | **JetBrains Mono** | **300** | **24 / 1.12** | **-0.02em** |
+| **Primary label — structural locator** | **JetBrains Mono** | **300** | **24 / 1.12** | **-0.02em** |
+| **Primary label — panel** | **Inter** | **300** | **24 / 1.12** | **-0.02em** |
 | **Compact action** | **JetBrains Mono** | **300** | **14 / 1.20** | **0** |
 | Code / inline-code | JetBrains Mono | 300 | 0.9× host | 0 |
 | Tabular numerals | JetBrains Mono | inherit | inherit | 0 |
 
-The **primary-label role** is a structural locator, not display type: it names a thing the system has — a surface, a route, a panel, a named primitive — rather than setting prose. `.surface-title` in the `surface-shell` pattern and `.surface-panel-title` in `surface-panel.css` are its canonical implementations. Supporting copy under such a label stays on the Small Inter step, so the pair separates on size rather than weight. `colors_and_type.css` is unchanged by this role: its generic `.mono` utility remains for code, technical and tabular use, and the structural exception is applied only through those explicit canonical selectors.
+The **primary-label role** names a thing the system has — a surface, a route, a panel, a named primitive — rather than setting prose, and it is **one metric object**: 24 / 300 / 1.12 / -0.02em, on Body rather than an H-step because a label is a locator and not display type. It has **two implementations**, and each owns its family through its **selector**.
+
+`.surface-title` in the `surface-shell` pattern is the **structural locator** and is mono. That covers **both** of the pattern's title forms — the root-level plain `<h1>` and the breadcrumbed subpage title — because both carry `.surface-title`; those two forms differ in landmark and linkability, never in family. `.surface-panel-title` in `surface-panel.css` is the **panel primary label** and is Inter on the identical metric, and it stays Inter **whatever the label says** — a panel may name something technical or structural, and may carry `//` or any other terminalcore grammar, without changing family. Those two selectors are the canonical implementations; neither is conformed to the other, and the shared metric is what still makes a primary label read as one object across surfaces. **No family is ever derived from a payload string.**
+
+Supporting copy under either stays on the Small Inter step, so that pair separates on size rather than weight. `colors_and_type.css` is unchanged by this role: its generic `.mono` utility remains for code, technical and tabular use, and the mono **structural-locator** exception is applied only through `.surface-title`. The compact action (`.surface-action`) is a **separate** mono exception, with its own metric and its own canonical selector — it is not an implementation of this role.
 
 The **compact-action role** is the label on a small control — a chip, a route action, a `preview` or `README` button. `.surface-action` in `surface-action.css` is its canonical implementation. It is **Caption-sized, not the Caption role**, and the distinction is load-bearing: Caption is 14px Inter at 400, uppercased, on 0.14em tracking, and it labels things; the compact action is 14px mono at 300, **sentence- or lower-cased, on zero tracking**, and it is something you click. Conforming a compact action to Caption's uppercase, tracking, or weight — or to Inter — is a defect rather than a repair. This role also does not govern the 18px Inter **CTA** specimen in the style guide, which is a separate and deliberately different object.
 
