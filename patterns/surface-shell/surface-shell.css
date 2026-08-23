@@ -149,14 +149,18 @@ a.surface-mark:focus-visible {
 .theme-dark .surface-mark-dark { display: block; }
 
 /* ---------- Identity ---------- */
-/* The structural identity line, on the family's shared PRIMARY-LABEL ROLE:
-   mono, Body size, light weight, heading line-height, tight tracking. Those
-   five declarations are one object. Conforming consumers apply the same role
-   to panel titles, named primitives, and route labels, so a primary label
-   reads as one thing wherever it appears. A title is a locator rather than a
-   display heading, which is why it sits on Body and not on an H-step; it is
-   still a title, which is why it does not sit on the supporting step its own
-   lede occupies.
+/* The structural identity line, on the STRUCTURAL-LOCATOR role: mono, Body
+   size, light weight, heading line-height, tight tracking. Mono belongs to
+   this role rather than to the whole primary-label family, and it belongs to
+   BOTH title forms — the root-level plain heading and the breadcrumbed subpage
+   title alike, since both carry `.surface-title`. A panel primary label
+   (`.surface-panel-title`) carries the same four METRIC declarations and takes
+   Inter. The split is allocated per selector; it is never derived from what an
+   instance happens to say. Shared metric, different family, on purpose: do not
+   conform either to the other. A title is a locator rather than a display
+   heading, which is why it sits on Body and not on an H-step; it is still a
+   title, which is why it does not sit on the supporting step its own lede
+   occupies.
 
    Light weight is deliberate and is the foundation's, not a local choice: the
    repo README calls the light weights deliberate, and a vendorable pattern
