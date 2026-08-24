@@ -25,7 +25,7 @@
 <style>
   /* Styleguide layout — token-driven; no hardcoded color values anywhere. */
   section { margin: var(--space-8) 0; }
-  .sg-h { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
+  .sg-h { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
   .grid { display: grid; gap: var(--space-4); }
   .cols-auto { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
@@ -43,7 +43,7 @@
   .role { padding: var(--space-3) 0; border-top: 1px solid var(--line-2); }
   .role:first-child { border-top: 0; }
   .role .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
-  .note { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
+  .note { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
   /* Specimen framing for the two interactive roles. Layout only — no control
      value is restated in CSS, so the rendered compact-action specimen resolves
      from surface-action.css. The prose beside it does restate values and is
@@ -63,12 +63,22 @@
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
-  .badge { display: inline-block; font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
+  .badge { display: inline-block; font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
   .btn { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-small); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-5); border: 1px solid var(--line-1); cursor: pointer; margin: 0 var(--space-3) var(--space-3) 0; }
   .btn-primary { background: var(--ask-ui-accent-1); color: var(--ask-white); border-color: transparent; }
   .btn-ghost { background: transparent; color: var(--fg-1); }
   .specimen { line-height: var(--lh-tight); }
   .row { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+  /* Wordmark specimen. Sizing only — visibility is the shell's own
+     `.surface-mark-light` / `.surface-mark-dark` pairing, which this page
+     already loads and which tracks all three of the foundation's dark paths.
+     Declaring `display` here would outrank those rules and show both marks, so
+     this sets width and nothing else. */
+  .wm-specimen img { width: 108px; height: auto; }
+  /* Descriptive label for the specimen beside it. `.meta` is the mono column
+     for selectors, token names and metrics; this is interface copy, so it is
+     Inter. The technical identification sits on the `.lbl` token line below. */
+  .spec-caption { font-size: var(--fs-caption); color: var(--fg-3); }
   .meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); white-space: nowrap; }
 
   /* Mode selector — this surface's own control, occupying the shell's optional
@@ -156,9 +166,19 @@
           <p class="note">OPT-IN. It never rebinds the general gradient-surface foreground ramp; a bounded element or region may opt into it only once registered. It is not the default foreground and is not selected by font size. Density, legal, tabular, accessibility, or a comparable context may justify <em>proposing</em> a use — none of them authorizes one. Approved uses are registered in the repo README, under <b>High-contrast foreground — registered uses</b>; a new one requires measured need, explicit ASK authorization, and registration there before merge.</p>
         </div>
         <div class="role">
-          <div class="row"><span style="font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-h3); color: var(--ask-white);">ASK</span><span class="meta">wordmark only</span></div>
-          <span class="lbl"><code>--ask-white</code> · <span data-fg="--ask-white"></span></span>
-          <p class="note">White is the light-mode WORDMARK (brand mark), never body text. Shown here against the lavender field.</p>
+          <!-- The real asset pair, not a text approximation, and mode-driven through
+               the shell's own pairing classes: the mark shown is the one this mode
+               actually ships. The previous specimen rendered white Inter text in both
+               modes and described a lavender field it was not on, which made it false
+               in dark mode — the case the selector above exists to check. -->
+          <div class="row">
+            <span class="wm-specimen">
+              <img class="surface-mark-light" src="../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+              <img class="surface-mark-dark" src="../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+            </span><span class="spec-caption">wordmark pairing</span>
+          </div>
+          <span class="lbl"><code>--ask-white</code> · <span data-fg="--ask-white"></span> &nbsp;·&nbsp; <code>--ask-lavender-ask</code> · <span data-fg="--ask-lavender-ask"></span></span>
+          <p class="note">The wordmark carries its own mode-specific pairing and is never body text: <b>white on the light gradient, lavender-ASK on the dark gradient</b>. This specimen swaps with the mode selector above, so what you see is what that mode ships. A flat lavender field belongs to the exported standalone asset, not to a UI placement. <code>--ask-white</code> stays an ordinary core token in the palette inventory below — it is the light-mode mark color, not a dark-mode treatment.</p>
         </div>
       </div>
     </div>
