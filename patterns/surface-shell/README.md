@@ -245,23 +245,27 @@ The lede is **not** Caption text. Caption is the 14px uppercase label role: the
 foundation's inherited Inter. The lede is prose a reader reads, so it sits on
 the supporting-text step instead.
 
-The shell **footer** sits on that same Small step. The lede and the footer are
-the surface's supporting voice at its open and its close, so they read at one
-size — and at one foreground: both carry `--fg-2`. That shared foreground is
-continuity, not a distinction, and recoloring either one to manufacture a
-distinction would be a defect. The footer stays distinct through its mono
-family, its right alignment, and its terminal position rather than through being
-smaller or darker than the text it closes under.
+The shell **footer** does **not** sit on that step. It takes the **Caption
+size** — the same 14px the compact action takes — because both are operative
+chrome a reader clicks rather than prose a reader reads, so terminal navigation
+and compact controls measure alike. What the footer still shares with the lede
+is `--fg-2`: continuity across the surface's open and its close, not a
+distinction, and recoloring either one to manufacture a distinction would be a
+defect. The footer stays its own role through its mono family, its right
+alignment, and its terminal position.
 
 Its tracking is `--tracking-normal`, and that is a correction rather than an
-omission. Wide tracking adds 1.44px between letters at this step, and mono's
-fixed advances are already wider than the lede's proportional Inter; together
-they made a footer measuring the same size as the lede read visibly larger than
-it. The family carries the distinction without help.
+omission. At this step wide tracking would add 1.12px between letters — 0.08em
+of 14px. Mono's fixed advances already carry the terminal distinction on their
+own, so normal tracking is what keeps the footer from overstating it.
 
-It is still **not** Caption. It is never uppercased and it does not take
-Caption's weight. Do not "conform" it to Caption by uppercasing it, changing
-its family, or raising its weight.
+Taking Caption's size is **not** becoming Caption. It is never uppercased and it
+does not take Caption's weight. Do not "conform" it to Caption by uppercasing
+it, changing its family, or raising its weight.
+
+Taking the compact action's size is **not** becoming a compact action either.
+The footer has no pill, no fill, no border, and none of `surface-action.css`'s
+interaction contract. Do not apply `.surface-action` to a footer link.
 
 ### Landmarks are part of the contract
 

@@ -193,7 +193,20 @@ A canonical inspection specimen may render the role to display and measure it. I
 
 ### Type
 
-**Inter is the default for interface prose, supporting copy, and display. JetBrains Mono is used for code, technical and tabular data, and two explicit bounded roles — the structural locator and the compact action.** Mono is never a generic body or support-copy substitute, and nothing becomes mono merely for being interface-facing — it enters where structure or precision matters. The two **mono** roles below — the structural locator and the compact action — are the bounded exceptions, and they are bounded because each names its canonical selectors; a third does not follow from them. The panel primary label sits between them in the table because it shares the locator's metric exactly, not because it is a third mono role: it is Inter. Both families are loaded locally as variable webfonts in `fonts/` (OFL).
+**Inter is the default interface, display and explanatory family. JetBrains Mono is reserved for explicit technical, structural or operative roles, owned by selectors in their applicable module or pattern.** Mono is never a generic body or support-copy substitute, and nothing becomes mono merely for being interface-facing — it enters where structure or precision matters. Family is chosen by the owning selector, never by payload text, HTML element type, capitalization, or the presence of `//`.
+
+The **current live-surface allocation**:
+
+| Owner | Selectors | Role |
+| --- | --- | --- |
+| foundation utility | `code` · `kbd` · `pre` · `samp` · `.mono` · `[data-mono]` · `.tabular` | code, technical and tabular literals |
+| `surface-action.css` | `.surface-action` | compact operative control |
+| `surface-shell` | `.surface-title` · `.surface-badge` · `.surface-footer` | structural title, status badge, terminal navigation |
+| a consuming surface | its own explicitly named operative control | e.g. the style guide's `.surface-theme` mode selector |
+
+Everything else on a live surface is Inter unless the owner of a selector says otherwise, and a generic utility class is not a license to make prose mono.
+
+That table is the live-surface allocation, **not a repo-wide census**. The artifact and diagram patterns own additional pattern-local technical and structural mono selectors — diagram sublabels, stamps, theme tags, archive metadata — under the same principle: an explicit selector in the owning pattern. Those local contracts never make mono a page default, and they do not extend to any surface that has not adopted the pattern. The panel primary label sits between them in the table because it shares the locator's metric exactly, not because it is a third mono role: it is Inter. Both families are loaded locally as variable webfonts in `fonts/` (OFL).
 
 Type hierarchy is **role-driven**. The defined scale steps distinguish semantic roles; do not invent an ad-hoc size merely to add emphasis. Within a role, weight and foreground carry contrast.
 

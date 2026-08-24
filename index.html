@@ -34,10 +34,17 @@
      foreground ramp, the sans default, and antialiasing; restating them here
      was not merely redundant, because the `background` shorthand also reset
      background-attachment from `fixed` to `scroll` and quietly gave this
-     surface a different gradient behavior from its own family. What remains
-     is a mono payload default and a full-height field. */
+     surface a different gradient behavior from its own family.
+
+     The page-wide `font-family: var(--font-mono)` that used to sit here is
+     gone. It was a generic fallback, not an intentional object: every visible
+     role on this page already declares its own family through the shell, the
+     panel contract, or `code`, so removing it changes nothing rendered. What
+     it did do was invert the default — any unclassified text added here would
+     have inherited mono without earning it. The foundation's Inter default is
+     operative again, and mono appears only where an explicit owner selector
+     assigns it. What remains here is a full-height field. */
   body {
-    font-family: var(--font-mono);
     min-height: 100vh;
   }
   /* The stack between panels is this page's; the panels themselves are the
