@@ -20,6 +20,11 @@ consumer adopting this pattern is adopting the ASK design language, and supplies
 only its own Tier 3. `design-system-ASK`'s own pages are its first consumers,
 not its required identity.
 
+"Its own" means locally supplied by the consumer's source of intent — not
+necessarily a distinct mark. ASK may assign the ASK wordmark to an ASK-family
+project; the shell still ships no mark, makes no assignment, and does not make
+that project ASK-the-entity.
+
 The shell owns the chrome around the payload. It owns no payload. A consuming
 surface supplies everything between the rule and the footer, the footer's own
 links, and its own Tier 3 identity.
