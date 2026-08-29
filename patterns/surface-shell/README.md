@@ -88,11 +88,20 @@ The title is a locator, not a display heading, and every structural separator is
 `<span class="sep" aria-hidden="true">`, so the glyph stays uniform while segment
 color remains free to express hierarchy. Those are separate decisions.
 
-**It carries the structural-locator role** — mono, plus the four metric
-declarations `--fs-body`, `--fw-light`, `--lh-heading`, `--tracking-tight`.
-Those four are the primary-label object, and a consuming home page's panel
-titles resolve to exactly them, so a reader moving between surfaces meets one
-thing rather than two dialects. **The family is this role's own**, and it
+**It carries the structural-locator role** — mono, plus the primary-label
+metric. Three of its four declarations are shared outright: `--fs-body`,
+`--fw-light` and `--tracking-tight`. Leading defaults to `--lh-heading` (1.12)
+and divides in exactly one place:
+
+| Form | Leading |
+| --- | --- |
+| root-level plain `.surface-title` | 1.12 |
+| `.surface-panel-title` | 1.12 |
+| breadcrumb `.surface-title` | **1.35**, pattern-local |
+
+A consuming home page's panel titles resolve to the shared core and the default
+leading, so a reader moving between surfaces still meets one thing rather than
+two dialects. The breadcrumb's exception is bounded to the form that wraps. **The family is this role's own**, and it
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
@@ -208,29 +217,22 @@ indicator is:
 }
 ```
 
-The rest state is **also** a text decoration now — a 1px magenta-derived rule
-rather than a `--line-2` border — so focus recolors and thickens the single
-decoration that is already there rather than clearing a competing one. The rule
-previously carried `border-bottom-color: transparent` for exactly that purpose;
-with the border retired it would be inert, so it is gone. Exactly one underline
-renders in every state.
+The rest state is a text decoration too — a 1px magenta-derived rule — so focus
+recolors and thickens the decoration already there. Exactly one underline
+renders in every state, and there is nothing to clear or suppress beneath it.
 
-The historical note below describes the superseded border mechanism and is kept
-because the reasoning about fragment-native indicators still governs: that clear
-was transitioned along with the rest of `border-bottom-color`, so the border
-faded out over `--dur-2`: at steady state
-one underline renders, and during the transition both do briefly. The border's
-*width* is untouched, so nothing reflows. `--fg-1` is the existing
-theme-resolving default foreground role: no new token, no `--fg-high-contrast`
-registration, and the same treatment on the quieter `.org` home link as on an
-ordinary ancestor.
+`text-decoration-color` transitions over `--dur-2`, and thickness and offset
+change without layout movement, because a decoration occupies no space in the
+line box. `--fg-1` is the existing theme-resolving default foreground role: no
+new token, no `--fg-high-contrast` registration, and the same treatment on the
+quieter `.org` home link as on an ordinary ancestor.
 
 Two properties are worth naming so they are not mistaken for defects.
 `text-decoration-skip-ink` stays at its initial `auto`, so the underline breaks
 around descenders — per-glyph typographic clearance, not a contour opening at a
 line break. And `:focus-visible` is last among the equal-specificity state
 rules, so while a link is focused its underline *is* the focus indicator and the
-hover and active border limbs are suppressed; active still dims the whole
+hover and active decoration colors are suppressed; active still dims the whole
 element, because the focus rule sets no opacity.
 
 Measured at 320 / 360 / 375 / 393 / 414px in both themes:

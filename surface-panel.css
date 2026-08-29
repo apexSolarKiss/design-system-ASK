@@ -69,8 +69,11 @@
 }
 
 /* The panel primary label — Inter, on the primary-label METRIC the
-   surface-shell's structural title also carries: the same size, weight,
-   line-height and tracking. The FAMILY is where the two part, and it is owned
+   surface-shell's structural title also carries: the same size, weight and
+   tracking. Leading is shared with the shell's ROOT-LEVEL PLAIN title at
+   --lh-heading; the shell's BREADCRUMB title alone takes a pattern-local 1.35
+   for wrapped-fragment clearance, which is surface-shell's exception and not
+   this role's. The FAMILY is where the two part, and it is owned
    by the SELECTOR, allocated per role: `.surface-panel-title` is Inter, the
    foundation's default interface and display family; `.surface-title` is the
    mono structural locator, in both of the shell's title forms.

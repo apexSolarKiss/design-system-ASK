@@ -12,12 +12,15 @@
    Tier 3 — the same boundary the output-artifact pattern already draws.
 
    It composes existing var() roles and introduces no token and no palette
-   color. Two literal COLOR values appear, and only two: the focus glow's
+   color. Exactly one literal value is VISIBLE PAINT: the focus glow's
    translucent white, which the repo README's hover/press/focus contract
-   specifies verbatim and for which no token exists; and the `transparent`
-   keyword, which clears the breadcrumb's rest underline while its focus
-   indicator is showing — a keyword for the absence of paint, not a color drawn
-   from anywhere. Adding any other raw color value here is a defect.
+   specifies verbatim and for which no token exists.
+
+   The identity scrim's mask carries two more, and they are a different kind of
+   thing. `#000` and `transparent` inside a mask-image are ALPHA-COVERAGE STOPS
+   — they say fully masked and fully unmasked, and neither is ever drawn. The
+   scrim's rendered paint is var(--bg-gradient). Adding any other raw color
+   value as visible paint here is a defect.
 
    That assertion governs color, and only color. Geometry, tracking, and border
    widths do carry raw values where no token expresses them. Text size is the
@@ -391,18 +394,19 @@ a.surface-mark:focus-visible {
    so there is no box to enclose and nothing to reach past.
    --fg-1 is the existing theme-resolving default foreground role, so this needs
    no new token, earns no --fg-high-contrast registration, and reads the same on
-   the quieter .org home link as on an ordinary ancestor. The rest underline is
-   a 1px border, so focus clears it to transparent rather than stacking two
-   rules; the border WIDTH is untouched, so nothing reflows. The clear is
-   transitioned with the rest of border-bottom-color, so the 1px border fades
-   out over --dur-2 rather than vanishing at t=0 — at steady state one underline
-   renders, during the transition both briefly do.
+   the quieter .org home link as on an ordinary ancestor.
+   ONE text decoration serves every state. The rest underline is itself a
+   decoration, so focus recolors and thickens the rule already there rather than
+   clearing a competing one — there is no border to clear and no second rule to
+   suppress. text-decoration-color transitions over --dur-2; thickness and
+   offset change without layout movement, because a decoration occupies no
+   space in the line box.
    Two properties of the indicator are worth naming so they are not mistaken
    for defects. `text-decoration-skip-ink` is left at its initial `auto`, so the
    underline breaks around descenders: that is per-glyph typographic clearance,
    not a contour opening at a line break. And `:focus-visible` sits last among
    the equal-specificity state rules, so while a link is focused its underline
-   is the focus indicator and the hover/active border limbs are suppressed;
+   is the focus indicator and the hover/active decoration colors are suppressed;
    active still dims the whole element, because this rule sets no opacity.
    Measured at 320 / 360 / 375 / 393 / 414 in both themes: every fragment
    carries the indicator, zero indicator pixels land on neighboring glyph ink,
