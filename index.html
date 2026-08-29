@@ -29,6 +29,14 @@
 <link rel="stylesheet" href="surface-panel.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
+  /* REQUIRED by surface-shell: the rendered border-box block size of
+     .surface-mark at the shell's 116px inline size. This surface's mark pair is
+     2160x974 in both modes, so one declaration serves light and dark. The shell
+     ships no default deliberately — see the note on .surface in
+     surface-shell.css — and an owner check asserts this equals the rendered
+     mark height. */
+  .surface { --surface-mark-block-size: calc(116px * 974 / 2160); }
+
   /* Local body delta — the intentional difference from the foundation, and
      nothing else. The foundation already binds the gradient (fixed), the
      foreground ramp, the sans default, and antialiasing; restating them here

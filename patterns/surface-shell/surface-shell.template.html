@@ -20,6 +20,14 @@
 <link rel="stylesheet" href="surface-shell.css">
 
 <style>
+  /* REQUIRED by surface-shell, and demonstrated here rather than described:
+     the rendered border-box block size of .surface-mark at the shell's 116px
+     inline size. THIS specimen's marks are the 216x97 placeholders below, so
+     the ratio is theirs. Replace it with your own mark's ratio — the shell
+     ships no default, and an undeclared value collapses the identity scrim and
+     drops the pinned mark onto the breadcrumb. */
+  .surface { --surface-mark-block-size: calc(116px * 97 / 216); }
+
   /* Payload styling belongs to the consuming surface, not to the shell.
      These few rules exist so the specimen shows a payload under the rule;
      replace them wholesale. */

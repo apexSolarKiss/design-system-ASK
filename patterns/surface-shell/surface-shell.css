@@ -38,9 +38,81 @@
 
 /* ---------- Page container ---------- */
 .surface {
-  max-width: 1100px;
+  /* PATTERN-SCOPED CONFIGURATION. None of this goes on :root. These are the
+     shell's own knobs, the consumer already declares --surface-mark-block-size
+     here, and a module vendored alongside this one must not silently inherit a
+     shell-owned value across two independently pinned files. */
+
+  /* ONE content-width seam, read by max-width AND by the fixed mark, so the
+     two can never disagree. .surface is content-box — the foundation declares
+     no box-sizing override — so 1100px is the CONTENT width and the 32px
+     horizontal padding sits OUTSIDE it, giving a 1164px border box. */
+  --surface-content-max: 1100px;
+
+  --surface-mark-fade: 24px;     /* fade length below the mark's rest bottom */
+  --surface-mark-lift: 24px;     /* settle distance, and the scroll range */
+  --surface-scrim-overscan: max(64px, env(safe-area-inset-top, 0px));
+
+  --surface-shell-link-underline:
+    color-mix(in srgb, var(--ask-emphasis-magenta) 45%, var(--fg-1));
+
+  /* --surface-mark-block-size is CONSUMER-REQUIRED and ships no default. A
+     default would silently assume one mark's aspect ratio for every mark in
+     every consuming surface. It is the RENDERED BORDER-BOX BLOCK SIZE of
+     .surface-mark at the shell-owned 116px inline size, EXCLUDING margins.
+
+     Where a surface supplies a light/dark mark pair, either the two visible
+     marks resolve to the same block size, or the consumer declares a
+     theme-resolved value under EVERY theme path this pattern supports — the
+     bare prefers-color-scheme query, :root[data-theme="dark"], and .theme-dark.
+
+     An undeclared value does not degrade quietly: the calc()s below become
+     invalid at computed-value time, the scrim collapses to zero height, the
+     header compensation to zero, and the fixed mark lands on the breadcrumb.
+     A stale value is the quieter failure, and the one an owner check catches —
+     assert |declared - rendered| <= 1px. */
+
+  max-width: var(--surface-content-max);
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-10);
+}
+
+/* The fixed identity scrim. It carries the page gradient over the band the
+   pinned mark occupies, so payload scrolling under that band is hidden rather
+   than colliding with the mark, and fades out over --surface-mark-fade.
+
+   CARRIER: .surface, deliberately — NOT .surface-head, which is display:flex
+   and would take a ::before as a FLEX ITEM and disturb the header. .surface is
+   an ordinary block, is unpositioned, and carries no transform, filter or
+   contain, so a fixed pseudo resolves against the viewport. That last point is
+   a contract constraint on this pattern: giving .surface a transform later
+   would trap this scrim in it.
+
+   pointer-events: auto is load-bearing, not a default. The band deliberately
+   hides the breadcrumb and the optional control as they scroll under it, and
+   pointer-events:none would leave those hidden elements eligible for hit
+   testing — a control invisible under an opaque band would still activate on
+   click. The scrim is the fixed header's paint layer, so it takes the hits.
+   The mark sits above it on z-index and stays operable; wheel and touch
+   scrolling over a fixed box still scroll the page beneath it. */
+.surface::before {
+  content: "";
+  position: fixed;
+  top: calc(-1 * var(--surface-scrim-overscan));
+  left: 0;
+  right: 0;
+  height: calc(var(--surface-scrim-overscan) + var(--space-8)
+               + var(--surface-mark-block-size) + var(--surface-mark-fade));
+  z-index: 2;                    /* above scrolling payload, below the mark */
+  pointer-events: auto;
+  background: var(--bg-gradient);
+  background-attachment: fixed;  /* reproduces the page gradient exactly */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0,
+    #000 calc(var(--surface-scrim-overscan) + var(--space-8) + var(--surface-mark-block-size)),
+    transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0,
+    #000 calc(var(--surface-scrim-overscan) + var(--space-8) + var(--surface-mark-block-size)),
+    transparent 100%);
 }
 
 /* The payload landmark. The shell requires the <main> element — it is the
@@ -49,11 +121,18 @@
    that surface to target; the shell deliberately leaves it unstyled. */
 
 /* ---------- Header ---------- */
+/* The WHOLE header is compensated, not only its main column. .surface-head-aside
+   is a first-class slot, and compensating only the main column would leave a
+   consumer's optional control sitting behind the scrim at rest. This moves the
+   control's resting relationship from beside the MARK to beside the structural
+   TITLE, which is the only coherent position once everything above the fade is
+   deliberately obscured. */
 .surface-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-5);
+  padding-top: calc(var(--surface-mark-block-size) + var(--surface-mark-fade));
 }
 /* Grows into the width the optional control slot does not take. min-width: 0 is
    load-bearing beside flex-grow: without it a flex item's automatic minimum size
@@ -97,10 +176,45 @@
    changes — the HTML standard requires it — but its media queries can only
    see the ENVIRONMENT. They cannot see this design system's explicit DOM
    theme state, which is how a consumer forces a mode. CSS sees both. */
+/* PINNED, and settling once. The mark holds the viewport rather than the
+   document, rises by --surface-mark-lift over the first --surface-mark-lift of
+   scroll, then stays. margin-bottom is 0 because the fade now occupies the gap
+   the old --space-5 margin held — one spatial allocation, not two.
+
+   The horizontal inset uses 100%, NOT 100vw. This is a fixed box, so a
+   percentage resolves against the fixed containing block — the same layout
+   viewport the content column is laid out in. Viewport units are sized as
+   though a classic scrollbar were not there, so 100vw would displace the mark
+   by half the scrollbar gutter wherever a vertical scrollbar consumes layout
+   width. And there is no + var(--space-6) in the wide branch: .surface is
+   content-box, so (100% - 1100px) / 2 already IS the content column's left
+   edge. Adding the padding again put the mark 32px right of the column. */
 .surface-mark {
   display: block;
+  position: fixed;
+  top: var(--space-8);
+  left: max(var(--space-6), calc((100% - var(--surface-content-max)) / 2));
   width: 116px;
-  margin-bottom: var(--space-5);
+  margin-bottom: 0;
+  z-index: 3;                    /* above the scrim, so it stays operable */
+}
+
+/* `translate`, never `transform`: a.surface-mark:active owns
+   transform: scale(0.97) below, and the individual property COMPOSES with it
+   where a transform declaration here would overwrite the press. */
+@keyframes surface-mark-settle {
+  from { translate: 0 0; }
+  to   { translate: 0 calc(-1 * var(--surface-mark-lift)); }
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .surface-mark {
+      animation: surface-mark-settle linear both;
+      animation-timeline: scroll(root block);
+      animation-duration: auto;
+      animation-range: 0 var(--surface-mark-lift);
+    }
+  }
 }
 .surface-mark > * { display: block; width: 100%; height: auto; }
 
@@ -150,14 +264,23 @@ a.surface-mark:focus-visible {
 
 /* ---------- Identity ---------- */
 /* The structural identity line, on the STRUCTURAL-LOCATOR role: mono, Body
-   size, light weight, heading line-height, tight tracking. Mono belongs to
-   this role rather than to the whole primary-label family, and it belongs to
-   BOTH title forms — the root-level plain heading and the breadcrumbed subpage
-   title alike, since both carry `.surface-title`. A panel primary label
-   (`.surface-panel-title`) carries the same four METRIC declarations and takes
-   Inter. The split is allocated per selector; it is never derived from what an
-   instance happens to say. Shared metric, different family, on purpose: do not
-   conform either to the other. A title is a locator rather than a display
+   size, light weight, tight tracking. Mono belongs to this role rather than to
+   the whole primary-label family, and it belongs to BOTH title forms — the
+   root-level plain heading and the breadcrumbed subpage title alike, since both
+   carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
+   Inter on the same size, weight and tracking.
+
+   LINE-HEIGHT IS THE ONE DECLARATION THAT NOW DIVIDES. The plain form and the
+   panel label both stay on --lh-heading (1.12); the BREADCRUMB form alone takes
+   a pattern-local 1.35, because a breadcrumb wraps and its fragments need
+   clearance the label forms never do. That is a bounded exception on one
+   declaration in one form, declared below on `.surface-breadcrumb
+   .surface-title` — family, size, weight and tracking remain shared, and the
+   primary-label role still reads as one object across surfaces.
+
+   The family split is allocated per selector; it is never derived from what an
+   instance happens to say. Same size, weight and tracking; different family;
+   and one divided declaration — on purpose. Do not conform either to the other. A title is a locator rather than a display
    heading, which is why it sits on Body and not on an H-step; it is still a
    title, which is why it does not sit on the supporting step its own lede
    occupies.
@@ -186,7 +309,13 @@ a.surface-mark:focus-visible {
    consuming surface's own topology. The separators are aria-hidden because the
    crumb structure is conveyed by the nav landmark, not by punctuation read
    aloud between every segment. */
+/* The breadcrumb's own leading. A plain title sets one line; a breadcrumb wraps
+   at a narrow column, and at --lh-heading its fragments crowd — the descenders
+   of one line meeting the next line's underline. 1.35 is the measured clearance,
+   and it is scoped to the breadcrumb form alone so the plain title and the panel
+   label keep the shared 1.12 (see the metric note above). */
 .surface-breadcrumb { display: block; }
+.surface-breadcrumb .surface-title { line-height: 1.35; }
 .surface-title .sep { color: var(--fg-3); }
 /* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
    shell's one deliberate exception to the repo README's scale press. A scale
@@ -213,20 +342,41 @@ a.surface-mark:focus-visible {
    and names --line-1 so the underline brightens within its own hue instead of
    shifting toward the text color. The foundation rule stays untouched for every
    other link. */
+/* The rest underline is now a TEXT DECORATION rather than a 1px --line-2
+   border, and it carries the shell's magenta-derived value. The old rest state
+   measured 1.11:1 and 1.08:1 against the light gradient stops — decoration, not
+   information — and its hover brightening reached only 1.26:1. The new resting
+   rule measures 3.24:1 and 3.70:1 in light, 6.18:1 and 7.40:1 in dark, so a
+   link in a title is distinguishable from the title around it by the rule alone.
+
+   The value is mixed toward --fg-1, NOT toward each segment's own color. Mixed
+   toward --fg-2 — the .org segment's color, and the footer's — it measures
+   2.80:1 in light and fails the floor. Segment COLOR is untouched: .org stays
+   quiet, the current .page segment stays inert. Only the underline is uniform.
+
+   Hover holds opacity at 1 so press stays distinct, exactly as the previous
+   rule did and for the same reason: the foundation binds a:hover opacity at
+   (0,1,1), and this link cannot take a transform press because it fragments. */
 .surface-title a {
   color: inherit;
-  border-bottom-color: var(--line-2);
+  border-bottom: none;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: var(--surface-shell-link-underline);
   transition:
     opacity var(--dur-1) var(--ease-out),
-    border-bottom-color var(--dur-2) var(--ease-out);
+    text-decoration-color var(--dur-2) var(--ease-out);
 }
 .surface-title a:hover {
   opacity: 1;
-  border-bottom-color: var(--line-1);
+  text-decoration-color: var(--ask-emphasis-magenta);
 }
 .surface-title a:active {
   opacity: 0.92;
-  border-bottom-color: var(--line-1);
+  text-decoration-color: var(--ask-emphasis-magenta);
 }
 /* Focus is a text-decoration underline here, and only here, because this link
    fragments. Anything drawn around the BOX fails on fragmented inline text, and
@@ -262,9 +412,6 @@ a.surface-mark:focus-visible {
 .surface-title a:focus-visible {
   outline: none;
   box-shadow: none;
-  border-bottom-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
   text-decoration-color: var(--fg-1);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
@@ -399,25 +546,43 @@ a.surface-mark:focus-visible {
 }
 
 /* Interaction — the repo README's hover/press/focus contract, which the shell
-   must carry rather than leave to each consumer. Hover takes the contract's
-   opacity limb, not its border-brightening limb: the softened --line-2
-   underline above is a deliberate base state, and in light mode the line
-   roles are translucent white while currentColor is a purple, so brightening
-   to currentColor would shift hue rather than brighten. display:inline-block
-   is load-bearing — transform does not apply to a non-replaced inline box,
-   so without it the press state is silently inert wherever a consumer wraps
-   these links in anything that is not the flex row itself. */
+   must carry rather than leave to each consumer. Hover now takes the contract's
+   BRIGHTENING limb. It previously took the opacity limb instead, and the reason
+   was specific: the rest underline was a --line-2 border, and brightening a
+   translucent-white line role toward a purple currentColor shifts hue rather
+   than brightens. A magenta-derived decoration is a usable brightening limb, so
+   the role returns to the contract's intended shape — hover raises the rule to
+   full magenta and holds opacity at 1, press keeps the scale. Both roles that
+   carry this affordance now share one grammar.
+
+   display:inline-block is load-bearing — transform does not apply to a
+   non-replaced inline box, so without it the press state is silently inert
+   wherever a consumer wraps these links in anything that is not the flex row
+   itself. As a direct flex child of .surface-footer it blockifies to `block`;
+   both are boxes a transform can act on, and the declared value is what
+   protects the wrapped case. The rest underline is a text decoration rather
+   than a border for the same reason inline-block matters here: a border would
+   follow the inline-block BOX, while the decoration follows the text. Focus
+   keeps its box-shadow ring — these links do not fragment — and the resting
+   underline stays visible beneath it. */
 .surface-footer a {
   color: var(--fg-2);
-  border-bottom-color: var(--line-2);
+  border-bottom: none;
   display: inline-block;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: var(--surface-shell-link-underline);
   transition:
     opacity var(--dur-2) var(--ease-out),
     transform var(--dur-1) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out);
+    box-shadow var(--dur-2) var(--ease-out),
+    text-decoration-color var(--dur-2) var(--ease-out);
 }
-.surface-footer a:hover { opacity: 0.92; }
-.surface-footer a:active { transform: scale(0.97); }
+.surface-footer a:hover { opacity: 1; text-decoration-color: var(--ask-emphasis-magenta); }
+.surface-footer a:active { transform: scale(0.97); text-decoration-color: var(--ask-emphasis-magenta); }
 .surface-footer a:focus-visible {
   outline: none;
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);

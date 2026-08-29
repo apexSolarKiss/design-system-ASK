@@ -16,6 +16,12 @@
      canonical contract. Consumer-owned specimen framing and descriptive copy
      remain maintained and may require conformance when the contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
+
+<!-- The canonical textual-link contract, loaded so the specimen below RENDERS
+     from the module rather than from a local restatement. The page's own prose
+     links opt in too, so the affordance is exercised in running text and not
+     only in a swatch. -->
+<link rel="stylesheet" href="../surface-text-link.css">
 <!-- Page chrome: the canonical surface-shell pattern, consumed by same-repo
      reference. The mode selector below is NOT part of that pattern — it is this
      inspection surface's own control, styled here and driven by
@@ -23,6 +29,14 @@
 <link rel="stylesheet" href="../patterns/surface-shell/surface-shell.css">
 
 <style>
+  /* REQUIRED by surface-shell: the rendered border-box block size of
+     .surface-mark at the shell's 116px inline size. This surface's mark pair is
+     2160x974 in both modes, so one declaration serves light and dark. The shell
+     ships no default deliberately — see the note on .surface in
+     surface-shell.css — and an owner check asserts this equals the rendered
+     mark height. */
+  .surface { --surface-mark-block-size: calc(116px * 974 / 2160); }
+
   /* Styleguide layout — token-driven; no hardcoded color values anywhere. */
   section { margin: var(--space-8) 0; }
   .sg-h { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
@@ -305,6 +319,23 @@
 
     <h3 class="spec-role">CTA <span class="spec-role-meta">18px Inter 400 · a SEPARATE role — not a compact action</span></h3>
     <p class="note" style="margin: 0 0 var(--space-3);">The Primary / Ghost pair above. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. It is not governed by <code>surface-action.css</code> and must not be conformed to it.</p>
+
+    <!-- The third interactive role, and the one with no geometry of its own.
+         Placed directly after the two boxed roles because the boundary IS the
+         point: a compact action announces itself by its shape, a textual link
+         has only the rule beneath it. -->
+    <h3 class="spec-role" id="textual-link">Textual link <span class="spec-role-meta">unboxed · canonical <code>.surface-text-link</code></span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">A link inside running prose or a structural title, opted in by class. The resting rule is magenta mixed toward the default foreground and resolved against the active theme — held to the 3:1 non-text floor because it is the only thing distinguishing the link from the text around it. Hover raises the same accent to full value; focus is governed separately and independently.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <p style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">The design system is published at <a class="surface-text-link" href="../index.html">design-system-ASK</a>, and the pattern catalog lists every <a class="surface-text-link" href="../patterns/index.html">surface and artifact pattern</a> it exhibits. Traversability is carried by the rule beneath the words — the words keep the foreground their context already assigns.</p>
+        <p class="note" style="margin: var(--space-3) 0 0;">Two links in ordinary prose. Neither changes text color; the underline is the whole affordance. Hover either to see the rule rise to full magenta, and tab to one to see the independent focus indicator.</p>
+      </div>
+      <div class="card">
+        <p style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">A shaped object announces itself by geometry and takes no class: <a class="surface-action" href="#textual-link">compact action</a> — while <a class="surface-text-link" href="#textual-link">an unboxed link of exactly the same length</a> announces itself only by its rule.</p>
+        <p class="note" style="margin: var(--space-3) 0 0;">The boundary, on one line. The module is <strong>opt-in</strong> for that reason: the excluded set — panels, actions, cards, gallery launches, marks, linked figures — is open-ended, so the class is added to the links that qualify rather than withheld from the ones that do not.</p>
+      </div>
+    </div>
   </section>
 
   <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>

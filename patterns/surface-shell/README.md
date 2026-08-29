@@ -153,17 +153,33 @@ wrapping and take the non-geometric limbs — opacity and underline — instead:
 
 | State | Opacity | Underline |
 | --- | --- | --- |
-| rest | 1 | `--line-2` |
-| hover | 1 | `--line-1` |
-| active | 0.92 | `--line-1` |
+| rest | 1 | `--surface-shell-link-underline` — magenta mixed 45% toward `--fg-1`, theme-resolved |
+| hover | 1 | `--ask-emphasis-magenta` at full value |
+| active | 0.92 | `--ask-emphasis-magenta` at full value |
 
-Hover spends the border-brightening limb; press adds the opacity drop on top of
-the already-bright underline. Both `:hover` declarations are overrides: the
+The underline is a **text decoration**, not a border. It was a 1px `--line-2`
+border, which measured 1.11:1 and 1.08:1 against the light gradient stops —
+present as texture, not legible as information — and brightened only to 1.26:1
+on hover. Where the rule is the one thing marking a link inside a title, it has
+to clear the 3:1 non-text floor, and the resting value measures 3.24:1 and
+3.70:1 in light, 6.18:1 and 7.40:1 in dark. Full magenta on hover is a
+supplemental pointer state and is not required to clear the floor on its own,
+because the resting rule already does.
+
+The value is mixed toward `--fg-1` rather than toward each segment's own color.
+Mixed toward `--fg-2` — the `.org` segment's color — it measures 2.80:1 in light
+and fails. Segment **color** is untouched: `.org` stays quiet, the current
+`.page` segment stays inert. The affordance is uniform; the hierarchy is not.
+
+Hover spends the brightening limb; press adds the opacity drop on top of the
+already-bright underline. Both `:hover` declarations are overrides: the
 foundation binds `a:hover { border-bottom-color: currentColor; opacity: 0.92 }`,
-whose opacity would otherwise make hover and press compute identically, and
-whose `currentColor` would shift the underline's hue rather than brighten it.
-Declaring both inside `.surface-title` settles each on specificity rather than
-on stylesheet order. The foundation rule itself is unchanged.
+whose opacity would otherwise make hover and press compute identically.
+Declaring opacity inside `.surface-title` settles it on specificity rather than
+on stylesheet order. The foundation rule itself is unchanged, and it remains the
+fallback for any link that does not opt into a role: where `color-mix()` is
+unsupported the decoration falls back to `currentColor`, so the affordance
+survives even where the magenta does not.
 
 No state changes display, box construction, line breaking, measured width, or
 fragment count.
@@ -186,18 +202,23 @@ indicator is:
 .surface-title a:focus-visible {
   outline: none;
   box-shadow: none;
-  border-bottom-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
   text-decoration-color: var(--fg-1);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
 }
 ```
 
-`border-bottom-color: transparent` clears the 1px rest underline so it does not
-sit beneath the indicator. That clear is transitioned along with the rest of
-`border-bottom-color`, so the border fades out over `--dur-2`: at steady state
+The rest state is **also** a text decoration now — a 1px magenta-derived rule
+rather than a `--line-2` border — so focus recolors and thickens the single
+decoration that is already there rather than clearing a competing one. The rule
+previously carried `border-bottom-color: transparent` for exactly that purpose;
+with the border retired it would be inert, so it is gone. Exactly one underline
+renders in every state.
+
+The historical note below describes the superseded border mechanism and is kept
+because the reasoning about fragment-native indicators still governs: that clear
+was transitioned along with the rest of `border-bottom-color`, so the border
+faded out over `--dur-2`: at steady state
 one underline renders, and during the transition both do briefly. The border's
 *width* is untouched, so nothing reflows. `--fg-1` is the existing
 theme-resolving default foreground role: no new token, no `--fg-high-contrast`
@@ -230,6 +251,18 @@ declare `display: inline-block`, so both are boxes a transform can act on rather
 than inline text that fragments; both keep the scale press. The footer's
 `inline-block` is load-bearing in its own right — `surface-shell.css` records
 why above `.surface-footer a` — and is not merely a consequence of the flex row.
+
+**The footer links share the title's underline grammar and keep their own press
+and focus.** Their rest rule is the same `--surface-shell-link-underline`, their
+hover raises it to full magenta, and their press keeps `scale(0.97)` — so hover
+and press stay distinct without the opacity drop the role previously used. That
+opacity limb existed *because* the old border-brightening limb was unusable:
+brightening a translucent-white line role toward a purple `currentColor` shifts
+hue rather than brightens. A magenta-derived decoration brightens cleanly, so
+the role returns to the repo README's intended hover shape. Focus keeps the
+box-shadow glow — these links do not fragment — and the resting underline stays
+visible beneath it, which is the one place the two roles deliberately differ:
+the title's focus indicator *is* its underline, the footer's sits above one.
 
 The `.org` span carries the owning organization; the `.page` span carries the
 current segment and takes `aria-current="page"`. The root variant omits `.page`
@@ -291,12 +324,37 @@ element and declares **no** payload styling of its own.
 ### The identity mark
 
 `.surface-mark` is a **slot**, not a mark. The shell owns its width, its
-alignment, and the optional mode-pairing mechanism. You own what goes in it:
+alignment, its pinning, and the optional mode-pairing mechanism. You own what
+goes in it — and you must tell the shell how tall it renders:
+
+```css
+/* REQUIRED on .surface. No default ships. */
+.surface { --surface-mark-block-size: calc(116px * <mark height> / <mark width>); }
+```
+
+`--surface-mark-block-size` is the **rendered border-box block size** of
+`.surface-mark` at the shell's 116px inline size, **excluding margins**. The
+shell derives the identity scrim's height and the header's opening compensation
+from it, and it ships no default deliberately: a default would silently assume
+one mark's aspect ratio for every consuming surface. An **undeclared** value
+fails loudly — the `calc()`s become invalid at computed-value time, the scrim
+collapses to zero height, and the pinned mark lands on the breadcrumb. A
+**stale** value is the quieter failure: verify `|declared − rendered| ≤ 1px`
+whenever the mark asset changes.
+
+**One constraint this places on the consuming surface:** the scrim is a
+`position: fixed` pseudo-element on `.surface`, so `.surface` must not acquire a
+`transform`, `filter`, `perspective`, `backdrop-filter`, or `contain` — any of
+those would establish a containing block and trap the scrim inside the scrolling
+page.
 
 | The shell owns | The consuming surface owns |
 | --- | --- |
 | Slot width — a fixed 116px at every breakpoint — and its alignment | The mark itself — image asset or inline SVG |
-| The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode |
+| **Pin position and settle** — the mark is `position: fixed` at `--space-8` from the top, horizontally on the content column's left edge, and rises by `--surface-mark-lift` (24px) over the first 24px of scroll, then holds | Nothing — the consuming surface does not position the mark |
+| **The identity scrim** — a fixed gradient band carrying the page gradient over the pinned mark, fading out over `--surface-mark-fade` (24px), and the matching header compensation | Nothing |
+| **Nothing about the mark's block size** — see the required declaration below | **`--surface-mark-block-size`**, declared on `.surface`. REQUIRED, no default |
+| The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode. Where a pairing exists, either both marks resolve to the **same** block size, or the surface declares a theme-resolved `--surface-mark-block-size` under every theme path the pattern supports |
 | Nothing about the wrapper's semantics | The wrapper element and its role — a non-interactive `<div role="img">`, or a native `<a>` when the mark is navigation |
 | Nothing about identity | The accessible name, and the Tier 3 identity it names |
 
@@ -385,6 +443,14 @@ the failure this mirroring prevents.
 
 Do not emit an empty slot element to hold space. An absent slot must be absent
 from the markup.
+
+**The optional control sits beside the structural title, not beside the mark.**
+The pinned mark holds the viewport while the header scrolls, so the header's
+opening compensation is applied to the whole `.surface-head` — both the main
+column and the aside start below the scrim's fade. A control in the slot is
+visible and operable at rest, and it passes *behind* the scrim as the page
+scrolls, exactly as the breadcrumb does. The scrim takes pointer hits while it
+covers them, so a control hidden under the band cannot be clicked through it.
 
 ### The status note
 
