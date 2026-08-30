@@ -28,12 +28,34 @@
   --rin-settle: 0px;
 }
 
+/* ---------- the two mark elements ----------
+   Both render identically; only their semantics differ, and exactly one is
+   displayed per breakpoint. These BASE rules must precede the breakpoint rules
+   below: `[data-rin] .rin-mark` and `[data-rin] .rin-mark-desk` have the same
+   specificity, so a later generic `display: block` would silently beat the
+   media query's `display: none` and render both marks at once. */
+/* both mark elements render identically; only their semantics differ */
+[data-rin] .rin-mark { display: block; width: 100%; padding: 0; border: 0; background: none; }
+[data-rin] .rin-mark > img { display: block; width: 100%; height: auto; }
+[data-rin] button.rin-mark { cursor: pointer;
+  transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+[data-rin] button.rin-mark:hover { opacity: 0.92; }
+[data-rin] button.rin-mark:active { transform: scale(0.97); }
+[data-rin] button.rin-mark:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
 /* ---------- desktop: one mark, settling, persistent ---------- */
 @media (min-width: 768px) {
   [data-rin] .rin-mark-slot { position: fixed; top: calc(64px - var(--rin-settle));
     left: max(32px, calc((100% - 1100px) / 2)); width: var(--rin-button); z-index: 40; margin: 0; }
   [data-rin] .rin-head { padding-top: calc(var(--rin-button-block) + 24px); }
   [data-rin] .rin-mobile-unit { display: none; }
+  [data-rin] .rin-mark-open { display: none; }        /* mobile-only identity mark */
+}
+@media (max-width: 767px) {
+  [data-rin] .rin-mark-desk { display: none; }        /* desktop-only trigger */
 }
 
 /* ---------- mobile: opening mark scrolls away; a second unit enters ---------- */
@@ -58,11 +80,24 @@
   }
   [data-rin] .rin-trigger {
     position: absolute; right: var(--rin-inset-r); bottom: var(--rin-inset-b);
-    pointer-events: auto;
+    pointer-events: auto; z-index: 2;          /* painted and targetable above the shield */
   }
-  /* terminal clearance: max(), never additive */
+  [data-rin] .rin-hit-shield {
+    position: absolute; left: 0; right: 0; top: var(--rin-fade); bottom: 0;
+    z-index: 1;
+    pointer-events: auto;      /* intercept activation of content hidden beneath */
+    touch-action: pan-y;       /* but never take the vertical pan */
+  }
+  /* Terminal clearance: max(), never additive — and ONLY where the persistent
+     unit can actually appear. On a short page the reserve is removed entirely,
+     because reserving room for a unit that never seats is exactly the
+     "artificial scrolling merely because the pattern exists" the guard forbids.
+     Holding progress at zero is not sufficient; the reserve itself must go. */
   [data-rin] .rin-surface { padding-bottom: max(var(--space-10), var(--rin-end-reserve)); }
   [data-rin] { scroll-padding-bottom: var(--rin-end-reserve); }
+  [data-rin].is-shortpage .rin-surface { padding-bottom: var(--space-10); }
+  [data-rin].is-shortpage { scroll-padding-bottom: 0; }
+  [data-rin].is-shortpage .rin-mobile-unit { display: none; }
 }
 
 /* the trigger is a native button wearing the mark */
@@ -122,11 +157,16 @@
   margin: var(--space-4) 0 0; max-width: 60ch; }
 [data-rin] .rin-panel-slot { margin: var(--space-5) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
 
-/* ---------- reduced motion: remove travel, never navigation ---------- */
+/* ---------- reduced motion: DISCRETE handoff, never a seated duplicate ----------
+   The earlier version forced translateY(0), which seated the lower unit at the
+   top of the page while the driver still held it out of the tab order — two
+   visible marks, one of them inoperable. Travel is removed by snapping the SAME
+   progress value to 0 or 1 in the driver, so the states stay mutually exclusive
+   and the trigger's operability always matches what is on screen. */
 @media (prefers-reduced-motion: reduce) {
-  [data-rin] .rin-mobile-unit { transition: none; transform: translateY(0); }
+  [data-rin] .rin-mobile-unit { transition: none; }
   [data-rin] .rin-panel { transition: none; }
-  [data-rin] .rin-mark-slot { transition: none; }
+  [data-rin] button.rin-mark, [data-rin] .rin-trigger { transition: none; }
 }
 
 /* ---------- instrumentation, prototype only ---------- */

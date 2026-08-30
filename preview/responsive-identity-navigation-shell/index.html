@@ -24,9 +24,21 @@
 
     <header class="rin-head surface-head">
       <div class="surface-head-main">
-        <div class="rin-mark-slot surface-mark" role="img" aria-label="ASK">
-          <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
-          <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+        <!-- Two breakpoint-specific mark elements, because the two breakpoints
+             give the opening mark genuinely different jobs. On desktop it IS the
+             persistent trigger and must be a real button; on mobile it is an
+             in-flow identity mark that scrolls away, and the seated lower-right
+             button takes over. One is rendered at a time. -->
+        <div class="rin-mark-slot surface-mark">
+          <button type="button" class="rin-mark rin-mark-desk" id="rin-desk-trigger"
+                  aria-expanded="false" aria-controls="rin-panel" aria-label="Open navigation">
+            <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+            <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+          </button>
+          <span class="rin-mark rin-mark-open" role="img" aria-label="ASK">
+            <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+            <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+          </span>
         </div>
         <nav class="surface-breadcrumb" aria-label="Breadcrumb">
           <h1 class="surface-title"><a class="org" href="../../index.html">apexSolarKiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../../patterns/index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">responsive identity-navigation shell</span></h1>
@@ -77,6 +89,12 @@
        in the tab order, which the driver enforces. -->
   <div class="rin-mobile-unit" aria-hidden="false">
     <div class="rin-mobile-fade"></div>
+    <!-- Hit shield. It covers exactly the region where the fade is OPAQUE, and
+         no further: mask transparency does not affect hit-testing, so shielding
+         the whole unit would block clicks through a band that still looks clear.
+         It intercepts pointer activation of covered content while leaving
+         vertical panning to the page. -->
+    <div class="rin-hit-shield"></div>
     <button type="button" class="rin-trigger" aria-expanded="false" aria-controls="rin-panel" aria-label="Open navigation">
       <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" width="2160" height="974">
       <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" width="2160" height="974">

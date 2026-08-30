@@ -11,13 +11,16 @@
   if (!root) return;
 
   var openingMark = root.querySelector('.rin-mark-slot');
-  var trigger     = root.querySelector('.rin-trigger');
+  var mobTrigger  = root.querySelector('.rin-trigger');
+  var deskTrigger = root.querySelector('.rin-mark-desk');
   var panel       = root.querySelector('.rin-panel');
   var scrim       = root.querySelector('.rin-scrim');
   var probe       = root.querySelector('.rin-probe');
-  var desktopMark = root.querySelector('.rin-mark-slot');
 
   var MOBILE = function () { return window.matchMedia('(max-width: 767px)').matches; };
+  var REDUCED = function () { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; };
+  /* the trigger that is actually operable at this breakpoint */
+  function activeTrigger() { return MOBILE() ? mobTrigger : deskTrigger; }
   var SETTLE_RANGE = 24, SETTLE_TO = 24;   /* 64 -> 40 over the first 24px */
 
   var lastInvoker = null, ticking = false;
@@ -62,22 +65,38 @@
 
   function frame() {
     ticking = false;
-    var p = MOBILE() ? (shortPage() ? 0 : handoffProgress()) : 0;
+    var short = MOBILE() && shortPage();
+    root.classList.toggle('is-shortpage', short);
+
+    var p = MOBILE() ? (short ? 0 : handoffProgress()) : 0;
+    /* Reduced motion: the SAME progress value, snapped. Discrete states, never
+       an interpolated slide and never both marks visible at once. */
+    if (REDUCED()) p = p >= 1 ? 1 : 0;
     root.style.setProperty('--rin-p', p.toFixed(4));
 
-    /* desktop settle, same source: the opening mark is the same element */
+    /* desktop settle, from the same scroll the mark responds to — snapped under
+       reduced motion rather than continuing to travel while claiming it does not */
     if (!MOBILE()) {
       var s = Math.min(SETTLE_TO, Math.max(0, window.scrollY / SETTLE_RANGE * SETTLE_TO));
+      if (REDUCED()) s = s >= SETTLE_TO ? SETTLE_TO : 0;
       root.style.setProperty('--rin-settle', s.toFixed(2) + 'px');
     } else {
       root.style.setProperty('--rin-settle', '0px');
     }
 
-    /* only ONE persistent trigger is ever in the tab order */
-    if (trigger) {
-      var seated = MOBILE() ? p > 0.999 : true;
-      trigger.setAttribute('tabindex', seated ? '0' : '-1');
-      trigger.setAttribute('aria-hidden', seated ? 'false' : 'true');
+    /* Exactly one persistent trigger is operable, and its operability always
+       matches what is on screen — a visible-but-inert mark is the defect this
+       replaces. */
+    if (mobTrigger) {
+      var seated = MOBILE() && !short && p > 0.999;
+      mobTrigger.setAttribute('tabindex', seated ? '0' : '-1');
+      mobTrigger.setAttribute('aria-hidden', seated ? 'false' : 'true');
+      mobTrigger.disabled = !seated;
+    }
+    if (deskTrigger) {
+      deskTrigger.setAttribute('tabindex', MOBILE() ? '-1' : '0');
+      deskTrigger.setAttribute('aria-hidden', MOBILE() ? 'true' : 'false');
+      deskTrigger.disabled = MOBILE();
     }
     if (probe) {
       var r = openingMark ? openingMark.getBoundingClientRect() : {top:0,bottom:0,height:0};
@@ -88,6 +107,7 @@
         '\nscrollY   ' + Math.round(window.scrollY) +
         '\nsettle    ' + getComputedStyle(root).getPropertyValue('--rin-settle').trim() +
         '\nseated    ' + (MOBILE() ? (p > 0.999) : 'n/a') +
+        '\nreduced   ' + REDUCED() +
         '\nexitSpan  ' + exitSpan.toFixed(1) +
         '\nshortPage ' + shortPage() +
         '\npanel     ' + (panel && !panel.hidden ? 'open' : 'closed');
@@ -104,7 +124,7 @@
     lastInvoker = invoker || document.activeElement;
     panel.hidden = false; if (scrim) scrim.hidden = false;
     requestAnimationFrame(function () { panel.classList.add('is-open'); });
-    trigger.setAttribute('aria-expanded', 'true');
+    var at = activeTrigger(); if (at) at.setAttribute('aria-expanded', 'true');
     var f = focusables(); if (f.length) f[0].focus();
     document.addEventListener('keydown', onKeydown, true);
     frame();
@@ -112,11 +132,31 @@
   function closePanel() {
     if (!panel || panel.hidden) return;
     panel.classList.remove('is-open');
-    trigger.setAttribute('aria-expanded', 'false');
+    var at = activeTrigger(); if (at) at.setAttribute('aria-expanded', 'false');
     document.removeEventListener('keydown', onKeydown, true);
-    var done = function () { panel.hidden = true; if (scrim) scrim.hidden = true; frame(); };
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) done(); else setTimeout(done, 220);
+
+    /* Complete on the transform's own transitionend, so the exit is never cut
+       short. The previous 220ms timer was shorter than the declared --dur-3
+       (420ms), so the panel vanished mid-slide. The fallback is derived from the
+       computed duration rather than hard-coded, so it cannot drift out of step
+       with the stylesheet again. */
+    var done = function () {
+      if (panel.hidden) return;
+      panel.removeEventListener('transitionend', onEnd);
+      panel.hidden = true; if (scrim) scrim.hidden = true; frame();
+    };
+    function onEnd(e) { if (e.target === panel && e.propertyName === 'transform') done(); }
+
+    if (REDUCED()) { done(); }
+    else {
+      panel.addEventListener('transitionend', onEnd);
+      var cs = getComputedStyle(panel);
+      var secs = (cs.transitionDuration || '0s').split(',').map(function (v) { return parseFloat(v) || 0; });
+      var delays = (cs.transitionDelay || '0s').split(',').map(function (v) { return parseFloat(v) || 0; });
+      var longest = 0;
+      for (var i = 0; i < secs.length; i++) longest = Math.max(longest, secs[i] + (delays[i] || 0));
+      setTimeout(done, Math.round(longest * 1000) + 60);   /* defensive only */
+    }
     if (lastInvoker && lastInvoker.isConnected) lastInvoker.focus();
     lastInvoker = null;
   }
@@ -129,11 +169,12 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 
-  if (trigger) {
-    trigger.addEventListener('click', function () {
-      panel && panel.hidden ? openPanel(trigger) : closePanel();
+  [mobTrigger, deskTrigger].forEach(function (t) {
+    if (!t) return;
+    t.addEventListener('click', function () {
+      panel && panel.hidden ? openPanel(t) : closePanel();
     });
-  }
+  });
   if (scrim) scrim.addEventListener('click', closePanel);
 
   function remeasure() { measureExitSpan(); frame(); }
