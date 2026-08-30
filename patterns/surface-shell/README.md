@@ -88,11 +88,17 @@ The title is a locator, not a display heading, and every structural separator is
 `<span class="sep" aria-hidden="true">`, so the glyph stays uniform while segment
 color remains free to express hierarchy. Those are separate decisions.
 
-**It carries the structural-locator role** — mono, plus the four metric
-declarations `--fs-body`, `--fw-light`, `--lh-heading`, `--tracking-tight`.
-Those four are the primary-label object, and a consuming home page's panel
-titles resolve to exactly them, so a reader moving between surfaces meets one
-thing rather than two dialects. **The family is this role's own**, and it
+**It carries the structural-locator role** — mono, plus `--fs-body`,
+`--fw-light` and `--tracking-tight`. Those three are shared with the
+primary-label object, and a consuming home page's panel titles resolve to
+exactly them, so a reader moving between surfaces meets one thing rather than
+two dialects.
+
+**Leading is the one declaration that divides.** The root-level plain title and
+`.surface-panel-title` both stay on `--lh-heading` (1.12); the **breadcrumb**
+form alone takes a pattern-local `1.35`, because it wraps and its fragments need
+clearance the single-line label forms never do. Size, weight, tracking and family
+are unchanged by that exception. **The family is this role's own**, and it
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
@@ -153,17 +159,30 @@ wrapping and take the non-geometric limbs — opacity and underline — instead:
 
 | State | Opacity | Underline |
 | --- | --- | --- |
-| rest | 1 | `--line-2` |
-| hover | 1 | `--line-1` |
-| active | 0.92 | `--line-1` |
+| rest | 1 | `--surface-shell-link-underline` — the emphasis accent at 50% opacity |
+| hover | 1 | `--ask-emphasis-magenta` at full opacity |
+| active | 0.92 | `--ask-emphasis-magenta` at full opacity |
 
-Hover spends the border-brightening limb; press adds the opacity drop on top of
-the already-bright underline. Both `:hover` declarations are overrides: the
-foundation binds `a:hover { border-bottom-color: currentColor; opacity: 0.92 }`,
-whose opacity would otherwise make hover and press compute identically, and
-whose `currentColor` would shift the underline's hue rather than brighten it.
-Declaring both inside `.surface-title` settles each on specificity rather than
-on stylesheet order. The foundation rule itself is unchanged.
+The underline is a **text decoration**, not a border. It was a 1px `--line-2`
+border measuring 1.11:1 and 1.08:1 against the light gradient stops — texture
+rather than information — brightening only to 1.26:1 on hover.
+
+The new resting value is the accent's own hue at half dose, **not** a mix toward
+the foreground: mixing changes what color it is, and the resulting plum reads as
+a darker text color rather than a quieter magenta. It measures 1.72:1 / 1.82:1
+light and 2.11:1 / 2.23:1 dark, so it does **not** clear the strict 3:1 non-text
+floor in either theme, and no strict AA claim is made for it. In light that floor
+is unreachable by any opacity; in dark a higher one would reach it, but that
+would be a different treatment from the single uniform default. The affordance
+rests on the **presence** of a rule where the surrounding text has none, plus an
+independently governed focus indicator. `surface-text-link.css` carries the full
+disposition.
+
+Hover spends the brightening limb; press adds the opacity drop on top of the
+already-bright underline. The `:hover` opacity declaration is an override: the
+foundation binds `a:hover { opacity: 0.92 }`, which would otherwise make hover
+and press compute identically. Declaring it inside `.surface-title` settles it on
+specificity rather than on stylesheet order. The foundation rule is unchanged.
 
 No state changes display, box construction, line breaking, measured width, or
 fragment count.
@@ -171,9 +190,9 @@ fragment count.
 **Focus is a text-decoration underline here, because this link fragments.**
 Anything drawn around the *box* fails on fragmented inline text. A `box-shadow`
 ring sliced — the default — is drawn around the unbroken box and then cut, so it
-opens on the cut edges. Cloned, each fragment closes, but the fragment boxes
-already overlap at this line-height, so the rings overlap each other. A
-rectangular outline is a single shape only where consecutive fragments overlap
+opens on the cut edges. Cloned, each fragment closes, but the result is one ring
+per line rather than a single typographic indicator. A rectangular outline is a
+single shape only where consecutive fragments overlap
 horizontally, which is a property of where the text happens to break, not of the
 treatment: at a 256px column the break is `asymptotic` / `system key` and it is
 one shape; at 311px it is `asymptotic system` / `key` and it splits into one ring
@@ -186,23 +205,30 @@ indicator is:
 .surface-title a:focus-visible {
   outline: none;
   box-shadow: none;
-  border-bottom-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
   text-decoration-color: var(--fg-1);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
 }
 ```
 
-`border-bottom-color: transparent` clears the 1px rest underline so it does not
-sit beneath the indicator. That clear is transitioned along with the rest of
-`border-bottom-color`, so the border fades out over `--dur-2`: at steady state
-one underline renders, and during the transition both do briefly. The border's
-*width* is untouched, so nothing reflows. `--fg-1` is the existing
-theme-resolving default foreground role: no new token, no `--fg-high-contrast`
-registration, and the same treatment on the quieter `.org` home link as on an
-ordinary ancestor.
+The rest state is **also** a text decoration, so focus recolors and thickens the
+single decoration already there rather than clearing a competing one. Exactly one
+underline renders in every state, and nothing reflows because only color,
+thickness and offset change. `--fg-1` is the existing theme-resolving default
+foreground role: no new token, no `--fg-high-contrast` registration, and the same
+treatment on the quieter `.org` home link as on an ordinary ancestor.
+
+**The footer's focus is a different anatomy, and deliberately so.** Footer links
+do not fragment, so the `box-shadow` ring works there and is retained unchanged —
+and the resting magenta underline stays **visible beneath it** rather than being
+cleared, because the ring is the indicator and the affordance underneath is not
+disturbed. Do not describe one focus anatomy across both roles:
+
+| Role | Focus indicator | Rest underline during focus |
+| --- | --- | --- |
+| `.surface-title a` (breadcrumb) | the same decoration, recolored to `--fg-1` at 2px / 2px | becomes the indicator |
+| `.surface-footer a` | the existing white `box-shadow` ring | stays visible beneath the ring |
+| `.surface-text-link` (module) | `--fg-1` decoration at 2px / 2px | becomes the indicator |
 
 Two properties are worth naming so they are not mistaken for defects.
 `text-decoration-skip-ink` stays at its initial `auto`, so the underline breaks

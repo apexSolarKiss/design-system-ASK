@@ -38,6 +38,18 @@
 
 /* ---------- Page container ---------- */
 .surface {
+  /* Pattern-scoped, never :root. surface-text-link.css declares its own
+     equivalent on its own selector: the two files are separately vendorable and
+     separately pinned, and sharing one global would let a consumer that updated
+     the module while holding an older shell silently inherit the older value,
+     with no audit of either file showing it. One formula, two owners.
+
+     Mixed with `transparent`, not with a foreground role — the accent's own hue
+     at half dose. Mixing toward --fg-1 instead produces a plum that reads as a
+     darker text color rather than a quieter magenta. */
+  --surface-shell-link-underline:
+    color-mix(in srgb, var(--ask-emphasis-magenta) 50%, transparent);
+
   max-width: 1100px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-10);
@@ -150,14 +162,22 @@ a.surface-mark:focus-visible {
 
 /* ---------- Identity ---------- */
 /* The structural identity line, on the STRUCTURAL-LOCATOR role: mono, Body
-   size, light weight, heading line-height, tight tracking. Mono belongs to
-   this role rather than to the whole primary-label family, and it belongs to
-   BOTH title forms — the root-level plain heading and the breadcrumbed subpage
-   title alike, since both carry `.surface-title`. A panel primary label
-   (`.surface-panel-title`) carries the same four METRIC declarations and takes
-   Inter. The split is allocated per selector; it is never derived from what an
-   instance happens to say. Shared metric, different family, on purpose: do not
-   conform either to the other. A title is a locator rather than a display
+   size, light weight, tight tracking. Mono belongs to this role rather than to
+   the whole primary-label family, and it belongs to BOTH title forms — the
+   root-level plain heading and the breadcrumbed subpage title alike, since both
+   carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
+   Inter on the same size, weight and tracking.
+
+   LINE-HEIGHT IS THE ONE DECLARATION THAT DIVIDES. The plain form and the panel
+   label both stay on --lh-heading (1.12); the BREADCRUMB form alone takes a
+   pattern-local 1.35, because a breadcrumb wraps and its fragments need
+   clearance the label forms never do. That is a bounded exception on one
+   declaration in one form, declared below on `.surface-breadcrumb
+   .surface-title`.
+
+   The family split is allocated per selector; it is never derived from what an
+   instance happens to say. Same size, weight and tracking; different family;
+   and one divided declaration — on purpose. Do not conform either to the other. A title is a locator rather than a display
    heading, which is why it sits on Body and not on an H-step; it is still a
    title, which is why it does not sit on the supporting step its own lede
    occupies.
@@ -186,7 +206,13 @@ a.surface-mark:focus-visible {
    consuming surface's own topology. The separators are aria-hidden because the
    crumb structure is conveyed by the nav landmark, not by punctuation read
    aloud between every segment. */
+/* The breadcrumb's own leading. A plain title sets one line; a breadcrumb wraps
+   at a narrow column, and at --lh-heading its fragments crowd — the descenders
+   of one line meeting the next line's underline. 1.35 is the measured clearance,
+   scoped to the breadcrumb form alone so the plain title and the panel label
+   keep the shared 1.12 (see the metric note above). */
 .surface-breadcrumb { display: block; }
+.surface-breadcrumb .surface-title { line-height: 1.35; }
 .surface-title .sep { color: var(--fg-3); }
 /* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
    shell's one deliberate exception to the repo README's scale press. A scale
@@ -213,20 +239,42 @@ a.surface-mark:focus-visible {
    and names --line-1 so the underline brightens within its own hue instead of
    shifting toward the text color. The foundation rule stays untouched for every
    other link. */
+/* The rest underline is a TEXT DECORATION carrying the accent at partial
+   opacity, not a --line-2 border. The old rest state measured 1.11:1 and 1.08:1
+   against the light gradient stops — present as texture, not legible as
+   information — and its hover brightening reached only 1.26:1.
+
+   The new resting value does not clear the strict 3:1 non-text floor either: it
+   measures 1.72:1 / 1.82:1 light and 2.11:1 / 2.23:1 dark. That is stated rather
+   than engineered away. Magenta's luminance sits so close to the light
+   gradient's that NO opacity reaches the floor there, full opacity included, and
+   the only value that would is a mix toward the foreground — which changes the
+   hue rather than the dose. ASK selected the saturated appearance knowingly; see
+   surface-text-link.css for the full accessibility disposition.
+
+   Hover holds opacity at 1 so press stays distinct, exactly as the previous rule
+   did and for the same reason: the foundation binds a:hover opacity at (0,1,1),
+   and this link cannot take a transform press because it fragments. */
 .surface-title a {
   color: inherit;
-  border-bottom-color: var(--line-2);
+  border-bottom: none;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: var(--surface-shell-link-underline);
   transition:
     opacity var(--dur-1) var(--ease-out),
-    border-bottom-color var(--dur-2) var(--ease-out);
+    text-decoration-color var(--dur-2) var(--ease-out);
 }
 .surface-title a:hover {
   opacity: 1;
-  border-bottom-color: var(--line-1);
+  text-decoration-color: var(--ask-emphasis-magenta);
 }
 .surface-title a:active {
   opacity: 0.92;
-  border-bottom-color: var(--line-1);
+  text-decoration-color: var(--ask-emphasis-magenta);
 }
 /* Focus is a text-decoration underline here, and only here, because this link
    fragments. Anything drawn around the BOX fails on fragmented inline text, and
@@ -262,9 +310,6 @@ a.surface-mark:focus-visible {
 .surface-title a:focus-visible {
   outline: none;
   box-shadow: none;
-  border-bottom-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
   text-decoration-color: var(--fg-1);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
@@ -399,25 +444,47 @@ a.surface-mark:focus-visible {
 }
 
 /* Interaction — the repo README's hover/press/focus contract, which the shell
-   must carry rather than leave to each consumer. Hover takes the contract's
-   opacity limb, not its border-brightening limb: the softened --line-2
-   underline above is a deliberate base state, and in light mode the line
-   roles are translucent white while currentColor is a purple, so brightening
-   to currentColor would shift hue rather than brighten. display:inline-block
-   is load-bearing — transform does not apply to a non-replaced inline box,
-   so without it the press state is silently inert wherever a consumer wraps
-   these links in anything that is not the flex row itself. */
+   must carry rather than leave to each consumer. Hover now takes the contract's
+   BRIGHTENING limb. It previously took the opacity limb instead, and the reason
+   was specific: the rest underline was a --line-2 border, and brightening a
+   translucent-white line role toward a purple currentColor shifts hue rather
+   than brightens. A magenta text decoration brightens cleanly, so the role
+   returns to the contract's intended shape — hover raises the rule to full
+   opacity and holds element opacity at 1, press keeps the scale.
+
+   FOCUS DIFFERS FROM THE BREADCRUMB'S, deliberately. These links do not
+   fragment, so the box-shadow ring works here where it fails there, and it is
+   retained unchanged. The resting underline stays VISIBLE beneath the ring
+   rather than being cleared: the ring is the indicator, so the affordance
+   underneath is not disturbed. The breadcrumb, having no ring, recolors and
+   thickens its single decoration instead.
+
+   display:inline-block is load-bearing — transform does not apply to a
+   non-replaced inline box, so without it the press state is silently inert
+   wherever a consumer wraps these links in anything that is not the flex row
+   itself. As a direct flex child it blockifies to `block`; both are boxes a
+   transform can act on, and the declared value is what protects the wrapped
+   case. The rest underline is a text decoration rather than a border for the
+   same reason inline-block matters here: a border would follow the
+   inline-block BOX, while the decoration follows the text. */
 .surface-footer a {
   color: var(--fg-2);
-  border-bottom-color: var(--line-2);
+  border-bottom: none;
   display: inline-block;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: var(--surface-shell-link-underline);
   transition:
     opacity var(--dur-2) var(--ease-out),
     transform var(--dur-1) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out);
+    box-shadow var(--dur-2) var(--ease-out),
+    text-decoration-color var(--dur-2) var(--ease-out);
 }
-.surface-footer a:hover { opacity: 0.92; }
-.surface-footer a:active { transform: scale(0.97); }
+.surface-footer a:hover { opacity: 1; text-decoration-color: var(--ask-emphasis-magenta); }
+.surface-footer a:active { transform: scale(0.97); text-decoration-color: var(--ask-emphasis-magenta); }
 .surface-footer a:focus-visible {
   outline: none;
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
