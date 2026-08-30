@@ -43,7 +43,12 @@
   body {
     min-height: 100vh;
   }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--gap); }
+  /* min() is load-bearing at the narrowest accepted viewport. A bare
+     minmax(320px, 1fr) makes 320px a HARD floor, so at a 320px viewport — where
+     the shell's own padding leaves 256px of content — every track still claims
+     320px and the page scrolls sideways. min(320px, 100%) keeps the preferred
+     track width while letting it shrink to the column it actually has. */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: var(--gap); }
   /* The card chrome and its column rhythm now resolve from the shared
      surface-panel contract; only what that contract deliberately leaves to the
      consuming surface stays here. Two values changed in adopting it: the fill
@@ -265,7 +270,9 @@
 
   <!-- Responsive navigation. The header breadcrumb stays the ONE authored source
        for this page's path; only the sibling destinations the crumb cannot
-       contain are authored here. `design-system-ASK` is already the ancestor
+       contain are authored here, and the current page is a POSITION marker
+       (`data-surface-nav-current`) that the runtime fills from that breadcrumb —
+       never a second authored label or a second aria-current. `design-system-ASK` is already the ancestor
        row, so it is deliberately not repeated as an "overview" child — two rows
        reaching the same destination is the defect this IA exists to remove. -->
   <template class="surface-nav-source"
@@ -273,7 +280,7 @@
             data-nav-root-href="https://a-s-k.studio/">
     <ul class="surface-nav-local">
       <li><a href="../preview/styleguide.html">style guide</a></li>
-      <li><a href="index.html" aria-current="page">pattern previews</a></li>
+      <li data-surface-nav-current></li>
     </ul>
     <p class="surface-nav-utilities">
       <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>

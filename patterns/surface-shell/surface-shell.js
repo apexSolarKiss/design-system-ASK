@@ -45,9 +45,23 @@
   var PANEL_LABEL   = cfg.navPanelLabel   || 'Navigation';
   var CLOSE_LABEL   = cfg.navCloseLabel   || 'close';
 
-  var mqMobile  = window.matchMedia('(max-width: 767px)');
+  /* NAVIGATION MODE is the driver's, not a raw width query — see the same note
+     in surface-shell.css. Mobile is `narrow` OR `short and coarse`: a landscape
+     phone at 844x390 is wider than the desktop breakpoint and still wants the
+     lower-right mark, which is exactly what the short coarse-pointer override
+     exists for. Width alone hands that device the desktop composition. */
+  var mqNarrow = window.matchMedia('(max-width: 767px)');
+  var mqShortCoarse = window.matchMedia(
+    '(min-width: 768px) and (max-height: 499px) and (hover: none) and (pointer: coarse)');
   var mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function MOBILE()  { return mqMobile.matches; }
+
+  function desiredMode() {
+    return (mqNarrow.matches || mqShortCoarse.matches) ? 'mobile' : 'desktop';
+  }
+  var mode = desiredMode(), pendingMode = null;
+  /* Everything downstream reads the COMMITTED mode, so geometry, operability
+     and the stylesheet cannot disagree while a commit is deferred. */
+  function MOBILE()  { return mode === 'mobile'; }
   function REDUCED() { return mqReduced.matches; }
 
   var SETTLE_RANGE = 24, SETTLE_TO = 24;     /* 64px -> 40px over the first 24px */
@@ -58,6 +72,41 @@
      it. Segments are delimited by the decorative `//` separators; a segment may
      be an anchor, a span, or a bare text node, and its destination is whatever
      the author gave it — the panel invents none. */
+  /* Rewrite every id declared inside `el`, and every reference to those ids,
+     with a suffix. Only ids DECLARED in the subtree are rewritten, so a
+     reference out to a document-level def is left pointing where it pointed. */
+  function uniquifyIds(el, suffix) {
+    var map = {};
+    Array.prototype.forEach.call(el.querySelectorAll('[id]'), function (n) {
+      var old = n.getAttribute('id');
+      if (!old || map[old]) return;
+      map[old] = old + suffix;
+      n.setAttribute('id', map[old]);
+    });
+    if (!Object.keys(map).length) return;
+    var all = [el].concat(Array.prototype.slice.call(el.querySelectorAll('*')));
+    all.forEach(function (n) {
+      Array.prototype.forEach.call(n.attributes, function (attr) {
+        var v = attr.value, name = attr.name;
+        if (!v) return;
+        var next = v;
+        if (name === 'href' || name === 'xlink:href') {
+          if (v.charAt(0) === '#' && map[v.slice(1)]) next = '#' + map[v.slice(1)];
+        } else if (name === 'aria-labelledby' || name === 'aria-describedby' ||
+                   name === 'aria-owns' || name === 'aria-controls' || name === 'for') {
+          next = v.split(/\s+/).map(function (t) { return map[t] || t; }).join(' ');
+        }
+        /* url(#id) can appear in fill, stroke, clip-path, mask, filter, every
+           marker-*, and inside a style attribute — so match the FORM, not a
+           list of property names that would go stale. */
+        next = next.replace(/url\((['"]?)#([^)'"]+)\1\)/g, function (m, q, id) {
+          return map[id] ? 'url(' + q + '#' + map[id] + q + ')' : m;
+        });
+        if (next !== v) n.setAttribute(name, next);
+      });
+    });
+  }
+
   function readCrumb(titleEl) {
     if (!titleEl) return [];
     var out = [], cur = { label: '', href: null, current: false };
@@ -113,17 +162,47 @@
 
   /* Optional local destinations, authored once in the panel-nav source. A
      breadcrumb cannot supply siblings it does not contain, so these are a
-     SECOND authored source rather than a second copy of the first. */
-  var localItems = [];
+     SECOND authored source rather than a second copy of the first.
+
+     THE CURRENT PAGE IS NEVER AUTHORED HERE. An `<li data-surface-nav-current>`
+     is an inert POSITION marker: the consumer says where the current location
+     sits among its siblings, and the runtime fills it with the segment derived
+     from the visible breadcrumb. Authoring the label again — or a second
+     aria-current — would give the panel an independent current-page source
+     that could drift from the visible title, which is the failure the
+     one-authored-path rule exists to prevent. A nested <ul> inside that <li>
+     makes the current location the PARENT of its children rather than their
+     sibling, which is the shape a root surface needs. */
   var localList = source.content.querySelector('.surface-nav-local');
-  if (localList) {
-    Array.prototype.forEach.call(localList.querySelectorAll('a[href]'), function (a) {
-      localItems.push({
-        label: (a.textContent || '').replace(/\s+/g, ' ').trim(),
-        href: a.getAttribute('href'),
-        current: a.getAttribute('aria-current') === 'page'
-      });
+
+  /* Render an authored <ul> as a level, preserving the author's order and
+     nesting. Returns whether the current segment was placed anywhere inside. */
+  function renderLocal(ul, currentSeg, placed) {
+    var ol = level();
+    Array.prototype.forEach.call(ul.children, function (li) {
+      if (li.tagName !== 'LI') return;
+      var out = doc.createElement('li');
+      if (li.hasAttribute('data-surface-nav-current')) {
+        if (!currentSeg) return;                 /* nothing to place; drop the marker */
+        out.appendChild(row(currentSeg));
+        placed.value = true;
+      } else {
+        var a = li.querySelector(':scope > a[href]');
+        if (!a) return;
+        out.appendChild(row({
+          label: (a.textContent || '').replace(/\s+/g, ' ').trim(),
+          href: a.getAttribute('href'),
+          current: false
+        }));
+      }
+      var sub = li.querySelector(':scope > ul');
+      if (sub) {
+        var subLevel = renderLocal(sub, currentSeg, placed);
+        if (subLevel.children.length) out.appendChild(subLevel);
+      }
+      ol.appendChild(out);
     });
+    return ol;
   }
 
   function buildTree() {
@@ -148,25 +227,21 @@
       host = next;
     });
 
-    if (localItems.length) {
-      var covered = false;
-      localItems.forEach(function (it) {
-        var li = doc.createElement('li');
-        li.appendChild(row(it));
-        host.appendChild(li);
-        if (it.current) covered = true;
-      });
-      /* Never lose the current page: if the authored local list does not mark
-         it, the crumb's own leaf is appended rather than silently dropped. */
-      if (!covered && currentSeg) {
-        var li2 = doc.createElement('li');
-        li2.appendChild(row(currentSeg));
-        host.appendChild(li2);
-      }
-    } else if (currentSeg) {
-      var li3 = doc.createElement('li');
-      li3.appendChild(row(currentSeg));
-      host.appendChild(li3);
+    var placed = { value: false };
+    if (localList) {
+      var localLevel = renderLocal(localList, currentSeg, placed);
+      /* SNAPSHOT first. `children` is a live collection and appendChild MOVES
+         the node out of it, so iterating the collection directly transplants
+         only the first row and silently drops the rest. */
+      Array.prototype.slice.call(localLevel.children)
+        .forEach(function (li) { host.appendChild(li); });
+    }
+    /* Never lose the current page: a source with no placeholder still gets the
+       crumb's own leaf, appended after whatever it authored. */
+    if (!placed.value && currentSeg) {
+      var leaf = doc.createElement('li');
+      leaf.appendChild(row(currentSeg));
+      host.appendChild(leaf);
     }
 
     nav.appendChild(top);
@@ -215,6 +290,7 @@
   trigger.type = 'button';
   trigger.className = mark.className || 'surface-mark';
   trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-haspopup', 'dialog');
   trigger.setAttribute('aria-controls', PANEL_ID);
   trigger.setAttribute('aria-label', TRIGGER_LABEL);
   if (mark.tagName === 'A' && mark.getAttribute('href')) {
@@ -230,10 +306,18 @@
   var seatBtn = trigger.cloneNode(true);
   seatBtn.classList.add('surface-nav-trigger');
   seatBtn.removeAttribute('data-surface-mark-home');
+  /* The pattern promises inline SVG as a valid mark payload, and a deep clone
+     of one duplicates every id it declares. A gradient, clipPath, mask, filter
+     or symbol referenced as url(#id) or href="#id" would then resolve against
+     whichever copy the document happens to hit first — usually the wrong one,
+     and always non-deterministically. Rewrite the clone's ids and every
+     internal reference to them before it enters the document. */
+  uniquifyIds(seatBtn, '-surface-nav-seat');
   seat.appendChild(fade); seat.appendChild(shield); seat.appendChild(seatBtn);
   doc.body.appendChild(seat);
 
   root.setAttribute('data-surface-nav', 'ready');
+  root.setAttribute('data-surface-nav-mode', mode);
   surface.setAttribute('data-surface-nav', 'ready');
 
   /* ------------------------------------------------------------ geometry --
@@ -313,11 +397,18 @@
       writeVar('--surface-nav-settle', '0px');
     }
 
-    /* exactly one operable trigger, and its operability always matches what is
-       on screen — a visible-but-inert mark is the defect this replaces */
+    /* Exactly one operable trigger, and its operability always matches what is
+       on screen — a visible-but-inert mark is the defect this replaces.
+
+       ORDER IS LOAD-BEARING: enable the INCOMING control before disabling the
+       outgoing one. setOperable moves focus to the alternate only if that
+       alternate is already enabled, so disabling first would blur a focused
+       trigger to the body on the upward handoff and lose the keyboard position
+       entirely — a defect in one direction only, which is exactly the kind that
+       survives a one-directional test. */
     var seated = MOBILE() && !isShort && p > 0.999;
-    setOperable(seatBtn, seated);
-    setOperable(trigger, !seated);
+    if (seated) { setOperable(seatBtn, true);  setOperable(trigger, false); }
+    else        { setOperable(trigger, true);  setOperable(seatBtn, false); }
   }
 
   function schedule() { if (!scheduled) { scheduled = true; requestAnimationFrame(frame); } }
@@ -399,6 +490,7 @@
       else panel.removeAttribute('open');
       unlockPageScroll();
       restoreFocus();
+      if (pendingMode) { var m = pendingMode; pendingMode = null; commitMode(m); }
       schedule();
     }
     function onEnd(e) { if (e.target === panel && e.propertyName === 'transform') finish(); }
@@ -436,18 +528,44 @@
         e.clientY < r.top  || e.clientY > r.bottom) closePanel();
   });
 
-  /* A mode change while the panel is open commits a different placement and a
-     different entrance, so the panel closes first and focus returns to whichever
-     trigger is visible and operable afterwards. */
-  function onModeChange() {
-    if (isOpen) closePanel();
+  /* Commit a mode: publish it, then re-derive everything that depends on it. */
+  function commitMode(next) {
+    mode = next;
+    root.setAttribute('data-surface-nav-mode', mode);
     remeasure();
     var t = visibleTrigger();
-    if (t && doc.activeElement && (doc.activeElement === trigger || doc.activeElement === seatBtn)
-        && t !== doc.activeElement && !t.disabled) t.focus();
+    if (t && !t.disabled && doc.activeElement &&
+        (doc.activeElement === trigger || doc.activeElement === seatBtn) &&
+        t !== doc.activeElement) t.focus();
   }
-  if (mqMobile.addEventListener) mqMobile.addEventListener('change', onModeChange);
-  else if (mqMobile.addListener) mqMobile.addListener(onModeChange);
+
+  /* A mode change commits a different placement AND a different entrance. While
+     the panel is open that would swap drawer geometry for sheet geometry
+     mid-exit, so the change is DEFERRED: the panel closes under the geometry it
+     opened with, and the new mode commits once the close completes. */
+  /* `isOpen` goes false at the TOP of closePanel, because it tracks intent
+     rather than the dialog's state — the element stays open and in the top
+     layer for the whole exit. Deferral must therefore key on the DIALOG, or a
+     second matching media query firing in the same tick (a rotation changes
+     both the width and the short-coarse query) would see isOpen already false
+     and commit the new geometry mid-exit — which is the exact swap this defers
+     to prevent. */
+  function panelActive() { return isOpen || panel.open || panel.hasAttribute('open'); }
+
+  function onModeQueryChange() {
+    var want = desiredMode();
+    if (want === mode) { pendingMode = null; return; }   /* rotated back mid-exit */
+    if (panelActive()) {
+      pendingMode = want;
+      if (isOpen) closePanel();
+      return;
+    }
+    commitMode(want);
+  }
+  [mqNarrow, mqShortCoarse].forEach(function (mq) {
+    if (mq.addEventListener) mq.addEventListener('change', onModeQueryChange);
+    else if (mq.addListener) mq.addListener(onModeQueryChange);
+  });
   if (mqReduced.addEventListener) mqReduced.addEventListener('change', schedule);
   else if (mqReduced.addListener) mqReduced.addListener(schedule);
 
@@ -465,8 +583,13 @@
   }
 
   window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', remeasure);
-  window.addEventListener('orientationchange', remeasure);
+  window.addEventListener('resize', function () { onModeQueryChange(); remeasure(); });
+  window.addEventListener('orientationchange', function () { onModeQueryChange(); remeasure(); });
+  /* BFCache return restores the DOM but not the measurements: the viewport, the
+     resolved mode, the mark's rendered box and the short-page verdict can all
+     have changed while the page sat in the cache, and no scroll or resize event
+     is guaranteed on the way back. */
+  window.addEventListener('pageshow', function () { onModeQueryChange(); remeasure(); });
   if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(remeasure);
   remeasure();
 })();

@@ -132,16 +132,41 @@
 
   <!-- Terminal destinations, as compact actions. They remain anchors: two of
        these leave the surface and one leaves the origin entirely, and a button
-       would keep the look while losing the destination. This page deliberately
-       does NOT adopt the responsive navigation panel — it is one of the
-       root/plain-title surfaces whose adoption is decided per surface — so it
-       loads no runtime and acquires no navigation geometry. -->
+       would keep the look while losing the destination. -->
   <footer class="surface-footer">
     <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
     <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
     <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
   </footer>
 
+  <!-- Responsive navigation. The identity mark discloses the panel here exactly
+       as it does on the style guide and the gallery — one meaning for the mark
+       across the family, with no live surface kept as an exception.
+
+       PARENT FORM. This surface IS design-system-ASK, so its current location
+       is the PARENT of its local destinations rather than their sibling: the
+       placeholder carries a nested list. The current label and its aria-current
+       are authored once, in the visible title above; `design-system-ASK` is
+       deliberately not repeated as an "overview" child, because two rows
+       reaching one destination is the defect this IA removes. -->
+  <template class="surface-nav-source"
+            data-nav-root-label="ASK"
+            data-nav-root-href="https://a-s-k.studio/">
+    <ul class="surface-nav-local">
+      <li data-surface-nav-current>
+        <ul>
+          <li><a href="preview/styleguide.html">style guide</a></li>
+          <li><a href="patterns/index.html">pattern previews</a></li>
+        </ul>
+      </li>
+    </ul>
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    </p>
+  </template>
+
 </div>
+
+<script src="patterns/surface-shell/surface-shell.js"></script>
 </body>
 </html>

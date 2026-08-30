@@ -31,8 +31,12 @@
   section { margin: var(--space-8) 0; }
   .sg-h { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
   .grid { display: grid; gap: var(--space-4); }
-  .cols-auto { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  /* min() is load-bearing at the narrowest accepted viewport — a bare track
+     minimum is a HARD floor, so at 320px, where the shell's padding leaves
+     256px of content, the track still claims its minimum and the page scrolls
+     sideways. min(<pref>, 100%) keeps the preferred width and lets it shrink. */
+  .cols-auto { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
   .card { background: var(--surface-glass); border: 1px solid var(--line-1); border-radius: var(--radius-lg); padding: var(--space-5); }
   .card-solid { background: var(--surface-solid); border: 1px solid var(--line-inverse); border-radius: var(--radius-lg); padding: var(--space-5); }
   /* The label sits on the same FIXED fill as the card's text, so it takes the same
@@ -367,13 +371,15 @@
 
   <!-- Responsive navigation. The header breadcrumb stays the ONE authored source
        for this page's path; only the sibling destinations the crumb cannot
-       contain are authored here. `design-system-ASK` is already the ancestor
+       contain are authored here, and the current page is a POSITION marker
+       (`data-surface-nav-current`) that the runtime fills from that breadcrumb —
+       never a second authored label or a second aria-current. `design-system-ASK` is already the ancestor
        row, so it is deliberately not repeated as an "overview" child. -->
   <template class="surface-nav-source"
             data-nav-root-label="ASK"
             data-nav-root-href="https://a-s-k.studio/">
     <ul class="surface-nav-local">
-      <li><a href="styleguide.html" aria-current="page">style guide</a></li>
+      <li data-surface-nav-current></li>
       <li><a href="../patterns/index.html">pattern previews</a></li>
     </ul>
     <p class="surface-nav-utilities">

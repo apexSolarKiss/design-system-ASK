@@ -193,12 +193,24 @@
   <template class="surface-nav-source"
             data-nav-root-label="[root]"
             data-nav-root-href="#">
-    <!-- OPTIONAL local destinations, rendered under the deepest ancestor. Mark
-         the current page with aria-current="page"; it renders inert. Omit the
-         whole list where the surface has no siblings worth offering. -->
+    <!-- OPTIONAL local destinations, rendered under the deepest ancestor.
+
+         THE CURRENT PAGE IS NEVER AUTHORED HERE. `data-surface-nav-current` is
+         an inert POSITION marker: you say where the current location sits among
+         its siblings, and the runtime fills it with the segment derived from
+         the visible title above. Writing the label again — or a second
+         aria-current — gives the panel an independent current-page source that
+         can drift from the visible one, which is precisely what the
+         one-authored-path rule prevents.
+
+         SIBLING FORM is shown. For the PARENT form — where this surface is the
+         root of its own family and the local destinations are its children —
+         nest a <ul> inside the placeholder <li> instead.
+
+         Omit the whole list where the surface has no siblings worth offering. -->
     <ul class="surface-nav-local">
       <li><a href="#">[local destination]</a></li>
-      <li><a href="#" aria-current="page">[this surface]</a></li>
+      <li data-surface-nav-current></li>
       <li><a href="#">[local destination]</a></li>
     </ul>
     <!-- OPTIONAL utilities — repository, source, external routes. These ARE

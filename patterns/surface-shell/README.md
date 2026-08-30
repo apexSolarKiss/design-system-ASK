@@ -330,9 +330,10 @@ own; it does not acquire typography by accident from a navigation row.
 
 **What this replaced.** The footer used to carry its own unboxed terminal-link
 treatment — a magenta text decoration, a load-bearing `inline-block`, and a
-footer-specific focus ring. All of it is retired. `--surface-shell-link-underline`
-survives because the **breadcrumb** still uses it; it now has one consumer in
-this file, not two.
+footer-specific focus ring. All of it is retired.
+`--surface-shell-link-underline` survives, with **two** consumers in this file:
+the **breadcrumb** and the **operable panel hierarchy rows**. It does not regain
+the footer.
 
 ### Landmarks are part of the contract
 
@@ -530,6 +531,22 @@ One native `<dialog>`, one content tree, one interaction contract:
 | trigger | persistent top-left mark | opening mark, then the seated mark |
 | entrance | drawer, from the top | sheet, from the bottom |
 
+**Mobile is not a width.** The mode is `narrow` **or** `short and coarse`:
+
+```text
+(max-width: 767px)
+OR
+(min-width: 768px) and (max-height: 499px) and (hover: none) and (pointer: coarse)
+```
+
+A landscape phone at 844×390 is wider than the desktop breakpoint and still wants
+the lower-right mark; a width-only divide hands it a fixed top-left mark and a top
+drawer on a 390px-tall touch viewport. The mode is **published as state** by the
+runtime and the geometry keys to that state, never to a raw query — which is also
+what lets a rotation *while the panel is open* close under the geometry it opened
+with and commit the new mode afterwards, rather than swapping drawer for sheet
+mid-exit.
+
 Identical in both: content, hierarchy, current-page state, focus entry and
 return, the explicit close control, outside dismissal, `Escape`, background
 scroll lock, and glass paint. Do not maintain separate desktop and mobile menu
@@ -553,21 +570,45 @@ narrows rather than breaks:
 | --- | --- | --- |
 | the header breadcrumb | once, visibly | the panel's vertical **current path**, derived — never restated |
 | `data-nav-root-*` on the source | once, as configuration | the root row above the crumb, which the mark's own context already implies |
-| `.surface-nav-local` | once, optionally | **sibling** destinations the crumb cannot contain |
+| `.surface-nav-local` | once, optionally | **sibling or child** destinations the crumb cannot contain |
 | `.surface-nav-utilities` | once, optionally | repository and other external routes |
 
+**The current page is never authored twice.** `data-surface-nav-current` is an
+inert **position marker**: you say where the current location sits among its
+neighbours, and the runtime fills it with the segment derived from the visible
+breadcrumb. Writing the label again — or a second `aria-current` — would give
+the panel an independent current-page source that can drift from the visible
+title, which is exactly what the one-authored-path rule exists to prevent.
+
 ```html
+<!-- SIBLING form: this surface sits among its siblings -->
 <template class="surface-nav-source"
           data-nav-root-label="ASK" data-nav-root-href="https://example.org/">
   <ul class="surface-nav-local">
     <li><a href="…">a sibling</a></li>
-    <li><a href="…" aria-current="page">this surface</a></li>
+    <li data-surface-nav-current></li>
   </ul>
   <p class="surface-nav-utilities">
     <a class="surface-action surface-action--secondary" href="…">repository</a>
   </p>
 </template>
 ```
+
+```html
+<!-- PARENT form: this surface is the root of its own family, and the local
+     destinations are its children rather than its siblings -->
+<ul class="surface-nav-local">
+  <li data-surface-nav-current>
+    <ul>
+      <li><a href="…">a child</a></li>
+      <li><a href="…">another child</a></li>
+    </ul>
+  </li>
+</ul>
+```
+
+The authored order and nesting are rendered as authored: the panel's shape is the
+consumer's, and only the current row's *content* comes from the shell.
 
 A `<template>` is inert by definition, so an unenhanced page renders nothing from
 it and exposes no partial control.
@@ -586,12 +627,27 @@ pill would flatten exactly the structure the panel exists to express.
 `surface-action` stays where it belongs: utilities, explicit local action rows,
 and the footer.
 
+**An operable row carries the magenta text affordance** — the same resting rule
+the breadcrumb uses, at partial opacity, rising to full magenta on hover and
+press. The glass row-fill is a *hover* response, so without the underline the
+resting hierarchy would read as a diagram of the site rather than a set of
+destinations. Shape communicates operability for a shaped control; text needs the
+rule beneath it. The **full-row ring** remains the focus indicator and the
+underline stays visible beneath it — these rows are blocks and do not fragment,
+so the breadcrumb's fragment-native focus anatomy would be the wrong one to copy.
+The current row is a `span`, carries no underline, and has no hover state.
+
 ### What a declining surface gets
 
 Nothing. That is the test, and it is worth running: no `surface-shell.js`, no
-`data-surface-nav` attribute, no fixed mark, no seated unit, no
-`scroll-padding-bottom`, no `scrollbar-gutter`, and an identity mark that is
-still an ordinary anchor.
+`data-surface-nav` attribute, no `data-surface-nav-mode`, no fixed mark, no
+seated unit, no `scroll-padding-bottom`, no `scrollbar-gutter`, and an identity
+mark that is still an ordinary anchor.
+
+Declining is a real option for a surface with nowhere to go. It is **not** a way
+to give one page of a family a different mark behavior from the rest: the mark's
+meaning is supposed to be the same wherever it appears, so a family either adopts
+together or has a stated reason not to.
 
 ## What the shell does not own
 

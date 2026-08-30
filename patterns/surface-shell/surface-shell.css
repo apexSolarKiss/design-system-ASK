@@ -55,7 +55,13 @@
   --surface-shell-link-underline:
     color-mix(in srgb, var(--ask-emphasis-magenta) 50%, transparent);
 
-  max-width: 1100px;
+  /* The content measure has ONE owner. The fixed desktop mark aligns to this
+     same edge, and two independent 1100px literals would drift the moment
+     either moved. Pattern-scoped like the underline above, and inherited by
+     everything inside the surface that needs it. */
+  --surface-shell-content-max: 1100px;
+
+  max-width: var(--surface-shell-content-max);
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-10);
 }
@@ -150,6 +156,9 @@ a.surface-mark:focus-visible {
    UA button box, which is reset here. Authoring a button directly is valid but
    forfeits the no-JS home destination, so the anchor is the documented source. */
 button.surface-mark {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -536,83 +545,95 @@ button.surface-mark:focus-visible {
   scrollbar-gutter: stable;
 }
 
-/* ---------- Desktop: one persistent, settling mark ---------- */
-@media (min-width: 768px) {
-  .surface[data-surface-nav="ready"] .surface-mark {
-    position: fixed;
-    top: calc(var(--space-8) - var(--surface-nav-settle));
-    /* aligned with the surface's CONTENT edge. .surface is 1100px of content
-       plus 2 x --space-6 of padding, so the content edge sits at
-       (100% - 1100px) / 2 once the viewport is wide enough to show the gutter,
-       and at the padding itself below that. */
-    left: max(var(--space-6), calc((100% - 1100px) / 2));
-    width: 116px;
-    margin: 0;
-    z-index: 40;
-  }
-  /* The header reclaims the space the now-fixed mark left behind. */
-  .surface[data-surface-nav="ready"] .surface-head {
-    padding-top: calc(var(--surface-nav-mark-block) + var(--space-5));
-  }
-  .surface-nav-seat { display: none; }
+/* ---------- NAVIGATION MODE ----------
+   Geometry keys to a DRIVER-OWNED mode attribute, never to a raw width query.
+   Two reasons, and both are contracts rather than preferences.
+
+   FIRST, mobile mode is not a width. It is `narrow` OR `short and coarse`: a
+   landscape phone at 844x390 is wider than the desktop breakpoint and still
+   wants the lower-right mark, because a fixed top-left mark plus a top drawer
+   on a 390px-tall touch viewport is the case the override exists to prevent.
+   A pure width divide silently hands that device the desktop composition.
+
+   SECOND, a media query changes the instant the viewport does. If the panel is
+   open when a phone rotates, a query-keyed stylesheet would swap the panel from
+   drawer geometry to sheet geometry mid-exit, and no amount of script could
+   stop it. With the mode published as state, the driver holds the current
+   geometry until the close completes and commits afterwards. */
+:root[data-surface-nav-mode="desktop"] .surface[data-surface-nav="ready"] .surface-mark {
+  position: fixed;
+  top: calc(var(--space-8) - var(--surface-nav-settle));
+  /* aligned with the surface's CONTENT edge, from the single measure declared
+     on .surface: the box is that measure plus 2 x --space-6 of padding, so the
+     content edge sits at (100% - measure) / 2 once the viewport is wide enough
+     to show the gutter, and at the padding itself below that. */
+  left: max(var(--space-6), calc((100% - var(--surface-shell-content-max)) / 2));
+  width: 116px;
+  margin: 0;
+  z-index: 40;
+}
+/* The header reclaims the space the now-fixed mark left behind. */
+:root[data-surface-nav-mode="desktop"] .surface[data-surface-nav="ready"] .surface-head {
+  padding-top: calc(var(--surface-nav-mark-block) + var(--space-5));
+}
+:root[data-surface-nav-mode="desktop"] .surface-nav-seat { display: none; }
+
+/* ---------- Mobile: the opening mark leaves, a seated unit arrives ----------
+   The fade and the mark travel as ONE object, so content is always cleared
+   before it reaches the mark. Seated at p=1, entirely below the viewport at
+   p=0; the driver drives p from the opening mark's own rect. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-seat {
+  position: fixed;
+  right: 0; bottom: 0; left: 0;
+  z-index: 40;
+  pointer-events: none;
+  height: var(--surface-nav-depth);
+  transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
+  will-change: transform;
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-fade {
+  position: absolute; inset: 0 0 auto 0; height: 100%;
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
+  pointer-events: none;
+}
+/* Hit shield over exactly the region where the fade is OPAQUE, and no further:
+   mask transparency does not affect hit-testing, so shielding the whole unit
+   would block activation through a band that still looks clear. It intercepts
+   pointer activation of covered content and leaves the vertical pan to the
+   page. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-shield {
+  position: absolute; left: 0; right: 0;
+  top: var(--surface-nav-fade); bottom: 0;
+  z-index: 1;
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-trigger {
+  position: absolute;
+  right: var(--surface-nav-inset-r);
+  bottom: var(--surface-nav-inset-b);
+  z-index: 2;
+  pointer-events: auto;
+  margin-bottom: 0;
 }
 
-/* ---------- Mobile: the opening mark leaves, a seated unit arrives ---------- */
-@media (max-width: 767px) {
-  /* The fade and the mark travel as ONE object, so content is always cleared
-     before it reaches the mark. Seated at p=1, entirely below the viewport at
-     p=0; the driver drives p from the opening mark's own rect. */
-  .surface-nav-seat {
-    position: fixed;
-    right: 0; bottom: 0; left: 0;
-    z-index: 40;
-    pointer-events: none;
-    height: var(--surface-nav-depth);
-    transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
-    will-change: transform;
-  }
-  .surface-nav-fade {
-    position: absolute; inset: 0 0 auto 0; height: 100%;
-    background-image: var(--bg-gradient);
-    background-attachment: fixed;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
-            mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
-    pointer-events: none;
-  }
-  /* Hit shield over exactly the region where the fade is OPAQUE, and no
-     further: mask transparency does not affect hit-testing, so shielding the
-     whole unit would block activation through a band that still looks clear.
-     It intercepts pointer activation of covered content and leaves the
-     vertical pan to the page. */
-  .surface-nav-shield {
-    position: absolute; left: 0; right: 0;
-    top: var(--surface-nav-fade); bottom: 0;
-    z-index: 1;
-    pointer-events: auto;
-    touch-action: pan-y;
-  }
-  .surface-nav-trigger {
-    position: absolute;
-    right: var(--surface-nav-inset-r);
-    bottom: var(--surface-nav-inset-b);
-    z-index: 2;
-    pointer-events: auto;
-    margin-bottom: 0;
-  }
-
-  /* Terminal clearance: max(), never additive — and only where the seated unit
-     can actually appear. On a short page the reserve is REMOVED rather than
-     merely held at zero progress: reserving room for a unit that never seats
-     would manufacture the very scrolling the guard exists to prevent. */
-  .surface[data-surface-nav="ready"] {
-    padding-bottom: max(var(--space-10), var(--surface-nav-reserve));
-  }
-  :root[data-surface-nav="ready"] { scroll-padding-bottom: var(--surface-nav-reserve); }
-
-  .surface[data-surface-nav-short] { padding-bottom: var(--space-10); }
-  :root[data-surface-nav-short] { scroll-padding-bottom: 0; }
-  :root[data-surface-nav-short] .surface-nav-seat { display: none; }
+/* Terminal clearance: max(), never additive — and only where the seated unit
+   can actually appear. On a short page the reserve is REMOVED rather than
+   merely held at zero progress: reserving room for a unit that never seats
+   would manufacture the very scrolling the guard exists to prevent. */
+:root[data-surface-nav-mode="mobile"] .surface[data-surface-nav="ready"] {
+  padding-bottom: max(var(--space-10), var(--surface-nav-reserve));
 }
+:root[data-surface-nav-mode="mobile"][data-surface-nav="ready"] {
+  scroll-padding-bottom: var(--surface-nav-reserve);
+}
+
+:root[data-surface-nav-mode="mobile"] .surface[data-surface-nav-short] { padding-bottom: var(--space-10); }
+:root[data-surface-nav-short] { scroll-padding-bottom: 0; }
+:root[data-surface-nav-short] .surface-nav-seat { display: none; }
 
 /* ---------- The panel ----------
    A native <dialog> opened with showModal(), so the background leaves the
@@ -642,8 +663,18 @@ button.surface-mark:focus-visible {
    without appearing in any rule anyone reviewed. */
 .surface-nav-panel::backdrop { background: transparent; }
 
+/* border-box on the INNER element too, for the same reason it is on the dialog.
+   The foundation declares no global box-sizing, so a content-box inner element
+   bounded at 100dvh would grow to 100dvh PLUS its padding PLUS the mobile
+   safe-area compensation, and the parent's overflow:hidden would clip the
+   excess — putting the last hierarchy row, the last utility, or the close
+   control out of reach on a long menu. That is the exact panel-overflow failure
+   the bound exists to prevent. min-height:0 keeps it shrinkable inside the
+   dialog's own flex/blockformatting context rather than floored at its content. */
 .surface-nav-panel-inner {
+  box-sizing: border-box;
   max-height: 100dvh;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;     /* the panel scrolls; the page does not */
   padding: var(--space-6);
@@ -657,24 +688,28 @@ button.surface-mark:focus-visible {
    inset-block-end to 0 and centers with `margin: auto`; declaring only `bottom`
    leaves the UA's `top: 0` standing, the box becomes over-constrained against
    `height: fit-content`, and the sheet silently renders as a top drawer. */
-@media (min-width: 768px) {        /* drawer, downward from the top */
-  .surface-nav-panel {
-    top: 0; bottom: auto; left: 0; right: 0;
-    border-top: 0;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    transform: translateY(-100%);
-  }
+:root[data-surface-nav-mode="desktop"] .surface-nav-panel {   /* drawer, from the top */
+  top: 0; bottom: auto; left: 0; right: 0;
+  border-top: 0;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  transform: translateY(-100%);
 }
-@media (max-width: 767px) {        /* sheet, upward from the bottom */
-  .surface-nav-panel {
-    bottom: 0; top: auto; left: 0; right: 0;
-    border-bottom: 0;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    transform: translateY(100%);
-  }
-  .surface-nav-panel-inner { padding-bottom: calc(var(--space-6) + var(--surface-nav-inset-b)); }
+:root[data-surface-nav-mode="mobile"] .surface-nav-panel {    /* sheet, from the bottom */
+  bottom: 0; top: auto; left: 0; right: 0;
+  border-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transform: translateY(100%);
 }
-.surface-nav-panel.is-open { transform: translateY(0); }
+:root[data-surface-nav-mode="mobile"] .surface-nav-panel-inner {
+  padding-bottom: calc(var(--space-6) + var(--surface-nav-inset-b));
+}
+/* The open state has to OUTRANK the mode rules that set the closed transform.
+   Both of those are :root + attribute + class, so a bare
+   `.surface-nav-panel.is-open` loses on specificity and the panel stays parked
+   off-screen while every other signal — open, :modal, aria-expanded, the focus
+   trap — reports that it arrived. Keying this on the same attribute puts it one
+   class ahead, and the failure mode is why it is not left to source order. */
+:root[data-surface-nav-mode] .surface-nav-panel.is-open { transform: translateY(0); }
 
 /* ---------- Panel hierarchy ----------
    A nested list, not a verticalized breadcrumb and not a stack of identical
@@ -701,23 +736,56 @@ button.surface-mark:focus-visible {
   color: var(--fg-1);
 }
 /* Full-row target, and the row is the anchor rather than a link inside a row —
-   the panel's own equivalent of the full-panel link form. */
+   the panel's own equivalent of the full-panel link form.
+
+   AN OPERABLE ROW CARRIES THE SHELL'S MAGENTA TEXT AFFORDANCE, the same
+   resting rule the breadcrumb uses. The glass row-fill is a HOVER response, so
+   on its own it leaves the resting state with nothing saying the words are
+   operable — the hierarchy would read as a diagram of the site rather than a
+   set of destinations. Shape communicates operability for a compact action;
+   text needs the rule beneath it.
+
+   `--surface-shell-link-underline` therefore has TWO consumers in this file:
+   the breadcrumb and these rows. It does NOT regain the footer, whose
+   destinations are compact actions. */
 a.surface-nav-row {
   border-bottom: none;
-  text-decoration: none;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  text-decoration-color: var(--surface-shell-link-underline);
   transition:
     background-color var(--dur-2) var(--ease-out),
     color var(--dur-2) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out);
+    box-shadow var(--dur-2) var(--ease-out),
+    text-decoration-color var(--dur-2) var(--ease-out);
 }
-a.surface-nav-row:hover { background: var(--surface-glass); color: var(--fg-1); opacity: 1; }
-a.surface-nav-row:active { background: var(--surface-glass-2); }
+a.surface-nav-row:hover {
+  background: var(--surface-glass);
+  color: var(--fg-1);
+  opacity: 1;
+  text-decoration-color: var(--ask-emphasis-magenta);
+}
+a.surface-nav-row:active {
+  background: var(--surface-glass-2);
+  text-decoration-color: var(--ask-emphasis-magenta);
+}
+/* The FULL-ROW ring stays the focus indicator here, and the resting underline
+   stays visible beneath it. These rows are blocks and do not fragment, so the
+   breadcrumb's fragment-native anatomy — which replaces the decoration with the
+   indicator — would be the wrong one to copy. */
 a.surface-nav-row:focus-visible {
   outline: none;
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
-/* The current page is inert and looks it — no hover, no target, no destination. */
-.surface-nav-row[aria-current="page"] { color: var(--fg-3); }
+/* The current page is inert and looks it — no underline, no hover, no target,
+   no destination. It is a span, never an anchor. */
+.surface-nav-row[aria-current="page"] {
+  color: var(--fg-3);
+  text-decoration: none;
+}
 
 .surface-nav-head {
   display: flex;
