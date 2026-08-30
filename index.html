@@ -27,6 +27,10 @@
      ============================================================ -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-panel.css">
+<!-- Newly required: the shell's footer destinations are compact actions, so the
+     module that owns them is loaded here even though this page carries no other
+     compact control. -->
+<link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
   /* Local body delta — the intentional difference from the foundation, and
@@ -93,7 +97,7 @@
         <img class="surface-mark-light" src="assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
         <img class="surface-mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
       </a>
-      <h1 class="surface-title"><span class="org">apexSolarKiss</span> <span class="sep" aria-hidden="true">//</span> design-system-ASK</h1>
+      <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a> <span class="sep" aria-hidden="true">//</span> design-system-ASK</h1>
       <p class="surface-lede">Minimal design foundations for the ASK visual identity. Tokens remain irreducible. The repo
         also carries artifact inheritance scaffolds and opt-in semantic primitives that show downstream surfaces
         how to consume them without redefining them.</p>
@@ -126,10 +130,16 @@
 
   </main>
 
+  <!-- Terminal destinations, as compact actions. They remain anchors: two of
+       these leave the surface and one leaves the origin entirely, and a button
+       would keep the look while losing the destination. This page deliberately
+       does NOT adopt the responsive navigation panel — it is one of the
+       root/plain-title surfaces whose adoption is decided per surface — so it
+       loads no runtime and acquires no navigation geometry. -->
   <footer class="surface-footer">
-    <a href="preview/styleguide.html">style guide</a>
-    <a href="patterns/index.html">pattern previews</a>
-    <a href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
+    <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
   </footer>
 
 </div>

@@ -42,9 +42,13 @@
                        no declaration here to overwrite it. Traversability is
                        carried by the rule beneath the words, never by
                        brightening the words.
-     shell link roles  .surface-title a and .surface-footer a are owned by
-                       surface-shell.css through direct selectors and need no
-                       consumer class.
+     shell link roles  .surface-title a — the breadcrumb — is owned by
+                       surface-shell.css through a direct selector and needs no
+                       consumer class. The shell FOOTER is no longer one of
+                       these: its destinations are compact actions and carry
+                       surface-action's classes explicitly, which is why they
+                       appear in this module's NOT-for list above rather than
+                       in this note.
 
    WHY THESE VALUES. The resting underline is the emphasis accent at partial
    opacity — the accent's own hue, reduced in dose. It is NOT mixed toward the

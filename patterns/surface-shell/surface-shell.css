@@ -47,7 +47,11 @@
 
      Mixed with `transparent`, not with a foreground role — the accent's own hue
      at half dose. Mixing toward --fg-1 instead produces a plum that reads as a
-     darker text color rather than a quieter magenta. */
+     darker text color rather than a quieter magenta.
+
+     ONE consumer inside this file: the breadcrumb. It had two until the footer
+     was reclassified as a row of compact actions; the property stays because the
+     breadcrumb still needs it, not because two roles still share it. */
   --surface-shell-link-underline:
     color-mix(in srgb, var(--ask-emphasis-magenta) 50%, transparent);
 
@@ -139,6 +143,32 @@ a.surface-mark:focus-visible {
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
+/* A TRIGGER mark. Where the surface adopts responsive navigation, the driver
+   upgrades the authored anchor in place into a native button that discloses the
+   navigation panel — see §Responsive navigation. The chrome is the anchor's,
+   because it is the same object wearing the same mark; what differs is only the
+   UA button box, which is reset here. Authoring a button directly is valid but
+   forfeits the no-JS home destination, so the anchor is the documented source. */
+button.surface-mark {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+button.surface-mark:hover { opacity: 0.92; }
+button.surface-mark:active { transform: scale(0.97); }
+button.surface-mark:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+
 /* Optional per-mode pairing. It must track EVERY dark path the foundation
    defines, or a consumer gets dark tokens under a light mark. As of
    colors_and_type.css there are exactly three, and all three are mirrored
@@ -226,10 +256,10 @@ a.surface-mark:focus-visible {
    to full magenta, and press adds the 0.92 opacity limb on top of that already
    full-value rule. Neither state changes display, box construction, line
    breaking, measured width, or fragment count. The identity mark is a
-   block-level slot and the footer links declare display:inline-block, so both
-   are boxes a transform can act on rather than inline text that fragments; both
-   keep scale(0.97). That inline-block is load-bearing for the footer for its own
-   reason — see the note above .surface-footer a.
+   block-level slot and a footer destination is a compact action with a box of
+   its own, so both are objects a transform can act on rather than inline text
+   that fragments; both keep scale(0.97), the footer's now through
+   surface-action.css rather than through a rule here.
    The :hover opacity declaration is an override, not a default. The foundation
    binds `a:hover { opacity: 0.92 }` at (0,1,1), which reaches these links
    outright and would make hover compute identically to press. Declaring it here
@@ -300,8 +330,9 @@ a.surface-mark:focus-visible {
    Measured at 320 / 360 / 375 / 393 / 414 in both themes: every fragment
    carries the indicator, zero indicator pixels land on neighboring glyph ink,
    and contrast is 3.50:1 and 4.00:1 against the light gradient stops, 10.25:1
-   and 12.26:1 against the dark. The mark and the footer links do not fragment
-   and keep the box-shadow glow. */
+   and 12.26:1 against the dark. The identity mark does not fragment and keeps
+   the box-shadow glow; footer destinations keep theirs through
+   surface-action.css. */
 .surface-title a:focus-visible {
   outline: none;
   box-shadow: none;
@@ -315,24 +346,11 @@ a.surface-mark:focus-visible {
    not a label, so it sits on the Small step rather than the Caption step —
    Caption is the 14px uppercase role.
 
-   The footer below is a SEPARATE terminal role and it NO LONGER SHARES this
-   step: it sits on --fs-caption, alongside the compact action. What still ties
-   the two together is --fg-2 and normal tracking — the lede by inheriting the
-   foundation's, the footer by declaring it. That shared foreground is
-   continuity rather than a differentiator, and recoloring either one to
-   manufacture a distinction would still be a defect.
-
-   The footer takes Caption's SIZE, not the Caption ROLE, and the test is the
-   tokens Caption otherwise differs on: --fw-regular, --tracking-wide, and
-   uppercase transformation. It takes none of them. It shares --fg-2 with
-   Caption as well, so "shares no Caption token" would be false. What makes the
-   footer read as its own terminal role is its JetBrains Mono family, its right
-   alignment, and its terminal position.
-
-   Hierarchy here is role-driven: the defined scale steps distinguish semantic
-   roles, and more than one role may sit on a step — the footer and the compact
-   action now do. No ad-hoc size is introduced for emphasis. The lede's weight
-   stays at Light because 300 is where Small is defined.
+   The footer below no longer shares this step, and no longer declares a type
+   role at all: its items ARE compact actions, so their family, size, weight,
+   tracking and foreground resolve from surface-action.css. The footer row is
+   layout. The lede's weight stays at Light because 300 is where Small is
+   defined.
 
    `--lh-body` is the tokenized line-height nearest the README's 18 / 1.40
    figure; the repo defines no 1.40 token, and the `.small` utility declares no
@@ -401,90 +419,37 @@ a.surface-mark:focus-visible {
 }
 
 /* ---------- Footer ----------
-   Right-aligned, always. The reader's eye travels top-left to bottom-right,
-   so the footer sits where the reading path ends — the mirror of the
-   flush-left header above. This is the shell's rule, not a per-surface
-   choice: a left-aligned footer restarts the eye at a column the page has
-   already finished with. The foundation underlines anchors; the footer replaces
-   that border with the shell's own magenta text decoration at partial opacity,
-   so a row of links reads as one quiet band in the same grammar the breadcrumb
-   uses.
+   Right-aligned, always. The reader's eye travels top-left to bottom-right, so
+   the footer sits where the reading path ends — the mirror of the flush-left
+   header above. This is the shell's rule, not a per-surface choice: a
+   left-aligned footer restarts the eye at a column the page has already
+   finished with.
 
-   The footer sits on the CAPTION SIZE step — the same 14px the compact action
-   takes. Both are operative chrome a reader clicks rather than prose a reader
-   reads, so terminal navigation and compact controls measure alike. It shares
-   --fg-2 with the lede above it: that foreground is continuity across the
-   surface's open and its close, not a differentiator, and neither should be
-   recolored to invent one.
+   THE ROW IS LAYOUT AND NOTHING ELSE. Its items are compact actions —
+   `<a class="surface-action surface-action--secondary" href="…">` — so
+   surface-action.css owns their family, size, weight, tracking, padding,
+   radius, fill, border, foreground, hover, press and focus. They stay anchors:
+   a destination is navigation, and a native button would trade
+   open-in-new-tab, copy-link and the rest for an appearance.
 
-   Sharing Caption's size is not becoming Caption. The footer is never
-   uppercased, does not take --fw-regular, and does not take wide tracking.
-   Sharing the compact action's size is not becoming one either: the footer has
-   no pill, no fill, no border, and none of surface-action.css's interaction
-   contract. It stays its own role through family, alignment and terminal
-   position.
+   The former unboxed terminal-link role is RETIRED — no magenta text
+   decoration, no load-bearing inline-block, no footer-specific focus ring. Its
+   type declarations are retired with it, deliberately: leaving font-family,
+   size, tracking or color on the row would let an item that forgot its classes
+   inherit an approximation of the old treatment and look roughly correct. A
+   missing class should fail visibly. Any future non-action footer content
+   earns an explicit role of its own rather than inheriting one from the
+   navigation row.
 
-   Tracking is NORMAL, not wide. At this step wide tracking would add 1.12px
-   between letters — 0.08em of 14px. Mono's fixed advances already carry the
-   terminal distinction on their own, so normal tracking is what keeps the
-   footer from overstating it. */
+   Consuming surfaces still own WHICH destinations close the page. Right
+   alignment, wrap behavior, the row gap and the terminal margin are the
+   shell's. */
 .surface-footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-5);
   margin-top: var(--space-9);
-  font-family: var(--font-mono);
-  font-size: var(--fs-caption);
-  letter-spacing: var(--tracking-normal);
-  color: var(--fg-2);
-}
-
-/* Interaction — the repo README's hover/press/focus contract, which the shell
-   must carry rather than leave to each consumer. Hover now takes the contract's
-   BRIGHTENING limb. It previously took the opacity limb instead, and the reason
-   was specific: the rest underline was a --line-2 border, and brightening a
-   translucent-white line role toward a purple currentColor shifts hue rather
-   than brightens. A magenta text decoration brightens cleanly, so the role
-   returns to the contract's intended shape — hover raises the rule to full
-   opacity and holds element opacity at 1, press keeps the scale.
-
-   FOCUS DIFFERS FROM THE BREADCRUMB'S, deliberately. These links do not
-   fragment, so the box-shadow ring works here where it fails there, and it is
-   retained unchanged. The resting underline stays VISIBLE beneath the ring
-   rather than being cleared: the ring is the indicator, so the affordance
-   underneath is not disturbed. The breadcrumb, having no ring, recolors and
-   thickens its single decoration instead.
-
-   display:inline-block is load-bearing — transform does not apply to a
-   non-replaced inline box, so without it the press state is silently inert
-   wherever a consumer wraps these links in anything that is not the flex row
-   itself. As a direct flex child it blockifies to `block`; both are boxes a
-   transform can act on, and the declared value is what protects the wrapped
-   case. The rest underline is a text decoration rather than a border for the
-   same reason inline-block matters here: a border would follow the
-   inline-block BOX, while the decoration follows the text. */
-.surface-footer a {
-  color: var(--fg-2);
-  border-bottom: none;
-  display: inline-block;
-  text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
-  text-decoration-skip-ink: auto;
-  text-decoration-color: var(--surface-shell-link-underline);
-  transition:
-    opacity var(--dur-2) var(--ease-out),
-    transform var(--dur-1) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out),
-    text-decoration-color var(--dur-2) var(--ease-out);
-}
-.surface-footer a:hover { opacity: 1; text-decoration-color: var(--ask-emphasis-magenta); }
-.surface-footer a:active { transform: scale(0.97); text-decoration-color: var(--ask-emphasis-magenta); }
-.surface-footer a:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
 /* Narrow viewports. What changes here is the header's ARRANGEMENT, not the
@@ -498,4 +463,291 @@ a.surface-mark:focus-visible {
   .surface-head { flex-direction: column; }
   .surface-head-main { width: 100%; }
   .surface-head-aside { align-self: flex-start; }
+}
+
+/* =========================================================================
+   RESPONSIVE NAVIGATION — OPTIONAL
+   =========================================================================
+   Everything below is inert until `surface-shell.js` finds an authored
+   `<template class="surface-nav-source">` and marks the document ready. A
+   surface that declines navigation loads this stylesheet and acquires nothing:
+   no fixed mark, no seated unit, no terminal reserve, no scroll padding, no
+   scrollbar gutter. That gate is the whole reason the state attribute exists,
+   and it is why the navigation-only ROOT declarations below are safe.
+
+   THE MARK IS THE DISCLOSURE. In a navigation-enabled shell the identity mark
+   opens the panel at every placement — the persistent desktop mark, the mobile
+   opening mark, and the mobile seated mark. One meaning wherever it appears.
+   Exactly one trigger is operable and in the tab order at any instant; the
+   driver transfers operability atomically at the handoff.
+
+   ONE AUTHORED MARK. The consumer authors a single `<a class="surface-mark">`
+   with a real home destination. The driver upgrades that element in place and
+   derives the seated placement from the same payload. There is no second
+   authored mark tree to drift, and without JavaScript the anchor remains an
+   ordinary home link rather than a dead control.
+
+   ONE PANEL, TWO ENTRANCES. One native `<dialog>`, one content tree, one
+   interaction contract. Desktop enters as a drawer from the top, mobile as a
+   sheet from the bottom. Content, hierarchy, current-page state, focus entry
+   and return, close, dismissal and scroll lock are identical.
+   ========================================================================= */
+
+/* The authored navigation source. A <template> is inert by definition, so an
+   unenhanced page renders nothing from it and exposes no partial control. */
+.surface-nav-source { display: none; }
+
+/* Navigation-only ROOT geometry, gated on the driver-set state.
+   Deliberately root-scoped, and the one place this pattern declares anything
+   there: the terminal reserve has to reach BOTH the page container's padding
+   and the viewport's own scroll padding, and a value declared on .surface
+   cannot travel upward. It is namespaced, it is written by no other module,
+   and it does not exist at all unless this pattern's own driver put the
+   attribute there — which is a narrower blast radius than a global would be. */
+:root[data-surface-nav="ready"] {
+  --surface-nav-inset-b: max(20px, env(safe-area-inset-bottom, 0px));
+  --surface-nav-inset-r: max(20px, env(safe-area-inset-right, 0px));
+
+  /* RENDERED mark geometry, measured by the driver from the seated trigger's
+     own box. Never a constant: the aspect ratio of a consumer's mark is that
+     consumer's Tier 3, and hard-coding one here would make a wide wordmark's
+     proportions a property of the shell. The fallback is the slot width, which
+     is the shell's and is always true. */
+  --surface-nav-mark-block: 116px;
+  --surface-nav-gap: var(--space-5);        /* protected gap above the mark */
+  --surface-nav-fade: 48px;                 /* fade depth above the gap */
+  --surface-nav-footer-clear: var(--space-5);
+
+  /* viewport bottom -> TOP OF THE FADE */
+  --surface-nav-depth: calc(var(--surface-nav-inset-b) + var(--surface-nav-mark-block)
+                            + var(--surface-nav-gap) + var(--surface-nav-fade));
+  --surface-nav-reserve: calc(var(--surface-nav-depth) + var(--surface-nav-footer-clear));
+
+  /* handoff progress 0..1, written by the driver from the OPENING mark's actual
+     viewport exit — never from a percentage of the document, because the
+     terminal reserve changes the document's height and a percentage would
+     retime itself whenever the footer, the content or the browser chrome moved */
+  --surface-nav-p: 0;
+  --surface-nav-settle: 0px;                /* desktop, 64 -> 40 over 24px */
+
+  /* The gutter is reserved only where navigation exists, so a declining surface
+     never acquires permanent geometry from merely loading this file. It keeps
+     the page from shifting when the modal locks background scrolling. */
+  scrollbar-gutter: stable;
+}
+
+/* ---------- Desktop: one persistent, settling mark ---------- */
+@media (min-width: 768px) {
+  .surface[data-surface-nav="ready"] .surface-mark {
+    position: fixed;
+    top: calc(var(--space-8) - var(--surface-nav-settle));
+    /* aligned with the surface's CONTENT edge. .surface is 1100px of content
+       plus 2 x --space-6 of padding, so the content edge sits at
+       (100% - 1100px) / 2 once the viewport is wide enough to show the gutter,
+       and at the padding itself below that. */
+    left: max(var(--space-6), calc((100% - 1100px) / 2));
+    width: 116px;
+    margin: 0;
+    z-index: 40;
+  }
+  /* The header reclaims the space the now-fixed mark left behind. */
+  .surface[data-surface-nav="ready"] .surface-head {
+    padding-top: calc(var(--surface-nav-mark-block) + var(--space-5));
+  }
+  .surface-nav-seat { display: none; }
+}
+
+/* ---------- Mobile: the opening mark leaves, a seated unit arrives ---------- */
+@media (max-width: 767px) {
+  /* The fade and the mark travel as ONE object, so content is always cleared
+     before it reaches the mark. Seated at p=1, entirely below the viewport at
+     p=0; the driver drives p from the opening mark's own rect. */
+  .surface-nav-seat {
+    position: fixed;
+    right: 0; bottom: 0; left: 0;
+    z-index: 40;
+    pointer-events: none;
+    height: var(--surface-nav-depth);
+    transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
+    will-change: transform;
+  }
+  .surface-nav-fade {
+    position: absolute; inset: 0 0 auto 0; height: 100%;
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
+    pointer-events: none;
+  }
+  /* Hit shield over exactly the region where the fade is OPAQUE, and no
+     further: mask transparency does not affect hit-testing, so shielding the
+     whole unit would block activation through a band that still looks clear.
+     It intercepts pointer activation of covered content and leaves the
+     vertical pan to the page. */
+  .surface-nav-shield {
+    position: absolute; left: 0; right: 0;
+    top: var(--surface-nav-fade); bottom: 0;
+    z-index: 1;
+    pointer-events: auto;
+    touch-action: pan-y;
+  }
+  .surface-nav-trigger {
+    position: absolute;
+    right: var(--surface-nav-inset-r);
+    bottom: var(--surface-nav-inset-b);
+    z-index: 2;
+    pointer-events: auto;
+    margin-bottom: 0;
+  }
+
+  /* Terminal clearance: max(), never additive — and only where the seated unit
+     can actually appear. On a short page the reserve is REMOVED rather than
+     merely held at zero progress: reserving room for a unit that never seats
+     would manufacture the very scrolling the guard exists to prevent. */
+  .surface[data-surface-nav="ready"] {
+    padding-bottom: max(var(--space-10), var(--surface-nav-reserve));
+  }
+  :root[data-surface-nav="ready"] { scroll-padding-bottom: var(--surface-nav-reserve); }
+
+  .surface[data-surface-nav-short] { padding-bottom: var(--space-10); }
+  :root[data-surface-nav-short] { scroll-padding-bottom: 0; }
+  :root[data-surface-nav-short] .surface-nav-seat { display: none; }
+}
+
+/* ---------- The panel ----------
+   A native <dialog> opened with showModal(), so the background leaves the
+   accessibility tree, focus is trapped by the UA, and the panel is promoted to
+   the top layer without a z-index race. The UA box is reset EXPLICITLY: without
+   border-box the max-height bound would constrain the content box while padding
+   and safe-area compensation extended past it, recreating overflow at exactly
+   the short viewport the bound protects. */
+.surface-nav-panel {
+  box-sizing: border-box;
+  position: fixed;
+  margin: 0;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  color: inherit;
+  background: var(--surface-glass-2);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+  border: 1px solid var(--line-1);
+  max-height: 100dvh;
+  overflow: hidden;                 /* the inner element scrolls, not the box */
+  transition: transform var(--dur-3) var(--ease-out);
+}
+/* Transparent by explicit declaration. The panel is composed against the
+   surface's own gradient, and an unruled UA veil would alter that composition
+   without appearing in any rule anyone reviewed. */
+.surface-nav-panel::backdrop { background: transparent; }
+
+.surface-nav-panel-inner {
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;     /* the panel scrolls; the page does not */
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* BOTH inset ends are declared in each direction, and the unused one is set to
+   `auto` explicitly. The UA's `dialog:modal` rule pins inset-block-start AND
+   inset-block-end to 0 and centers with `margin: auto`; declaring only `bottom`
+   leaves the UA's `top: 0` standing, the box becomes over-constrained against
+   `height: fit-content`, and the sheet silently renders as a top drawer. */
+@media (min-width: 768px) {        /* drawer, downward from the top */
+  .surface-nav-panel {
+    top: 0; bottom: auto; left: 0; right: 0;
+    border-top: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    transform: translateY(-100%);
+  }
+}
+@media (max-width: 767px) {        /* sheet, upward from the bottom */
+  .surface-nav-panel {
+    bottom: 0; top: auto; left: 0; right: 0;
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+  }
+  .surface-nav-panel-inner { padding-bottom: calc(var(--space-6) + var(--surface-nav-inset-b)); }
+}
+.surface-nav-panel.is-open { transform: translateY(0); }
+
+/* ---------- Panel hierarchy ----------
+   A nested list, not a verticalized breadcrumb and not a stack of identical
+   pills. Tier is carried by indentation and by the branch guide, because a
+   uniform row treatment would flatten exactly the structure the panel exists to
+   express. Compact actions stay where they belong: utilities and the footer. */
+.surface-nav-tree { display: block; }
+.surface-nav-level { list-style: none; margin: 0; padding: 0; }
+.surface-nav-level .surface-nav-level {
+  margin-left: var(--space-3);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--line-2);
+}
+.surface-nav-row {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  padding: var(--space-2) var(--space-3);
+  margin: 2px 0;
+  border-radius: var(--radius-sm);
+  color: var(--fg-1);
+}
+/* Full-row target, and the row is the anchor rather than a link inside a row —
+   the panel's own equivalent of the full-panel link form. */
+a.surface-nav-row {
+  border-bottom: none;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+a.surface-nav-row:hover { background: var(--surface-glass); color: var(--fg-1); opacity: 1; }
+a.surface-nav-row:active { background: var(--surface-glass-2); }
+a.surface-nav-row:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+/* The current page is inert and looks it — no hover, no target, no destination. */
+.surface-nav-row[aria-current="page"] { color: var(--fg-3); }
+
+.surface-nav-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.surface-nav-utilities { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; }
+
+/* ---------- Background scroll lock ----------
+   The durable contract is that the background's scroll position stays INVARIANT
+   while the panel is open. The mechanism is not the contract: a UA that blocks
+   scrolling for a modal dialog satisfies it, and where one leaks the driver
+   restores the recorded position instead. This declaration is the first limb;
+   the driver carries the second. Deliberately NOT `position: fixed` on the
+   body — that would make the body a containing block for fixed descendants and
+   tear the seated mark off the viewport. */
+:root[data-surface-nav-locked],
+:root[data-surface-nav-locked] body { overflow: hidden; }
+:root[data-surface-nav-locked] body { touch-action: none; }
+
+/* ---------- Reduced motion ----------
+   Travel is removed by SNAPPING the same progress value in the driver, so the
+   two mark placements stay mutually exclusive and a trigger's operability
+   always matches what is on screen. Forcing the seated unit to translateY(0)
+   instead would seat it at the top of the page while the driver still held it
+   out of the tab order — two visible marks, one inoperable. */
+@media (prefers-reduced-motion: reduce) {
+  .surface-nav-seat,
+  .surface-nav-panel,
+  button.surface-mark,
+  .surface-nav-trigger { transition: none; }
 }

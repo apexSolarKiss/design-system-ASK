@@ -17,6 +17,13 @@
      say. It may NOT redefine a Tier-1 or Tier-2 role, and duplicating a
      foundation binding with no purpose is noise, not a default. -->
 <link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+<!-- The compact-action module. It is a SIBLING reference, not a token-mirror
+     path: `_dsa-tokens/` means the token and font mirror, and routing a visual
+     module through it would make a mechanically convenient path into a false
+     architecture. Vendor surface-action.css beside surface-shell.css.
+     REQUIRED wherever this shell renders footer destinations, which are compact
+     actions, and wherever the navigation panel renders utility controls. -->
+<link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="surface-shell.css">
 
 <style>
@@ -65,15 +72,24 @@
            one per resolved mode. A single responsive SVG or <img> is equally
            valid — drop one child and both modifier classes.
 
-           THIS SPECIMEN IS THE NON-INTERACTIVE MARK. Where your mark is also
-           navigation, replace the wrapper itself with a native anchor —
-           <a class="surface-mark" href="/" aria-label="...">, pointing wherever
-           your surface's home is — omit role="img" on that anchor, and keep the
-           child mark assets decorative. Never place a link beneath a role="img"
-           wrapper: the image role makes descendants presentational, so the link
-           is pruned from the accessibility tree. Both forms are specified in
-           patterns/surface-shell/README.md, §The identity mark. -->
-      <div class="surface-mark" role="img" aria-label="[consuming organization]">
+           THIS SPECIMEN IS THE NAVIGATION FORM: a native anchor with a real
+           home destination and NO role="img", because the image role makes
+           descendants presentational and would prune the link from the
+           accessibility tree. Keep the child mark assets decorative.
+
+           ONE AUTHORED MARK. Where this surface adopts navigation — that is,
+           where the <template class="surface-nav-source"> below is present —
+           surface-shell.js upgrades THIS element in place into the navigation
+           button and derives the mobile seated placement from the same payload.
+           Do not author a second mark. Without JavaScript it stays exactly what
+           it is here: an ordinary home link, never a dead control.
+
+           A surface with no navigation and no home destination uses the
+           non-interactive form instead — <div class="surface-mark" role="img"
+           aria-label="..."> — and omits the source template and the script.
+           Both forms are specified in patterns/surface-shell/README.md,
+           §The identity mark. -->
+      <a class="surface-mark" href="#" aria-label="[consuming organization] home">
         <svg class="surface-mark-light" viewBox="0 0 216 97" aria-hidden="true" focusable="false">
           <rect x="1" y="1" width="214" height="95" rx="10" fill="none"
                 stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 5"/>
@@ -86,7 +102,7 @@
           <text x="108" y="55" text-anchor="middle" font-size="16"
                 fill="currentColor" fill-opacity="0.7">[dark mark]</text>
         </svg>
-      </div>
+      </a>
 
       <!-- Surface identity. The .org span carries the owning organization; the
            optional .page span carries the payload name within the surface family.
@@ -139,14 +155,55 @@
   </main>
 
   <!-- Footer. Right-aligned by the shell — the reading path ends here. Content
-       is the consuming surface's own; the alignment is not a local choice. -->
+       is the consuming surface's own; the alignment is not a local choice.
+
+       Destinations are COMPACT ACTIONS and stay ANCHORS. surface-action.css owns
+       their family, size, weight, tracking, box, foreground and interaction; the
+       shell owns only the row. A native <button> would look the same and lose
+       the destination, so navigation never becomes one. -->
   <footer class="surface-footer">
-    <a href="#">[link]</a>
-    <a href="#">[link]</a>
-    <a href="#">[link]</a>
+    <a class="surface-action surface-action--secondary" href="#">[link]</a>
+    <a class="surface-action surface-action--secondary" href="#">[link]</a>
+    <a class="surface-action surface-action--secondary" href="#">[link]</a>
   </footer>
 
+  <!-- OPTIONAL RESPONSIVE NAVIGATION. Its presence is what enables the runtime:
+       delete this template and the script tag below and the surface declines
+       navigation entirely — no panel, no trigger, no terminal reserve, no
+       scroll padding, no scrollbar gutter, and the mark above stays a plain
+       home anchor.
+
+       TWO AUTHORED SOURCES, deliberately. The visible header breadcrumb is the
+       ONE source for the current path, and the panel derives its vertical path
+       from it — never a second title tree. A breadcrumb cannot supply siblings
+       it does not contain, so optional LOCAL destinations are authored here
+       instead, once. The root row comes from configuration, because the mark
+       already carries that context and the visible crumb should not grow a
+       segment to feed the panel. -->
+  <template class="surface-nav-source"
+            data-nav-root-label="[root]"
+            data-nav-root-href="#">
+    <!-- OPTIONAL local destinations, rendered under the deepest ancestor. Mark
+         the current page with aria-current="page"; it renders inert. Omit the
+         whole list where the surface has no siblings worth offering. -->
+    <ul class="surface-nav-local">
+      <li><a href="#">[local destination]</a></li>
+      <li><a href="#" aria-current="page">[this surface]</a></li>
+      <li><a href="#">[local destination]</a></li>
+    </ul>
+    <!-- OPTIONAL utilities — repository, source, external routes. These ARE
+         compact actions: they are discrete controls rather than tiers of the
+         hierarchy, and rendering the hierarchy as pills would flatten it. -->
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="#">[utility]</a>
+    </p>
+  </template>
+
 </div>
+
+<!-- OPTIONAL navigation runtime. Vendored only by surfaces that adopt
+     navigation; a declining page ships no copy and loads nothing. -->
+<script src="surface-shell.js"></script>
 
 </body>
 </html>
