@@ -86,7 +86,10 @@
    may name something technical or structural, and may contain `//` or any
    other terminalcore grammar, and it stays Inter, because the selector owns
    the role. Nothing here licenses reading a payload string to pick a family.
-   The four shared metric declarations are what still make a primary label read
+   Size, weight and tracking are shared across this label and BOTH shell-title
+   forms; this label and the PLAIN shell title additionally share 1.12 leading,
+   while the breadcrumb form alone takes 1.35. Those shared declarations are
+   what still make a primary label read
    as one object across surfaces.
 
    Do not conform either implementation to the other. */

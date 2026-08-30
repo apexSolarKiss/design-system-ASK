@@ -226,7 +226,7 @@ The **24px primary label over 18px supporting copy** pair is a sanctioned distin
 | Body | Inter | 200 | 24 / 1.45 | 0 |
 | Small | Inter | 300 | 18 / 1.40 | 0 |
 | Caption | Inter | 400 | 14, UPPERCASE | 0.14em |
-| **Primary label — structural locator** | **JetBrains Mono** | **300** | **24 / 1.12** | **-0.02em** |
+| **Primary label — structural locator** | **JetBrains Mono** | **300** | **24 / 1.12 default**<br>breadcrumb form **1.35** | **-0.02em** |
 | **Primary label — panel** | **Inter** | **300** | **24 / 1.12** | **-0.02em** |
 | **Compact action** | **JetBrains Mono** | **300** | **14 / 1.20** | **0** |
 | Code / inline-code | JetBrains Mono | 300 | 0.9× host | 0 |
@@ -263,12 +263,13 @@ The **compact-action role** is the label on a small control — a chip, a route 
   | --- | --- |
   | generic anchors (foundation `a`) and **compact actions** (`.surface-action`) | **foreground-bound** — the border resolves to `currentColor` |
   | **full-panel links** (`a.surface-panel`) | the explicit `--line-2` → `--line-1` line-role brightening |
-  | **wrapping breadcrumb links** (`.surface-title a`) | their own line-role treatment — underline to `--line-1`, opacity held at 1 so the 0.92 drop reads as press |
-  | **mark and footer roles** (`a.surface-mark`, `.surface-footer a`) | declared opacity only; the border does not change |
+  | **unboxed textual links** (`.surface-text-link`) and **breadcrumb links** (`.surface-title a`) | the magenta text decoration rises from partial to full opacity; element opacity held at 1 so the 0.92 drop reads as press |
+  | **the identity mark** (`a.surface-mark`) | declared opacity only; nothing else changes |
+  | **shell footer links** (`.surface-footer a`) | the same magenta decoration to full opacity, element opacity held at 1; the scale press is theirs |
 
   A compact action is small, and its rest border is `--line-2` — the faintest line the system has. Resolving it to the control's own governed foreground (`--fg-1`, or `--fg-2` on the `--secondary` variant) is what makes the outline legible at that scale, and it puts compact actions in step with the foundation's generic anchor rather than making them an exception.
-- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. Such links press without geometry: hover brightens the underline and holds opacity at 1, so on them the 0.92 drop reads as press rather than as hover. `patterns/surface-shell/README.md` carries the state model.
-- **Focus** — `0 0 0 1px white, 0 0 0 4px rgba(white, 0.25)` glow. Never the browser default. **Same exception: inline text that wraps.** Anything drawn around the box fails on fragmented inline text — sliced it opens at the cuts, cloned the rings overlap, and a rectangular outline is one shape only where the fragments happen to overlap horizontally. Such links take a fragment-native indicator instead: a 2px `--fg-1` underline, which each fragment carries in its own right. `patterns/surface-shell/README.md` records the measurements.
+- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. The fragmenting population is exactly `.surface-text-link` and breadcrumb links (`.surface-title a`); they press without geometry, hover raising the underline to full opacity and holding element opacity at 1, so on them the 0.92 drop reads as press rather than as hover. Footer links and the identity mark are boxes and keep the scale. `patterns/surface-shell/README.md` carries the state model.
+- **Focus** — `0 0 0 1px white, 0 0 0 4px rgba(white, 0.25)` glow. Never the browser default. **Same exception: inline text that wraps.** Anything drawn around the box fails on fragmented inline text — sliced it opens at the cuts, cloned it becomes one ring per line rather than a single typographic indicator, and a rectangular outline is one shape only where the fragments happen to overlap horizontally. Two anatomies result, and they are not interchangeable: `.surface-text-link` and breadcrumb links take a **fragment-native** indicator — their own decoration recolored to `--fg-1` at 2px thickness and 2px offset, so one underline renders in every state — while the identity mark and **shell footer links**, which do not fragment, keep the **glow**, the footer's resting magenta underline remaining visible beneath it. `patterns/surface-shell/README.md` records the measurements.
 
 ### Motion
 - Easing — `cubic-bezier(0.22, 1, 0.36, 1)` for entries; `cubic-bezier(0.65, 0, 0.35, 1)` for cross-fades.

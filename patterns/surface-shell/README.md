@@ -235,7 +235,7 @@ Two properties are worth naming so they are not mistaken for defects.
 around descenders — per-glyph typographic clearance, not a contour opening at a
 line break. And `:focus-visible` is last among the equal-specificity state
 rules, so while a link is focused its underline *is* the focus indicator and the
-hover and active border limbs are suppressed; active still dims the whole
+hover and active magenta limbs are suppressed; active still dims the whole
 element, because the focus rule sets no opacity.
 
 Measured at 320 / 360 / 375 / 393 / 414px in both themes:
