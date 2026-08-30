@@ -198,7 +198,29 @@
       remeasure();
     });
   }
+  /* ---------- keep the browser's edge colour on the RESOLVED theme ----------
+     A media-conditioned <meta name="theme-color"> follows the OS preference
+     alone. ASK surfaces can also carry an explicit page-level theme, so the tag
+     is synchronised to whatever actually resolved — read back off the element
+     rather than re-derived, so the meta and the paint cannot disagree. */
+  var meta = document.getElementById('rin-theme-color');
+  function syncEdge() {
+    if (!meta) return;
+    var c = getComputedStyle(root).getPropertyValue('--rin-edge').trim();
+    if (c && meta.getAttribute('content') !== c) meta.setAttribute('content', c);
+  }
+  syncEdge();
+  ['(prefers-color-scheme: dark)', '(prefers-color-scheme: light)'].forEach(function (q) {
+    var mq = window.matchMedia(q);
+    var on = function () { syncEdge(); };
+    if (mq.addEventListener) mq.addEventListener('change', on); else if (mq.addListener) mq.addListener(on);
+  });
+  /* an explicit page-level theme can change after load, too */
+  new MutationObserver(syncEdge).observe(document.documentElement,
+    { attributes: true, attributeFilter: ['data-theme', 'class'] });
+
   window.__rin = { progress: handoffProgress, frame: frame, open: openPanel, close: closePanel,
+                   syncEdge: syncEdge, edge: function () { return meta && meta.getAttribute('content'); },
                    shortPage: shortPage, remeasure: remeasure,
                    exitSpan: function () { return exitSpan; } };
 })();

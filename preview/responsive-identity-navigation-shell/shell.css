@@ -34,9 +34,13 @@
    below: `[data-rin] .rin-mark` and `[data-rin] .rin-mark-desk` have the same
    specificity, so a later generic `display: block` would silently beat the
    media query's `display: none` and render both marks at once. */
-/* both mark elements render identically; only their semantics differ */
-[data-rin] .rin-mark { display: block; width: 100%; padding: 0; border: 0; background: none; }
-[data-rin] .rin-mark > img { display: block; width: 100%; height: auto; }
+/* Each instance carries .surface-mark itself, so the canonical slot rules and
+   the canonical light/dark PAIRING rules apply to it directly. Nothing here
+   declares `display` on the images: the earlier version forced them all to
+   block, which outranked `.surface-mark-dark { display: none }` at (0,2,1) vs
+   (0,1,0) and rendered BOTH assets at once in light mode. Which asset shows is
+   the canonical mechanism's decision, not this prototype's. */
+[data-rin] .rin-mark { padding: 0; border: 0; background: none; margin-bottom: 0; }
 [data-rin] button.rin-mark { cursor: pointer;
   transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
 [data-rin] button.rin-mark:hover { opacity: 0.92; }
@@ -112,7 +116,7 @@
   outline: none;
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
-[data-rin] .rin-trigger img { display: block; width: 100%; height: auto; }
+[data-rin] .rin-trigger { margin-bottom: 0; }
 
 /* ---------- the glass navigation panel ---------- */
 [data-rin] .rin-panel {
@@ -148,11 +152,12 @@
   [data-rin] .rin-panel.is-open { transform: translateY(0); }
 }
 
-[data-rin] .rin-panel-crumb { font-family: var(--font-mono); font-size: var(--fs-body);
-  font-weight: var(--fw-light); line-height: 1.35; letter-spacing: var(--tracking-tight); margin: 0; }
-[data-rin] .rin-panel-crumb .org { color: var(--fg-2); }
-[data-rin] .rin-panel-crumb .page { color: var(--fg-3); }
-[data-rin] .rin-panel-crumb .sep { color: var(--fg-3); }
+/* Panel-local LAYOUT only. Typography, segment colour and link treatment all
+   come from the canonical .surface-breadcrumb / .surface-title grammar the panel
+   now renders through — duplicating them here is what let the panel drift out of
+   step with the shell in the first place. */
+[data-rin] .rin-panel-breadcrumb { margin: 0; }
+[data-rin] .rin-panel-breadcrumb .surface-title { margin: 0; }
 [data-rin] .rin-panel-lede { font-size: var(--fs-small); color: var(--fg-2);
   margin: var(--space-4) 0 0; max-width: 60ch; }
 [data-rin] .rin-panel-slot { margin: var(--space-5) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
@@ -167,6 +172,29 @@
   [data-rin] .rin-mobile-unit { transition: none; }
   [data-rin] .rin-panel { transition: none; }
   [data-rin] button.rin-mark, [data-rin] .rin-trigger { transition: none; }
+}
+
+/* ---------- the browser's own scroll-edge colour ----------
+   A solid background-color BENEATH the foundation's gradient. The gradient is
+   painted by `background`, which sets background-color to transparent, so Safari
+   has no solid colour to derive its under-page area from and resolves it toward
+   white — correct in light, wrong in dark. This adds the missing solid layer and
+   leaves the gradient on top, so nothing visible on the page changes. It is NOT
+   a black overlay at the top of the page: that would cover content rather than
+   correct the browser's own edge. */
+[data-rin] { --rin-edge: #FFFFFF; color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) [data-rin] {
+    --rin-edge: var(--ask-ink-dark); color-scheme: dark; }
+}
+:root[data-theme="dark"] [data-rin],
+.theme-dark [data-rin] { --rin-edge: var(--ask-ink-dark); color-scheme: dark; }
+:root[data-theme="light"] [data-rin] { --rin-edge: #FFFFFF; color-scheme: light; }
+
+html:has([data-rin]), [data-rin] {
+  background-color: var(--rin-edge);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
 }
 
 /* ---------- instrumentation, prototype only ---------- */

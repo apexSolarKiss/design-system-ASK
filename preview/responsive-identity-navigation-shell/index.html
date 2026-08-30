@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- The browser's own scroll-edge / under-page area. Safari derives it from the
+     solid background colors of html/body and from theme-color; the foundation
+     paints a gradient through the `background` shorthand and supplies no solid
+     edge color, which leaves the pocket resolving toward white in dark mode.
+     The meta value is synchronised to the RESOLVED theme by the driver, because
+     a media-conditioned tag follows the OS preference alone and ASK surfaces may
+     also carry an explicit page-level theme state. -->
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="rin-theme-color" content="#FFFFFF">
 <title>PROTOTYPE // responsive identity-navigation shell — DO NOT MERGE</title>
 
 <!-- TEMPORARY PROTOTYPE. Not a pattern, not a contract, not a consumer surface.
@@ -12,6 +21,7 @@
 
 <link rel="stylesheet" href="../../colors_and_type.css">
 <link rel="stylesheet" href="../../surface-action.css">
+<link rel="stylesheet" href="../../surface-text-link.css">
 <!-- the canonical shell, referenced READ-ONLY. The prototype overrides only the
      mark's positioning and the header compensation, both scoped to [data-rin]. -->
 <link rel="stylesheet" href="../../patterns/surface-shell/surface-shell.css">
@@ -29,13 +39,13 @@
              persistent trigger and must be a real button; on mobile it is an
              in-flow identity mark that scrolls away, and the seated lower-right
              button takes over. One is rendered at a time. -->
-        <div class="rin-mark-slot surface-mark">
-          <button type="button" class="rin-mark rin-mark-desk" id="rin-desk-trigger"
+        <div class="rin-mark-slot">
+          <button type="button" class="rin-mark rin-mark-desk surface-mark" id="rin-desk-trigger"
                   aria-expanded="false" aria-controls="rin-panel" aria-label="Open navigation">
             <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
             <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
           </button>
-          <span class="rin-mark rin-mark-open" role="img" aria-label="ASK">
+          <span class="rin-mark rin-mark-open surface-mark" role="img" aria-label="ASK">
             <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
             <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
           </span>
@@ -82,6 +92,38 @@
       <a href="../styleguide.html">style guide</a>
     </footer>
 
+
+    <!-- The panel lives INSIDE .surface, and that is structural rather than
+         cosmetic. `--surface-shell-link-underline` is scoped to .surface — which
+         is right, because it must not become a global the generic module could
+         silently inherit across two independently pinned files. The consequence
+         is that a panel rendered as a SIBLING of .surface never sees it: its
+         breadcrumb links fall back to currentColor and lose the magenta
+         entirely. Being fixed-position, the panel's DOM home costs it no layout,
+         so it belongs where it can inherit the grammar it renders. -->
+
+    <button type="button" class="rin-scrim" hidden aria-label="Close navigation" tabindex="-1"></button>
+
+    <div class="rin-panel" id="rin-panel" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+      <!-- REQUIRED: the navigational context the opening breadcrumb carried.
+           In an owner implementation this and the header breadcrumb resolve from
+           one governed source; authoring them twice is how they drift. -->
+      <!-- The canonical breadcrumb grammar, not a lookalike. Rendering the path
+           through .surface-breadcrumb / .surface-title / .org / .sep / .page means
+           the panel inherits the shell's own link treatment — the magenta rest
+           underline and full-magenta hover — instead of reimplementing typography
+           that would then have to be kept in step by hand. -->
+      <nav class="surface-breadcrumb rin-panel-breadcrumb" aria-label="Breadcrumb">
+        <p class="surface-title"><a class="org" href="../../index.html">apexSolarKiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../../patterns/index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">responsive identity-navigation shell</span></p>
+      </nav>
+      <!-- OPTIONAL governed slots. A surface fills what it has; the shell does not
+           duplicate every header field on every page. -->
+      <p class="rin-panel-lede">Optional slot — the lede, with an unboxed <a class="surface-text-link" href="../styleguide.html">textual link</a> inside it. A simple surface would leave this out entirely.</p>
+      <p class="rin-panel-slot">
+        <a class="surface-action" href="../../index.html">home</a>
+        <a class="surface-action surface-action--secondary" href="../styleguide.html">style guide</a>
+      </p>
+    </div>
   </div>
 
   <!-- the persistent trigger. On desktop it is the opening mark itself, made a
@@ -95,27 +137,12 @@
          It intercepts pointer activation of covered content while leaving
          vertical panning to the page. -->
     <div class="rin-hit-shield"></div>
-    <button type="button" class="rin-trigger" aria-expanded="false" aria-controls="rin-panel" aria-label="Open navigation">
-      <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" width="2160" height="974">
-      <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" width="2160" height="974">
+    <button type="button" class="rin-trigger surface-mark" aria-expanded="false" aria-controls="rin-panel" aria-label="Open navigation">
+      <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+      <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
     </button>
   </div>
 
-  <button type="button" class="rin-scrim" hidden aria-label="Close navigation" tabindex="-1"></button>
-
-  <div class="rin-panel" id="rin-panel" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
-    <!-- REQUIRED: the navigational context the opening breadcrumb carried.
-         In an owner implementation this and the header breadcrumb resolve from
-         one governed source; authoring them twice is how they drift. -->
-    <p class="rin-panel-crumb"><a class="org" href="../../index.html">apexSolarKiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../../patterns/index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">responsive identity-navigation shell</span></p>
-    <!-- OPTIONAL governed slots. A surface fills what it has; the shell does not
-         duplicate every header field on every page. -->
-    <p class="rin-panel-lede">Optional slot — the lede. A simple surface would leave this out entirely.</p>
-    <p class="rin-panel-slot">
-      <a class="surface-action" href="../../index.html">home</a>
-      <a class="surface-action surface-action--secondary" href="../styleguide.html">style guide</a>
-    </p>
-  </div>
 
   <div class="rin-probe" aria-hidden="true"></div>
 
