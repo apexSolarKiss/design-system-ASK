@@ -147,16 +147,42 @@ ASK's *personal* writing voice is a separate convention (terminalcore — slash-
 
 The gradient is **fixed to the viewport** (`background-attachment: fixed`), so scrolling reveals one continuous field.
 
+**Browser / under-page edge.** A browser paints its own area beyond the document — the
+over-scroll pocket above and below the page — and derives it from a **solid** background
+colour, not from a gradient. It reads `color-scheme` for the same reason, to decide how to
+render scrollbars and form controls. Both signals are page-wide, so the foundation owns both
+**on the root** and nowhere else.
+
+`--bg-edge` is the Tier-1 semantic role that carries the value. It binds existing palette
+values and creates none: `--ask-white` in light, `--ask-ink-dark` in dark. The base reset
+paints it on `html` **beneath** the gradient, so nothing visible on the page changes — the
+gradient still covers the viewport, and the solid shows only where the browser reaches past
+the document.
+
+Two consequences worth stating, because both are easy to undo by accident:
+
+- The base reset uses the `background-image` **longhand**. The `background` shorthand resets
+  `background-color` to `transparent`, which is precisely what left the canvas with no solid
+  layer to derive an edge from.
+- The edge selectors match the **root only**. The general dark-mode blocks also match a
+  descendant `.theme-dark`, which is right for local subtree theming and wrong here: custom
+  properties inherit downward, so a `.theme-dark` on `body` would resolve dark for that
+  subtree while `html` kept the light edge — dark content inside a white browser edge. A
+  descendant `.theme-dark` therefore leaves the canvas alone, by design.
+
+This is a **foundation** property, not a pattern feature. A pattern or surface must not declare
+`background-color` or `color-scheme` on the root to correct its own edge.
+
 **Core set — the named values.** Everything fundamental is built from these:
 
 | Token | Hex | Use |
 | --- | --- | --- |
 | `--ask-fg-light` | `#6A637F` | **Default light-mode foreground** (body text — the approved dark purple) |
-| `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
+| `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) and the **light browser / under-page edge** (`--bg-edge`) — **not** body text |
 | `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
 | `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; also the opt-in high-contrast foreground role (`--fg-high-contrast`). Approved uses are registered below — see **High-contrast foreground — registered uses** |
-| `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right |
+| `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right; also the **dark browser / under-page edge** (`--bg-edge`) |
 
 **High-contrast foreground — registered uses.** `--fg-high-contrast` binds `--ask-ink-light` as an **opt-in** foreground role, and this list is its registry: a use is approved only if it appears here. The role never rebinds the default gradient-surface foreground ramp — `--fg-1` / `--fg-2` / `--fg-3` stay as approved — it is never the default foreground, and it is never selected by font size. A bounded element or region may opt in where the ordinary roles do not carry enough contrast, and only by registration below. The list order is organizational, not chronological.
 
