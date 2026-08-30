@@ -49,9 +49,11 @@
      at half dose. Mixing toward --fg-1 instead produces a plum that reads as a
      darker text color rather than a quieter magenta.
 
-     ONE consumer inside this file: the breadcrumb. It had two until the footer
-     was reclassified as a row of compact actions; the property stays because the
-     breadcrumb still needs it, not because two roles still share it. */
+     TWO consumers inside this file: the breadcrumb, and the operable rows of the
+     navigation panel's hierarchy. Both are textual destinations that need a rule
+     beneath the words; the footer is not among them any more, because a footer
+     destination is a shaped compact action and its geometry already says it is
+     operable. */
   --surface-shell-link-underline:
     color-mix(in srgb, var(--ask-emphasis-magenta) 50%, transparent);
 
@@ -155,10 +157,17 @@ a.surface-mark:focus-visible {
    because it is the same object wearing the same mark; what differs is only the
    UA button box, which is reset here. Authoring a button directly is valid but
    forfeits the no-JS home destination, so the anchor is the documented source. */
+/* The runtime REPLACES the authored anchor with this element, so it inherits
+   none of `.surface-mark`'s box — including the mark-to-title gap, which is the
+   shell's and not a per-instance choice. Declaring `margin: 0` here deleted that
+   gap for the one placement that is still in normal flow: the mobile opening
+   mark. Desktop hid it, because the fixed-mark rule zeroes the margin on
+   purpose, and so does the seated trigger; both of those are MORE SPECIFIC and
+   still win. */
 button.surface-mark {
   appearance: none;
   -webkit-appearance: none;
-  margin: 0;
+  margin: 0 0 var(--space-5);
   padding: 0;
   border: 0;
   background: none;
