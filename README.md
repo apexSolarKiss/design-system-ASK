@@ -164,7 +164,6 @@ The gradient is **fixed to the viewport** (`background-attachment: fixed`), so s
    - participant ink and search-highlight text on the sanctioned colored fills;
    - in the AA-compliant **light** theme, essential page chrome, the archive title, and the focus indicator, where the ordinary foreground roles fail. In dark those page-level roles return to the normal dark foreground role.
 2. `--fg-on-card` — text on the fixed `--surface-solid` role, which does not flip with the theme and so takes a foreground that does not either.
-3. The ASK homepage positioning band on the light gradient, where the ordinary foreground roles fail normal-text contrast.
 
 A new use requires all three of the following before merge: measured evidence that the ordinary foreground roles are insufficient for the exact bounded element or region; explicit ASK source-of-intent authorization; and registration in this list. Density, legal, tabular, accessibility, or a comparable context may create the pressure that justifies *proposing* a use — none of them authorizes one on its own.
 
