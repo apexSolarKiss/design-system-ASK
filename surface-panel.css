@@ -68,12 +68,17 @@
   box-shadow: var(--shadow-md);
 }
 
-/* The panel primary label — Inter, on the primary-label METRIC the
-   surface-shell's structural title also carries: the same size, weight,
-   line-height and tracking. The FAMILY is where the two part, and it is owned
-   by the SELECTOR, allocated per role: `.surface-panel-title` is Inter, the
-   foundation's default interface and display family; `.surface-title` is the
-   mono structural locator, in both of the shell's title forms.
+/* The panel primary label — Inter, sharing the primary-label object's size,
+   weight and tracking with surface-shell's structural title. LEADING is shared
+   with the shell's PLAIN title form only: this label and the plain title both
+   sit on --lh-heading, while the shell's BREADCRUMB form takes a pattern-local
+   1.35 for wrapped-fragment clearance. That exception is the shell's and does
+   not reach this label.
+
+   The FAMILY is where the two part, and it is owned by the SELECTOR, allocated
+   per role: `.surface-panel-title` is Inter, the foundation's default interface
+   and display family; `.surface-title` is the mono structural locator, in both
+   of the shell's title forms.
    `.surface-action` is a third role and a separate mono exception — not this
    one.
 
@@ -81,7 +86,10 @@
    may name something technical or structural, and may contain `//` or any
    other terminalcore grammar, and it stays Inter, because the selector owns
    the role. Nothing here licenses reading a payload string to pick a family.
-   The four shared metric declarations are what still make a primary label read
+   Size, weight and tracking are shared across this label and BOTH shell-title
+   forms; this label and the PLAIN shell title additionally share 1.12 leading,
+   while the breadcrumb form alone takes 1.35. Those shared declarations are
+   what still make a primary label read
    as one object across surfaces.
 
    Do not conform either implementation to the other. */

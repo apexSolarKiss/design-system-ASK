@@ -16,6 +16,10 @@
      canonical contract. Consumer-owned specimen framing and descriptive copy
      remain maintained and may require conformance when the contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
+
+<!-- The canonical textual-link contract, loaded so the specimen below RENDERS
+     from the module rather than from a local restatement. -->
+<link rel="stylesheet" href="../surface-text-link.css">
 <!-- Page chrome: the canonical surface-shell pattern, consumed by same-repo
      reference. The mode selector below is NOT part of that pattern — it is this
      inspection surface's own control, styled here and driven by
@@ -60,6 +64,13 @@
      resolve a declared width the same way unless the contract owns
      box-sizing. */
   .spec-actions-fixed .surface-action { width: 190px; }
+  /* Stands in for a consuming role that deliberately colors its own anchors.
+     The textual-link module declares NO color, so this survives it — that is
+     what the specimen is for. */
+  .spec-quiet-role a { color: var(--fg-3); }
+  /* A deliberately narrow column, so the long specimen anchor fragments across
+     lines in the same viewport as everything else. */
+  .spec-narrow-prose { max-width: 300px; }
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
@@ -74,7 +85,11 @@
      already loads and which tracks all three of the foundation's dark paths.
      Declaring `display` here would outrank those rules and show both marks, so
      this sets width and nothing else. */
-  .wm-specimen img { width: 108px; height: auto; }
+  /* Same asset, same rendered size as the shell's mark slot — 116px. The two
+     differ in role, not in scale: this is the pairing specimen, .surface-mark is
+     the live UI placement, and a reader comparing them should not have to
+     discount an 8px difference. */
+  .wm-specimen img { width: 116px; height: auto; }
   /* Descriptive label for the specimen beside it. `.meta` is the mono column
      for selectors, token names and metrics; this is interface copy, so it is
      Inter. The technical identification sits on the `.lbl` token line below. */
@@ -305,6 +320,26 @@
 
     <h3 class="spec-role">CTA <span class="spec-role-meta">18px Inter 400 · a SEPARATE role — not a compact action</span></h3>
     <p class="note" style="margin: 0 0 var(--space-3);">The Primary / Ghost pair above. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. It is not governed by <code>surface-action.css</code> and must not be conformed to it.</p>
+
+    <!-- The third interactive role, and the one with no geometry of its own.
+         It sits directly after the two boxed roles because the boundary IS the
+         point: a compact action announces itself by its shape, a textual link
+         has only the rule beneath it. -->
+    <h3 class="spec-role" id="textual-link">Textual link <span class="spec-role-meta">unboxed · canonical <code>.surface-text-link</code></span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">A link inside running prose or a structural title, opted in by class. The resting rule is the emphasis accent at partial opacity — its own hue at a reduced dose, never mixed toward the foreground. Hover raises it to full opacity. Focus is governed separately and independently. The module declares <strong>no text color</strong>: an ordinary link inherits its context, and a role-colored anchor keeps its own.</p>
+    <p class="note" style="margin: 0 0 var(--space-5); border-left: 2px solid var(--line-1); padding-left: var(--space-3);"><strong>This is the default-ASK treatment, and no strict AA claim is made for it.</strong> The resting underline measures 1.72:1 and 1.82:1 against the light gradient stops and 2.11:1 and 2.23:1 against the dark — below the strict 3:1 non-text floor <em>in both themes</em>. In light that floor is unreachable at any opacity, full included; in dark a higher opacity would reach it, but that would be a different treatment from the single uniform default. The affordance rests on the <em>presence</em> of a rule where the surrounding prose has none, plus the independently governed focus indicator, which does clear its own requirement. <strong>No AA alternate ships in this unit.</strong></p>
+    <div class="grid cols-2">
+      <div class="card">
+        <p style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">The design system is published at <a class="surface-text-link" href="../index.html">design-system-ASK</a>, and the catalog lists every <a class="surface-text-link" href="../patterns/index.html">surface and artifact pattern</a> it exhibits.</p>
+        <p class="spec-quiet-role" style="margin: var(--space-3) 0 0; font-size: var(--fs-small); line-height: var(--lh-body);">A consuming role may color its own anchors, and the module leaves that alone: <a class="surface-text-link" href="#textual-link">this link is deliberately quieter</a> than the prose above it, and carries the same rule.</p>
+        <p class="note" style="margin: var(--space-3) 0 0;">Top: ordinary prose links, inheriting the payload foreground. Bottom: an anchor its own role colors to <code>--fg-3</code>, unchanged by the module. Hover either to see the rule rise to full opacity, and Tab to one for the independent focus indicator.</p>
+      </div>
+      <div class="card">
+        <p class="spec-narrow-prose" style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">At this column width <a class="surface-text-link" href="#textual-link">a single anchor long enough to break across more than one line</a> fragments, and the rule follows each fragment.</p>
+        <p style="margin: var(--space-4) 0 0; font-size: var(--fs-small); line-height: var(--lh-body);">A shaped object announces itself by geometry and takes no class: <a class="surface-action" href="#textual-link">compact action</a> — while <a class="surface-text-link" href="#textual-link">an unboxed link</a> announces itself only by its rule.</p>
+        <p class="note" style="margin: var(--space-3) 0 0;">Top: the fragmenting case — a text decoration follows each line's own text, which a box-drawn indicator cannot. Bottom: the boundary on one line. The module is <strong>opt-in</strong> for that reason — the excluded set is open-ended, so the class is added to the links that qualify rather than withheld from the ones that do not.</p>
+      </div>
+    </div>
   </section>
 
   <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>

@@ -29,8 +29,9 @@
      placement         inside a panel, outside one, several, one, or none
 
    NOT for: full-panel links (a.surface-panel owns those), ordinary inline
-   text links, theme or mode selectors, lightbox and gallery-overlay triggers,
-   status notes, badges, or non-interactive labels. Being rectangular and
+   text links (surface-text-link.css owns those), theme or mode selectors,
+   lightbox and gallery-overlay triggers, status notes, badges, or
+   non-interactive labels. Being rectangular and
    clickable is not the same role.
 
    WHY THESE VALUES. The contract uses existing role tokens wherever the system
@@ -101,9 +102,13 @@
    exception carved out of a line-role norm — the line-role cases are the ones
    that are specific, and they are named: FULL-PANEL LINKS (a.surface-panel)
    take the --line-2 -> --line-1 brightening, and WRAPPING BREADCRUMB LINKS
-   (.surface-title a) take their own underline treatment. Mark and footer roles
-   change opacity only and leave their border alone. Do not conform any of them
-   to this rule, or this rule to them.
+   (.surface-title a) take their own underline treatment. The IDENTITY MARK
+   changes opacity only and leaves its border alone. The SHELL FOOTER no longer
+   does: it now carries the shell-owned magenta text decoration at rest, raises
+   it to full opacity on hover, keeps its scale press, and keeps its existing
+   box-shadow focus ring. And ORDINARY INLINE TEXT LINKS, excluded below, have
+   their own owner — surface-text-link.css. Do not conform any of them to this
+   rule, or this rule to them.
 
    State it accurately: in light mode this visibly moves the border from a
    translucent white to the foreground purple. That IS a color transition. What
