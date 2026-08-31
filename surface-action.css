@@ -103,12 +103,18 @@
    that are specific, and they are named: FULL-PANEL LINKS (a.surface-panel)
    take the --line-2 -> --line-1 brightening, and WRAPPING BREADCRUMB LINKS
    (.surface-title a) take their own underline treatment. The IDENTITY MARK
-   changes opacity only and leaves its border alone. The SHELL FOOTER no longer
-   does: it now carries the shell-owned magenta text decoration at rest, raises
-   it to full opacity on hover, keeps its scale press, and keeps its existing
-   box-shadow focus ring. And ORDINARY INLINE TEXT LINKS, excluded below, have
-   their own owner — surface-text-link.css. Do not conform any of them to this
-   rule, or this rule to them.
+   changes opacity only and leaves its border alone. And ORDINARY INLINE TEXT
+   LINKS, excluded below, have their own owner — surface-text-link.css. Do not
+   conform any of them to this rule, or this rule to them.
+
+   THE SHELL FOOTER IS NOT AMONG THEM ANY MORE. It used to carry its own unboxed
+   terminal-link treatment; a footer destination is now a compact action, so it
+   is governed BY this rule rather than excluded from it. Nothing here changed
+   to accommodate it — the row is the shell's, the item is this module's, and
+   the split is the same one that already separates a gallery card's action row
+   from the control inside it. A footer destination stays an <a>: the shaped
+   geometry is what this module supplies, and it supplies it identically to an
+   anchor that navigates and a button that acts.
 
    State it accurately: in light mode this visibly moves the border from a
    translucent white to the foreground purple. That IS a color transition. What

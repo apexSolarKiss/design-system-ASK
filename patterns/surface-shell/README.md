@@ -27,7 +27,7 @@ that project ASK-the-entity.
 
 The shell owns the chrome around the payload. It owns no payload. A consuming
 surface supplies everything between the rule and the footer, the footer's own
-links, and its own Tier 3 identity.
+destinations, and its own Tier 3 identity.
 
 The header is flush left and the footer is flush right. That pairing is the
 shell's, not a per-surface preference: the reader's eye travels top-left to
@@ -49,10 +49,32 @@ class label into it — one surface pattern does not earn a taxonomy.
 | --- | --- |
 | `surface-shell.css` | The canonical implementation. Composes existing `var()` roles; defines no token. |
 | `surface-shell.template.html` | The canonical markup specimen, with the required structure and both optional slots. |
+| `surface-shell.js` | **Optional** responsive-navigation runtime. Vendored only by surfaces that adopt navigation. |
 
 The rendered specimen is generated to `patterns/_preview/surface-shell.html` by
 `tools/gen-pattern-previews.mjs`. It is owner preview evidence — do not vendor
-it. Vendor this directory's two files.
+it.
+
+**What to vendor.** The core shell is `surface-shell.css` plus the template, and
+every consumer takes those. Two additions are conditional, and they are separate
+questions:
+
+| Also vendor | When |
+| --- | --- |
+| `surface-action.css` (repo root) | The surface renders **footer destinations**, **or** adopts navigation. |
+| `surface-shell.js` (this directory) | The surface **adopts navigation**. A declining surface ships no copy. |
+
+**Navigation requires `surface-action.css` on its own**, whether or not the surface has
+a footer to style. The panel's **close control is mandatory** and is a compact action —
+the runtime builds it for every adopter — while the utility row is optional. A surface
+that adopts navigation, has no footer destinations, omits the utility row, and follows
+these instructions to the letter would otherwise ship an unstyled mandatory button.
+
+`surface-action.css` sits beside the vendored shell, referenced by bare filename,
+exactly as the template does. It is **not** a `_dsa-tokens/` file: that mirror is
+for tokens and fonts, and routing a visual module through it would make a
+convenient path into a false architecture. CSS pins are tracked for every
+consumer; the JS pin only for adopters.
 
 ---
 
@@ -72,12 +94,15 @@ it. Vendor this directory's two files.
 
   <main class="surface-payload">…payload…</main>
 
-  <footer class="surface-footer">…links…</footer>
+  <footer class="surface-footer">
+    <a class="surface-action surface-action--secondary" href="…">…</a>
+  </footer>
 </div>
 ```
 
-The `.surface-mark` wrapper above is the **non-interactive** form. Where the mark
-is also navigation, the wrapper itself becomes the link —
+The `.surface-mark` wrapper above is the **non-interactive** form, which is the
+right one only where the surface has no home destination and adopts no
+navigation. Everywhere else the wrapper itself becomes the link —
 `<a class="surface-mark" href="…" aria-label="…">`, with no `role="img"`. Both
 forms are specified under §The identity mark.
 
@@ -110,9 +135,18 @@ an H-step; being a title is why it does not sit on the supporting step its own
 lede occupies. The pair
 separates on size — 24 against 18 — not on weight.
 
-**Root-level surface — a plain heading.** A surface with no navigable ancestor
-takes a bare `<h1 class="surface-title">`. Do not wrap it in a navigation
-landmark: a `nav` whose contents are all inert navigates nowhere.
+**Root-level surface — a plain heading.** A surface that is the root of its own
+family takes a bare `<h1 class="surface-title">` and no navigation landmark: the
+title names the surface itself rather than a position inside it, so there is no
+current-page segment and no within-family ancestor to navigate to.
+
+That test is **within the surface family**, and the distinction is load-bearing.
+An `.org` segment may still link outward to a broader public parent — a studio
+route above a project's own root, say — without making the surface a subpage of
+its own family. One outward link does not turn a root title into a breadcrumb,
+and wrapping it in a `nav` on that basis would announce a hierarchy the surface
+does not have. The design-system's own root page is exactly this case: its
+`apexSolarKiss` segment links out, and its title stays plain.
 
 **Subpage — a breadcrumbed title.** Where a navigable ancestor exists, wrap the
 same `<h1>` in a breadcrumb landmark. Linkability is decided by **destination,
@@ -127,11 +161,10 @@ has somewhere to go:
 
 Never invent a destination to make a segment interactive.
 
-The example below is design-system-ASK's own topology, in which `apexSolarKiss`
-is an organization name with no page of its own and therefore stays static. A
-consumer whose organization segment *is* a real home — `ASK` resolving to the
-ASK front door, say — links that segment instead. Both are conformant; the
-difference is topology, not class:
+The generic form below leaves `[org]` static, because a placeholder organization
+has no destination to link to. That is the *placeholder's* topology, not a
+default — an organization segment is static only while it genuinely has nowhere
+to go:
 
 ```html
 <nav class="surface-breadcrumb" aria-label="Breadcrumb">
@@ -144,6 +177,23 @@ difference is topology, not class:
   </h1>
 </nav>
 ```
+
+**design-system-ASK's own surfaces are the linked case**, and they are worth
+reading against the generic form above. `apexSolarKiss` has a real public parent,
+so it links to it:
+
+```html
+<a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a>
+<span class="sep" aria-hidden="true">//</span>
+<a href="../index.html">design-system-ASK</a>
+<span class="sep" aria-hidden="true">//</span>
+<span class="page" aria-current="page">style guide</span>
+```
+
+The public IA parent is the destination, not the code host: a GitHub
+organization is a **utility** destination and belongs in the navigation panel,
+never in the breadcrumb's ancestry. Both forms are conformant, and the
+difference is topology rather than class.
 
 The `nav` wraps the title only — never the mark, never the lede. `nav` inside
 `<h1>` would be invalid, since a heading takes phrasing content; wrapping is the
@@ -218,17 +268,15 @@ thickness and offset change. `--fg-1` is the existing theme-resolving default
 foreground role: no new token, no `--fg-high-contrast` registration, and the same
 treatment on the quieter `.org` home link as on an ordinary ancestor.
 
-**The footer's focus is a different anatomy, and deliberately so.** Footer links
-do not fragment, so the `box-shadow` ring works there and is retained unchanged —
-and the resting magenta underline stays **visible beneath it** rather than being
-cleared, because the ring is the indicator and the affordance underneath is not
-disturbed. Do not describe one focus anatomy across both roles:
+**Two focus anatomies, and they are not interchangeable.** A fragmenting inline
+link cannot carry a ring; a box can. Do not describe one anatomy across both:
 
 | Role | Focus indicator | Rest underline during focus |
 | --- | --- | --- |
 | `.surface-title a` (breadcrumb) | the same decoration, recolored to `--fg-1` at 2px / 2px | becomes the indicator |
-| `.surface-footer a` | the existing white `box-shadow` ring | stays visible beneath the ring |
 | `.surface-text-link` (module) | `--fg-1` decoration at 2px / 2px | becomes the indicator |
+| the identity mark | the white `box-shadow` ring | n/a |
+| footer destinations | `surface-action.css`'s own focus limb | n/a — they carry no underline |
 
 Two properties are worth naming so they are not mistaken for defects.
 `text-decoration-skip-ink` stays at its initial `auto`, so the underline breaks
@@ -248,14 +296,16 @@ Measured at 320 / 360 / 375 / 393 / 414px in both themes:
 | contrast against the dark gradient stops | 10.25:1 · 12.26:1 |
 | fragment count, line breaks, width, title and header height, page overflow | identical focused and unfocused |
 
-The mark and the footer links do not fragment and keep the box-shadow glow.
+The identity mark does not fragment and keeps the box-shadow glow. Footer
+destinations keep a ring too, but it is `surface-action.css`'s, not this
+pattern's.
 
 This is a surface-pattern exception for wrapping text, not a general retirement
-of press feedback. The identity mark is a block-level slot and the footer links
-declare `display: inline-block`, so both are boxes a transform can act on rather
-than inline text that fragments; both keep the scale press. The footer's
-`inline-block` is load-bearing in its own right — `surface-shell.css` records
-why above `.surface-footer a` — and is not merely a consequence of the flex row.
+of press feedback. The identity mark is a block-level slot, and a footer
+destination is a compact action with a box of its own, so both are objects a
+transform can act on rather than inline text that fragments; both keep the scale
+press — the footer's now through `surface-action.css` rather than through a rule
+of the shell's.
 
 The `.org` span carries the owning organization; the `.page` span carries the
 current segment and takes `aria-current="page"`. The root variant omits `.page`
@@ -276,27 +326,36 @@ The lede is **not** Caption text. Caption is the 14px uppercase label role: the
 foundation's inherited Inter. The lede is prose a reader reads, so it sits on
 the supporting-text step instead.
 
-The shell **footer** does **not** sit on that step. It takes the **Caption
-size** — the same 14px the compact action takes — because both are operative
-chrome a reader clicks rather than prose a reader reads, so terminal navigation
-and compact controls measure alike. What the footer still shares with the lede
-is `--fg-2`: continuity across the surface's open and its close, not a
-distinction, and recoloring either one to manufacture a distinction would be a
-defect. The footer stays its own role through its mono family, its right
-alignment, and its terminal position.
+The shell **footer** sits on no type step of its own, because it declares no
+type. Its destinations **are compact actions**, and `surface-action.css` owns
+their family, size, weight, tracking, padding, radius, fill, border, foreground,
+hover, press and focus:
 
-Its tracking is `--tracking-normal`, and that is a correction rather than an
-omission. At this step wide tracking would add 1.12px between letters — 0.08em
-of 14px. Mono's fixed advances already carry the terminal distinction on their
-own, so normal tracking is what keeps the footer from overstating it.
+```html
+<footer class="surface-footer">
+  <a class="surface-action surface-action--secondary" href="…">…</a>
+</footer>
+```
 
-Taking Caption's size is **not** becoming Caption. It is never uppercased and it
-does not take Caption's weight. Do not "conform" it to Caption by uppercasing
-it, changing its family, or raising its weight.
+**They stay anchors.** A destination is navigation; a `<button>` would keep the
+appearance and lose the destination, open-in-new-tab, copy-link, and every other
+thing a link is. The `--secondary` variant is the quieter foreground-only form,
+which preserves the footer's previous `--fg-2` weighting.
 
-Taking the compact action's size is **not** becoming a compact action either.
-The footer has no pill, no fill, no border, and none of `surface-action.css`'s
-interaction contract. Do not apply `.surface-action` to a footer link.
+**The row declares nothing but layout** — `display`, `flex-wrap`,
+`justify-content`, `gap`, `margin-top`. That is deliberate rather than an
+omission: leaving `font-family`, `font-size`, `letter-spacing` or `color` on the
+row would let an item that forgot its classes inherit an approximation of the
+retired treatment and look roughly correct. A missing class should fail
+**visibly**. Any future non-action footer content earns an explicit role of its
+own; it does not acquire typography by accident from a navigation row.
+
+**What this replaced.** The footer used to carry its own unboxed terminal-link
+treatment — a magenta text decoration, a load-bearing `inline-block`, and a
+footer-specific focus ring. All of it is retired.
+`--surface-shell-link-underline` survives, with **two** consumers in this file:
+the **breadcrumb** and the **operable panel hierarchy rows**. It does not regain
+the footer.
 
 ### Landmarks are part of the contract
 
@@ -324,6 +383,7 @@ alignment, and the optional mode-pairing mechanism. You own what goes in it:
 | Slot width — a fixed 116px at every breakpoint — and its alignment | The mark itself — image asset or inline SVG |
 | The optional light/dark visibility mechanism | Whether to have a pairing at all, and which asset is which mode |
 | Nothing about the wrapper's semantics | The wrapper element and its role — a non-interactive `<div role="img">`, or a native `<a>` when the mark is navigation |
+| The mark's **action** where the surface adopts navigation — see §Responsive navigation | Nothing about that action; the authored anchor is upgraded in place |
 | Nothing about identity | The accessible name, and the Tier 3 identity it names |
 
 This pattern ships **no organization's wordmark**. A consuming project supplies
@@ -446,6 +506,173 @@ of this pattern and is not vendored with it.
 
 ---
 
+## Responsive navigation
+
+**Optional.** A surface adopts it by authoring one navigation source and loading
+`surface-shell.js` **and `surface-action.css`** — the panel's close control is
+mandatory and is a compact action, so the module is required by navigation
+itself and not only by a footer. A surface that adopts none of it renders
+exactly as before: no panel, no trigger, no terminal reserve, no scroll
+padding, no scrollbar gutter. None of the navigation CSS engages, because all
+of it is gated on a state attribute only the runtime sets.
+
+### What the breadcrumb is for, and what it is not
+
+The visible breadcrumb was doing two jobs. It keeps one.
+
+| | |
+| --- | --- |
+| **Header breadcrumb** | orientation — the structural title, the current path, ancestor shortcuts. It may wrap. It is **not** the navigation interface. |
+| **Identity mark** | the navigation disclosure. One meaning at every placement. |
+| **Panel** | the navigation interface — a vertical, tiered hierarchy, identical on both breakpoints. |
+| **Footer** | terminal destination actions. |
+
+The breadcrumb is not removed, shortened, or moved into the panel.
+
+### The mark is the disclosure
+
+Where navigation is adopted, the mark **opens the panel** — the persistent
+desktop mark, the mobile opening mark, and the mobile seated mark alike. At any
+instant exactly **one** trigger is operable and exactly **one** is in the tab
+order; operability transfers atomically at the phase-locked handoff. A visible
+but inert mark is the defect this replaces.
+
+**One authored mark.** You author a single `<a class="surface-mark" href="…">`
+with a real home destination. The runtime upgrades that element in place into
+the navigation button and derives the seated placement from the same payload.
+There is no second authored mark to drift out of step.
+
+**Without JavaScript it stays a home link.** The panel and the button never
+appear, and no dead control is exposed. That is the whole reason the authored
+element is an anchor rather than a button.
+
+### One panel, two entrances
+
+One native `<dialog>`, one content tree, one interaction contract:
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| trigger | persistent top-left mark | opening mark, then the seated mark |
+| entrance | drawer, from the top | sheet, from the bottom |
+
+**Mobile is not a width.** The mode is `narrow` **or** `short and coarse`:
+
+```text
+(max-width: 767px)
+OR
+(min-width: 768px) and (max-height: 499px) and (hover: none) and (pointer: coarse)
+```
+
+A landscape phone at 844×390 is wider than the desktop breakpoint and still wants
+the lower-right mark; a width-only divide hands it a fixed top-left mark and a top
+drawer on a 390px-tall touch viewport. The mode is **published as state** by the
+runtime and the geometry keys to that state, never to a raw query — which is also
+what lets a rotation *while the panel is open* close under the geometry it opened
+with and commit the new mode afterwards, rather than swapping drawer for sheet
+mid-exit.
+
+Identical in both: content, hierarchy, current-page state, focus entry and
+return, the explicit close control, outside dismissal, `Escape`, background
+scroll lock, and glass paint. Do not maintain separate desktop and mobile menu
+markup.
+
+Three details are contracts rather than implementation preferences. The dialog's
+UA box is reset **explicitly**, because without `box-sizing: border-box` the
+`max-height` bound constrains the content box while padding and safe-area
+compensation extend past it — recreating overflow at exactly the short viewport
+the bound protects. `::backdrop` is made **transparent** by declaration, so no
+unruled veil alters the composition. And the dialog stays **open and in the top
+layer for the whole exit**, with `close()` called on completion, so the motion is
+never cut short.
+
+### Two authored sources, and why
+
+A breadcrumb cannot supply siblings it does not contain, so the one-source rule
+narrows rather than breaks:
+
+| Source | Authored | Used for |
+| --- | --- | --- |
+| the header breadcrumb | once, visibly | the panel's vertical **current path**, derived — never restated |
+| `data-nav-root-*` on the source | once, as configuration | the root row above the crumb, which the mark's own context already implies |
+| `.surface-nav-local` | once, optionally | **sibling or child** destinations the crumb cannot contain |
+| `.surface-nav-utilities` | once, optionally | repository and other external routes |
+
+**The current page is never authored twice.** `data-surface-nav-current` is an
+inert **position marker**: you say where the current location sits among its
+neighbours, and the runtime fills it with the segment derived from the visible
+breadcrumb. Writing the label again — or a second `aria-current` — would give
+the panel an independent current-page source that can drift from the visible
+title, which is exactly what the one-authored-path rule exists to prevent.
+
+```html
+<!-- SIBLING form: this surface sits among its siblings -->
+<template class="surface-nav-source"
+          data-nav-root-label="ASK" data-nav-root-href="https://example.org/">
+  <ul class="surface-nav-local">
+    <li><a href="…">a sibling</a></li>
+    <li data-surface-nav-current></li>
+  </ul>
+  <p class="surface-nav-utilities">
+    <a class="surface-action surface-action--secondary" href="…">repository</a>
+  </p>
+</template>
+```
+
+```html
+<!-- PARENT form: this surface is the root of its own family, and the local
+     destinations are its children rather than its siblings -->
+<ul class="surface-nav-local">
+  <li data-surface-nav-current>
+    <ul>
+      <li><a href="…">a child</a></li>
+      <li><a href="…">another child</a></li>
+    </ul>
+  </li>
+</ul>
+```
+
+The authored order and nesting are rendered as authored: the panel's shape is the
+consumer's, and only the current row's *content* comes from the shell.
+
+A `<template>` is inert by definition, so an unenhanced page renders nothing from
+it and exposes no partial control.
+
+**Do not list the ancestor twice.** The deepest ancestor already has its own row
+and its own destination; adding an "overview" child pointing at the same place
+puts two rows on one target, which is the defect this IA exists to remove.
+
+### The hierarchy is a hierarchy
+
+Rows are nested list items. Tier is carried by indentation and the branch guide;
+the current item is inert and carries `aria-current="page"`.
+
+**Hierarchy rows are not compact actions.** Rendering every tier as an identical
+pill would flatten exactly the structure the panel exists to express.
+`surface-action` stays where it belongs: utilities, explicit local action rows,
+and the footer.
+
+**An operable row carries the magenta text affordance** — the same resting rule
+the breadcrumb uses, at partial opacity, rising to full magenta on hover and
+press. The glass row-fill is a *hover* response, so without the underline the
+resting hierarchy would read as a diagram of the site rather than a set of
+destinations. Shape communicates operability for a shaped control; text needs the
+rule beneath it. The **full-row ring** remains the focus indicator and the
+underline stays visible beneath it — these rows are blocks and do not fragment,
+so the breadcrumb's fragment-native focus anatomy would be the wrong one to copy.
+The current row is a `span`, carries no underline, and has no hover state.
+
+### What a declining surface gets
+
+Nothing. That is the test, and it is worth running: no `surface-shell.js`, no
+`data-surface-nav` attribute, no `data-surface-nav-mode`, no fixed mark, no
+seated unit, no `scroll-padding-bottom`, no `scrollbar-gutter`, and an identity
+mark that is still an ordinary anchor.
+
+Declining is a real option for a surface with nowhere to go. It is **not** a way
+to give one page of a family a different mark behavior from the rest: the mark's
+meaning is supposed to be the same wherever it appears, so a family either adopts
+together or has a stated reason not to.
+
 ## What the shell does not own
 
 - **The gradient field, base type, and base element styling.** `colors_and_type.css`
@@ -460,10 +687,10 @@ of this pattern and is not vendored with it.
   `background-attachment: fixed` to `scroll` and gives that surface a different
   gradient behavior from the rest of its family.
 - **Payload layout.** Everything between `.surface-rule` and `.surface-footer`.
-- **Footer content.** Which links a surface closes with is the surface's business.
-  Their right alignment and interaction behavior are not — those belong to the
-  shell, which carries the repo README's hover/press/focus contract so every
-  consumer inherits it rather than reimplementing it.
+- **Footer content.** Which destinations a surface closes with is the surface's
+  business. Their right alignment, wrap and row gap are the shell's; their
+  presentation and interaction are `surface-action.css`'s. Three owners, one
+  row — and none of them is the consuming page's own stylesheet.
 - **Identity.** The mark slot is the shell's; the mark, its pairing, and its
   accessible name are the consuming project's Tier 3.
 - **Tokens.** The shell composes existing `var()` roles and introduces no token
@@ -504,10 +731,13 @@ generated-artifact treatment: generator `--check`, generated-set parity, and
 visual verification. The gallery page consuming the shell for its own chrome is
 a separate relationship from the gallery cataloguing that generated specimen.
 
-**Downstream repos** vendor a local pinned copy of `surface-shell.css` alongside
-the foundation mirror, with no CDN and no live hot-link to a design-system
-deployment. A cross-origin runtime dependency on another surface's host is not a
-consumption path this pattern offers.
+**Downstream repos** vendor local pinned copies alongside the foundation mirror,
+with no CDN and no live hot-link to a design-system deployment. A cross-origin
+runtime dependency on another surface's host is not a consumption path this
+pattern offers. What to vendor is in §Files: always `surface-shell.css` and the
+template, plus `surface-action.css` wherever footer destinations are rendered,
+plus `surface-shell.js` for navigation adopters only. A repo with at least one
+adopting page may vendor **one** shared copy of the runtime.
 
 Do not hand-edit a vendored copy. Local differences belong in the consuming
 repo's own stylesheet, layered over the vendored file — that keeps the vendored

@@ -31,8 +31,12 @@
   section { margin: var(--space-8) 0; }
   .sg-h { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2); border-bottom: 1px solid var(--line-1); padding-bottom: var(--space-2); margin: 0 0 var(--space-5); }
   .grid { display: grid; gap: var(--space-4); }
-  .cols-auto { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  /* min() is load-bearing at the narrowest accepted viewport — a bare track
+     minimum is a HARD floor, so at 320px, where the shell's padding leaves
+     256px of content, the track still claims its minimum and the page scrolls
+     sideways. min(<pref>, 100%) keeps the preferred width and lets it shrink. */
+  .cols-auto { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+  .cols-2 { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
   .card { background: var(--surface-glass); border: 1px solid var(--line-1); border-radius: var(--radius-lg); padding: var(--space-5); }
   .card-solid { background: var(--surface-solid); border: 1px solid var(--line-inverse); border-radius: var(--radius-lg); padding: var(--space-5); }
   /* The label sits on the same FIXED fill as the card's text, so it takes the same
@@ -136,7 +140,7 @@
         <img class="surface-mark-dark" src="../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
       </a>
       <nav class="surface-breadcrumb" aria-label="Breadcrumb">
-        <h1 class="surface-title"><span class="org">apexSolarKiss</span> <span class="sep" aria-hidden="true">//</span> <a href="../index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">style guide</span></h1>
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">style guide</span></h1>
       </nav>
       <p class="surface-lede">Canonical token review surface, live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical. Theme follows the system by default; select light or dark to verify a fixed mode. This is a reference/preview surface, not a sealed deliverable.</p>
     </div>
@@ -360,10 +364,28 @@
   </main>
 
   <footer class="surface-footer">
-    <a href="../index.html">design-system-ASK</a>
-    <a href="../patterns/index.html">pattern previews</a>
-    <a href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    <a class="surface-action surface-action--secondary" href="../index.html">design-system-ASK</a>
+    <a class="surface-action surface-action--secondary" href="../patterns/index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
   </footer>
+
+  <!-- Responsive navigation. The header breadcrumb stays the ONE authored source
+       for this page's path; only the sibling destinations the crumb cannot
+       contain are authored here, and the current page is a POSITION marker
+       (`data-surface-nav-current`) that the runtime fills from that breadcrumb —
+       never a second authored label or a second aria-current. `design-system-ASK` is already the ancestor
+       row, so it is deliberately not repeated as an "overview" child. -->
+  <template class="surface-nav-source"
+            data-nav-root-label="ASK"
+            data-nav-root-href="https://a-s-k.studio/">
+    <ul class="surface-nav-local">
+      <li data-surface-nav-current></li>
+      <li><a href="../patterns/index.html">pattern previews</a></li>
+    </ul>
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    </p>
+  </template>
 
   </div>
 
@@ -412,5 +434,6 @@
   paint();
 </script>
 <script src="../styleguide-theme-control.js"></script>
+<script src="../patterns/surface-shell/surface-shell.js"></script>
 </body>
 </html>

@@ -44,22 +44,36 @@ const SHELLS = [
   // as the FLOW pair above: one canonical shell, two deterministic generated views.
   { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html',  flavor: 'default-ASK' },
   { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-AA-compliant.html', flavor: 'AA-compliant' },
-  // The surface-shell specimen. Unlike the diagram and artifact templates this one carries no engine and
-  // no data — the canonical markup IS the pattern — so the generic path rewrite is the whole transform.
+  // The surface-shell specimen. It carries no diagram engine and no data — the canonical markup IS the
+  // pattern — but it is no longer script-free: the OPTIONAL navigation runtime rides along with it, and
+  // `surface-shell.js` resolves through the ordinary bare pattern-local branch because it lives in the
+  // pattern directory. What does NOT is `surface-action.css`, which lives at the design-system ROOT; it
+  // is declared in rootRefs below rather than routed through `_dsa-tokens/`, because that folder means
+  // the token and font mirror and a visual module does not belong in it.
   // The gallery page CONSUMES this same pattern for its own chrome; previewing it here is the separate
   // catalog relationship, not that consumption. See CONSUMERS.md.
-  { src: 'surface-shell/surface-shell.template.html',              dir: 'surface-shell',              out: 'surface-shell.html' },
+  { src: 'surface-shell/surface-shell.template.html',              dir: 'surface-shell',              out: 'surface-shell.html',
+    rootRefs: ['surface-action.css'] },
 ];
 
 // Rewrite a src/href value from the canonical shell's perspective (patterns/<dir>/)
 // to the preview's perspective (patterns/_preview/).
-function rewriteRef(val, dir) {
+//
+// A canonical template is written from the CONSUMER's perspective: a vendored module sits beside the
+// template, so it is referenced by bare filename. That is right downstream and wrong here, where the
+// module is not beside the pattern but at the design-system root. Rather than teach the template about
+// this repository's layout — or overload `_dsa-tokens/`, which means the token and font mirror — each
+// spec DECLARES which of its bare references are root modules, and only the owner-preview transform
+// learns where they live. rootRefs is checked before the bare pattern-local branch, so a pattern-local
+// sibling and a root module can share the same reference shape in the template.
+function rewriteRef(val, spec) {
   if (/^(https?:|data:|#|mailto:)/.test(val)) return val;         // external / anchor — leave
   if (val.startsWith('./_dsa-tokens/')) return '../../' + val.slice('./_dsa-tokens/'.length); // DS-root tokens/fonts
   if (val.startsWith('_dsa-tokens/'))   return '../../' + val.slice('_dsa-tokens/'.length);
   if (val.startsWith('../') || val.startsWith('/')) return val;   // already relative-up / absolute — leave
+  if (spec.rootRefs && spec.rootRefs.includes(val)) return `../../${val}`;  // declared DS-root module
   // bare pattern-local file (no slash) → reference the canonical pattern dir
-  if (!val.includes('/')) return `../${dir}/${val}`;
+  if (!val.includes('/')) return `../${spec.dir}/${val}`;
   return val;
 }
 
@@ -144,7 +158,7 @@ function replaceOnce(html, re, replacement, what, out) {
 // reading the canonical source), so `--check` can compute the expected set in memory.
 function render(s) {
   let html = fs.readFileSync(path.join(PATTERNS, s.src), 'utf8');
-  html = html.replace(/\b(href|src)="([^"]*)"/g, (m, attr, val) => `${attr}="${rewriteRef(val, s.dir)}"`);
+  html = html.replace(/\b(href|src)="([^"]*)"/g, (m, attr, val) => `${attr}="${rewriteRef(val, s)}"`);
   html = html.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${MARKER(s.out, s.dir)}\n<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/${s.dir}/">\n${THEME_INIT}`);
   // Preview-only initial-view tuning: inject right after the shared fit contract loads, before
   // the engine's render()/fit() runs. Owner-preview-only; changes no canonical file.
