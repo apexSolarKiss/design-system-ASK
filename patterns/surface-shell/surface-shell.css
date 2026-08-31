@@ -186,6 +186,16 @@ button.surface-mark:focus-visible {
   outline: none;
   box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
+/* Focus returns to this trigger after every close, which is right. Painting a
+   keyboard indicator for a TOUCH is not: iOS Safari matches :focus-visible on
+   programmatic focus whatever began the interaction, so a tap-to-close left the
+   mark wearing a bright white ring. The driver sets this attribute only when the
+   close came from a pointer, and removes it on the trigger's blur or the next
+   keypress — so a hardware keyboard on a phone or tablet keeps its indicator,
+   which a coarse-pointer media query would have taken away. */
+button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
+  box-shadow: none;
+}
 
 /* Optional per-mode pairing. It must track EVERY dark path the foundation
    defines, or a consumer gets dark tokens under a light mark. As of

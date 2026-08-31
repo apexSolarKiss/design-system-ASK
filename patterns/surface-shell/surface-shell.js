@@ -467,6 +467,32 @@
      is the primary guard; the generation is the backstop for a callback already
      dequeued and running when the close arrives, which cancelAnimationFrame
      cannot reach. */
+  /* INPUT MODALITY. Returning focus to the invoker is correct and stays; what
+     is wrong is painting a keyboard indicator for a touch. iOS Safari treats
+     programmatic focus as :focus-visible regardless of how the interaction
+     began, so a tap-to-close leaves the trigger wearing the white ring.
+
+     Tracked by MODALITY rather than by breakpoint or pointer media, because a
+     hardware keyboard on an iPad is the case a coarse-pointer query would
+     silently break. Capture phase, so it is recorded before any handler that
+     might close the panel. */
+  var lastModality = 'key';
+  doc.addEventListener('pointerdown', function () { lastModality = 'pointer'; }, true);
+  doc.addEventListener('keydown', function () {
+    lastModality = 'key';
+    /* any keyboard use restores the visible treatment immediately */
+    clearPointerFocus();
+  }, true);
+
+  function setPointerFocus(on) {
+    [trigger, seatBtn].forEach(function (el) {
+      if (!el) return;
+      if (on) el.setAttribute('data-surface-nav-pointer-focus', '');
+      else el.removeAttribute('data-surface-nav-pointer-focus');
+    });
+  }
+  function clearPointerFocus() { setPointerFocus(false); }
+
   var openGen = 0, rafA = null, rafB = null;
 
   function cancelOpeningFrames() {
@@ -511,6 +537,12 @@
        locked, aria-expanded already false. The page looks normal and ignores
        every interaction for most of half a second. */
     var hadEntered = panel.classList.contains('is-open');
+    /* Stamp the modality HERE, at close initiation, and never inside the focus
+       path. Focus return is an accessibility behavior and this is a purely
+       presentational suppression, so the two are kept physically separate: the
+       stylesheet keys on the attribute, whichever trigger the existing
+       restoreFocus() lands on, and restoreFocus() itself is untouched. */
+    setPointerFocus(lastModality === 'pointer');
     openGen++;                 /* invalidate any opening callback already running */
     cancelOpeningFrames();     /* and drop the ones still queued */
     panel.classList.remove('is-open');
@@ -551,6 +583,7 @@
   function toggle(e) { isOpen ? closePanel() : openPanel(e.currentTarget); }
   trigger.addEventListener('click', toggle);
   seatBtn.addEventListener('click', toggle);
+
   closeBtn.addEventListener('click', closePanel);
 
   /* Escape routes through the motion-completing path rather than the UA's
