@@ -155,11 +155,10 @@ has somewhere to go:
 
 Never invent a destination to make a segment interactive.
 
-The example below is design-system-ASK's own topology, in which `apexSolarKiss`
-is an organization name with no page of its own and therefore stays static. A
-consumer whose organization segment *is* a real home — `ASK` resolving to the
-ASK front door, say — links that segment instead. Both are conformant; the
-difference is topology, not class:
+The generic form below leaves `[org]` static, because a placeholder organization
+has no destination to link to. That is the *placeholder's* topology, not a
+default — an organization segment is static only while it genuinely has nowhere
+to go:
 
 ```html
 <nav class="surface-breadcrumb" aria-label="Breadcrumb">
@@ -172,6 +171,23 @@ difference is topology, not class:
   </h1>
 </nav>
 ```
+
+**design-system-ASK's own surfaces are the linked case**, and they are worth
+reading against the generic form above. `apexSolarKiss` has a real public parent,
+so it links to it:
+
+```html
+<a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a>
+<span class="sep" aria-hidden="true">//</span>
+<a href="../index.html">design-system-ASK</a>
+<span class="sep" aria-hidden="true">//</span>
+<span class="page" aria-current="page">style guide</span>
+```
+
+The public IA parent is the destination, not the code host: a GitHub
+organization is a **utility** destination and belongs in the navigation panel,
+never in the breadcrumb's ancestry. Both forms are conformant, and the
+difference is topology rather than class.
 
 The `nav` wraps the title only — never the mark, never the lede. `nav` inside
 `<h1>` would be invalid, since a heading takes phrasing content; wrapping is the

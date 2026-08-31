@@ -116,9 +116,10 @@
            Linkability is decided by DESTINATION, not by segment class: link a
            segment that is a real ancestor or home, leave a segment with no
            destination of its own static, and never invent a destination to make
-           a breadcrumb. [org] is static in THIS example because the example's
-           organization has no page; a consumer whose org segment is its own home
-           links it instead.
+           a breadcrumb. [org] is static HERE only because a placeholder has no
+           destination — that is the placeholder's topology, not a default. A
+           consumer whose organization segment has a real public parent links it,
+           as design-system-ASK's own surfaces do.
            Every structural separator is `//`, never a single slash, and each is a
            decorative <span class="sep" aria-hidden="true">. -->
       <h1 class="surface-title"><span class="org">[org]</span> <span class="sep" aria-hidden="true">//</span> [repo]</h1>

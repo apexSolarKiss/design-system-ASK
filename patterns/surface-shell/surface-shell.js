@@ -454,9 +454,31 @@
     if (target && !target.disabled) target.focus();
   }
 
+  /* The entrance is deferred by two frames — the first commits the closed
+     transform, the second animates from it — and a deferred effect that nobody
+     can cancel is a race. Dismissing before the second frame lands (Escape, the
+     close control, an outside tap, a rotation) removes a class that is not there
+     yet, and the queued callback then adds it AFTER the close began: the panel
+     travels inward on a dismissed dialog, `finish` closes it with `is-open` still
+     attached, and the next opening either appears already open or skips its
+     entrance entirely.
+
+     Both frames are therefore tracked AND stamped with a generation. Cancelling
+     is the primary guard; the generation is the backstop for a callback already
+     dequeued and running when the close arrives, which cancelAnimationFrame
+     cannot reach. */
+  var openGen = 0, rafA = null, rafB = null;
+
+  function cancelOpeningFrames() {
+    if (rafA !== null) { cancelAnimationFrame(rafA); rafA = null; }
+    if (rafB !== null) { cancelAnimationFrame(rafB); rafB = null; }
+  }
+
   function openPanel(invoker) {
     if (isOpen) return;
     isOpen = true;
+    cancelOpeningFrames();
+    var gen = ++openGen;
     lastInvoker = invoker || visibleTrigger();
     lockPageScroll();
     if (typeof panel.showModal === 'function') panel.showModal();
@@ -464,9 +486,15 @@
     setExpanded(true);
     var first = panel.querySelector('a[href], button:not([disabled])');
     if (first) first.focus();
-    /* two frames: the first commits the closed transform, the second animates */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { panel.classList.add('is-open'); });
+    rafA = requestAnimationFrame(function () {
+      rafA = null;
+      if (gen !== openGen || !isOpen) return;
+      rafB = requestAnimationFrame(function () {
+        rafB = null;
+        if (gen !== openGen || !isOpen) return;
+        if (!(panel.open || panel.hasAttribute('open'))) return;
+        panel.classList.add('is-open');
+      });
     });
   }
 
@@ -474,6 +502,8 @@
   function closePanel() {
     if (!isOpen) return;
     isOpen = false;
+    openGen++;                 /* invalidate any opening callback already running */
+    cancelOpeningFrames();     /* and drop the ones still queued */
     panel.classList.remove('is-open');
     setExpanded(false);
 
@@ -484,6 +514,7 @@
        overlay transition — is what the correctness depends on. */
     function finish() {
       if (!panel.open && !panel.hasAttribute('open')) return;
+      panel.classList.remove('is-open');   /* defensive: a frame may have landed */
       panel.removeEventListener('transitionend', onEnd);
       if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
       if (typeof panel.close === 'function' && panel.open) panel.close();
