@@ -313,7 +313,12 @@
      and always non-deterministically. Rewrite the clone's ids and every
      internal reference to them before it enters the document. */
   uniquifyIds(seatBtn, '-surface-nav-seat');
-  seat.appendChild(fade); seat.appendChild(shield); seat.appendChild(seatBtn);
+  /* The fade is a SIBLING of the seat, and deliberately so: it has to stand
+     outside the seat's transform, or its gradient no longer matches the
+     page's. The seat keeps what actually travels — the hit shield and the
+     seated mark. surface-shell.css carries the reasoning. */
+  seat.appendChild(shield); seat.appendChild(seatBtn);
+  doc.body.appendChild(fade);
   doc.body.appendChild(seat);
 
   root.setAttribute('data-surface-nav', 'ready');
