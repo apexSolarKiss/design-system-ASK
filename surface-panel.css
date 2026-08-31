@@ -116,10 +116,23 @@
 
 /* A panel that is ITSELF a link. Only this form gets interaction, and it takes
    the repo README's hover/press/focus contract verbatim so every consumer
-   inherits it rather than re-deriving it. Hover spends both approved limbs:
-   the opacity drop, plus a real --line-2 -> --line-1 border brightening. No
-   hue shift — the two line roles are the same translucent value at different
-   strengths, so this brightens rather than recolors.
+   inherits it rather than re-deriving it. Hover spends both approved limbs: the
+   opacity drop, plus the border resolving to the panel's OWN GOVERNED
+   FOREGROUND — the same hover mechanism a compact action uses, and the same one
+   the foundation's generic anchor already uses on its border-bottom.
+
+   It previously brightened --line-2 to --line-1, two strengths of one
+   translucent value. That is a real change and it read as almost none: on the
+   light gradient a faint white line brightening slightly, under a simultaneous
+   opacity drop, is a response a reader can look straight past. Resolving to
+   currentColor is what makes the panel answer at the scale it occupies.
+
+   SAME MECHANISM IS NOT THE SAME COLOR. currentColor here is --fg-1, the
+   panel's own governed foreground, while a --secondary compact action resolves
+   to --fg-2. The panel's hover border is therefore stronger than a secondary
+   button's, which is correct: one mechanism, two role priorities. Demoting the
+   panel to the quieter foreground to match a button pixel-for-pixel would be
+   matching the wrong thing.
 
    An inert panel gets none of this. A panel containing its own links is inert
    HERE and its links carry their own affordances; nesting a link inside a
@@ -140,7 +153,7 @@ a.surface-panel {
     transform var(--dur-1) var(--ease-out),
     box-shadow var(--dur-2) var(--ease-out);
 }
-a.surface-panel:hover { opacity: 0.92; border-color: var(--line-1); }
+a.surface-panel:hover { opacity: 0.92; border-color: currentColor; }
 a.surface-panel:active { transform: scale(0.97); }
 a.surface-panel:focus-visible {
   outline: none;
