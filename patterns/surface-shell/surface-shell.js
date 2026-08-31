@@ -502,6 +502,15 @@
   function closePanel() {
     if (!isOpen) return;
     isOpen = false;
+    /* Whether an EXIT is even possible has to be read BEFORE the class is
+       removed. If the entrance never landed — a synchronous dismissal, or one
+       between the two opening frames — the transform never left its closed
+       value, so no transform transition can run and there is nothing to wait
+       for. Waiting anyway leaves the dialog open in the top layer for the
+       fallback duration: parked off-screen, background inert, page scroll
+       locked, aria-expanded already false. The page looks normal and ignores
+       every interaction for most of half a second. */
+    var hadEntered = panel.classList.contains('is-open');
     openGen++;                 /* invalidate any opening callback already running */
     cancelOpeningFrames();     /* and drop the ones still queued */
     panel.classList.remove('is-open');
@@ -526,7 +535,8 @@
     }
     function onEnd(e) { if (e.target === panel && e.propertyName === 'transform') finish(); }
 
-    if (REDUCED()) { finish(); return; }
+    /* Nothing to animate: reduced motion, or an entrance that never arrived. */
+    if (REDUCED() || !hadEntered) { finish(); return; }
     panel.addEventListener('transitionend', onEnd);
     var cs = getComputedStyle(panel);
     var durs = (cs.transitionDuration || '0s').split(',').map(parseFloat);

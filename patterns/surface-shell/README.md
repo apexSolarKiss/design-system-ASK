@@ -61,8 +61,14 @@ questions:
 
 | Also vendor | When |
 | --- | --- |
-| `surface-action.css` (repo root) | The surface renders **footer destinations** — they are compact actions — or the navigation panel's utility controls. |
+| `surface-action.css` (repo root) | The surface renders **footer destinations**, **or** adopts navigation. |
 | `surface-shell.js` (this directory) | The surface **adopts navigation**. A declining surface ships no copy. |
+
+**Navigation requires `surface-action.css` on its own**, whether or not the surface has
+a footer to style. The panel's **close control is mandatory** and is a compact action —
+the runtime builds it for every adopter — while the utility row is optional. A surface
+that adopts navigation, has no footer destinations, omits the utility row, and follows
+these instructions to the letter would otherwise ship an unstyled mandatory button.
 
 `surface-action.css` sits beside the vendored shell, referenced by bare filename,
 exactly as the template does. It is **not** a `_dsa-tokens/` file: that mirror is
@@ -503,10 +509,12 @@ of this pattern and is not vendored with it.
 ## Responsive navigation
 
 **Optional.** A surface adopts it by authoring one navigation source and loading
-`surface-shell.js`. A surface that does neither renders exactly as before: no
-panel, no trigger, no terminal reserve, no scroll padding, no scrollbar gutter.
-None of the navigation CSS engages, because all of it is gated on a state
-attribute only the runtime sets.
+`surface-shell.js` **and `surface-action.css`** — the panel's close control is
+mandatory and is a compact action, so the module is required by navigation
+itself and not only by a footer. A surface that adopts none of it renders
+exactly as before: no panel, no trigger, no terminal reserve, no scroll
+padding, no scrollbar gutter. None of the navigation CSS engages, because all
+of it is gated on a state attribute only the runtime sets.
 
 ### What the breadcrumb is for, and what it is not
 
