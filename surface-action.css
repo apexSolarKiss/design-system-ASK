@@ -98,14 +98,25 @@
    control for its context gets a matching hover border for free.
 
    This ALIGNS compact actions with the foundation's generic-anchor treatment,
-   which already hovers to `border-bottom-color: currentColor`. It is not an
-   exception carved out of a line-role norm — the line-role cases are the ones
-   that are specific, and they are named: FULL-PANEL LINKS (a.surface-panel)
-   take the --line-2 -> --line-1 brightening, and WRAPPING BREADCRUMB LINKS
-   (.surface-title a) take their own underline treatment. The IDENTITY MARK
-   changes opacity only and leaves its border alone. And ORDINARY INLINE TEXT
-   LINKS, excluded below, have their own owner — surface-text-link.css. Do not
-   conform any of them to this rule, or this rule to them.
+   which already hovers to `border-bottom-color: currentColor`. THREE GOVERNED
+   POPULATIONS now share that hover mechanism — generic anchors, compact
+   actions, and FULL-PANEL LINKS (a.surface-panel) — while keeping different
+   ANATOMY and different foreground priority:
+
+     generic anchor      a text-edge border, resolving to its inherited color
+     compact action      the complete pill border, --fg-1 or --fg-2 on
+                         --secondary
+     full-panel link     the complete panel border, --fg-1
+
+   Sharing the mechanism is not sharing the paint, and it is not a claim about
+   every bordered thing that might later become interactive. It names these
+   three and no others.
+
+   The remaining roles are governed elsewhere and are NOT conformed to this
+   rule: WRAPPING BREADCRUMB LINKS (.surface-title a) and the navigation
+   panel's hierarchy rows take the shell's magenta underline; ORDINARY INLINE
+   TEXT LINKS, excluded below, have their own owner — surface-text-link.css;
+   and the IDENTITY MARK changes opacity only, leaving its border alone.
 
    THE SHELL FOOTER IS NOT AMONG THEM ANY MORE. It used to carry its own unboxed
    terminal-link treatment; a footer destination is now a compact action, so it
