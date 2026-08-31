@@ -558,12 +558,12 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   --surface-nav-p: 0;
   --surface-nav-settle: 0px;                /* desktop, 64 -> 40 over 24px */
 
-  /* The fade mask's TILE HEIGHT: the 48px ramp plus the full travel depth. The
-     tile is STATIC — its size and its color stops never mention p — so the
-     handoff moves a cached mask by offset instead of regenerating a gradient
-     image on every frame. Tall enough that its opaque remainder always reaches
-     the viewport bottom at every p, and no taller. */
-  --surface-nav-fade-tile: calc(var(--surface-nav-fade) + var(--surface-nav-depth));
+  /* The fade's LEADING EDGE, in the mask's own coordinate space. The 100% here
+     resolves against the mask positioning area of .surface-nav-fade, which is
+     the viewport box — so this is only meaningful where it is used, and it is
+     used in exactly one place. Declared here anyway so the two mask-image
+     declarations that consume it cannot drift apart. */
+  --surface-nav-fade-edge: calc(100% - var(--surface-nav-p) * var(--surface-nav-depth));
 
   /* The gutter is reserved only where navigation exists, so a declining surface
      never acquires permanent geometry from merely loading this file. It keeps
@@ -641,55 +641,29 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    it too, and matching the mechanism is what makes the parity survive the
    engines where lvh, dvh and the fixed-position containing block disagree.
    Reconstructing the box with 100dvh would be a second opinion about the
-   viewport, and a second opinion is exactly what a seam is.
-
-   The element is the BAND, not the viewport. `background-attachment: fixed`
-   gives it the viewport as its background POSITIONING AREA whatever its own
-   size, so the paint is identical to a full-viewport layer while the composited
-   surface is the ~192px strip that is actually capable of showing anything.
-   Everything above the band was permanently mask-transparent in the
-   full-viewport form, so nothing is lost — and, decisively, the band lets the
-   mask offset be a PURE LENGTH from this element's own top edge. Expressing it
-   against a full-viewport box would require naming the viewport height in CSS,
-   which is the second opinion the paragraph above rejects.
-
-   STATIC TILE, MOVED BY OFFSET. The mask is one cached 48px ramp over a solid
-   remainder; p appears only in `mask-position`. Its predecessor interpolated
-   two color stops into `mask-image` on every frame, so each frame regenerated
-   the gradient image before compositing it. Same ramp, same travel, same
-   edge — at p=1 the ramp still starts exactly at the seated unit's top edge.
-
-   ONE MEASURED COST, recorded so it is not rediscovered as a bug. A POSITIONED
-   mask image snaps its origin to a whole device pixel; interpolated gradient
-   stops did not. So the ramp's interior alpha sits up to ~1/255 below the
-   sub-pixel-exact curve, and the edge quantizes to a device pixel as p sweeps
-   rather than sliding continuously. Measured at DPR 1, that is a uniform
-   0.0045 alpha; the ramp's first and last rows, its depth, its travel and the
-   opaque region are all unchanged, and pixel parity against the canvas is
-   unaffected because in the parity case the fade paints the colour already
-   underneath it — at which point the alpha does not matter at all. */
+   viewport, and a second opinion is exactly what a seam is. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-fade {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: var(--surface-nav-fade-tile);
+  inset: 0;
   z-index: 39;                      /* beneath the seat's shield and trigger */
   pointer-events: none;
   background-image: var(--bg-gradient);
   background-attachment: fixed;
 
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade));
-          mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade));
-  -webkit-mask-size: 100% var(--surface-nav-fade-tile);
-          mask-size: 100% var(--surface-nav-fade-tile);
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  /* p=0 puts the ramp's top on this element's bottom edge (nothing showing);
-     p=1 puts it --surface-nav-fade below the element top, which is exactly
-     (viewport bottom - depth). */
-  -webkit-mask-position: 0 calc(var(--surface-nav-fade)
-                                + (1 - var(--surface-nav-p)) * var(--surface-nav-depth));
-          mask-position: 0 calc(var(--surface-nav-fade)
-                                + (1 - var(--surface-nav-p)) * var(--surface-nav-depth));
+  /* The same 48px ramp as before, relocated into viewport coordinates: the
+     boundary travels with p while the paint underneath stands still. At p=1
+     the ramp starts at (100% - depth), which is exactly where the seated
+     unit's top edge is, so no geometry changes. */
+  -webkit-mask-image: linear-gradient(to bottom,
+                        transparent 0,
+                        transparent var(--surface-nav-fade-edge),
+                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
+                        #000 100%);
+          mask-image: linear-gradient(to bottom,
+                        transparent 0,
+                        transparent var(--surface-nav-fade-edge),
+                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
+                        #000 100%);
 }
 /* Hit shield over exactly the region where the fade is OPAQUE, and no further:
    mask transparency does not affect hit-testing, so shielding the whole unit
