@@ -551,6 +551,15 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
                             + var(--surface-nav-gap) + var(--surface-nav-fade));
   --surface-nav-reserve: calc(var(--surface-nav-depth) + var(--surface-nav-footer-clear));
 
+  /* viewport top -> BOTTOM OF THE RESTING DESKTOP MARK. Measured from the mark's
+     RESTING offset, not its settled one: the mark settles UPWARD by
+     --surface-nav-settle, so the resting position is the lowest it ever sits and
+     an opaque zone measured there covers it at every settle value — which is why
+     the desktop shield needs no per-frame geometry. --surface-nav-mark-block is
+     the driver's measurement of the same upgraded trigger the mobile placement
+     measures, so a consumer's own mark proportions govern here too. */
+  --surface-nav-top-depth: calc(var(--space-8) + var(--surface-nav-mark-block));
+
   /* handoff progress 0..1, written by the driver from the OPENING mark's actual
      viewport exit — never from a percentage of the document, because the
      terminal reserve changes the document's height and a percentage would
@@ -602,8 +611,64 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 :root[data-surface-nav-mode="desktop"] .surface[data-surface-nav="ready"] .surface-head {
   padding-top: calc(var(--surface-nav-mark-block) + var(--space-5));
 }
-:root[data-surface-nav-mode="desktop"] .surface-nav-seat,
-:root[data-surface-nav-mode="desktop"] .surface-nav-fade { display: none; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-seat { display: none; }
+
+/* ---------- Desktop: the same fade carrier, shielding the persistent mark ----
+   The mark is fixed chrome, so payload content scrolling beneath it painted
+   THROUGH it — the mark read as floating in front of the page rather than as
+   part of its chrome. The mobile seated mark never had that problem because it
+   has always carried a fade; this is the same contract at the other edge, on
+   the same DOM carrier, with the geometry mirrored.
+
+   The mobile field is a moving mask over a stationary paint. This one does not
+   move at all: the opaque zone is measured from the mark's RESTING offset,
+   which is the lowest it ever sits, so the settle travels entirely inside a band
+   that was already opaque. No p, no per-frame mask, nothing to pulse during the
+   64px -> 40px settlement.
+
+   THE RAMP ENDS EXACTLY WHERE CONTENT BEGINS, and that is what sets its depth
+   rather than a taste decision. In this mode .surface-head takes
+   `padding-top: mark-block + --space-5`, so the first payload pixel sits one
+   --surface-nav-gap below the resting mark's bottom edge. Ramping over that gap
+   puts the fade at zero opacity precisely where the title starts: at the top of
+   the page nothing is attenuated, and the band is invisible because it paints
+   the page's own gradient over the page's own padding. A deeper ramp would look
+   softer and would tint the title at scroll top. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-fade {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: calc(var(--surface-nav-top-depth) + var(--surface-nav-gap));
+  z-index: 39;                      /* beneath the mark, above the payload */
+  pointer-events: none;
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+
+  -webkit-mask-image: linear-gradient(to bottom,
+                        #000 0,
+                        #000 var(--surface-nav-top-depth),
+                        transparent 100%);
+          mask-image: linear-gradient(to bottom,
+                        #000 0,
+                        #000 var(--surface-nav-top-depth),
+                        transparent 100%);
+}
+/* Hit shield over exactly the OPAQUE zone, and no further — the same rule the
+   mobile shield follows, for the same reason: a mask changes what is painted and
+   nothing about what is hit, so content scrolled fully out of sight under the
+   mark would otherwise still take a click. It stops at the ramp rather than at
+   the element's edge, because a band that still shows its content must still let
+   that content be used. A pseudo-element rather than a second authored node: the
+   mobile shield is a child of the seat, which this mode hides, and reaching into
+   the driver to re-parent it would disturb the seated unit to save one bounded
+   desktop carrier. Wheel and trackpad scrolling are unaffected — this intercepts
+   pointer activation, not scrolling. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-fade::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: var(--surface-nav-top-depth);
+  pointer-events: auto;
+}
 
 /* ---------- Mobile: the opening mark leaves, a seated unit arrives ----------
    The fade's EDGE and the mark travel as one, so content is always cleared

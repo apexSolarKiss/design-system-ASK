@@ -585,6 +585,45 @@ unruled veil alters the composition. And the dialog stays **open and in the top
 layer for the whole exit**, with `close()` called on completion, so the motion is
 never cut short.
 
+### The mark is chrome, so the page fades behind it
+
+A fixed mark that payload content scrolls *through* reads as floating in front of
+the page rather than as part of its chrome. Both placements therefore carry a
+gradient fade, on **one** DOM carrier — `.surface-nav-fade`, a body-level sibling
+— with mode-specific geometry:
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| edge | top | bottom |
+| protects | the persistent top-left mark | the seated lower-right mark |
+| opaque zone | viewport top to the mark's **resting** bottom | the seated unit |
+| ramp | `--surface-nav-gap`, ending exactly where payload content begins | `--surface-nav-fade`, 48px |
+| motion | none — the mask is static | the mask edge travels with `--surface-nav-p` |
+
+Both paint `var(--bg-gradient)` with `background-attachment: fixed`, which is what
+makes the fade indistinguishable from the page rather than a panel over it. The
+attachment is load-bearing and fragile in one specific way: **an ancestor with a
+`transform` collapses the background positioning area from the viewport to the
+element's own box**, and because the gradient is 45°, its axis length and endpoint
+colours are functions of that box's diagonal — so the fade becomes a *different*
+gradient, not a shifted one, and reads as a hard rectangle. That is why the fade is
+a sibling of the transformed mobile seat rather than a child of it.
+
+The desktop opaque zone is measured from the mark's **resting** offset, which is
+the lowest it ever sits; the 64px → 40px settle therefore travels entirely inside a
+band that was already opaque, and the shield needs no per-frame geometry. Its ramp
+depth is not a taste decision: `.surface-head` takes
+`padding-top: --surface-nav-mark-block + --space-5` in this mode, so ramping over
+that same gap puts the fade at zero opacity exactly where the title starts. At the
+top of the page nothing is attenuated and the band is invisible, because it paints
+the page's own gradient over the page's own padding.
+
+**A mask changes what is painted and nothing about what is hit.** Each placement
+therefore carries a shield over exactly its *opaque* region and no further, so
+content scrolled out of sight cannot still take a click while content that is
+merely dimmed stays usable. Scrolling is unaffected — the shields intercept
+pointer activation, not wheel or trackpad movement.
+
 ### Two authored sources, and why
 
 A breadcrumb cannot supply siblings it does not contain, so the one-source rule
