@@ -700,20 +700,37 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    mismatch. README.md already warns a consuming surface off the same failure
    by its other route, a re-stated `background` shorthand.
 
-   So the field claims the viewport by the SAME MECHANISM the canvas does,
-   rather than by reconstructing viewport dimensions in CSS. colors_and_type.css
-   binds `html, body` with `background-attachment: fixed`; this element declares
-   it too, and matching the mechanism is what makes the parity survive the
-   engines where lvh, dvh and the fixed-position containing block disagree.
-   Reconstructing the box with 100dvh would be a second opinion about the
-   viewport, and a second opinion is exactly what a seam is. */
+   THE ATTACHMENT CLAIM IS FALSIFIED, and the correction is recorded here
+   rather than quietly dropped. This element used to declare
+   `background-attachment: fixed` to claim the viewport by the same mechanism
+   the canvas uses, on the reasoning that matching the mechanism would keep the
+   two gradients in step. Real iPhone Safari says otherwise: with that
+   declaration the field goes stale during upward scrolling and holds a wrong
+   gradient state long enough to read as a block over the page. Same declaration
+   did NOT produce synchronized compositing between the root canvas and a fixed
+   overlay, so `matching the mechanism` was never a sufficient condition — only
+   an untested one.
+
+   The declaration is therefore GONE, and the element uses the initial `scroll`
+   value. That is safe here for a reason specific to this element: it is already
+   `position: fixed; inset: 0`, so its own padding box IS the viewport box, and
+   a 45deg gradient painted into it has the same axis length and endpoint colors
+   as one painted into the viewport. The original seam came from painting the
+   gradient inside the seat's 144px TRANSFORMED box, not from the absence of
+   fixed attachment.
+
+   THE RESIDUAL RISK IS NAMED, because this trades one viewport opinion for
+   another. The canvas still resolves its gradient against the fixed-position
+   background area; this element now resolves its own against its fixed box. On
+   an engine where those two disagree — iOS while the browser chrome collapses
+   is the candidate — a seam could reappear at exactly that moment. That case is
+   a device gate, not a headless one. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-fade {
   position: fixed;
   inset: 0;
   z-index: 39;                      /* beneath the seat's shield and trigger */
   pointer-events: none;
   background-image: var(--bg-gradient);
-  background-attachment: fixed;
 
   /* The same 48px ramp as before, relocated into viewport coordinates: the
      boundary travels with p while the paint underneath stands still. At p=1
