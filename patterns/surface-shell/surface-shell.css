@@ -223,7 +223,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 /* The structural identity line, on the STRUCTURAL-LOCATOR role: mono, Body
    size, light weight, tight tracking. Mono belongs to this role rather than to
    the whole primary-label family, and it belongs to BOTH title forms — the
-   root-level plain heading and the breadcrumbed subpage title alike, since both
+   plain heading and the breadcrumbed title alike, since both
    carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
    Inter on the same size, weight and tracking.
 
@@ -261,8 +261,19 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
-.surface-title .org { color: var(--fg-2); }   /* owning organization */
-.surface-title .page { color: var(--fg-3); }  /* payload name within the surface family */
+/* The two classes do not share a scope. .org is the outer owning / public-root
+   context and is valid in BOTH title forms — static owning context in a plain
+   title, the outermost ancestry segment in a breadcrumb. .page is the inert
+   CURRENT LEAF inside a breadcrumb path only, at any depth there: a family root
+   that is the page you are on takes it exactly as a deeper current page does. An
+   unclassed segment carries no class and keeps the strongest foreground — the
+   local surface label in a plain title, an intermediate ancestor in a breadcrumb.
+
+   Currentness and linkability are separate axes: a current leaf is unlinked
+   BECAUSE it is current, which is never a reason to omit .page, and ordinary
+   static context may lack an href without becoming .page. */
+.surface-title .org { color: var(--fg-2); }   /* outer owning context, EITHER form */
+.surface-title .page { color: var(--fg-3); }  /* current leaf, BREADCRUMB paths only */
 
 /* Breadcrumb grammar. Every structural separator is `//` — never a single
    slash — and the separator is a decorative span, so the glyph is uniform while

@@ -131,8 +131,8 @@ alone left only **2px** between the underline and the next line's glyphs at 320 
 375 / 390 / 414 in both themes — clear, and visibly cramped on device. `1.16` adds
 0.96px per line at 24px. It is the **structural locator's own metric**, not a
 foundation token, and nothing else inherits it. **The family is this role's own**, and it
-covers **both** title variants below: the root-level plain heading and the
-breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
+covers **both** title variants below: the plain heading and the breadcrumbed
+title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
 label (`.surface-panel-title`) takes Inter on the same size, weight and
 tracking — but on its own `--lh-heading` (1.12) leading — whatever the panel is
@@ -143,21 +143,35 @@ an H-step; being a title is why it does not sit on the supporting step its own
 lede occupies. The pair
 separates on size — 24 against 18 — not on weight.
 
-**Root-level surface — a plain heading.** A surface that is the root of its own
-family takes a bare `<h1 class="surface-title">` and no navigation landmark: the
-title names the surface itself rather than a position inside it, so there is no
-current-page segment and no within-family ancestor to navigate to.
+**The test is ancestry, not local rootedness.** Every page shows its complete,
+real, navigable public ancestry, from the public family root down to itself:
 
-That test is **within the surface family**, and the distinction is load-bearing.
-An `.org` segment may still link outward to a broader public parent — a studio
-route above a project's own root, say — without making the surface a subpage of
-its own family. One outward link does not turn a root title into a breadcrumb,
-and wrapping it in a `nav` on that basis would announce a hierarchy the surface
-does not have. The design-system's own root page is exactly this case: its
-`apexSolarKiss` segment links out, and its title stays plain.
+| condition | treatment |
+| --- | --- |
+| no real navigable public ancestor at any level | plain `<h1 class="surface-title">`, no landmark |
+| one or more real public ancestors, inside the local family or above it | the same `<h1>` wrapped in a breadcrumb landmark |
 
-**Subpage — a breadcrumbed title.** Where a navigable ancestor exists, wrap the
-same `<h1>` in a breadcrumb landmark. Linkability is decided by **destination,
+A **real** ancestor is one with a public destination a reader can actually reach.
+An ancestor that exists only as a concept, or whose page is not public, is not
+one, and inventing a destination to manufacture a segment is the failure this
+rule guards against — not the absence of one.
+
+The distinction is deliberately **not** "inside this surface's own family". A
+project root with a genuine public parent above it — a studio route above a
+project, an organization above a studio — *has* ancestry, and hiding it makes
+the same surface announce a different depth depending on which family happens to
+own it. A reader crossing between two of a studio's projects should meet one
+hierarchy, not two dialects of one.
+
+> **This supersedes an earlier rule.** Before this change the pattern said a
+> root-level surface kept a plain title even when its `.org` segment linked
+> outward, on the reasoning that one outward link does not make a surface a
+> subpage *of its own family*. That is true and no longer the test: the crumb
+> describes public ancestry, and a real public parent is ancestry. The
+> design-system's own root page was the named example, and it is now a
+> breadcrumb.
+
+**A breadcrumbed title.** Linkability is decided by **destination,
 not by segment class** — the class names what a segment *is*, never whether it
 has somewhere to go:
 
@@ -166,6 +180,40 @@ has somewhere to go:
 | a real ancestor or home destination | linked |
 | structural context with no destination of its own | static |
 | the current segment | unlinked, with `aria-current="page"` |
+
+The classes say nothing about what kind of thing a segment names, and **they do
+not share a scope** — one is available to both title forms and one is not:
+
+| class | plain title | breadcrumbed title |
+| --- | --- | --- |
+| `.org` | the static owning context | the outermost ancestry segment |
+| *(none)* | the local current surface label | an intermediate ancestor |
+| `.page` | — | the inert current leaf, **at any depth in the path** |
+
+`.org` is **valid in both forms**, which is why the generic plain specimen
+carries `<span class="org">[org]</span>`. Only `.page` and the intermediate
+reading of an unclassed segment belong to a breadcrumb path, because only a path
+has depth to grade.
+
+`.page` is the *current* segment, not a "payload" one. A family root that is the
+page you are on takes it, exactly as a deep subpage does — which is why the
+design-system's own front door carries
+`<span class="page" aria-current="page">design-system-ASK</span>`. There is no
+root-page exception, because an exception is precisely what would reintroduce
+two grammars.
+
+**Currentness and linkability are different axes, and the table above grades only
+the first.** A current leaf carries no `href` *because* it is current — that is a
+consequence of being current, never the reason it takes `.page`. Never omit
+`.page` from a breadcrumb leaf on the ground that it has no destination, and
+never promote ordinary static context to `.page` merely because it also lacks
+one.
+
+**A plain title's local label is unclassed because the plain form carries no
+breadcrumb path** — not because classes are unavailable to it, and not because
+the label has no destination. That is a distinction between the two *title
+forms*, and it is not a licence to leave a breadcrumbed family root's leaf
+bare.
 
 Never invent a destination to make a segment interactive.
 
@@ -187,16 +235,29 @@ to go:
 ```
 
 **design-system-ASK's own surfaces are the linked case**, and they are worth
-reading against the generic form above. `apexSolarKiss` has a real public parent,
-so it links to it:
+reading against the generic form above. Every ancestor above them is real and
+public, so every one of them appears:
 
 ```html
-<a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a>
+<a class="org" href="https://a-s-k.studio/">ASK</a>
+<span class="sep" aria-hidden="true">//</span>
+<a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a>
 <span class="sep" aria-hidden="true">//</span>
 <a href="../index.html">design-system-ASK</a>
 <span class="sep" aria-hidden="true">//</span>
 <span class="page" aria-current="page">style guide</span>
 ```
+
+Two details there are consumer topology rather than pattern rule, and a
+different consumer will resolve them differently. The **human-facing brand name**
+is the label — `apex solar kiss`, not the `apexSolarKiss` GitHub handle, because
+a breadcrumb names a place a reader goes rather than a repository namespace. And
+**within this breadcrumb path the segment classes grade depth**: `.org` on the
+outermost ancestor, `.page` on the inert current leaf, nothing on the segments
+between. That grading is what lets a four-segment chain still read as one object
+rather than four equal words. A plain title has no path to grade, so it has no
+intermediate tier and no `.page` — it still carries `.org` for its owning
+context.
 
 The public IA parent is the destination, not the code host: a GitHub
 organization is a **utility** destination and belongs in the navigation panel,
@@ -722,17 +783,36 @@ cleared by different events, and sharing one would let each clear the other's.
 keyboard input; focus returns to the mark, and the ring is what tells a keyboard
 user where it landed. Removing it would make focus restoration invisible.
 
-### Two authored sources, and why
+### One path source, plus what a path cannot contain
 
-A breadcrumb cannot supply siblings it does not contain, so the one-source rule
-narrows rather than breaks:
+The visible structural title owns the **complete current public path** — every
+real navigable ancestor and the inert current leaf. A breadcrumb cannot supply
+siblings it does not contain, so the remaining sources are strictly *off-path*:
 
 | Source | Authored | Used for |
 | --- | --- | --- |
 | the header breadcrumb | once, visibly | the panel's vertical **current path**, derived — never restated |
-| `data-nav-root-*` on the source | once, as configuration | the root row above the crumb, which the mark's own context already implies |
-| `.surface-nav-local` | once, optionally | **sibling or child** destinations the crumb cannot contain |
+| `.surface-nav-local` | once, optionally | **sibling or child** destinations the path cannot contain |
 | `.surface-nav-utilities` | once, optionally | repository and other external routes |
+
+**No public ancestor is repeated in source configuration.** A segment that
+belongs to the current path belongs in the visible title, where a reader can see
+it — not in an attribute that only the panel reads.
+
+> **`data-nav-root-*` is legacy runtime compatibility, not current authoring.**
+> It predates the ancestry rule, when the public root was configured *above* the
+> crumb instead of appearing *inside* it. The runtime still honours it so that
+> already-landed consumers are not broken by taking a newer `surface-shell.js`,
+> and it is **retained for that reason alone**.
+>
+> Do not author it on a new surface. Authoring it alongside a visible root
+> produces the exact defect the one-path rule exists to prevent — the runtime
+> prepends the configured root and then appends the visible chain, so `ASK`
+> appears twice in the panel. A configured legacy root must never name a segment
+> the structural title already shows.
+>
+> Removal is a later cleanup unit, gated on the propagation census reaching zero
+> live use — not on this document.
 
 **The current page is never authored twice.** `data-surface-nav-current` is an
 inert **position marker**: you say where the current location sits among its
@@ -742,9 +822,9 @@ the panel an independent current-page source that can drift from the visible
 title, which is exactly what the one-authored-path rule exists to prevent.
 
 ```html
-<!-- SIBLING form: this surface sits among its siblings -->
-<template class="surface-nav-source"
-          data-nav-root-label="ASK" data-nav-root-href="https://example.org/">
+<!-- SIBLING form: this surface sits among its siblings. The template carries no
+     root configuration — the public ancestry is already in the visible title. -->
+<template class="surface-nav-source">
   <ul class="surface-nav-local">
     <li><a href="…">a sibling</a></li>
     <li data-surface-nav-current></li>
@@ -757,7 +837,9 @@ title, which is exactly what the one-authored-path rule exists to prevent.
 
 ```html
 <!-- PARENT form: this surface is the root of its own family, and the local
-     destinations are its children rather than its siblings -->
+     destinations are its children rather than its siblings. Being a family root
+     says nothing about ancestry: this surface may still have public ancestors
+     above it, and if it does they are in its visible title. -->
 <ul class="surface-nav-local">
   <li data-surface-nav-current>
     <ul>
