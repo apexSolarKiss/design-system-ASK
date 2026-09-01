@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>surface-nav bottom treatment // A/B</title>
+<style>
+  html { background: #201D26; color: #D4C6E1; font: 300 18px/1.5 ui-sans-serif, system-ui, sans-serif; }
+  body { margin: 0; padding: 12vh 6vw; }
+  h1 { font: 300 24px/1.16 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -0.02em; margin: 0 0 8px; }
+  p { color: #BFB3D4; max-width: 46ch; }
+  ul { list-style: none; padding: 0; margin: 40px 0 0; }
+  li { margin: 0 0 20px; }
+  a { display: inline-block; color: #D4C6E1; text-decoration-color: rgba(255,0,255,0.5);
+      text-underline-offset: 0.22em; font: 300 24px/1.16 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  a:hover { text-decoration-color: #FF00FF; }
+  small { display: block; color: #8B79A2; font-size: 15px; margin-top: 4px;
+          font-family: ui-sans-serif, system-ui, sans-serif; letter-spacing: 0; }
+</style>
+<h1>surface-nav // mobile bottom treatment</h1>
+<p>Open each as a top-level page, not in a frame. Safari's toolbar, overscroll and
+fixed-layer behaviour differ inside a frame, and those are the behaviours under test.</p>
+<ul>
+  <li><a href="../surface-nav-bottom-treatment-a-gradient/">A // gradient fade</a>
+      <small>Matches the page gradient. Intermittent delayed repaint scrolling up on iPhone Safari.</small></li>
+  <li><a href="../surface-nav-bottom-treatment-b-glass/">B // glass shelf</a>
+      <small>No repaint lag, stable in both directions. Permanently more visible; can reduce contrast.</small></li>
+</ul>
+<p><small>Both carry the same two further candidates: structural title at 1.16, and the light
+Safari under-page edge at lavender rather than white. Prototype evidence — not owner truth.</small></p>
