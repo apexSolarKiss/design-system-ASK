@@ -122,8 +122,13 @@
            optional .page span carries the payload name within the surface family.
            The specimen below is the two-segment root form, so it omits .page. -->
       <!-- STRUCTURAL TITLE. Two variants — README.md §The structural title.
-           ROOT-LEVEL surface: a plain <h1>, no navigation landmark, because there is
-           no navigable ancestor to put in one. Shown here.
+           The test is PUBLIC ANCESTRY, not local rootedness. Show the complete,
+           real, navigable public ancestry from the public family root down to
+           this surface.
+           PLAIN <h1>, no navigation landmark — shown here — only where there is
+           no real navigable public ancestor AT ANY LEVEL. Being the root of your
+           own family is not enough: a genuine public parent above that family
+           (a studio route above a project, say) IS ancestry and takes a crumb.
            BREADCRUMBED subpage: wrap this <h1> in
            <nav class="surface-breadcrumb" aria-label="Breadcrumb"> and mark the
            current segment <span class="page" aria-current="page">.
@@ -133,7 +138,8 @@
            a breadcrumb. [org] is static HERE only because a placeholder has no
            destination — that is the placeholder's topology, not a default. A
            consumer whose organization segment has a real public parent links it,
-           as design-system-ASK's own surfaces do.
+           as design-system-ASK's own surfaces do. Label a segment with the
+           human-facing name of the place it goes, not a repository namespace.
            Every structural separator is `//`, never a single slash, and each is a
            decorative <span class="sep" aria-hidden="true">. -->
       <h1 class="surface-title"><span class="org">[org]</span> <span class="sep" aria-hidden="true">//</span> [repo]</h1>

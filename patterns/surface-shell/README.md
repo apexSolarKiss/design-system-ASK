@@ -143,21 +143,35 @@ an H-step; being a title is why it does not sit on the supporting step its own
 lede occupies. The pair
 separates on size — 24 against 18 — not on weight.
 
-**Root-level surface — a plain heading.** A surface that is the root of its own
-family takes a bare `<h1 class="surface-title">` and no navigation landmark: the
-title names the surface itself rather than a position inside it, so there is no
-current-page segment and no within-family ancestor to navigate to.
+**The test is ancestry, not local rootedness.** Every page shows its complete,
+real, navigable public ancestry, from the public family root down to itself:
 
-That test is **within the surface family**, and the distinction is load-bearing.
-An `.org` segment may still link outward to a broader public parent — a studio
-route above a project's own root, say — without making the surface a subpage of
-its own family. One outward link does not turn a root title into a breadcrumb,
-and wrapping it in a `nav` on that basis would announce a hierarchy the surface
-does not have. The design-system's own root page is exactly this case: its
-`apexSolarKiss` segment links out, and its title stays plain.
+| condition | treatment |
+| --- | --- |
+| no real navigable public ancestor at any level | plain `<h1 class="surface-title">`, no landmark |
+| one or more real public ancestors, inside the local family or above it | the same `<h1>` wrapped in a breadcrumb landmark |
 
-**Subpage — a breadcrumbed title.** Where a navigable ancestor exists, wrap the
-same `<h1>` in a breadcrumb landmark. Linkability is decided by **destination,
+A **real** ancestor is one with a public destination a reader can actually reach.
+An ancestor that exists only as a concept, or whose page is not public, is not
+one, and inventing a destination to manufacture a segment is the failure this
+rule guards against — not the absence of one.
+
+The distinction is deliberately **not** "inside this surface's own family". A
+project root with a genuine public parent above it — a studio route above a
+project, an organization above a studio — *has* ancestry, and hiding it makes
+the same surface announce a different depth depending on which family happens to
+own it. A reader crossing between two of a studio's projects should meet one
+hierarchy, not two dialects of one.
+
+> **This supersedes an earlier rule.** Until PR #132 this pattern said a
+> root-level surface kept a plain title even when its `.org` segment linked
+> outward, on the reasoning that one outward link does not make a surface a
+> subpage *of its own family*. That is true and no longer the test: the crumb
+> describes public ancestry, and a real public parent is ancestry. The
+> design-system's own root page was the named example, and it is now a
+> breadcrumb.
+
+**A breadcrumbed title.** Linkability is decided by **destination,
 not by segment class** — the class names what a segment *is*, never whether it
 has somewhere to go:
 
@@ -187,16 +201,26 @@ to go:
 ```
 
 **design-system-ASK's own surfaces are the linked case**, and they are worth
-reading against the generic form above. `apexSolarKiss` has a real public parent,
-so it links to it:
+reading against the generic form above. Every ancestor above them is real and
+public, so every one of them appears:
 
 ```html
-<a class="org" href="https://a-s-k.studio/apex-solar-kiss">apexSolarKiss</a>
+<a class="org" href="https://a-s-k.studio/">ASK</a>
+<span class="sep" aria-hidden="true">//</span>
+<a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a>
 <span class="sep" aria-hidden="true">//</span>
 <a href="../index.html">design-system-ASK</a>
 <span class="sep" aria-hidden="true">//</span>
 <span class="page" aria-current="page">style guide</span>
 ```
+
+Two details there are consumer topology rather than pattern rule, and a
+different consumer will resolve them differently. The **human-facing brand name**
+is the label — `apex solar kiss`, not the `apexSolarKiss` GitHub handle, because
+a breadcrumb names a place a reader goes rather than a repository namespace. And
+the **segment classes grade depth**: `.org` on the outermost ancestor, `.page` on
+the inert current leaf, nothing on the segments between. That grading is what
+lets a four-segment chain still read as one object rather than four equal words.
 
 The public IA parent is the destination, not the code host: a GitHub
 organization is a **utility** destination and belongs in the navigation panel,
