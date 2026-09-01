@@ -119,17 +119,25 @@ primary-label object, and a consuming home page's panel titles resolve to
 exactly them, so a reader moving between surfaces meets one thing rather than
 two dialects.
 
-**Leading is the one declaration that divides.** The root-level plain title and
-`.surface-panel-title` both stay on `--lh-heading` (1.12); the **breadcrumb**
-form alone takes a pattern-local `1.35`, because it wraps and its fragments need
-clearance the single-line label forms never do. Size, weight, tracking and family
-are unchanged by that exception. **The family is this role's own**, and it
+**Both title forms share one leading; the panel label does not.** The root-level
+plain title and the breadcrumb form both sit on **1.16**. `.surface-panel-title`
+keeps `--lh-heading` (1.12) — it is a single-line label in a different
+implementation, and the adjustment was earned by a condition it does not have.
+
+`1.16` is where two measurements meet. The breadcrumb's old pattern-local `1.35`
+was measured against an underline that was a *border*, and survived the change to a
+text decoration by inertia; re-measured it is visibly loose. But `--lh-heading`
+alone left only **2px** between the underline and the next line's glyphs at 320 /
+375 / 390 / 414 in both themes — clear, and visibly cramped on device. `1.16` adds
+0.96px per line at 24px. It is the **structural locator's own metric**, not a
+foundation token, and nothing else inherits it. **The family is this role's own**, and it
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
-label (`.surface-panel-title`) takes Inter on the identical metric, whatever
-the panel is called. The allocation is per selector, never read off an
-instance's copy. Shared metric, different family, deliberately — do not conform
+label (`.surface-panel-title`) takes Inter on the same size, weight and
+tracking — but on its own `--lh-heading` (1.12) leading — whatever the panel is
+called. The allocation is per selector, never read off an instance's copy. Same
+core, different family and different leading, deliberately — do not conform
 either to the other. Being a locator is why the title sits on Body rather than
 an H-step; being a title is why it does not sit on the supporting step its own
 lede occupies. The pair
@@ -584,6 +592,135 @@ the bound protects. `::backdrop` is made **transparent** by declaration, so no
 unruled veil alters the composition. And the dialog stays **open and in the top
 layer for the whole exit**, with `close()` called on completion, so the motion is
 never cut short.
+
+### The mark is chrome, so the page fades behind it
+
+A fixed mark that payload content scrolls *through* reads as floating in front of
+the page rather than as part of its chrome. Both placements therefore carry a
+gradient fade, on **one** DOM carrier — `.surface-nav-fade`, a body-level sibling
+— with mode-specific geometry:
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| edge | top | bottom |
+| protects | the persistent top-left mark | the seated lower-right mark |
+| opaque zone | viewport top to the mark's **resting** bottom | the seated unit |
+| ramp | `--surface-nav-gap`, ending exactly where payload content begins | `--surface-nav-fade`, 48px |
+| motion | none — the mask is static | the mask edge travels with `--surface-nav-p` |
+
+Both paint `var(--bg-gradient)` with `background-attachment: fixed`, which is what
+makes a settled frame's fade indistinguishable from the page rather than a panel
+over it. That parity is spatial and is the contract; one real-device timing
+residual is recorded below. The attachment is load-bearing and fragile in one
+specific way: **an ancestor with a `transform` collapses the background
+positioning area from the viewport to the element's own box**, and because the
+gradient is 45°, its axis length and endpoint colours are functions of that box's
+diagonal — so the fade becomes a *different* gradient, not a shifted one, and
+reads as a hard rectangle. That is why the fade is a sibling of the transformed
+mobile seat rather than a child of it.
+
+The desktop opaque zone is measured from the mark's **resting** offset, which is
+the lowest it ever sits; the 64px → 40px settle therefore travels entirely inside a
+band that was already opaque, and the shield needs no per-frame geometry. Its ramp
+depth is not a taste decision: `.surface-head` takes
+`padding-top: --surface-nav-mark-block + --space-5` in this mode, so ramping over
+that same gap puts the fade at zero opacity exactly where the title starts. At the
+top of the page nothing is attenuated and the band is invisible, because it paints
+the page's own gradient over the page's own padding.
+
+**A mask changes what is painted and nothing about what is hit.** Each placement
+therefore carries a shield over exactly its *opaque* region and no further, so
+content scrolled out of sight cannot still take a click while content that is
+merely dimmed stays usable. Scrolling is unaffected — the shields intercept
+pointer activation, not wheel or trackpad movement.
+
+#### Known iOS Safari limitation
+
+On real iPhone Safari, the mobile fade may **intermittently keep painting a stale
+gradient after fast upward inertial scrolling**, so a seam becomes briefly visible
+between the fade and the page behind it. Scrolling a small further amount normally
+repaints it. The effect has not reproduced in a desktop browser's device
+emulation, and **no root cause has been established** — it is not a claim about
+the progress value, the mask, or WebKit's compositing of a fixed-attachment
+background.
+
+Settled-frame spatial parity remains the contract. **Temporal pixel parity during
+iOS inertial scrolling is not claimed.**
+
+The limitation is **accepted and non-blocking**. It is a property of painting the
+page's own gradient twice, and the alternative that removes it entirely — a
+blurred glass shelf, which is not a copy of the page — was rejected because it is
+permanently visible and reduces the readability of content passing beneath it. The
+gradient fade is invisible when correct; ASK selected it knowing this residual.
+
+Reproduction evidence, the full experiment inventory, and the criteria a remedy
+would have to satisfy live in [issue #133](https://github.com/apexSolarKiss/design-system-ASK/issues/133),
+which is open to external investigation. Nothing further is authorized here.
+
+### Where the close control sits, and why it differs by mode
+
+The control is the same button in both modes — same class, semantics, label and
+focus treatment. Only its corner differs, because the two panels enter from
+opposite edges:
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| panel enters from | the top | the bottom |
+| close sits at | the drawer's **lower** right | the sheet's **upper** right |
+| reason | the corner furthest from the edge it came from, and nearest the reader | the corner nearest the thumb |
+
+On desktop the control sits **in an ordinary layout row**, not out of flow. The
+first attempt did pin it absolutely to the drawer's lower-right and padded the
+scroller to keep content out from under it; that produced two defects with one
+cause. It shared no layout with the repository utility, so the two could not be
+aligned to each other, and the padding protecting content from a floating button
+became empty depth the drawer had no content to fill. Both disappear once the
+control is simply *in* the layout.
+
+`display: contents` on `.surface-nav-head` is what allows that without touching
+the DOM. The head's own box is dropped, so the hierarchy, the utilities and the
+close all become grid items of `.surface-nav-panel-inner` directly, and the
+desktop override arranges them as a scrolling hierarchy above one shared bottom
+row: hierarchy across the upper row, repository utilities lower-left, close
+lower-right. The two footer items align to a common bottom edge because they are
+siblings in one row that both end-align inside it — not because either is
+positioned against the panel.
+
+**The scroller moves from the inner element to the hierarchy.** That is what lets
+a short drawer fit its content and a long one cap at the viewport, while the
+action row stays visible in both cases — the hierarchy alone scrolls, and the
+drawer carries no bottom padding compensating for a floating control, because
+there is no longer one to compensate for. Mobile is unchanged: the sheet's inner
+element scrolls, the close stays at its upper-right corner, and the padding it
+does carry is the safe-area inset rather than close-button clearance. **DOM order is unchanged in both modes**, so the tab order a
+keyboard user walks is the one the markup states; only the boxes move.
+
+### Focus is established the same way; only its *presentation* varies
+
+Opening the panel always moves focus to the first destination — a modal needs an
+internal focus destination, and that does not change with input modality. What
+varies is whether a **keyboard indicator** is painted:
+
+```text
+opened by pointer / touch   focus moves · keyboard ring suppressed
+opened by keyboard          focus moves · keyboard ring visible
+first keypress after a      suppression clears immediately, so a hardware
+  pointer open              keyboard gets its indicator the moment it is used
+Escape closes               focus returns to the invoking mark, visibly
+```
+
+iOS Safari matches `:focus-visible` on programmatic focus whatever began the
+interaction, so a tapped-open panel painted a white ring around the first row
+and implied a selection the user never made. The suppression is scoped to that
+one element by a bounded attribute and removes **only** `outline` and
+`box-shadow`: the row keeps its resting destination underline, its hover and
+active feedback, and its real focus. The trigger carries the equivalent
+treatment on the *return* path, under a separate attribute — the two states are
+cleared by different events, and sharing one would let each clear the other's.
+
+**The visible ring after `Escape` is correct and deliberate.** `Escape` is
+keyboard input; focus returns to the mark, and the ring is what tells a keyboard
+user where it landed. Removing it would make focus restoration invisible.
 
 ### Two authored sources, and why
 

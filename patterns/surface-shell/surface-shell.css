@@ -227,16 +227,25 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
    Inter on the same size, weight and tracking.
 
-   LINE-HEIGHT IS THE ONE DECLARATION THAT DIVIDES. The plain form and the panel
-   label both stay on --lh-heading (1.12); the BREADCRUMB form alone takes a
-   pattern-local 1.35, because a breadcrumb wraps and its fragments need
-   clearance the label forms never do. That is a bounded exception on one
-   declaration in one form, declared below on `.surface-breadcrumb
-   .surface-title`.
+   THE TWO TITLE FORMS SHARE ONE LEADING; THE PANEL LABEL DOES NOT. Both
+   .surface-title forms sit on 1.16. The panel label keeps --lh-heading (1.12),
+   because it is a single-line label in a different implementation and the
+   adjustment below was earned by a condition it does not have.
+
+   1.16 is where two measurements meet. The breadcrumb's old pattern-local 1.35
+   was measured against an underline that was a BORDER, and it survived the
+   change to a text decoration with its own offset and skip-ink behaviour by
+   inertia; re-measured, it is visibly loose. But --lh-heading alone left only
+   2px between the underline and the next line's glyphs at 320-414 in both
+   themes — clear, and visibly cramped on device. 1.16 adds 0.96px per line at
+   24px: enough to breathe, far short of 1.35.
+
+   That value is the STRUCTURAL LOCATOR's own metric, owned here. It is not a
+   foundation token and nothing else should inherit it.
 
    The family split is allocated per selector; it is never derived from what an
-   instance happens to say. Same size, weight and tracking; different family;
-   and one divided declaration — on purpose. Do not conform either to the other. A title is a locator rather than a display
+   instance happens to say. Same size, weight and tracking; different family,
+   and one deliberate leading difference. Do not conform either to the other. A title is a locator rather than a display
    heading, which is why it sits on Body and not on an H-step; it is still a
    title, which is why it does not sit on the supporting step its own lede
    occupies.
@@ -248,7 +257,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   font-family: var(--font-mono);
   font-size: var(--fs-body);
   font-weight: var(--fw-light);
-  line-height: var(--lh-heading);
+  line-height: 1.16;                /* the structural locator's own metric; see above */
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
@@ -265,13 +274,11 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    consuming surface's own topology. The separators are aria-hidden because the
    crumb structure is conveyed by the nav landmark, not by punctuation read
    aloud between every segment. */
-/* The breadcrumb's own leading. A plain title sets one line; a breadcrumb wraps
-   at a narrow column, and at --lh-heading its fragments crowd — the descenders
-   of one line meeting the next line's underline. 1.35 is the measured clearance,
-   scoped to the breadcrumb form alone so the plain title and the panel label
-   keep the shared 1.12 (see the metric note above). */
+/* No breadcrumb-specific leading. Both title forms inherit the explicit 1.16
+   structural-locator metric declared above on .surface-title, and the clearance
+   was re-measured rather than assumed — see the metric note. --lh-heading (1.12)
+   is the PANEL LABEL's metric; neither title form takes it. */
 .surface-breadcrumb { display: block; }
-.surface-breadcrumb .surface-title { line-height: 1.35; }
 .surface-title .sep { color: var(--fg-3); }
 /* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
    shell's one deliberate exception to the repo README's scale press. A scale
@@ -551,12 +558,28 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
                             + var(--surface-nav-gap) + var(--surface-nav-fade));
   --surface-nav-reserve: calc(var(--surface-nav-depth) + var(--surface-nav-footer-clear));
 
+  /* viewport top -> BOTTOM OF THE RESTING DESKTOP MARK. Measured from the mark's
+     RESTING offset, not its settled one: the mark settles UPWARD by
+     --surface-nav-settle, so the resting position is the lowest it ever sits and
+     an opaque zone measured there covers it at every settle value — which is why
+     the desktop shield needs no per-frame geometry. --surface-nav-mark-block is
+     the driver's measurement of the same upgraded trigger the mobile placement
+     measures, so a consumer's own mark proportions govern here too. */
+  --surface-nav-top-depth: calc(var(--space-8) + var(--surface-nav-mark-block));
+
   /* handoff progress 0..1, written by the driver from the OPENING mark's actual
      viewport exit — never from a percentage of the document, because the
      terminal reserve changes the document's height and a percentage would
      retime itself whenever the footer, the content or the browser chrome moved */
   --surface-nav-p: 0;
   --surface-nav-settle: 0px;                /* desktop, 64 -> 40 over 24px */
+
+  /* The fade's LEADING EDGE, in the mask's own coordinate space. The 100% here
+     resolves against the mask positioning area of .surface-nav-fade, which is
+     the viewport box — so this is only meaningful where it is used, and it is
+     used in exactly one place. Declared here anyway so the two mask-image
+     declarations that consume it cannot drift apart. */
+  --surface-nav-fade-edge: calc(100% - var(--surface-nav-p) * var(--surface-nav-depth));
 
   /* The gutter is reserved only where navigation exists, so a declining surface
      never acquires permanent geometry from merely loading this file. It keeps
@@ -597,10 +620,69 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 }
 :root[data-surface-nav-mode="desktop"] .surface-nav-seat { display: none; }
 
+/* ---------- Desktop: the same fade carrier, shielding the persistent mark ----
+   The mark is fixed chrome, so payload content scrolling beneath it painted
+   THROUGH it — the mark read as floating in front of the page rather than as
+   part of its chrome. The mobile seated mark never had that problem because it
+   has always carried a fade; this is the same contract at the other edge, on
+   the same DOM carrier, with the geometry mirrored.
+
+   The mobile field is a moving mask over a stationary paint. This one does not
+   move at all: the opaque zone is measured from the mark's RESTING offset,
+   which is the lowest it ever sits, so the settle travels entirely inside a band
+   that was already opaque. No p, no per-frame mask, nothing to pulse during the
+   64px -> 40px settlement.
+
+   THE RAMP ENDS EXACTLY WHERE CONTENT BEGINS, and that is what sets its depth
+   rather than a taste decision. In this mode .surface-head takes
+   `padding-top: mark-block + --space-5`, so the first payload pixel sits one
+   --surface-nav-gap below the resting mark's bottom edge. Ramping over that gap
+   puts the fade at zero opacity precisely where the title starts: at the top of
+   the page nothing is attenuated, and the band is invisible because it paints
+   the page's own gradient over the page's own padding. A deeper ramp would look
+   softer and would tint the title at scroll top. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-fade {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: calc(var(--surface-nav-top-depth) + var(--surface-nav-gap));
+  z-index: 39;                      /* beneath the mark, above the payload */
+  pointer-events: none;
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+
+  -webkit-mask-image: linear-gradient(to bottom,
+                        #000 0,
+                        #000 var(--surface-nav-top-depth),
+                        transparent 100%);
+          mask-image: linear-gradient(to bottom,
+                        #000 0,
+                        #000 var(--surface-nav-top-depth),
+                        transparent 100%);
+}
+/* Hit shield over exactly the OPAQUE zone, and no further — the same rule the
+   mobile shield follows, for the same reason: a mask changes what is painted and
+   nothing about what is hit, so content scrolled fully out of sight under the
+   mark would otherwise still take a click. It stops at the ramp rather than at
+   the element's edge, because a band that still shows its content must still let
+   that content be used. A pseudo-element rather than a second authored node: the
+   mobile shield is a child of the seat, which this mode hides, and reaching into
+   the driver to re-parent it would disturb the seated unit to save one bounded
+   desktop carrier. Wheel and trackpad scrolling are unaffected — this intercepts
+   pointer activation, not scrolling. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-fade::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: var(--surface-nav-top-depth);
+  pointer-events: auto;
+}
+
 /* ---------- Mobile: the opening mark leaves, a seated unit arrives ----------
-   The fade and the mark travel as ONE object, so content is always cleared
-   before it reaches the mark. Seated at p=1, entirely below the viewport at
-   p=0; the driver drives p from the opening mark's own rect. */
+   The fade's EDGE and the mark travel as one, so content is always cleared
+   before it reaches the mark — but the fade's paint does not travel with
+   them, and the separation is the point. See .surface-nav-fade below. Seated
+   at p=1, entirely below the viewport at p=0; the driver drives p from the
+   opening mark's own rect. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-seat {
   position: fixed;
   right: 0; bottom: 0; left: 0;
@@ -610,14 +692,69 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
   will-change: transform;
 }
+/* STATIONARY FIELD, MOVING MASK — and the fade is a SIBLING of the seat
+   rather than a child, which is the whole of it.
+
+   `background-attachment: fixed` gives an element the viewport as its
+   background positioning area, but only while no ancestor is transformed.
+   Inside the seat — whose transform is what moves the unit — the fixed
+   attachment degrades to `scroll` and the positioning area collapses to the
+   fade's own box, which is --surface-nav-depth tall: 144px on a 390x844
+   phone, against an 844px viewport. Because --bg-gradient is a 45deg gradient, its axis
+   length and endpoint colors are functions of that box's diagonal: the fade
+   was not a phase-shifted copy of the page's gradient, it was a different
+   gradient, which is why it read as a hard rectangle rather than a soft
+   mismatch. README.md already warns a consuming surface off the same failure
+   by its other route, a re-stated `background` shorthand.
+
+   So the field claims the viewport by the SAME MECHANISM the canvas does,
+   rather than by reconstructing viewport dimensions in CSS. colors_and_type.css
+   binds `html, body` with `background-attachment: fixed`; this element declares
+   it too, and matching the mechanism is what makes the parity survive the
+   engines where lvh, dvh and the fixed-position containing block disagree.
+   Reconstructing the box with 100dvh would be a second opinion about the
+   viewport, and a second opinion is exactly what a seam is. */
+/* KNOWN iOS SAFARI LIMITATION — accepted, not a defect awaiting a patch here.
+   After fast UPWARD inertial scrolling, this fixed-attachment gradient field may
+   keep painting a stale state on real iPhone Safari until a subsequent small
+   scroll repaints it. It is intermittent, it has not reproduced in desktop
+   device emulation, and NO ROOT CAUSE IS ESTABLISHED — in particular this is not
+   a claim about the progress value, the mask, or WebKit's compositing of a fixed
+   background. Settled-frame spatial parity holds; temporal pixel parity during
+   iOS inertial scrolling is not claimed.
+
+   The gradient treatment is retained BY RULING, not by omission: the alternative
+   that removes the behaviour entirely is a permanently visible glass shelf, and
+   it was rejected on readability.
+
+   Do not add forced-repaint ticks, epsilon nudges to p, scroll-direction
+   branches, or UA-specific behaviour here without real-iPhone A/B evidence — the
+   failure mode of every one of them is working on one device and one gesture.
+   See README.md "Known iOS Safari limitation" and issue #133. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-fade {
-  position: absolute; inset: 0 0 auto 0; height: 100%;
+  position: fixed;
+  inset: 0;
+  z-index: 39;                      /* beneath the seat's shield and trigger */
+  pointer-events: none;
   background-image: var(--bg-gradient);
   background-attachment: fixed;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
-          mask-image: linear-gradient(to bottom, transparent 0, #000 var(--surface-nav-fade), #000 100%);
-  pointer-events: none;
+
+  /* The same 48px ramp as before, relocated into viewport coordinates: the
+     boundary travels with p while the paint underneath stands still. At p=1
+     the ramp starts at (100% - depth), which is exactly where the seated
+     unit's top edge is, so no geometry changes. */
+  -webkit-mask-image: linear-gradient(to bottom,
+                        transparent 0,
+                        transparent var(--surface-nav-fade-edge),
+                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
+                        #000 100%);
+          mask-image: linear-gradient(to bottom,
+                        transparent 0,
+                        transparent var(--surface-nav-fade-edge),
+                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
+                        #000 100%);
 }
+
 /* Hit shield over exactly the region where the fade is OPAQUE, and no further:
    mask transparency does not affect hit-testing, so shielding the whole unit
    would block activation through a band that still looks clear. It intercepts
@@ -652,7 +789,8 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 
 :root[data-surface-nav-mode="mobile"] .surface[data-surface-nav-short] { padding-bottom: var(--space-10); }
 :root[data-surface-nav-short] { scroll-padding-bottom: 0; }
-:root[data-surface-nav-short] .surface-nav-seat { display: none; }
+:root[data-surface-nav-short] .surface-nav-seat,
+:root[data-surface-nav-short] .surface-nav-fade { display: none; }
 
 /* ---------- The panel ----------
    A native <dialog> opened with showModal(), so the background leaves the
@@ -689,7 +827,12 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    excess — putting the last hierarchy row, the last utility, or the close
    control out of reach on a long menu. That is the exact panel-overflow failure
    the bound exists to prevent. min-height:0 keeps it shrinkable inside the
-   dialog's own flex/blockformatting context rather than floored at its content. */
+   dialog's own flex/blockformatting context rather than floored at its content.
+
+   WHICH ELEMENT SCROLLS IS MODE-DEPENDENT. This is the mobile and default
+   behaviour: the inner element itself scrolls. The desktop override further
+   down moves the scroller to the hierarchy alone, so the action row stays put
+   while the tree scrolls behind it. */
 .surface-nav-panel-inner {
   box-sizing: border-box;
   max-height: 100dvh;
@@ -806,6 +949,29 @@ a.surface-nav-row:focus-visible {
   text-decoration: none;
 }
 
+/* Input modality, at the panel's ENTRANCE. The trigger already carries the
+   equivalent treatment on the RETURN path; this is the same browser behavior on
+   the way in, and it needs its own attribute rather than a second use of that
+   one, because the two states are cleared by different events and conflating
+   them would make each clear the other's.
+
+   Opening the panel moves focus to the first destination, which is correct and
+   stays — a modal needs an internal focus destination. What is wrong is
+   PAINTING a keyboard indicator for a touch: iOS Safari matches
+   :focus-visible on programmatic focus whatever began the interaction, so a
+   tapped-open panel showed a white ring around the first row and implied a
+   selection the user never made.
+
+   Only the keyboard indicator is suppressed. The row keeps its resting magenta
+   destination underline, its hover and active feedback, and its real focus —
+   the driver removes the attribute on the first keydown, on blur, and on close,
+   so a hardware keyboard on a phone or tablet gets the visible treatment the
+   moment it is used. */
+.surface-nav-panel [data-surface-nav-pointer-entry-focus]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .surface-nav-head {
   display: flex;
   align-items: flex-start;
@@ -813,6 +979,58 @@ a.surface-nav-row:focus-visible {
   gap: var(--space-4);
 }
 .surface-nav-utilities { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; }
+
+/* The close control sits with the hierarchy on MOBILE, where the sheet enters
+   from the bottom and its top-right corner is the corner nearest the thumb. On
+   DESKTOP the drawer enters from the top, so that same placement puts the
+   control at the edge the drawer came from — the least visible corner it has.
+
+   A FOOTER ROW, not an absolutely positioned button. The first attempt pinned
+   the close to the panel's lower-right and padded the scroller to keep content
+   out from under it. That put the control in the right corner and produced two
+   defects with one cause: it no longer shared a layout with the repository
+   utility, so the two could not align, and the padding that protected content
+   from an out-of-flow button became empty territory the drawer had no content
+   for. Both disappear once the control is simply IN the layout.
+
+   `display: contents` on the head is what makes that possible without touching
+   the DOM: the head's box is dropped, so the tree and the close become grid
+   items of the panel's own inner alongside the utilities, and the three can be
+   arranged as a scrolling hierarchy above one shared bottom row. DOM and
+   keyboard order are untouched — only the boxes change.
+
+   The scroller MOVES from the inner to the tree. That is what lets the drawer
+   fit its content when the hierarchy is short and cap at the viewport only when
+   it is long, while the action row stays put in both cases: `minmax(0, 1fr)`
+   takes content height in an auto-height container and yields to the max-height
+   bound when there is one. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-panel-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "tree  tree"
+    "utils close";
+  overflow: hidden;                 /* the hierarchy scrolls, not the panel */
+}
+/* Alignment belongs to the FOOTER ITEMS, never to the container. `align-items:
+   end` on the grid makes every item content-sized, which silently defeats the
+   scroller: the hierarchy stops stretching to its row, overflows it instead of
+   scrolling inside it, and the rows past the fold become unreachable rather
+   than scrollable. The tree keeps the default stretch so its box IS its row. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-utilities,
+:root[data-surface-nav-mode="desktop"] .surface-nav-close { align-self: end; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-head { display: contents; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-tree {
+  grid-area: tree;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;                    /* or the row refuses to shrink and scroll */
+}
+:root[data-surface-nav-mode="desktop"] .surface-nav-utilities { grid-area: utils; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-close { grid-area: close; }
+
+
 
 /* ---------- Background scroll lock ----------
    The durable contract is that the background's scroll position stays INVARIANT
