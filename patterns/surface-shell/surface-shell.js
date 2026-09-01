@@ -689,48 +689,6 @@
   }
 
   window.addEventListener('scroll', schedule, { passive: true });
-
-  /* FINAL-SETTLE RESYNC — one bounded test of a device observation.
-
-     ASK reports, repeatably: flick UPWARD, let momentum stop, and the fade can
-     stay in its previous colour state; waiting does not correct it; one tiny
-     further scroll corrects it immediately. Downward scrolling is correct at
-     any speed. That shape — corrected by any subsequent scroll, never by time —
-     says a final update is missing rather than that the geometry is wrong.
-
-     WHAT IS NOT YET KNOWN is which final update. Either `--surface-nav-p` never
-     received its terminal value, or it did and WebKit is holding a stale
-     composited paint. This resync distinguishes them: it runs the EXISTING
-     progress path once more after the scroll has definitively stopped, and
-     writeVar still suppresses a write when the value is unchanged. So if the
-     stale state clears, the progress value was the thing missing; if it does
-     not, the value was already right and the staleness is in the paint — which
-     is not something this driver should be chasing.
-
-     `scrollend` is the standardised signal that scrolling has finished; where
-     it is absent the same path runs off a short debounce on ordinary scroll
-     events. Feature-detected, not version-detected. Two frames of wait, because
-     the terminal scroll offset and the visual viewport both have to commit
-     before the read is worth anything. */
-  var settleTimer = null;
-  function finalSettle() {
-    if (!MOBILE()) return;          /* desktop has no travelling fade */
-    if (locked) return;             /* the modal owns the scroll position */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        if (!MOBILE() || locked) return;
-        frame();                    /* the existing path, once — no second formula */
-      });
-    });
-  }
-  if ('onscrollend' in window) {
-    window.addEventListener('scrollend', finalSettle);
-  } else {
-    window.addEventListener('scroll', function () {
-      if (settleTimer) clearTimeout(settleTimer);
-      settleTimer = setTimeout(function () { settleTimer = null; finalSettle(); }, 120);
-    }, { passive: true });
-  }
   window.addEventListener('resize', function () { onModeQueryChange(); remeasure(); });
   window.addEventListener('orientationchange', function () { onModeQueryChange(); remeasure(); });
   /* BFCache return restores the DOM but not the measurements: the viewport, the
