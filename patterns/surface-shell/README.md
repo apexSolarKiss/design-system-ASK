@@ -134,9 +134,10 @@ foundation token, and nothing else inherits it. **The family is this role's own*
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
-label (`.surface-panel-title`) takes Inter on the identical metric, whatever
-the panel is called. The allocation is per selector, never read off an
-instance's copy. Shared metric, different family, deliberately — do not conform
+label (`.surface-panel-title`) takes Inter on the same size, weight and
+tracking — but on its own `--lh-heading` (1.12) leading — whatever the panel is
+called. The allocation is per selector, never read off an instance's copy. Same
+core, different family and different leading, deliberately — do not conform
 either to the other. Being a locator is why the title sits on Body rather than
 an H-step; being a title is why it does not sit on the supporting step its own
 lede occupies. The pair
@@ -608,13 +609,15 @@ gradient fade, on **one** DOM carrier — `.surface-nav-fade`, a body-level sibl
 | motion | none — the mask is static | the mask edge travels with `--surface-nav-p` |
 
 Both paint `var(--bg-gradient)` with `background-attachment: fixed`, which is what
-makes the fade indistinguishable from the page rather than a panel over it. The
-attachment is load-bearing and fragile in one specific way: **an ancestor with a
-`transform` collapses the background positioning area from the viewport to the
-element's own box**, and because the gradient is 45°, its axis length and endpoint
-colours are functions of that box's diagonal — so the fade becomes a *different*
-gradient, not a shifted one, and reads as a hard rectangle. That is why the fade is
-a sibling of the transformed mobile seat rather than a child of it.
+makes a settled frame's fade indistinguishable from the page rather than a panel
+over it. That parity is spatial and is the contract; one real-device timing
+residual is recorded below. The attachment is load-bearing and fragile in one
+specific way: **an ancestor with a `transform` collapses the background
+positioning area from the viewport to the element's own box**, and because the
+gradient is 45°, its axis length and endpoint colours are functions of that box's
+diagonal — so the fade becomes a *different* gradient, not a shifted one, and
+reads as a hard rectangle. That is why the fade is a sibling of the transformed
+mobile seat rather than a child of it.
 
 The desktop opaque zone is measured from the mark's **resting** offset, which is
 the lowest it ever sits; the 64px → 40px settle therefore travels entirely inside a
@@ -631,6 +634,29 @@ content scrolled out of sight cannot still take a click while content that is
 merely dimmed stays usable. Scrolling is unaffected — the shields intercept
 pointer activation, not wheel or trackpad movement.
 
+#### Known iOS Safari limitation
+
+On real iPhone Safari, the mobile fade may **intermittently keep painting a stale
+gradient after fast upward inertial scrolling**, so a seam becomes briefly visible
+between the fade and the page behind it. Scrolling a small further amount normally
+repaints it. The effect has not reproduced in a desktop browser's device
+emulation, and **no root cause has been established** — it is not a claim about
+the progress value, the mask, or WebKit's compositing of a fixed-attachment
+background.
+
+Settled-frame spatial parity remains the contract. **Temporal pixel parity during
+iOS inertial scrolling is not claimed.**
+
+The limitation is **accepted and non-blocking**. It is a property of painting the
+page's own gradient twice, and the alternative that removes it entirely — a
+blurred glass shelf, which is not a copy of the page — was rejected because it is
+permanently visible and reduces the readability of content passing beneath it. The
+gradient fade is invisible when correct; ASK selected it knowing this residual.
+
+Reproduction evidence, the full experiment inventory, and the criteria a remedy
+would have to satisfy live in [issue #133](https://github.com/apexSolarKiss/design-system-ASK/issues/133),
+which is open to external investigation. Nothing further is authorized here.
+
 ### Where the close control sits, and why it differs by mode
 
 The control is the same button in both modes — same class, semantics, label and
@@ -643,13 +669,31 @@ opposite edges:
 | close sits at | the drawer's **lower** right | the sheet's **upper** right |
 | reason | the corner furthest from the edge it came from, and nearest the reader | the corner nearest the thumb |
 
-On desktop it is positioned against the **panel**, not laid out inside
-`.surface-nav-panel-inner` — which is the scroller. An in-flow control scrolls
-out of reach on a long hierarchy, and the one control that dismisses a modal
-must not be scrollable-away. Being out of flow it reserves nothing, so the
-scroller carries extra bottom padding to keep the last row and the utilities
-clear of it. **DOM order is unchanged in both modes**, so the tab order a
-keyboard user walks is the one the markup states; only the paint position moves.
+On desktop the control sits **in an ordinary layout row**, not out of flow. The
+first attempt did pin it absolutely to the drawer's lower-right and padded the
+scroller to keep content out from under it; that produced two defects with one
+cause. It shared no layout with the repository utility, so the two could not be
+aligned to each other, and the padding protecting content from a floating button
+became empty depth the drawer had no content to fill. Both disappear once the
+control is simply *in* the layout.
+
+`display: contents` on `.surface-nav-head` is what allows that without touching
+the DOM. The head's own box is dropped, so the hierarchy, the utilities and the
+close all become grid items of `.surface-nav-panel-inner` directly, and the
+desktop override arranges them as a scrolling hierarchy above one shared bottom
+row: hierarchy across the upper row, repository utilities lower-left, close
+lower-right. The two footer items align to a common bottom edge because they are
+siblings in one row that both end-align inside it — not because either is
+positioned against the panel.
+
+**The scroller moves from the inner element to the hierarchy.** That is what lets
+a short drawer fit its content and a long one cap at the viewport, while the
+action row stays visible in both cases — the hierarchy alone scrolls, and the
+drawer carries no bottom padding compensating for a floating control, because
+there is no longer one to compensate for. Mobile is unchanged: the sheet's inner
+element scrolls, the close stays at its upper-right corner, and the padding it
+does carry is the safe-area inset rather than close-button clearance. **DOM order is unchanged in both modes**, so the tab order a
+keyboard user walks is the one the markup states; only the boxes move.
 
 ### Focus is established the same way; only its *presentation* varies
 

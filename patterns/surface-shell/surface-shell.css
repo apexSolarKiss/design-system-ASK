@@ -274,9 +274,10 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    consuming surface's own topology. The separators are aria-hidden because the
    crumb structure is conveyed by the nav landmark, not by punctuation read
    aloud between every segment. */
-/* No breadcrumb-specific leading. The wrapped form inherits --lh-heading with
-   the plain form, and the clearance was re-measured rather than assumed — see
-   the metric note above. */
+/* No breadcrumb-specific leading. Both title forms inherit the explicit 1.16
+   structural-locator metric declared above on .surface-title, and the clearance
+   was re-measured rather than assumed — see the metric note. --lh-heading (1.12)
+   is the PANEL LABEL's metric; neither title form takes it. */
 .surface-breadcrumb { display: block; }
 .surface-title .sep { color: var(--fg-3); }
 /* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
@@ -713,6 +714,23 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    engines where lvh, dvh and the fixed-position containing block disagree.
    Reconstructing the box with 100dvh would be a second opinion about the
    viewport, and a second opinion is exactly what a seam is. */
+/* KNOWN iOS SAFARI LIMITATION — accepted, not a defect awaiting a patch here.
+   After fast UPWARD inertial scrolling, this fixed-attachment gradient field may
+   keep painting a stale state on real iPhone Safari until a subsequent small
+   scroll repaints it. It is intermittent, it has not reproduced in desktop
+   device emulation, and NO ROOT CAUSE IS ESTABLISHED — in particular this is not
+   a claim about the progress value, the mask, or WebKit's compositing of a fixed
+   background. Settled-frame spatial parity holds; temporal pixel parity during
+   iOS inertial scrolling is not claimed.
+
+   The gradient treatment is retained BY RULING, not by omission: the alternative
+   that removes the behaviour entirely is a permanently visible glass shelf, and
+   it was rejected on readability.
+
+   Do not add forced-repaint ticks, epsilon nudges to p, scroll-direction
+   branches, or UA-specific behaviour here without real-iPhone A/B evidence — the
+   failure mode of every one of them is working on one device and one gesture.
+   See README.md "Known iOS Safari limitation" and issue #133. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-fade {
   position: fixed;
   inset: 0;
@@ -809,7 +827,12 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    excess — putting the last hierarchy row, the last utility, or the close
    control out of reach on a long menu. That is the exact panel-overflow failure
    the bound exists to prevent. min-height:0 keeps it shrinkable inside the
-   dialog's own flex/blockformatting context rather than floored at its content. */
+   dialog's own flex/blockformatting context rather than floored at its content.
+
+   WHICH ELEMENT SCROLLS IS MODE-DEPENDENT. This is the mobile and default
+   behaviour: the inner element itself scrolls. The desktop override further
+   down moves the scroller to the hierarchy alone, so the action row stays put
+   while the tree scrolls behind it. */
 .surface-nav-panel-inner {
   box-sizing: border-box;
   max-height: 100dvh;
