@@ -251,7 +251,7 @@ The **24px primary label over 18px supporting copy** pair is a sanctioned distin
 | Body | Inter | 200 | 24 / 1.45 | 0 |
 | Small | Inter | 300 | 18 / 1.40 | 0 |
 | Caption | Inter | 400 | 14, UPPERCASE | 0.14em |
-| **Primary label — structural locator** | **JetBrains Mono** | **300** | **24 / 1.12 default**<br>breadcrumb form **1.35** | **-0.02em** |
+| **Primary label — structural locator** | **JetBrains Mono** | **300** | **24 / 1.12** | **-0.02em** |
 | **Primary label — panel** | **Inter** | **300** | **24 / 1.12** | **-0.02em** |
 | **Compact action** | **JetBrains Mono** | **300** | **14 / 1.20** | **0** |
 | Code / inline-code | JetBrains Mono | 300 | 0.9× host | 0 |
@@ -259,7 +259,7 @@ The **24px primary label over 18px supporting copy** pair is a sanctioned distin
 
 The **primary-label role** names a thing the system has — a surface, a route, a panel, a named primitive — rather than setting prose. Its **shared core** is 24 / 300 / -0.02em, on Body rather than an H-step because a label is a locator and not display type, and its **default leading** is 1.12. It has **two implementations**, and each owns its family through its **selector**.
 
-**One bounded pattern-local exception.** The `surface-shell` **breadcrumb** title takes `line-height: 1.35` in place of the default, because a breadcrumb wraps and its fragments need clearance the single-line label forms never do. Size, weight, tracking and family are unchanged, and the exception is scoped to `.surface-breadcrumb .surface-title` — the pattern's **root-level plain** title and `.surface-panel-title` both keep 1.12.
+**That exception is retired.** The `surface-shell` **breadcrumb** title used to take `line-height: 1.35` in place of the default, for wrapped-fragment clearance. It predated the current text-decoration anatomy, and re-measured against the anatomy that ships, the shared `--lh-heading` clears — so both title forms now share it. The retired scope was `.surface-breadcrumb .surface-title` — the pattern's **root-level plain** title and `.surface-panel-title` both keep 1.12.
 
 `.surface-title` in the `surface-shell` pattern is the **structural locator** and is mono. That covers **both** of the pattern's title forms — the root-level plain `<h1>` and the breadcrumbed subpage title — because both carry `.surface-title`; those two forms differ in landmark, linkability and leading, never in family. `.surface-panel-title` in `surface-panel.css` is the **panel primary label** and is Inter on the identical metric, and it stays Inter **whatever the label says** — a panel may name something technical or structural, and may carry `//` or any other terminalcore grammar, without changing family. Those two selectors are the canonical implementations; neither is conformed to the other, and the shared size, weight and tracking — with leading shared by the plain title and the panel label — is what still makes a primary label read as one object across surfaces. **No family is ever derived from a payload string.**
 

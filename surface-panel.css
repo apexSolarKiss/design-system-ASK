@@ -70,10 +70,11 @@
 
 /* The panel primary label — Inter, sharing the primary-label object's size,
    weight and tracking with surface-shell's structural title. LEADING is shared
-   with the shell's PLAIN title form only: this label and the plain title both
-   sit on --lh-heading, while the shell's BREADCRUMB form takes a pattern-local
-   1.35 for wrapped-fragment clearance. That exception is the shell's and does
-   not reach this label.
+   with BOTH of the shell's title forms: this label, the plain title and the
+   breadcrumb form all sit on --lh-heading. The shell's breadcrumb form used to
+   take a pattern-local 1.35 for wrapped-fragment clearance; that exception is
+   retired, so there is no longer a leading difference for this label to be
+   distinguished from.
 
    The FAMILY is where the two part, and it is owned by the SELECTOR, allocated
    per role: `.surface-panel-title` is Inter, the foundation's default interface
@@ -86,11 +87,9 @@
    may name something technical or structural, and may contain `//` or any
    other terminalcore grammar, and it stays Inter, because the selector owns
    the role. Nothing here licenses reading a payload string to pick a family.
-   Size, weight and tracking are shared across this label and BOTH shell-title
-   forms; this label and the PLAIN shell title additionally share 1.12 leading,
-   while the breadcrumb form alone takes 1.35. Those shared declarations are
-   what still make a primary label read
-   as one object across surfaces.
+   Size, weight, tracking AND leading are shared across this label and both
+   shell-title forms. Those shared declarations are what still make a primary
+   label read as one object across surfaces.
 
    Do not conform either implementation to the other. */
 .surface-panel-title {

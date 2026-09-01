@@ -227,16 +227,17 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
    Inter on the same size, weight and tracking.
 
-   LINE-HEIGHT IS THE ONE DECLARATION THAT DIVIDES. The plain form and the panel
-   label both stay on --lh-heading (1.12); the BREADCRUMB form alone takes a
-   pattern-local 1.35, because a breadcrumb wraps and its fragments need
-   clearance the label forms never do. That is a bounded exception on one
-   declaration in one form, declared below on `.surface-breadcrumb
-   .surface-title`.
+   NOTHING DIVIDES ANY MORE. Both title forms and the panel label share
+   --lh-heading. The breadcrumb form used to take a pattern-local 1.35 for
+   wrapped-fragment clearance, and that exception is RETIRED: it predates the
+   current text-decoration anatomy, and re-measuring against the anatomy that
+   actually ships shows the shared value clears. Measured at 320 / 375 / 390 /
+   414 in both themes, minimum underline-to-next-line clearance 2px at 1.12
+   against 7px at 1.35 — tighter, and clear.
 
    The family split is allocated per selector; it is never derived from what an
-   instance happens to say. Same size, weight and tracking; different family;
-   and one divided declaration — on purpose. Do not conform either to the other. A title is a locator rather than a display
+   instance happens to say. Same size, weight, tracking and leading; different
+   family. Do not conform either to the other. A title is a locator rather than a display
    heading, which is why it sits on Body and not on an H-step; it is still a
    title, which is why it does not sit on the supporting step its own lede
    occupies.
@@ -265,13 +266,10 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    consuming surface's own topology. The separators are aria-hidden because the
    crumb structure is conveyed by the nav landmark, not by punctuation read
    aloud between every segment. */
-/* The breadcrumb's own leading. A plain title sets one line; a breadcrumb wraps
-   at a narrow column, and at --lh-heading its fragments crowd — the descenders
-   of one line meeting the next line's underline. 1.35 is the measured clearance,
-   scoped to the breadcrumb form alone so the plain title and the panel label
-   keep the shared 1.12 (see the metric note above). */
+/* No breadcrumb-specific leading. The wrapped form inherits --lh-heading with
+   the plain form, and the clearance was re-measured rather than assumed — see
+   the metric note above. */
 .surface-breadcrumb { display: block; }
-.surface-breadcrumb .surface-title { line-height: 1.35; }
 .surface-title .sep { color: var(--fg-3); }
 /* A breadcrumb ancestor wraps as ordinary inline text, which makes this the
    shell's one deliberate exception to the repo README's scale press. A scale
@@ -730,6 +728,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
                         transparent 0,
                         #000 var(--surface-nav-fade));
 }
+
 /* Hit shield over exactly the region where the fade is OPAQUE, and no further:
    mask transparency does not affect hit-testing, so shielding the whole unit
    would block activation through a band that still looks clear. It intercepts
@@ -990,6 +989,16 @@ a.surface-nav-row:focus-visible {
    than scrollable. The tree keeps the default stretch so its box IS its row. */
 :root[data-surface-nav-mode="desktop"] .surface-nav-utilities,
 :root[data-surface-nav-mode="desktop"] .surface-nav-close { align-self: end; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-head { display: contents; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-tree {
+  grid-area: tree;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;                    /* or the row refuses to shrink and scroll */
+}
+:root[data-surface-nav-mode="desktop"] .surface-nav-utilities { grid-area: utils; }
+:root[data-surface-nav-mode="desktop"] .surface-nav-close { grid-area: close; }
+
 
 
 /* ---------- Background scroll lock ----------

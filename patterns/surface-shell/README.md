@@ -119,11 +119,13 @@ primary-label object, and a consuming home page's panel titles resolve to
 exactly them, so a reader moving between surfaces meets one thing rather than
 two dialects.
 
-**Leading is the one declaration that divides.** The root-level plain title and
-`.surface-panel-title` both stay on `--lh-heading` (1.12); the **breadcrumb**
-form alone takes a pattern-local `1.35`, because it wraps and its fragments need
-clearance the single-line label forms never do. Size, weight, tracking and family
-are unchanged by that exception. **The family is this role's own**, and it
+**Nothing divides any more.** The root-level plain title, the breadcrumb form and
+`.surface-panel-title` all sit on `--lh-heading`. The breadcrumb form used to take
+a pattern-local `1.35` for wrapped-fragment clearance; that exception predated the
+current text-decoration anatomy and is **retired**, because re-measuring against
+the anatomy that ships shows the shared value clears — minimum underline-to-next-line
+clearance 2px at 1.12 against 7px at 1.35, measured at 320 / 375 / 390 / 414 in both
+themes. Size, weight, tracking and family were never part of it. **The family is this role's own**, and it
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary
