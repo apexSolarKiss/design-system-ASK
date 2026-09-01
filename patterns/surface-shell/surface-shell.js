@@ -15,8 +15,9 @@
 
    WHAT IT BUILDS
      one panel      a native <dialog>, one content tree, two entrances
-     one hierarchy  derived from the single authored breadcrumb, plus the
-                    configured root and the optional authored local list
+     one hierarchy  derived from the single authored breadcrumb — which owns
+                    the COMPLETE current public path — plus the optional authored
+                    local list, and a legacy configured root where one survives
      two placements one authored mark, upgraded in place, plus a derived seated
                     instance for the mobile handoff
 
@@ -160,9 +161,11 @@
     return ol;
   }
 
-  /* Optional local destinations, authored once in the panel-nav source. A
+  /* Optional OFF-PATH destinations, authored once in the panel-nav source. A
      breadcrumb cannot supply siblings it does not contain, so these are a
-     SECOND authored source rather than a second copy of the first.
+     second authored source rather than a second copy of the first. They are
+     siblings and children only: the current path itself is never authored here,
+     because the visible title already owns it end to end.
 
      THE CURRENT PAGE IS NEVER AUTHORED HERE. An `<li data-surface-nav-current>`
      is an inert POSITION marker: the consumer says where the current location
@@ -211,6 +214,14 @@
     nav.setAttribute('aria-label', PANEL_LABEL);
 
     var chain = [];
+    /* LEGACY COMPATIBILITY, NOT CURRENT AUTHORING. A configured root predates the
+       rule that the visible title carries the complete public ancestry, and it is
+       honoured so a consumer authored before that rule is not broken merely by
+       taking a newer build of this file. New surfaces put every public ancestor
+       in the visible breadcrumb instead — authoring both makes the same root
+       appear twice, since this prepends the configured one and then appends the
+       whole visible chain. Removal is gated on the propagation census reaching
+       zero live use, not on this comment. */
     if (cfg.navRootLabel) {
       chain.push({ label: cfg.navRootLabel, href: cfg.navRootHref || null, current: false });
     }

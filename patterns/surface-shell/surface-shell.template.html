@@ -108,9 +108,12 @@
         </svg>
       </a>
 
-      <!-- Surface identity. The .org span carries the owning organization; the
-           optional .page span carries the payload name within the surface family.
-           The specimen below is the two-segment root form, so it omits .page. -->
+      <!-- Surface identity. The segment classes grade DEPTH: .org is the
+           outermost public-root segment, an intermediate ancestor carries no
+           class, and the optional .page span is the inert CURRENT LEAF at any
+           depth — a family root that is the page you are on takes it exactly as
+           a deep subpage does. The specimen below is a two-segment placeholder
+           whose leaf has no destination, so it omits .page. -->
       <!-- STRUCTURAL TITLE. Two variants — README.md §The structural title.
            The test is PUBLIC ANCESTRY, not local rootedness. Show the complete,
            real, navigable public ancestry from the public family root down to
@@ -119,9 +122,13 @@
            no real navigable public ancestor AT ANY LEVEL. Being the root of your
            own family is not enough: a genuine public parent above that family
            (a studio route above a project, say) IS ancestry and takes a crumb.
-           BREADCRUMBED subpage: wrap this <h1> in
+           BREADCRUMBED page: wrap this <h1> in
            <nav class="surface-breadcrumb" aria-label="Breadcrumb"> and mark the
            current segment <span class="page" aria-current="page">.
+           Segment classes grade DEPTH, not kind: .org on the outermost
+           public-root segment, nothing on an intermediate ancestor, and .page on
+           the inert current leaf AT ANY DEPTH — a family root that is the page
+           you are on takes .page exactly as a deep subpage does.
            Linkability is decided by DESTINATION, not by segment class: link a
            segment that is a real ancestor or home, leave a segment with no
            destination of its own static, and never invent a destination to make
@@ -184,16 +191,20 @@
        scroll padding, no scrollbar gutter, and the mark above stays a plain
        home anchor.
 
-       TWO AUTHORED SOURCES, deliberately. The visible header breadcrumb is the
-       ONE source for the current path, and the panel derives its vertical path
-       from it — never a second title tree. A breadcrumb cannot supply siblings
-       it does not contain, so optional LOCAL destinations are authored here
-       instead, once. The root row comes from configuration, because the mark
-       already carries that context and the visible crumb should not grow a
-       segment to feed the panel. -->
-  <template class="surface-nav-source"
-            data-nav-root-label="[root]"
-            data-nav-root-href="#">
+       ONE PATH SOURCE, PLUS WHAT A PATH CANNOT CONTAIN. The visible structural
+       title owns the COMPLETE current public path — every real navigable
+       ancestor and the inert current leaf — and the panel derives its vertical
+       path from it, never from a second title tree. A breadcrumb cannot supply
+       siblings it does not contain, so optional OFF-PATH local destinations are
+       authored here instead, once.
+
+       NO PUBLIC ANCESTOR IS REPEATED IN SOURCE CONFIGURATION. A segment on the
+       current path belongs in the visible title where a reader can see it, not
+       in an attribute only the panel reads. `data-nav-root-*` is legacy runtime
+       compatibility for consumers that predate this rule; it is not authored on
+       a new surface, and authoring it beside a visible root makes that root
+       appear twice in the panel. See README.md. -->
+  <template class="surface-nav-source">
     <!-- OPTIONAL local destinations, rendered under the deepest ancestor.
 
          THE CURRENT PAGE IS NEVER AUTHORED HERE. `data-surface-nav-current` is

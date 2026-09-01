@@ -223,7 +223,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 /* The structural identity line, on the STRUCTURAL-LOCATOR role: mono, Body
    size, light weight, tight tracking. Mono belongs to this role rather than to
    the whole primary-label family, and it belongs to BOTH title forms — the
-   root-level plain heading and the breadcrumbed subpage title alike, since both
+   plain heading and the breadcrumbed title alike, since both
    carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
    Inter on the same size, weight and tracking.
 
@@ -261,8 +261,12 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
-.surface-title .org { color: var(--fg-2); }   /* owning organization */
-.surface-title .page { color: var(--fg-3); }  /* payload name within the surface family */
+/* The classes grade DEPTH, not kind. .org is the outermost public-root segment;
+   an intermediate ancestor carries no class and keeps the strongest foreground;
+   .page is the inert CURRENT LEAF at any depth — a family root that is the page
+   you are on takes it exactly as a deep subpage does. */
+.surface-title .org { color: var(--fg-2); }   /* outermost public-root segment */
+.surface-title .page { color: var(--fg-3); }  /* inert current leaf, at any depth */
 
 /* Breadcrumb grammar. Every structural separator is `//` — never a single
    slash — and the separator is a decorative span, so the glyph is uniform while
