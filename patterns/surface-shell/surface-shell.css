@@ -936,6 +936,29 @@ a.surface-nav-row:focus-visible {
   text-decoration: none;
 }
 
+/* Input modality, at the panel's ENTRANCE. The trigger already carries the
+   equivalent treatment on the RETURN path; this is the same browser behavior on
+   the way in, and it needs its own attribute rather than a second use of that
+   one, because the two states are cleared by different events and conflating
+   them would make each clear the other's.
+
+   Opening the panel moves focus to the first destination, which is correct and
+   stays — a modal needs an internal focus destination. What is wrong is
+   PAINTING a keyboard indicator for a touch: iOS Safari matches
+   :focus-visible on programmatic focus whatever began the interaction, so a
+   tapped-open panel showed a white ring around the first row and implied a
+   selection the user never made.
+
+   Only the keyboard indicator is suppressed. The row keeps its resting magenta
+   destination underline, its hover and active feedback, and its real focus —
+   the driver removes the attribute on the first keydown, on blur, and on close,
+   so a hardware keyboard on a phone or tablet gets the visible treatment the
+   moment it is used. */
+.surface-nav-panel [data-surface-nav-pointer-entry-focus]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .surface-nav-head {
   display: flex;
   align-items: flex-start;

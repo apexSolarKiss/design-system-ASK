@@ -624,6 +624,53 @@ content scrolled out of sight cannot still take a click while content that is
 merely dimmed stays usable. Scrolling is unaffected — the shields intercept
 pointer activation, not wheel or trackpad movement.
 
+### Where the close control sits, and why it differs by mode
+
+The control is the same button in both modes — same class, semantics, label and
+focus treatment. Only its corner differs, because the two panels enter from
+opposite edges:
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| panel enters from | the top | the bottom |
+| close sits at | the drawer's **lower** right | the sheet's **upper** right |
+| reason | the corner furthest from the edge it came from, and nearest the reader | the corner nearest the thumb |
+
+On desktop it is positioned against the **panel**, not laid out inside
+`.surface-nav-panel-inner` — which is the scroller. An in-flow control scrolls
+out of reach on a long hierarchy, and the one control that dismisses a modal
+must not be scrollable-away. Being out of flow it reserves nothing, so the
+scroller carries extra bottom padding to keep the last row and the utilities
+clear of it. **DOM order is unchanged in both modes**, so the tab order a
+keyboard user walks is the one the markup states; only the paint position moves.
+
+### Focus is established the same way; only its *presentation* varies
+
+Opening the panel always moves focus to the first destination — a modal needs an
+internal focus destination, and that does not change with input modality. What
+varies is whether a **keyboard indicator** is painted:
+
+```text
+opened by pointer / touch   focus moves · keyboard ring suppressed
+opened by keyboard          focus moves · keyboard ring visible
+first keypress after a      suppression clears immediately, so a hardware
+  pointer open              keyboard gets its indicator the moment it is used
+Escape closes               focus returns to the invoking mark, visibly
+```
+
+iOS Safari matches `:focus-visible` on programmatic focus whatever began the
+interaction, so a tapped-open panel painted a white ring around the first row
+and implied a selection the user never made. The suppression is scoped to that
+one element by a bounded attribute and removes **only** `outline` and
+`box-shadow`: the row keeps its resting destination underline, its hover and
+active feedback, and its real focus. The trigger carries the equivalent
+treatment on the *return* path, under a separate attribute — the two states are
+cleared by different events, and sharing one would let each clear the other's.
+
+**The visible ring after `Escape` is correct and deliberate.** `Escape` is
+keyboard input; focus returns to the mark, and the ring is what tells a keyboard
+user where it landed. Removing it would make focus restoration invisible.
+
 ### Two authored sources, and why
 
 A breadcrumb cannot supply siblings it does not contain, so the one-source rule

@@ -485,8 +485,10 @@
   doc.addEventListener('pointerdown', function () { lastModality = 'pointer'; }, true);
   doc.addEventListener('keydown', function () {
     lastModality = 'key';
-    /* any keyboard use restores the visible treatment immediately */
+    /* any keyboard use restores the visible treatment immediately — on the
+       trigger and inside the panel alike, before the key is processed */
     clearPointerFocus();
+    clearPointerEntryFocus();
   }, true);
 
   function setPointerFocus(on) {
@@ -497,6 +499,22 @@
     });
   }
   function clearPointerFocus() { setPointerFocus(false); }
+
+  /* The same browser behavior on the way IN. Opening by touch still moves focus
+     to the first destination — a modal needs an internal focus destination —
+     but Safari paints that programmatic focus as :focus-visible, so the row
+     wore a keyboard ring and implied a selection the user never made.
+
+     A SEPARATE attribute from the trigger's, deliberately: the two are cleared
+     by different events, and one clearing function for both would let a close
+     wipe the entrance state or a keypress wipe the return state. */
+  var entryFocused = null;
+  function clearPointerEntryFocus() {
+    if (!entryFocused) return;
+    entryFocused.removeAttribute('data-surface-nav-pointer-entry-focus');
+    entryFocused.removeEventListener('blur', clearPointerEntryFocus);
+    entryFocused = null;
+  }
 
   var openGen = 0, rafA = null, rafB = null;
 
@@ -516,7 +534,15 @@
     else panel.setAttribute('open', '');
     setExpanded(true);
     var first = panel.querySelector('a[href], button:not([disabled])');
-    if (first) first.focus();
+    if (first) {
+      clearPointerEntryFocus();
+      if (lastModality === 'pointer') {
+        entryFocused = first;
+        first.setAttribute('data-surface-nav-pointer-entry-focus', '');
+        first.addEventListener('blur', clearPointerEntryFocus);
+      }
+      first.focus();
+    }
     rafA = requestAnimationFrame(function () {
       rafA = null;
       if (gen !== openGen || !isOpen) return;
@@ -533,6 +559,7 @@
   function closePanel() {
     if (!isOpen) return;
     isOpen = false;
+    clearPointerEntryFocus();   /* the entrance state does not outlive the panel */
     /* Whether an EXIT is even possible has to be read BEFORE the class is
        removed. If the entrance never landed — a synchronous dismissal, or one
        between the two opening frames — the transform never left its closed
