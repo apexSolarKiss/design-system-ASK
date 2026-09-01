@@ -944,6 +944,38 @@ a.surface-nav-row:focus-visible {
 }
 .surface-nav-utilities { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; }
 
+/* The close control sits with the hierarchy on MOBILE, where the sheet enters
+   from the bottom and its top-right corner is the corner nearest the thumb. On
+   DESKTOP the drawer enters from the top, so that same placement puts the
+   control at the edge the drawer came from — the least visible corner it has.
+   It moves to the drawer's own lower-right instead.
+
+   Positioned against the PANEL rather than laid out inside
+   .surface-nav-panel-inner, which is the scroller: an in-flow control scrolls
+   out of reach on a long hierarchy, and the one control that dismisses a modal
+   must not be scrollable-away. The panel is `position: fixed`, so it is the
+   containing block, and an absolutely positioned box whose containing block is
+   an ANCESTOR of the scroller is not clipped by it.
+
+   Out of flow means it reserves nothing, so the scroller reserves for it. Its
+   own extra bottom padding keeps the last hierarchy row and the utilities clear
+   of the control rather than letting them run underneath it. Both values come
+   from the spacing scale.
+
+   DOM order is untouched: the button still follows the tree and precedes the
+   utilities, so the tab order a keyboard user walks is the one the markup
+   states. Only the paint position differs. */
+:root[data-surface-nav-mode="desktop"] .surface-nav-close {
+  position: absolute;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: 1;
+}
+:root[data-surface-nav-mode="desktop"] .surface-nav-panel-inner {
+  padding-bottom: calc(var(--space-6) + var(--space-7));
+}
+
+
 /* ---------- Background scroll lock ----------
    The durable contract is that the background's scroll position stays INVARIANT
    while the panel is open. The mechanism is not the contract: a UA that blocks
