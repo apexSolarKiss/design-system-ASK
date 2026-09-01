@@ -118,21 +118,27 @@
         </svg>
       </a>
 
-      <!-- Surface identity. The segment classes grade DEPTH INSIDE A BREADCRUMB
-           PATH: .org is the outermost owning / public-root context, an
-           intermediate ancestor carries no class, and .page is the inert CURRENT
-           LEAF at any depth in that path — a family root that is the page you are
-           on takes it exactly as a deep subpage does.
+      <!-- Surface identity. The two classes do NOT share a scope.
+
+           .org      outer owning / public-root context. Valid in BOTH title
+                     forms: static owning context in the plain form, the
+                     outermost ancestry segment in a breadcrumb. The specimen
+                     below is plain and carries it.
+           unclassed PLAIN: the local current surface label.
+                     BREADCRUMB: an intermediate ancestor.
+           .page     the inert CURRENT LEAF, inside a breadcrumb path only. At
+                     any depth there — a family root that is the page you are on
+                     takes it exactly as a deeper current page does.
+
+           So a plain title's local label is unclassed because the plain form
+           carries no breadcrumb path, NOT because every class is unavailable to
+           it and NOT because the label lacks an href.
 
            CURRENTNESS AND LINKABILITY ARE DIFFERENT AXES. A current leaf is
            unlinked BECAUSE it is current; having no href is not why it takes
            .page, and is never a reason to omit .page from a breadcrumb leaf.
-
-           The specimen below is the PLAIN form, so it has no breadcrumb path
-           whose depth classes need assigning at all, and its local surface label
-           stays unclassed. That is a difference between the two title forms —
-           not a destination test, and not an exception for a breadcrumbed family
-           root, which does take .page. -->
+           Ordinary static context may equally lack an href without becoming
+           .page. -->
       <!-- STRUCTURAL TITLE. Two variants — README.md §The structural title.
            The test is PUBLIC ANCESTRY, not local rootedness. Show the complete,
            real, navigable public ancestry from the public family root down to
@@ -144,13 +150,14 @@
            BREADCRUMBED page: wrap this <h1> in
            <nav class="surface-breadcrumb" aria-label="Breadcrumb"> and mark the
            current segment <span class="page" aria-current="page">.
-           WITHIN THAT PATH, segment classes grade DEPTH, not kind: .org on the
+           WITHIN THAT PATH the classes grade DEPTH, not kind: .org on the
            outermost owning / public-root context, nothing on an intermediate
            ancestor, and .page on the inert current leaf AT ANY DEPTH in the path
            — a family root that is the page you are on takes .page exactly as a
-           deep subpage does. The plain form above has no such path, which is why
-           its label is unclassed; that is the form difference, not a rule about
-           destinations.
+           deep subpage does. The plain form above has no such path, so it has no
+           intermediate tier and no .page; it still carries .org for its owning
+           context, and its local label is unclassed. That is the form
+           difference, not a rule about destinations.
            Linkability is decided by DESTINATION, not by segment class: link a
            segment that is a real ancestor or home, leave a segment with no
            destination of its own static, and never invent a destination to make

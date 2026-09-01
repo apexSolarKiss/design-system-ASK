@@ -181,14 +181,19 @@ has somewhere to go:
 | structural context with no destination of its own | static |
 | the current segment | unlinked, with `aria-current="page"` |
 
-**Inside a breadcrumb path**, the classes grade **depth**, and they say nothing
-about what kind of thing a segment names:
+The classes say nothing about what kind of thing a segment names, and **they do
+not share a scope** — one is available to both title forms and one is not:
 
-| class | segment |
-| --- | --- |
-| `.org` | the outermost owning / public-root context |
-| *(none)* | an intermediate ancestor |
-| `.page` | the inert current leaf, **at any depth in that path** |
+| class | plain title | breadcrumbed title |
+| --- | --- | --- |
+| `.org` | the static owning context | the outermost ancestry segment |
+| *(none)* | the local current surface label | an intermediate ancestor |
+| `.page` | — | the inert current leaf, **at any depth in the path** |
+
+`.org` is **valid in both forms**, which is why the generic plain specimen
+carries `<span class="org">[org]</span>`. Only `.page` and the intermediate
+reading of an unclassed segment belong to a breadcrumb path, because only a path
+has depth to grade.
 
 `.page` is the *current* segment, not a "payload" one. A family root that is the
 page you are on takes it, exactly as a deep subpage does — which is why the
@@ -200,13 +205,15 @@ two grammars.
 **Currentness and linkability are different axes, and the table above grades only
 the first.** A current leaf carries no `href` *because* it is current — that is a
 consequence of being current, never the reason it takes `.page`. Never omit
-`.page` from a breadcrumb leaf on the ground that it has no destination.
+`.page` from a breadcrumb leaf on the ground that it has no destination, and
+never promote ordinary static context to `.page` merely because it also lacks
+one.
 
-**The plain form has no path to grade.** Where no real navigable public ancestor
-exists there is no breadcrumb, so there are no depth classes to assign and the
-local surface label simply stays unclassed. That is a distinction between the two
-*title forms* — not a destination test, and not a licence to leave a breadcrumbed
-family root's leaf bare.
+**A plain title's local label is unclassed because the plain form carries no
+breadcrumb path** — not because classes are unavailable to it, and not because
+the label has no destination. That is a distinction between the two *title
+forms*, and it is not a licence to leave a breadcrumbed family root's leaf
+bare.
 
 Never invent a destination to make a segment interactive.
 
@@ -248,8 +255,9 @@ a breadcrumb names a place a reader goes rather than a repository namespace. And
 **within this breadcrumb path the segment classes grade depth**: `.org` on the
 outermost ancestor, `.page` on the inert current leaf, nothing on the segments
 between. That grading is what lets a four-segment chain still read as one object
-rather than four equal words. A plain title has no path to grade, so it takes
-none of them.
+rather than four equal words. A plain title has no path to grade, so it has no
+intermediate tier and no `.page` — it still carries `.org` for its owning
+context.
 
 The public IA parent is the destination, not the code host: a GitHub
 organization is a **utility** destination and belongs in the navigation panel,

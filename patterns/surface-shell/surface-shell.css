@@ -261,17 +261,19 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
-/* INSIDE A BREADCRUMB PATH the classes grade DEPTH, not kind. .org is the
-   outermost owning / public-root context; an intermediate ancestor carries no
-   class and keeps the strongest foreground; .page is the inert CURRENT LEAF at
-   any depth in that path — a family root that is the page you are on takes it
-   exactly as a deep subpage does.
+/* The two classes do not share a scope. .org is the outer owning / public-root
+   context and is valid in BOTH title forms — static owning context in a plain
+   title, the outermost ancestry segment in a breadcrumb. .page is the inert
+   CURRENT LEAF inside a breadcrumb path only, at any depth there: a family root
+   that is the page you are on takes it exactly as a deeper current page does. An
+   unclassed segment carries no class and keeps the strongest foreground — the
+   local surface label in a plain title, an intermediate ancestor in a breadcrumb.
 
    Currentness and linkability are separate axes: a current leaf is unlinked
-   BECAUSE it is current, which is never a reason to omit .page. The PLAIN title
-   form has no breadcrumb path to grade at all, so its label stays unclassed. */
-.surface-title .org { color: var(--fg-2); }   /* outermost public-root segment */
-.surface-title .page { color: var(--fg-3); }  /* inert current leaf, at any depth */
+   BECAUSE it is current, which is never a reason to omit .page, and ordinary
+   static context may lack an href without becoming .page. */
+.surface-title .org { color: var(--fg-2); }   /* outer owning context, EITHER form */
+.surface-title .page { color: var(--fg-3); }  /* current leaf, BREADCRUMB paths only */
 
 /* Breadcrumb grammar. Every structural separator is `//` — never a single
    slash — and the separator is a decorative span, so the glyph is uniform while
