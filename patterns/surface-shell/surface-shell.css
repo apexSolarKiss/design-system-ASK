@@ -261,10 +261,15 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
-/* The classes grade DEPTH, not kind. .org is the outermost public-root segment;
-   an intermediate ancestor carries no class and keeps the strongest foreground;
-   .page is the inert CURRENT LEAF at any depth — a family root that is the page
-   you are on takes it exactly as a deep subpage does. */
+/* INSIDE A BREADCRUMB PATH the classes grade DEPTH, not kind. .org is the
+   outermost owning / public-root context; an intermediate ancestor carries no
+   class and keeps the strongest foreground; .page is the inert CURRENT LEAF at
+   any depth in that path — a family root that is the page you are on takes it
+   exactly as a deep subpage does.
+
+   Currentness and linkability are separate axes: a current leaf is unlinked
+   BECAUSE it is current, which is never a reason to omit .page. The PLAIN title
+   form has no breadcrumb path to grade at all, so its label stays unclassed. */
 .surface-title .org { color: var(--fg-2); }   /* outermost public-root segment */
 .surface-title .page { color: var(--fg-3); }  /* inert current leaf, at any depth */
 

@@ -181,14 +181,14 @@ has somewhere to go:
 | structural context with no destination of its own | static |
 | the current segment | unlinked, with `aria-current="page"` |
 
-The classes grade **depth**, and they say nothing about what kind of thing a
-segment names:
+**Inside a breadcrumb path**, the classes grade **depth**, and they say nothing
+about what kind of thing a segment names:
 
 | class | segment |
 | --- | --- |
-| `.org` | the outermost public-root segment |
+| `.org` | the outermost owning / public-root context |
 | *(none)* | an intermediate ancestor |
-| `.page` | the inert current leaf, **at any depth** |
+| `.page` | the inert current leaf, **at any depth in that path** |
 
 `.page` is the *current* segment, not a "payload" one. A family root that is the
 page you are on takes it, exactly as a deep subpage does — which is why the
@@ -196,6 +196,17 @@ design-system's own front door carries
 `<span class="page" aria-current="page">design-system-ASK</span>`. There is no
 root-page exception, because an exception is precisely what would reintroduce
 two grammars.
+
+**Currentness and linkability are different axes, and the table above grades only
+the first.** A current leaf carries no `href` *because* it is current — that is a
+consequence of being current, never the reason it takes `.page`. Never omit
+`.page` from a breadcrumb leaf on the ground that it has no destination.
+
+**The plain form has no path to grade.** Where no real navigable public ancestor
+exists there is no breadcrumb, so there are no depth classes to assign and the
+local surface label simply stays unclassed. That is a distinction between the two
+*title forms* — not a destination test, and not a licence to leave a breadcrumbed
+family root's leaf bare.
 
 Never invent a destination to make a segment interactive.
 
@@ -234,9 +245,11 @@ Two details there are consumer topology rather than pattern rule, and a
 different consumer will resolve them differently. The **human-facing brand name**
 is the label — `apex solar kiss`, not the `apexSolarKiss` GitHub handle, because
 a breadcrumb names a place a reader goes rather than a repository namespace. And
-the **segment classes grade depth**: `.org` on the outermost ancestor, `.page` on
-the inert current leaf, nothing on the segments between. That grading is what
-lets a four-segment chain still read as one object rather than four equal words.
+**within this breadcrumb path the segment classes grade depth**: `.org` on the
+outermost ancestor, `.page` on the inert current leaf, nothing on the segments
+between. That grading is what lets a four-segment chain still read as one object
+rather than four equal words. A plain title has no path to grade, so it takes
+none of them.
 
 The public IA parent is the destination, not the code host: a GitHub
 organization is a **utility** destination and belongs in the navigation panel,
