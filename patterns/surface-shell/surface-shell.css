@@ -567,12 +567,8 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   --surface-nav-p: 0;
   --surface-nav-settle: 0px;                /* desktop, 64 -> 40 over 24px */
 
-  /* The fade's LEADING EDGE, in the mask's own coordinate space. The 100% here
-     resolves against the mask positioning area of .surface-nav-fade, which is
-     the viewport box — so this is only meaningful where it is used, and it is
-     used in exactly one place. Declared here anyway so the two mask-image
-     declarations that consume it cannot drift apart. */
-  --surface-nav-fade-edge: calc(100% - var(--surface-nav-p) * var(--surface-nav-depth));
+  /* No --surface-nav-fade-edge any more. The shelf's mask is STATIC and its
+     travel is a transform, so nothing about the mask depends on p. */
 
   /* The gutter is reserved only where navigation exists, so a declining surface
      never acquires permanent geometry from merely loading this file. It keeps
@@ -685,50 +681,54 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
   will-change: transform;
 }
-/* STATIONARY FIELD, MOVING MASK — and the fade is a SIBLING of the seat
-   rather than a child, which is the whole of it.
+/* AN INTENTIONAL SHELF, NOT A COPY OF THE PAGE.
 
-   `background-attachment: fixed` gives an element the viewport as its
-   background positioning area, but only while no ancestor is transformed.
-   Inside the seat — whose transform is what moves the unit — the fixed
-   attachment degrades to `scroll` and the positioning area collapses to the
-   fade's own box, which is --surface-nav-depth tall: 144px on a 390x844
-   phone, against an 844px viewport. Because --bg-gradient is a 45deg gradient, its axis
-   length and endpoint colors are functions of that box's diagonal: the fade
-   was not a phase-shifted copy of the page's gradient, it was a different
-   gradient, which is why it read as a hard rectangle rather than a soft
-   mismatch. README.md already warns a consuming surface off the same failure
-   by its other route, a re-stated `background` shorthand.
+   Four implementations of the previous idea failed on real iPhone Safari, and
+   they are worth naming because the pattern in them is the finding: a dynamic
+   mask edge, a static mask tile moved by mask-position, `background-attachment:
+   fixed`, and its removal. Each changed HOW a second layer repainted
+   `--bg-gradient`. None changed the premise — that a second fixed layer can
+   independently repaint a nonuniform 45deg gradient and stay temporally
+   synchronised with the root canvas through iOS compositing. Device evidence
+   says it cannot: the field goes stale, and which direction it fails in moves
+   with the implementation.
 
-   So the field claims the viewport by the SAME MECHANISM the canvas does,
-   rather than by reconstructing viewport dimensions in CSS. colors_and_type.css
-   binds `html, body` with `background-attachment: fixed`; this element declares
-   it too, and matching the mechanism is what makes the parity survive the
-   engines where lvh, dvh and the fixed-position containing block disagree.
-   Reconstructing the box with 100dvh would be a second opinion about the
-   viewport, and a second opinion is exactly what a seam is. */
+   So the parity claim is RETIRED rather than attempted a fifth way. The shelf
+   no longer pretends to be the page; it is deliberate navigation chrome, in the
+   same glass the panel already uses, and the page stays visible underneath it —
+   quieted, not counterfeited. There is nothing left to keep in step, because
+   there is no longer a second copy of anything.
+
+   What survives unchanged is what the fade was actually for: content becomes
+   visually quiet before it reaches the mark. The shelf travels with the seat on
+   the same --surface-nav-p, so the two read as one unit, and its upper 48px is
+   a STATIC ramp from transparent into the glass — static because the ramp lives
+   in the shelf's own box, and the box is what moves.
+
+   The shelf may carry a transform now, which the old field could not: nothing
+   here resolves against the viewport, so there is no containing-block trap. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-fade {
   position: fixed;
-  inset: 0;
+  left: 0; right: 0; bottom: 0;
+  height: var(--surface-nav-depth);
   z-index: 39;                      /* beneath the seat's shield and trigger */
   pointer-events: none;
-  background-image: var(--bg-gradient);
-  background-attachment: fixed;
+  transform: translateY(calc((1 - var(--surface-nav-p)) * 100%));
+  will-change: transform;
 
-  /* The same 48px ramp as before, relocated into viewport coordinates: the
-     boundary travels with p while the paint underneath stands still. At p=1
-     the ramp starts at (100% - depth), which is exactly where the seated
-     unit's top edge is, so no geometry changes. */
+  background: var(--surface-glass-2);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+
+  /* Transparent at the leading edge, fully present after the same 48px, and
+     present through the rest of the depth. No p, no viewport, no second
+     gradient. */
   -webkit-mask-image: linear-gradient(to bottom,
                         transparent 0,
-                        transparent var(--surface-nav-fade-edge),
-                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
-                        #000 100%);
+                        #000 var(--surface-nav-fade));
           mask-image: linear-gradient(to bottom,
                         transparent 0,
-                        transparent var(--surface-nav-fade-edge),
-                        #000 calc(var(--surface-nav-fade-edge) + var(--surface-nav-fade)),
-                        #000 100%);
+                        #000 var(--surface-nav-fade));
 }
 /* Hit shield over exactly the region where the fade is OPAQUE, and no further:
    mask transparency does not affect hit-testing, so shielding the whole unit
