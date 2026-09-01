@@ -119,13 +119,18 @@ primary-label object, and a consuming home page's panel titles resolve to
 exactly them, so a reader moving between surfaces meets one thing rather than
 two dialects.
 
-**Nothing divides any more.** The root-level plain title, the breadcrumb form and
-`.surface-panel-title` all sit on `--lh-heading`. The breadcrumb form used to take
-a pattern-local `1.35` for wrapped-fragment clearance; that exception predated the
-current text-decoration anatomy and is **retired**, because re-measuring against
-the anatomy that ships shows the shared value clears — minimum underline-to-next-line
-clearance 2px at 1.12 against 7px at 1.35, measured at 320 / 375 / 390 / 414 in both
-themes. Size, weight, tracking and family were never part of it. **The family is this role's own**, and it
+**Both title forms share one leading; the panel label does not.** The root-level
+plain title and the breadcrumb form both sit on **1.16**. `.surface-panel-title`
+keeps `--lh-heading` (1.12) — it is a single-line label in a different
+implementation, and the adjustment was earned by a condition it does not have.
+
+`1.16` is where two measurements meet. The breadcrumb's old pattern-local `1.35`
+was measured against an underline that was a *border*, and survived the change to a
+text decoration by inertia; re-measured it is visibly loose. But `--lh-heading`
+alone left only **2px** between the underline and the next line's glyphs at 320 /
+375 / 390 / 414 in both themes — clear, and visibly cramped on device. `1.16` adds
+0.96px per line at 24px. It is the **structural locator's own metric**, not a
+foundation token, and nothing else inherits it. **The family is this role's own**, and it
 covers **both** title variants below: the root-level plain heading and the
 breadcrumbed subpage title both carry `.surface-title` and both stay mono — the
 two forms differ in landmark and linkability, never in family. A panel primary

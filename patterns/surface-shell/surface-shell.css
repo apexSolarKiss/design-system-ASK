@@ -227,17 +227,25 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    carry `.surface-title`. A panel primary label (`.surface-panel-title`) takes
    Inter on the same size, weight and tracking.
 
-   NOTHING DIVIDES ANY MORE. Both title forms and the panel label share
-   --lh-heading. The breadcrumb form used to take a pattern-local 1.35 for
-   wrapped-fragment clearance, and that exception is RETIRED: it predates the
-   current text-decoration anatomy, and re-measuring against the anatomy that
-   actually ships shows the shared value clears. Measured at 320 / 375 / 390 /
-   414 in both themes, minimum underline-to-next-line clearance 2px at 1.12
-   against 7px at 1.35 — tighter, and clear.
+   THE TWO TITLE FORMS SHARE ONE LEADING; THE PANEL LABEL DOES NOT. Both
+   .surface-title forms sit on 1.16. The panel label keeps --lh-heading (1.12),
+   because it is a single-line label in a different implementation and the
+   adjustment below was earned by a condition it does not have.
+
+   1.16 is where two measurements meet. The breadcrumb's old pattern-local 1.35
+   was measured against an underline that was a BORDER, and it survived the
+   change to a text decoration with its own offset and skip-ink behaviour by
+   inertia; re-measured, it is visibly loose. But --lh-heading alone left only
+   2px between the underline and the next line's glyphs at 320-414 in both
+   themes — clear, and visibly cramped on device. 1.16 adds 0.96px per line at
+   24px: enough to breathe, far short of 1.35.
+
+   That value is the STRUCTURAL LOCATOR's own metric, owned here. It is not a
+   foundation token and nothing else should inherit it.
 
    The family split is allocated per selector; it is never derived from what an
-   instance happens to say. Same size, weight, tracking and leading; different
-   family. Do not conform either to the other. A title is a locator rather than a display
+   instance happens to say. Same size, weight and tracking; different family,
+   and one deliberate leading difference. Do not conform either to the other. A title is a locator rather than a display
    heading, which is why it sits on Body and not on an H-step; it is still a
    title, which is why it does not sit on the supporting step its own lede
    occupies.
@@ -249,7 +257,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   font-family: var(--font-mono);
   font-size: var(--fs-body);
   font-weight: var(--fw-light);
-  line-height: var(--lh-heading);
+  line-height: 1.16;                /* the structural locator's own metric; see above */
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
