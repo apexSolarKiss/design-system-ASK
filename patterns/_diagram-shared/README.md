@@ -68,3 +68,40 @@ direction the box did.
 
 The failure is quiet: nothing collides, nothing leaves the viewBox, and the text wraps correctly —
 it simply renders outside its own box. A containment assertion is the only check that sees it.
+
+## What the helper owns
+
+```text
+line breaking    delimiter matching, longest-first, and force-break
+measurement      wrapped width and height for a given role cap
+role metrics     per-role cap, line height, and the has-note predicate
+tspan emission   the emitted text structure for a wrapped label or note
+```
+
+**An engine that keeps a private copy of any of those is the divergence this file exists to
+remove.** That is not a style preference. V previously granted `BOX_H_NOTE` of box height to a
+section whose note its own render branch never draws, because its local has-note predicate had
+drifted from H's — three copies of one predicate, behaving three ways. The predicate is now
+resolved here and is **target-aware**: H and V draw a section as label + rule + tag and never its
+note, while SEQ has no section branch at all, so a `kind: 'section'` record there is an ordinary
+node that *does* render its note.
+
+Engines keep what is genuinely theirs: source grammar, topology, base box geometry, placement,
+anchoring, connectors, the final envelope — and fonts and letter-spacing, which are CSS-derived
+and belong with the stylesheet.
+
+## The break contract
+
+```text
+authored \n                 hard break, always
+delimiters                  matched LONGEST-FIRST — // before / — breaking AFTER the delimiter
+whitespace                  a break opportunity
+a token still over its cap  force-broken, and only then
+```
+
+A visual line boundary does not corrupt an identifier: no source character is inserted, removed,
+reordered or normalized. The helper returns two parallel forms — `segments`, the exact partition
+where `segments.join('')` reproduces the source byte for byte, and `lines`, the rendered payload,
+which drops only trailing whitespace at a boundary so a `text-anchor: middle` run centres on its
+glyphs. Keeping them apart is what lets the preservation gate assert exact identity without
+pushing stray whitespace into the DOM.
