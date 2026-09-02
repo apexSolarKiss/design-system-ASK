@@ -15,11 +15,16 @@
      TARGETS             diagram-static-H · diagram-static-V · diagram-static-SEQ
      EXPLICITLY EXCLUDED diagram-static-FLOW · diagram-interactive-spine
 
-   FLOW is the fourth Class A static sibling, not an omission. It carries a
-   different grammar — window.FLOW_DIAGRAM against H/V/SEQ's
-   window.DIAGRAMS.render(TREE) over {kind, label, note?, tag?, status?, children?}
-   — so extending this helper to it would be a mandate nobody granted. The
-   interactive spine takes no text-layout dependency at all. The
+   FLOW is the fourth Class A static sibling, not an omission. It publishes the
+   SAME entry point — window.DIAGRAMS.render — so that is not the difference.
+   The difference is the node grammar it renders:
+
+     H / V / SEQ   window.TREE_DIAGRAM · {kind, label, note?, tag?, status?, children?}
+     FLOW          window.FLOW_DIAGRAM · band / carrier / rail / field / converge / spine
+
+   There is no `note` or `tag` role to cap, and no per-role metric here that
+   FLOW could ask for, so extending this helper to it would be a mandate nobody
+   granted. The interactive spine takes no text-layout dependency at all. The
    `patterns/_diagram-shared/` plane keeps a generic name and confers no
    authority over every diagram pattern; each member declares its own targets.
 
@@ -69,8 +74,12 @@
                 never a target: text is not padded toward it and lines are not
                 balanced, so the same string at the same cap always produces the
                 same lines regardless of what surrounds it.
-     lineHeight line advance when a run wraps, mirroring the rendered font-size
-                in diagrams.css so a wrapped line cannot collide with the next.
+     lineHeight line ADVANCE when a run wraps — the baseline-to-baseline step,
+                so each value sits above its role's rendered font-size in
+                diagrams.css rather than equalling it, and a wrapped line cannot
+                collide with the next. (`diagrams.css` declares no line-height on
+                these SVG classes; the advance lives here because only this file
+                emits the tspans that use it.)
 
      Selected on REAL RENDERS against both excess emptiness and fitted
      readability. `label` is deliberately loose: a tighter 420 was measured and
@@ -254,9 +263,10 @@
 
   /* The label role a node takes on a given target. */
   function roleFor(target, node) {
+    var shape = shapeOf(target);          // resolve FIRST: unknown target throws
     var kind = (node && node.kind) || 'node';
     if (kind === 'root') return 'root';
-    if (kind === 'section' && shapeOf(target).sections) return 'section';
+    if (kind === 'section' && shape.sections) return 'section';
     return 'label';
   }
 
@@ -265,15 +275,15 @@
      divergence between them and the render branch shows up as empty space
      nobody asked for. */
   function rendersNote(target, node) {
+    var shape = shapeOf(target);          // resolve FIRST, even when the answer is false
     if (!node || !node.note) return false;
-    var kind = node.kind || 'node';
-    return !(shapeOf(target).sections && kind === 'section');
+    return !(shape.sections && (node.kind || 'node') === 'section');
   }
 
   function rendersTag(target, node) {
+    var shape = shapeOf(target);
     if (!node || !node.tag) return false;
-    var kind = node.kind || 'node';
-    return !!(shapeOf(target).sections && kind === 'section');
+    return !!(shape.sections && (node.kind || 'node') === 'section');
   }
 
   /* True when the node renders ANY secondary run beneath its label — the
