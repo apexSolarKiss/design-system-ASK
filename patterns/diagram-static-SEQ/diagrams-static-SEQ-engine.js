@@ -110,7 +110,6 @@
      gap between them is preserved exactly. */
   const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
   const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
-  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.addedHeight   : 0);
   const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {

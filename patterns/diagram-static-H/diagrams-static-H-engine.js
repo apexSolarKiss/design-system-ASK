@@ -276,23 +276,21 @@
       height = legacyHeight;
     } else {
       /* ---------- PASS 3 // solve anchors under the legacy separations ----------
-         The pass numbering runs across the whole layout, not this block: PASS 1
-         is the per-depth pre-measure above, PASS 2 the provisional wrapped
-         skeleton A0 it produces. Only the two passes that a wrap makes
-         non-trivial are called out by name.
+         Pass numbering follows the approved model exactly, so engine and
+         document can be cross-read without a collision: PASS 0 measures, PASS 1
+         builds the A0 leaf-cursor skeleton, PASS 2 is the separations the
+         current renderer provides, PASS 3 solves, PASS 4 sets the envelope.
          constraint   A[b] - A[a] >= legacySep(a,b) + ( boxH[a] + boxH[b] ) / 2
          legacySep    ( L[b] - baseH[b]/2 ) - ( L[a] + baseH[a]/2 )      SIGNED
 
          The sign is kept. An existing overlap is NOT clamped to zero inside a
          max(): that would repair legacy geometry anonymously, under cover of a
          wrapping change nobody asked to change spacing. The U5-entry census
-         measured every governed pair on the 16 H pages that render — of 17 that
-         load this engine; tests/legend-export-fixture.html renders nothing,
-         on main as well as here, because it never loads diagrams-fit.js — and
-         found none negative. No pair therefore carries a repair override, and
-         none is implemented — there is deliberately no repair set in this file
-         to grep for. The bound is the censused set, not a claim about
-         trees this engine has never been given. */
+         measured every governed same-depth pair across the H surfaces and found
+         none negative, so no pair carries a repair override and none is
+         implemented — there is deliberately no repair set in this file to grep
+         for. The bound is the censused set, not a claim about trees this engine
+         has never been given. */
 
       /* Anchor equality is a CONSTRAINT, not a post-step: an internal node is
          top-aligned to its first child, so the two anchors are one unknown.
@@ -372,7 +370,11 @@
       const outs = new Map(), indeg = new Map();
       for (const c of A.keys()) { outs.set(c, []); indeg.set(c, 0); }
       for (const e of edges3) {
-        if (e.from === e.to) continue;               // equal anchors, no ordering
+        /* Both endpoints resolved to ONE anchor variable, so there is nothing to
+           order and no constraint to lose: an equality class is a first-child
+           chain, which holds at most one node per depth and at most one leaf,
+           so neither family can generate a real self-edge. */
+        if (e.from === e.to) continue;
         outs.get(e.from).push(e);
         indeg.set(e.to, indeg.get(e.to) + 1);
       }
@@ -448,7 +450,7 @@
       if (n.kind === 'section') {
         const secText = el('text', {
           x: n.x + BOX_PAD_X,
-          y: n.hasNote ? n.y + 14 : n.centerY - (gLabel(n) + gTag(n)) / 2,
+          y: n.hasNote ? n.y + 14 : n.centerY - gLabel(n) / 2,
           class: 'node-label section',
         });
         TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
@@ -459,7 +461,7 @@
             y: n.y + n.boxH - 12 - gTag(n),
             class: 'section-tag',
           });
-          TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeightTag });
+          TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.tag.lineHeight });
           nodeLayer.appendChild(tagText);
         }
         nodeLayer.appendChild(el('line', {

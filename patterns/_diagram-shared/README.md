@@ -56,7 +56,7 @@ lets the no-wrap case prove geometric identity rather than merely look unchanged
 
 ## What the helper does not own — and the trap that follows
 
-The helper returns **added** height (`height` is 0 when a run does not wrap). The consuming engine
+The helper returns **added** height (`addedHeight` is 0 when a run does not wrap). The consuming engine
 adds that to its own box, which means **the engine, not the helper, owns where a wrapped run is
 anchored**.
 

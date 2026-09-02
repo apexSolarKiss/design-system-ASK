@@ -118,7 +118,6 @@
      gap between them is preserved exactly. */
   const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
   const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
-  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.addedHeight   : 0);
   const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
@@ -347,7 +346,7 @@
             x: n.cx, y: labelY + 24 + labelDrop,
             'text-anchor': 'middle',
             class: 'section-tag',
-          }), n.lay.tag.lines, { x: n.cx, lineHeight: n.lay.label.lineHeightTag }));
+          }), n.lay.tag.lines, { x: n.cx, lineHeight: n.lay.tag.lineHeight }));
         }
         continue;
       }
