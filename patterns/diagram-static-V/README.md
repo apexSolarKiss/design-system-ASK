@@ -65,6 +65,17 @@ The horizontal placement uses leaf-packing with parents centered over children, 
 
 ## How to use it
 
+**Two V tree shapes render differently after this bundle's text-layout adoption**, both because a
+note V *measured* is now either dropped from measurement or actually drawn:
+
+- a **section** with a `note` no longer inflates band width (the section branch draws label + rule
+  + tag and never a note, so that width bought nothing);
+- a **group** with a `note` now **renders** it, with the label taking the paired offset.
+
+Nothing in design-system-ASK's own V page authors either shape. If your V source does, expect a
+changed picture — and a better one: the previous behaviour spent width and box height on text it
+never drew. Every other tree shape is render-neutral.
+
 1. Copy the **complete eight-file bundle** in `patterns/diagram-static-V/` into your consuming project (typically under `docs/diagrams/` or similar). **All eight, including `diagrams-text-layout.js`** — the engine fails closed on a missing support carrier, so a seven-file copy renders nothing and names the file it wants.
 2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-V.html` and `diagram-static-V.source.js` to match your project (e.g. `[your-project]_inheritance-spine.html` and `[your-project]_inheritance-spine.source.js`); update the `<script src>` reference in the HTML accordingly.

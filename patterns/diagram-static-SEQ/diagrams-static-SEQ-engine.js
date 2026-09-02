@@ -40,7 +40,11 @@
   /* FAIL-CLOSED on the text-layout carrier, on the same terms as the fit carrier.
      The INTERFACE is checked, not merely the global: a stale mirror that predates a
      method would pass a truthiness test and then fail deep inside layout, where the
-     error names nothing useful. */
+     error names nothing useful. The check covers the WHOLE published interface,
+     including members this engine never calls itself — `measure` is the contract's
+     measurement primitive, and SEQ gates `rendersTag` although it renders no tags.
+     A mirror missing any of them is incomplete, and an incomplete mirror should fail
+     here rather than in whichever consumer does use the missing member. */
   if (!window.DIAGRAM_TEXT_LAYOUT
       || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
       || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'

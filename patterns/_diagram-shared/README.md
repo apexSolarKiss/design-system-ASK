@@ -52,7 +52,23 @@ names.
 
 **Measurement parity is the first gate.** A string that does not wrap must measure exactly
 as it did before this plane existed, letter-spacing compensation included. That is what
-lets the no-wrap case prove geometric identity rather than merely look unchanged.
+lets a no-wrap page prove geometric identity rather than merely look unchanged — and it
+held on every page of the measured fleet.
+
+**It is not a blanket render-neutrality guarantee, and two V tree shapes change with no
+wrapping at all.** Both are corrections to notes V measured and never drew:
+
+```text
+V section with a note   the note no longer inflates band WIDTH   (base: ~+434px for
+                        text that was never drawn)
+V group with a note     the note is now DRAWN, and the group label takes the paired
+                        offset — base selected BOX_H_NOTE for it and drew nothing
+```
+
+Nothing in the current fleet authors either shape, so no existing page moves. A downstream
+V diagram that *does* author one will render differently after re-vendoring, and should:
+the published grammar permits `note` on a group and on a section, and the old behaviour
+spent geometry on invisible text. Re-vendor is render-neutral for every other tree shape.
 
 ## What the helper does not own — and the trap that follows
 
@@ -79,12 +95,20 @@ tspan emission   the emitted text structure for a wrapped label or note
 ```
 
 **An engine that keeps a private copy of any of those is the divergence this file exists to
-remove.** That is not a style preference. V previously granted `BOX_H_NOTE` of box height to a
-section whose note its own render branch never draws, because its local has-note predicate had
-drifted from H's — three copies of one predicate, behaving three ways. The predicate is now
-resolved here and is **target-aware**: H and V draw a section as label + rule + tag and never its
-note, while SEQ has no section branch at all, so a `kind: 'section'` record there is an ordinary
-node that *does* render its note.
+remove.** That is not a style preference, and the historical case is measured rather than recalled.
+V's local predicate counted a note on **any** kind while V drew one on neither a section nor a
+group:
+
+```text
+base V, note on a GROUP     BOX_H_NOTE selected · box 26 -> 44px · +18px height · +511px width
+base V, note on a SECTION   no height change at all — a section takes SECTION_H / SECTION_H_TAG,
+                            never BOX_H_NOTE — but +434px of band WIDTH
+both                        the note is never drawn
+```
+
+Two different symptoms from one drifted predicate. It is now resolved here and is **target-aware**:
+H and V draw a section as label + rule + tag and never its note, while SEQ has no section branch at
+all, so a `kind: 'section'` record there is an ordinary node that *does* render its note.
 
 Engines keep what is genuinely theirs: source grammar, topology, base box geometry, placement,
 anchoring, connectors, the final envelope — and fonts and letter-spacing, which are CSS-derived

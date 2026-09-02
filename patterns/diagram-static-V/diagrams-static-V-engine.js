@@ -42,7 +42,11 @@
   /* FAIL-CLOSED on the text-layout carrier, on the same terms as the fit carrier.
      The INTERFACE is checked, not merely the global: a stale mirror that predates a
      method would pass a truthiness test and then fail deep inside layout, where the
-     error names nothing useful. */
+     error names nothing useful. The check covers the WHOLE published interface,
+     including members this engine never calls itself — `measure` is the contract's
+     measurement primitive, and SEQ gates `rendersTag` although it renders no tags.
+     A mirror missing any of them is incomplete, and an incomplete mirror should fail
+     here rather than in whichever consumer does use the missing member. */
   if (!window.DIAGRAM_TEXT_LAYOUT
       || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
       || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'
@@ -149,10 +153,12 @@
     function build(node, depth, parentIdx) {
       const kind = node.kind || 'node';
       const status = node.status || 'earned';
-      /* Resolved by the helper. This engine previously counted a SECTION's note
-         here even though its section branch draws label + rule + tag and never a
-         note, so a section with a note was granted BOX_H_NOTE for text no reader
-         sees. That is the divergence three private predicates produce. */
+      /* Resolved by the helper. This engine's own predicate used to count a note
+         on ANY kind while drawing one on neither a section nor a group. Measured
+         on the base engine: a GROUP note selected BOX_H_NOTE and grew the box
+         26 -> 44px; a SECTION note cost no height — a section takes SECTION_H /
+         SECTION_H_TAG — but was still measured into the band width. Two
+         symptoms, one drifted predicate. */
       const hasNote = TL.hasRenderedSecondary(TARGET, node);
 
       // measured content width
@@ -192,8 +198,14 @@
       // the wider of the centered label/tag and the centered rule.
       let boxW, boxH;
       if (kind === 'section') {
+        /* The box geometry is this engine's; the QUESTION "does a tag render"
+           is the shared contract's. A raw node.tag here would agree with the
+           helper only by accident of sitting inside a section branch on a
+           target whose shape declares sections — an equivalence nothing
+           enforces, and exactly the silent coupling that let the note
+           predicate drift. */
         boxW = Math.max(contentW, SECTION_RULE_HALF * 2);
-        boxH = (node.tag ? SECTION_H_TAG : SECTION_H) + grow;
+        boxH = (TL.rendersTag(TARGET, node) ? SECTION_H_TAG : SECTION_H) + grow;
       } else {
         boxW = contentW + padX * 2;
         boxH = (kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H)) + grow;
@@ -289,7 +301,7 @@
        stem and bus stay solid. A single-child parent has no bus → the stem and
        drop form one straight vertical line (the spine). */
     function bottomY(n) {
-      if (n.kind === 'section') return n.cy + (n.tag ? n.boxH / 2 : SECTION_H / 2 - 4);
+      if (n.kind === 'section') return n.cy + (TL.rendersTag(TARGET, n) ? n.boxH / 2 : SECTION_H / 2 - 4);
       return n.cy + n.boxH / 2;
     }
     for (const p of nodes) {
@@ -328,7 +340,7 @@
       const top = n.cy - n.boxH / 2;
 
       if (n.kind === 'section') {
-        const labelY = n.tag ? top + 9 : n.cy - 3 - gLabel(n) / 2;
+        const labelY = TL.rendersTag(TARGET, n) ? top + 9 : n.cy - 3 - gLabel(n) / 2;
         const labelDrop = gLabel(n);   // rule + tag sit below the whole label block
         nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: labelY,

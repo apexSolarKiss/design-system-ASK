@@ -32,8 +32,16 @@
    An engine that keeps a private copy of any of those is the divergence this
    file exists to remove. That is why the caps and line heights live HERE and
    are requested by role, and why the rendered-secondary predicate is resolved
-   HERE and is target-aware: three separate copies of one predicate is exactly
-   how V came to grant box height to a section note that V never draws.
+   HERE and is target-aware.
+
+   The historical case, measured on the base engine rather than recalled: V's
+   private predicate counted a note on ANY kind, and V drew one on neither a
+   section nor a group. A note on a GROUP therefore selected BOX_H_NOTE and grew
+   the box 26 -> 44px (+18px height, +511px band width). A note on a SECTION cost
+   no height at all — a section takes SECTION_H / SECTION_H_TAG, never
+   BOX_H_NOTE — but was still measured into the band, +434px of width for text
+   nobody saw. Two different symptoms from one drifted predicate, which is why
+   it is resolved once, here.
 
    WHAT IT DOES NOT OWN
      source grammar · topology · placement · connector geometry · anchoring ·
@@ -160,12 +168,18 @@
      line of its own. Greedy by character; a single character wider than the cap
      is placed anyway rather than looping forever.
 
-     KNOWN LIMIT, recorded rather than fixed: this iterates UTF-16 CODE UNITS,
-     so a long enough token could split between the two units of an astral
-     character and render a broken glyph across the boundary — even though
-     segments.join('') still reconstructs the string. No case exists in the
-     current fleet; code-point or grapheme-safe breaking is a follow-on
-     hardening candidate, not a silent assumption that the problem is absent. */
+     KNOWN LIMITS, recorded rather than fixed. Both preserve
+     segments.join('') === source; both are follow-on hardening candidates, and
+     neither has a case in the current fleet:
+
+       1. this iterates UTF-16 CODE UNITS, so a long enough token could split
+          between the two units of an astral character and render a broken
+          glyph across the boundary;
+       2. atomize glues a delimiter to the run before it, so an atom ending
+          `//` that ALONE exceeds its cap can be force-broken BETWEEN the two
+          slashes — `…/` ending one line and `/` starting the next. The
+          longest-first rule governs where a break is CHOSEN; it does not bind
+          the last-resort force-break inside one oversized atom. */
   function forceBreak(atom, font, ls, cap) {
     var out = [], cur = '';
     for (var i = 0; i < atom.length; i++) {
