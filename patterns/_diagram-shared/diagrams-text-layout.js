@@ -123,11 +123,13 @@
 
      A visual line boundary does not corrupt an identifier: no source character
      is inserted, removed, reordered or normalized. `segments` is the exact
-     partition — segments.join('') reproduces the source byte for byte — while
-     `lines` is the rendered payload, which drops only trailing whitespace at a
-     boundary so a `text-anchor: middle` run centres on its glyphs. Keeping the
-     two apart is what lets the preservation gate assert exact identity without
-     pushing stray whitespace into the DOM. */
+     partition — `segments.join('') === source` holds, which is exact RUNTIME
+     STRING equality and not a claim about file bytes, since different literal
+     spellings or encodings can produce the same runtime string. `lines` is the
+     rendered payload, which drops only trailing whitespace at a boundary so a
+     `text-anchor: middle` run centres on its glyphs. Keeping the two apart is
+     what lets the preservation gate assert exact identity without pushing stray
+     whitespace into the DOM. */
 
   /* Atoms are the units a line is built from. An atom boundary is a legal break
      point AFTER that atom, so the delimiter or the whitespace stays with the
@@ -156,7 +158,14 @@
 
   /* Force-break, applied ONLY to a single atom that still exceeds the cap on a
      line of its own. Greedy by character; a single character wider than the cap
-     is placed anyway rather than looping forever. */
+     is placed anyway rather than looping forever.
+
+     KNOWN LIMIT, recorded rather than fixed: this iterates UTF-16 CODE UNITS,
+     so a long enough token could split between the two units of an astral
+     character and render a broken glyph across the boundary — even though
+     segments.join('') still reconstructs the string. No case exists in the
+     current fleet; code-point or grapheme-safe breaking is a follow-on
+     hardening candidate, not a silent assumption that the problem is absent. */
   function forceBreak(atom, font, ls, cap) {
     var out = [], cur = '';
     for (var i = 0; i < atom.length; i++) {
