@@ -33,6 +33,17 @@
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
+  /* The helper DECLARES which patterns it serves. Check membership rather than
+     trusting the filename: a mirror can be complete, load cleanly, and still be
+     the wrong member — vendored from a sibling plane, or from a future version
+     that dropped this pattern. That case passes an interface check and fails
+     nowhere, so it is the one the metadata exists to catch. */
+  if (!Array.isArray(window.DIAGRAM_TEXT_LAYOUT.TARGETS)
+      || window.DIAGRAM_TEXT_LAYOUT.TARGETS.indexOf('diagram-static-H') === -1) {
+    throw new Error('Diagram text-layout support does not declare diagram-static-H as a target'
+      + ' (declared: ' + JSON.stringify(window.DIAGRAM_TEXT_LAYOUT.TARGETS) + ').'
+      + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
+  }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
   /* ---------- layout constants ---------- */
   const GAP_WITHIN  = 6;    // vertical gap between sibling boxes of the SAME parent (within a group)
@@ -62,7 +73,7 @@
 
   /* ROLE CAPS — maximum rendered text width in px, per role, before wrapping.
      Selected on REAL RENDERS in U6 against both excess emptiness and fitted
-     readability, not chosen to minimise canvas area: a narrower page that needs
+     readability, not chosen to minimize canvas area: a narrower page that needs
      more zoom to read is not an improvement. Infinity disables wrapping for a
      role, which is also the value that makes the no-wrap identity trivially
      reachable for any role U6 leaves uncapped. */
@@ -84,6 +95,17 @@
      keeps no local canvas context and no local measure(): a second
      measurement path is exactly how a shared contract silently forks, and a
      dead one is worse than none because it reads as available. */
+
+  /* ADDED height of a wrapped run — 0 when it did not wrap.
+
+     boxH already carries this growth, so a run anchored to the box BOTTOM or
+     CENTRE must subtract its own growth: anchoring the FIRST baseline to a
+     grown edge deposits the new height as dead space on one side and pushes
+     the run's remaining lines out the other. A run anchored to the box TOP
+     needs no correction, because it grows in the direction the box grew. */
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -248,6 +270,10 @@
       height = legacyHeight;
     } else {
       /* ---------- PASS 3 // solve anchors under the legacy separations ----------
+         The pass numbering runs across the whole layout, not this block: PASS 1
+         is the per-depth pre-measure above, PASS 2 the provisional wrapped
+         skeleton A0 it produces. Only the two passes that a wrap makes
+         non-trivial are called out by name.
          constraint   A[b] - A[a] >= legacySep(a,b) + ( boxH[a] + boxH[b] ) / 2
          legacySep    ( L[b] - baseH[b]/2 ) - ( L[a] + baseH[a]/2 )      SIGNED
 
@@ -257,8 +283,9 @@
          measured every governed pair on the 16 H pages that render — of 17 that
          load this engine; tests/legend-export-fixture.html renders nothing,
          on main as well as here, because it never loads diagrams-fit.js — and
-         found none negative. LEGACY_REPAIR_SET is therefore NONE and no pair
-         carries an override. The bound is the censused set, not a claim about
+         found none negative. No pair therefore carries a repair override, and
+         none is implemented — there is deliberately no repair set in this file
+         to grep for. The bound is the censused set, not a claim about
          trees this engine has never been given. */
 
       /* Anchor equality is a CONSTRAINT, not a post-step: an internal node is
@@ -380,7 +407,7 @@
       if (n.kind === 'section') {
         const secText = el('text', {
           x: n.x + BOX_PAD_X,
-          y: n.hasNote ? n.y + 14 : n.centerY,
+          y: n.hasNote ? n.y + 14 : n.centerY - (gLabel(n) + gTag(n)) / 2,
           class: 'node-label section',
         });
         TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.section });
@@ -388,7 +415,7 @@
         if (n.tag) {
           const tagText = el('text', {
             x: n.x + BOX_PAD_X,
-            y: n.y + n.boxH - 12,
+            y: n.y + n.boxH - 12 - gTag(n),
             class: 'section-tag',
           });
           TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.sectionTag });
@@ -412,7 +439,7 @@
         }));
         const rootText = el('text', {
           x: n.x + ROOT_PAD_X,
-          y: n.hasNote ? n.y + 19 : n.centerY,
+          y: n.hasNote ? n.y + 19 : n.centerY - gLabel(n) / 2,
           class: 'node-label root',
         });
         TL.emit(rootText, n.lay.label.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.root });
@@ -420,7 +447,7 @@
         if (n.note) {
           const rootNote = el('text', {
             x: n.x + ROOT_PAD_X,
-            y: n.y + n.boxH - 12,
+            y: n.y + n.boxH - 12 - gNote(n),
             class: 'node-note',
           });
           TL.emit(rootNote, n.lay.note.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.note });
@@ -439,7 +466,7 @@
         }));
         const grpText = el('text', {
           x: n.x + BOX_PAD_X,
-          y: n.hasNote ? n.y + 16 : n.centerY,
+          y: n.hasNote ? n.y + 16 : n.centerY - gLabel(n) / 2,
           class: 'node-label',
         });
         TL.emit(grpText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
@@ -447,7 +474,7 @@
         if (n.note) {
           const grpNote = el('text', {
             x: n.x + BOX_PAD_X,
-            y: n.y + n.boxH - 10,
+            y: n.y + n.boxH - 10 - gNote(n),
             class: 'node-note',
           });
           TL.emit(grpNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });
@@ -466,7 +493,7 @@
       }));
       const nodeText = el('text', {
         x: n.x + BOX_PAD_X,
-        y: n.hasNote ? n.y + 16 : n.centerY,
+        y: n.hasNote ? n.y + 16 : n.centerY - gLabel(n) / 2,
         class: labelClass,
       });
       TL.emit(nodeText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
@@ -475,7 +502,7 @@
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         const nodeNote = el('text', {
           x: n.x + BOX_PAD_X,
-          y: n.y + n.boxH - 10,
+          y: n.y + n.boxH - 10 - gNote(n),
           class: noteClass,
         });
         TL.emit(nodeNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });

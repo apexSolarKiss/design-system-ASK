@@ -49,13 +49,24 @@
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
+  /* The helper DECLARES which patterns it serves. Check membership rather than
+     trusting the filename: a mirror can be complete, load cleanly, and still be
+     the wrong member — vendored from a sibling plane, or from a future version
+     that dropped this pattern. That case passes an interface check and fails
+     nowhere, so it is the one the metadata exists to catch. */
+  if (!Array.isArray(window.DIAGRAM_TEXT_LAYOUT.TARGETS)
+      || window.DIAGRAM_TEXT_LAYOUT.TARGETS.indexOf('diagram-static-V') === -1) {
+    throw new Error('Diagram text-layout support does not declare diagram-static-V as a target'
+      + ' (declared: ' + JSON.stringify(window.DIAGRAM_TEXT_LAYOUT.TARGETS) + ').'
+      + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
+  }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
 
   /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
      REAL RENDERS in U6 against both excess emptiness and fitted readability.
      This engine keeps its OWN geometry contract: it consumes wrapped width and
      wrapped height from the shared helper and does not import H's anchor solver. */
-const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
+  const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
   const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
   /* ---------- layout constants ---------- */
   const DEPTH_GAP = 58;      // vertical gap between depth bands (room for edges)
@@ -90,6 +101,19 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
      keeps no local canvas context and no local measure(): a second
      measurement path is exactly how a shared contract silently forks, and a
      dead one is worse than none because it reads as available. */
+
+  /* ADDED height of a wrapped run — 0 when it did not wrap.
+
+     boxH already carries this growth, so a run anchored to the box CENTRE or
+     BOTTOM must subtract its own growth: anchoring the FIRST baseline to a
+     grown edge deposits the new height as dead space on one side and pushes
+     the run's remaining lines out the other. A label/note PAIR is centred as
+     one block, so each is offset by half the pair's combined growth and the
+     gap between them is preserved exactly. */
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
+  const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -134,7 +158,11 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
         lineHeight: LINE_H[labelRole] });
       const labelW = labelLay.width;
       let noteW = 0, noteLay = null, tagLay = null;
-      if (node.note) {
+      /* Only measure notes for kinds that actually render them. The section
+         branch draws label + rule + tag and never a note, so measuring one
+         here would widen the band and inflate boxH for text no reader ever
+         sees. H guards the same case for the same reason. */
+      if (node.note && kind !== 'section') {
         noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
           maxWidth: CAP.note, lineHeight: LINE_H.note });
         noteW = noteLay.width;
@@ -292,21 +320,22 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
       const top = n.cy - n.boxH / 2;
 
       if (n.kind === 'section') {
-        const labelY = n.tag ? top + 9 : n.cy - 3;
+        const labelY = n.tag ? top + 9 : n.cy - 3 - gLabel(n) / 2;
+        const labelDrop = gLabel(n);   // rule + tag sit below the whole label block
         nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: labelY,
           'text-anchor': 'middle',
           class: 'node-label section',
         }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.section }));
         nodeLayer.appendChild(el('line', {
-          x1: n.cx - SECTION_RULE_HALF, y1: labelY + 11,
-          x2: n.cx + SECTION_RULE_HALF, y2: labelY + 11,
+          x1: n.cx - SECTION_RULE_HALF, y1: labelY + 11 + labelDrop,
+          x2: n.cx + SECTION_RULE_HALF, y2: labelY + 11 + labelDrop,
           class: 'section-rule',
           'stroke-opacity': 0.4,
         }));
         if (n.tag) {
           nodeLayer.appendChild(TL.emit(el('text', {
-            x: n.cx, y: labelY + 24,
+            x: n.cx, y: labelY + 24 + labelDrop,
             'text-anchor': 'middle',
             class: 'section-tag',
           }), n.lay.tag.lines, { x: n.cx, lineHeight: LINE_H.sectionTag }));
@@ -322,13 +351,13 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
           class: 'node-box root',
         }));
         nodeLayer.appendChild(TL.emit(el('text', {
-          x: n.cx, y: n.hasNote ? n.cy - 8 : n.cy,
+          x: n.cx, y: n.hasNote ? n.cy - 8 - gPair(n) : n.cy - gLabel(n) / 2,
           'text-anchor': 'middle',
           class: 'node-label root',
         }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.root }));
         if (n.note) {
           nodeLayer.appendChild(TL.emit(el('text', {
-            x: n.cx, y: n.cy + 12,
+            x: n.cx, y: n.cy + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'middle',
             class: 'node-note',
           }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));
@@ -361,14 +390,14 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
         class: boxClass,
       }));
       nodeLayer.appendChild(TL.emit(el('text', {
-        x: n.cx, y: n.hasNote ? n.cy - 7 : n.cy,
+        x: n.cx, y: n.hasNote ? n.cy - 7 - gPair(n) : n.cy - gLabel(n) / 2,
         'text-anchor': 'middle',
         class: labelClass,
       }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.label }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
-          x: n.cx, y: n.cy + 9,
+          x: n.cx, y: n.cy + 9 + gLabel(n) - gPair(n),
           'text-anchor': 'middle',
           class: noteClass,
         }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));

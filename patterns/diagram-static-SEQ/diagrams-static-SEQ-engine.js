@@ -47,13 +47,29 @@
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
+  /* The helper DECLARES which patterns it serves. Check membership rather than
+     trusting the filename: a mirror can be complete, load cleanly, and still be
+     the wrong member — vendored from a sibling plane, or from a future version
+     that dropped this pattern. That case passes an interface check and fails
+     nowhere, so it is the one the metadata exists to catch. */
+  if (!Array.isArray(window.DIAGRAM_TEXT_LAYOUT.TARGETS)
+      || window.DIAGRAM_TEXT_LAYOUT.TARGETS.indexOf('diagram-static-SEQ') === -1) {
+    throw new Error('Diagram text-layout support does not declare diagram-static-SEQ as a target'
+      + ' (declared: ' + JSON.stringify(window.DIAGRAM_TEXT_LAYOUT.TARGETS) + ').'
+      + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
+  }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
 
   /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
      REAL RENDERS in U6 against both excess emptiness and fitted readability.
      This engine keeps its OWN geometry contract: it consumes wrapped width and
-     wrapped height from the shared helper and does not import H's anchor solver. */
-const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
+     wrapped height from the shared helper and does not import H's anchor solver.
+
+     SEQ EXERCISES ONLY `root` AND `label`. It has no section branch: every
+     non-root node renders as a label, so `section` / `sectionTag` are carried
+     here for VECTOR PARITY with H and V — the three tables are meant to be
+     diffable at a glance — and tuning them changes nothing on this engine. */
+  const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
   const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
   /* ---------- layout constants ---------- */
   const LEFT_PAD      = 80;   // page left padding = shared left edge of all boxes
@@ -82,6 +98,19 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
      keeps no local canvas context and no local measure(): a second
      measurement path is exactly how a shared contract silently forks, and a
      dead one is worse than none because it reads as available. */
+
+  /* ADDED height of a wrapped run — 0 when it did not wrap.
+
+     boxH already carries this growth, so a run anchored to the box CENTRE or
+     BOTTOM must subtract its own growth: anchoring the FIRST baseline to a
+     grown edge deposits the new height as dead space on one side and pushes
+     the run's remaining lines out the other. A label/note PAIR is centred as
+     one block, so each is offset by half the pair's combined growth and the
+     gap between them is preserved exactly. */
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
+  const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -302,6 +331,13 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
         d: `M ${toRight + ARROW_H} ${yTo - ARROW_W / 2} L ${toRight + ARROW_H} ${yTo + ARROW_W / 2} L ${toRight} ${yTo} Z`,
         class: 'edge-arrowhead',
       }));
+      /* NOT governed text. This is an EDGE annotation, not a node role, so it is
+         never measured, capped, wrapped, or counted toward gutter width — the
+         one `el('text')` in this engine that does not go through the helper.
+         It carries `class: 'node-note'` for VISUAL consistency only; the shared
+         class is why it looks governed, and it is not. Pre-existing behaviour,
+         unchanged here. Bringing edge labels into the contract would be a
+         separate decision about a different text class. */
       if (e.label) {
         edgeLayer.appendChild(el('text', {
           x: e.gx + 11, y: (yFrom + yTo) / 2,
@@ -321,12 +357,12 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
           rx: 4, ry: 4, class: 'node-box root',
         }));
         nodeLayer.appendChild(TL.emit(el('text', {
-          x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 : n.top + n.boxH / 2,
+          x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
           'text-anchor': 'start', class: 'node-label root',
         }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.root }));
         if (n.note) {
           nodeLayer.appendChild(TL.emit(el('text', {
-            x: textX, y: n.top + n.boxH / 2 + 12,
+            x: textX, y: n.top + n.boxH / 2 + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'start', class: 'node-note',
           }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
         }
@@ -340,13 +376,13 @@ const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
         rx: 4, ry: 4, class: boxClass,
       }));
       nodeLayer.appendChild(TL.emit(el('text', {
-        x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 : n.top + n.boxH / 2,
+        x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
         'text-anchor': 'start', class: labelClass,
       }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.label }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
-          x: textX, y: n.top + n.boxH / 2 + 9,
+          x: textX, y: n.top + n.boxH / 2 + 9 + gLabel(n) - gPair(n),
           'text-anchor': 'start', class: noteClass,
         }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
       }
