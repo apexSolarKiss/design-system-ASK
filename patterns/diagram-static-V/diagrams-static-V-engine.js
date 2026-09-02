@@ -301,7 +301,14 @@
        stem and bus stay solid. A single-child parent has no bus → the stem and
        drop form one straight vertical line (the spine). */
     function bottomY(n) {
-      if (n.kind === 'section') return n.cy + (TL.rendersTag(TARGET, n) ? n.boxH / 2 : SECTION_H / 2 - 4);
+      /* Derive from FINAL geometry, not the legacy constant. A tagless section
+         grows boxH and moves its rule down when its label wraps; returning
+         SECTION_H/2 - 4 pinned the stem to the unwrapped bottom, so the
+         connector began ABOVE the rule and crossed it once the label took a
+         second line (measured -3.5px at two lines, -10px at three). Using
+         boxH/2 keeps the established 3px rule-to-stem gap at EVERY line count,
+         and at no wrap boxH === SECTION_H so the result is unchanged. */
+      if (n.kind === 'section') return n.cy + n.boxH / 2 - (TL.rendersTag(TARGET, n) ? 0 : 4);
       return n.cy + n.boxH / 2;
     }
     for (const p of nodes) {

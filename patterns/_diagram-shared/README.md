@@ -68,7 +68,12 @@ V group with a note     the note is now DRAWN, and the group label takes the pai
 Nothing in the current fleet authors either shape, so no existing page moves. A downstream
 V diagram that *does* author one will render differently after re-vendoring, and should:
 the published grammar permits `note` on a group and on a section, and the old behaviour
-spent geometry on invisible text. Re-vendor is render-neutral for every other tree shape.
+spent geometry on invisible text.
+
+These are the two known **structural** exceptions to no-wrap neutrality. Every measured
+current no-wrap page remains byte-identical. **Inputs that exceed a role cap still change
+by design** — wrapping them is the entire point of the contract — so "render-neutral" is a
+statement about the no-wrap path, never about the change as a whole.
 
 ## What the helper does not own — and the trap that follows
 
