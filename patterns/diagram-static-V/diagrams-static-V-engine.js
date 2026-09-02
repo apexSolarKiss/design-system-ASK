@@ -341,7 +341,7 @@
           class: 'section-rule',
           'stroke-opacity': 0.4,
         }));
-        if (n.tag) {
+        if (TL.rendersTag(TARGET, n)) {
           nodeLayer.appendChild(TL.emit(el('text', {
             x: n.cx, y: labelY + 24 + labelDrop,
             'text-anchor': 'middle',
@@ -363,7 +363,7 @@
           'text-anchor': 'middle',
           class: 'node-label root',
         }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
-        if (n.note) {
+        if (TL.rendersNote(TARGET, n)) {
           nodeLayer.appendChild(TL.emit(el('text', {
             x: n.cx, y: n.cy + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'middle',
@@ -374,6 +374,12 @@
       }
 
       if (n.kind === 'group') {
+        /* A group carries the ordinary label/note PAIR geometry and keeps only
+           its own fill treatment. The public tree grammar permits `note` on a
+           group, and the helper's predicate says a group note renders, so the
+           build path measures it and grows the box for it — a branch that then
+           emitted no note would reserve space for text no reader ever sees,
+           which is the exact defect this shared contract exists to remove. */
         nodeLayer.appendChild(el('rect', {
           x: n.cx - n.boxW / 2, y: top,
           width: n.boxW, height: n.boxH,
@@ -382,10 +388,17 @@
           'fill-opacity': 0.5,
         }));
         nodeLayer.appendChild(TL.emit(el('text', {
-          x: n.cx, y: n.cy,
+          x: n.cx, y: n.hasNote ? n.cy - 7 - gPair(n) : n.cy - gLabel(n) / 2,
           'text-anchor': 'middle',
           class: 'node-label',
         }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
+        if (TL.rendersNote(TARGET, n)) {
+          nodeLayer.appendChild(TL.emit(el('text', {
+            x: n.cx, y: n.cy + 9 + gLabel(n) - gPair(n),
+            'text-anchor': 'middle',
+            class: 'node-note',
+          }), n.lay.note.lines, { x: n.cx, lineHeight: n.lay.note.lineHeight }));
+        }
         continue;
       }
 
@@ -402,7 +415,7 @@
         'text-anchor': 'middle',
         class: labelClass,
       }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
-      if (n.note) {
+      if (TL.rendersNote(TARGET, n)) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: n.cy + 9 + gLabel(n) - gPair(n),

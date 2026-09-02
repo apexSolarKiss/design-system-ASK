@@ -363,7 +363,7 @@
           x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
           'text-anchor': 'start', class: 'node-label root',
         }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
-        if (n.note) {
+        if (TL.rendersNote(TARGET, n)) {
           nodeLayer.appendChild(TL.emit(el('text', {
             x: textX, y: n.top + n.boxH / 2 + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'start', class: 'node-note',
@@ -382,7 +382,7 @@
         x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
         'text-anchor': 'start', class: labelClass,
       }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
-      if (n.note) {
+      if (TL.rendersNote(TARGET, n)) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
           x: textX, y: n.top + n.boxH / 2 + 9 + gLabel(n) - gPair(n),

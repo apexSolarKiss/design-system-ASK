@@ -455,7 +455,7 @@
         });
         TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(secText);
-        if (n.tag) {
+        if (TL.rendersTag(TARGET, n)) {
           const tagText = el('text', {
             x: n.x + BOX_PAD_X,
             y: n.y + n.boxH - 12 - gTag(n),
@@ -487,7 +487,7 @@
         });
         TL.emit(rootText, n.lay.label.lines, { x: n.x + ROOT_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(rootText);
-        if (n.note) {
+        if (TL.rendersNote(TARGET, n)) {
           const rootNote = el('text', {
             x: n.x + ROOT_PAD_X,
             y: n.y + n.boxH - 12 - gNote(n),
@@ -514,7 +514,7 @@
         });
         TL.emit(grpText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(grpText);
-        if (n.note) {
+        if (TL.rendersNote(TARGET, n)) {
           const grpNote = el('text', {
             x: n.x + BOX_PAD_X,
             y: n.y + n.boxH - 10 - gNote(n),
@@ -541,7 +541,7 @@
       });
       TL.emit(nodeText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
       nodeLayer.appendChild(nodeText);
-      if (n.note) {
+      if (TL.rendersNote(TARGET, n)) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         const nodeNote = el('text', {
           x: n.x + BOX_PAD_X,
