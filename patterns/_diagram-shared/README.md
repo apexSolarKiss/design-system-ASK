@@ -101,7 +101,11 @@ a token still over its cap  force-broken, and only then
 
 A visual line boundary does not corrupt an identifier: no source character is inserted, removed,
 reordered or normalized. The helper returns two parallel forms — `segments`, the exact partition
-where `segments.join('')` reproduces the source byte for byte, and `lines`, the rendered payload,
+where `segments.join('') === source` proves exact runtime string equality, and `lines`, the rendered payload,
 which drops only trailing whitespace at a boundary so a `text-anchor: middle` run centres on its
 glyphs. Keeping them apart is what lets the preservation gate assert exact identity without
 pushing stray whitespace into the DOM.
+
+That is a claim about the runtime JavaScript string, not about file bytes: two different literal
+spellings or encodings can produce the same runtime string. Source-file byte preservation is a
+separate fact, established because every `*.source.js` path is outside this change.

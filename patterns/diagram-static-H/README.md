@@ -38,7 +38,7 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 ## How to use it
 
-1. Copy the seven files in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar).
+1. Copy the **complete eight-file bundle** in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar). **All eight, including `diagrams-text-layout.js`** — the engine fails closed on a missing support carrier, so a seven-file copy renders nothing and names the file it wants.
 2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-H.html` and `diagram-static-H.source.js` to match your project (e.g. `[your-project]_architecture-tree.html` and `[your-project]_architecture-tree.source.js`); update the `<script src>` reference in the HTML accordingly.
 4. Edit `diagram-static-H.source.js`: replace the placeholder tree with your project's actual structure. The tree shape is `{ kind, label, note?, tag?, status?, children? }`. **`tag` is valid only on `kind: 'section'`** (it renders as the section's `// <tag>` subtitle); the engine does not read `tag` on `root`, `group`, or ordinary `node` records. For secondary text beneath a root, group, or ordinary node, use **`note`**.
