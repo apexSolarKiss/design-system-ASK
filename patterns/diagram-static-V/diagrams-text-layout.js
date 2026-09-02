@@ -16,15 +16,24 @@
      EXPLICITLY EXCLUDED diagram-static-FLOW · diagram-interactive-spine
 
    FLOW is the fourth Class A static sibling, not an omission. It publishes the
-   SAME entry point — window.DIAGRAMS.render — so that is not the difference.
-   The difference is the node grammar it renders:
+   SAME entry point — window.DIAGRAMS.render — and it DOES draw note and tag
+   text: its grammar declares band.tag, carrier.note and field.tag, it emits
+   `flow-tag` and `node-note` runs, and it inherits the byte-identical
+   diagrams.css these role metrics were selected against. So "FLOW has nothing
+   to cap" would be false.
 
-     H / V / SEQ   window.TREE_DIAGRAM · {kind, label, note?, tag?, status?, children?}
-     FLOW          window.FLOW_DIAGRAM · band / carrier / rail / field / converge / spine
+   The difference is the record SHAPE the predicates dispatch on:
 
-   There is no `note` or `tag` role to cap, and no per-role metric here that
-   FLOW could ask for, so extending this helper to it would be a mandate nobody
-   granted. The interactive spine takes no text-layout dependency at all. The
+     H / V / SEQ   window.TREE_DIAGRAM · a KIND-TAGGED node
+                   {kind, label, note?, tag?, status?, children?}
+     FLOW          window.FLOW_DIAGRAM · POSITIONAL structure
+                   band / carrier / rail / field / converge / spine
+
+   roleFor, rendersNote and rendersTag all read node.kind, node.note and
+   node.tag from a kind-tagged record. FLOW has no `kind` field for them to
+   dispatch on, so serving it would mean designing a second, structurally
+   different target contract — a mandate nobody granted, not a gap. The
+   interactive spine takes no text-layout dependency at all. The
    `patterns/_diagram-shared/` plane keeps a generic name and confers no
    authority over every diagram pattern; each member declares its own targets.
 
@@ -74,12 +83,25 @@
                 never a target: text is not padded toward it and lines are not
                 balanced, so the same string at the same cap always produces the
                 same lines regardless of what surrounds it.
-     lineHeight line ADVANCE when a run wraps — the baseline-to-baseline step,
-                so each value sits above its role's rendered font-size in
-                diagrams.css rather than equalling it, and a wrapped line cannot
-                collide with the next. (`diagrams.css` declares no line-height on
-                these SVG classes; the advance lives here because only this file
-                emits the tspans that use it.)
+     lineHeight line ADVANCE when a run wraps — the baseline-to-baseline step.
+                Each value exceeds its role's rendered font-size, but font-size
+                is not what governs collision; the glyph box is. Measured against
+                the font's own bounding box (Inter / JetBrains Mono, as loaded):
+
+                  role        advance   fontBox   margin
+                  root           17        17        0
+                  label          16        16        0
+                  section        13        11       +2
+                  sectionTag     12        10       +2
+                  note           12        11       +1
+
+                So `root` and `label` carry NO margin beyond the font box: an
+                extreme pair — a descender directly above a ring or umlaut
+                capital — can touch. Ordinary text clears by about a pixel. This
+                is a chosen advance that clears typical content, NOT a proof that
+                two lines cannot collide, and it should not be written up as one.
+                (`diagrams.css` declares no line-height on these SVG classes; the
+                advance lives here because only this file emits the tspans.)
 
      Selected on REAL RENDERS against both excess emptiness and fitted
      readability. `label` is deliberately loose: a tighter 420 was measured and
