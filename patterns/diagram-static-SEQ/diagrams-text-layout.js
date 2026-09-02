@@ -1,11 +1,19 @@
 /* diagrams-text-layout.js
-   CANONICAL. The single text-layout contract shared by the H, V and SEQ static
-   diagram engines.
+
+   AUTHORITATIVE SOURCE PATH
+     patterns/_diagram-shared/diagrams-text-layout.js
+
+   Copies under diagram-static-H / diagram-static-V / diagram-static-SEQ are
+   generated mirrors. Identical bytes do not confer authority: a mirror is a
+   transport artifact, never the pin target, and never hand-edited.
+
+   The single text-layout contract shared by the H, V and SEQ static diagram
+   engines.
 
    TARGET SET, declared here rather than implied by this folder's name:
 
-     HVS_TEXT_LAYOUT_TARGETS   diagram-static-H · diagram-static-V · diagram-static-SEQ
-     EXPLICITLY EXCLUDED       diagram-static-FLOW · diagram-interactive-spine
+     TARGETS             diagram-static-H · diagram-static-V · diagram-static-SEQ
+     EXPLICITLY EXCLUDED diagram-static-FLOW · diagram-interactive-spine
 
    FLOW is the fourth Class A static sibling, not an omission. It carries a
    different grammar — window.FLOW_DIAGRAM against H/V/SEQ's
@@ -16,24 +24,75 @@
    authority over every diagram pattern; each member declares its own targets.
 
    WHAT THIS OWNS
-     exact measurement · role metrics · cap application · deterministic line
-     breaking · wrapped height · tspan emission
+     line breaking   delimiter matching, longest-first, and force-break
+     measurement     wrapped width and height for a given role cap
+     role metrics    per-role cap, line height, and the has-note predicate
+     tspan emission  the emitted text structure for a wrapped label or note
+
+   An engine that keeps a private copy of any of those is the divergence this
+   file exists to remove. That is why the caps and line heights live HERE and
+   are requested by role, and why the rendered-secondary predicate is resolved
+   HERE and is target-aware: three separate copies of one predicate is exactly
+   how V came to grant box height to a section note that V never draws.
 
    WHAT IT DOES NOT OWN
-     source grammar · topology · placement · connector geometry · the final SVG
-     envelope. Those stay with each engine, because H, V and SEQ have genuinely
-     different geometry contracts and collapsing them would be a fourth engine
-     wearing three names.
+     source grammar · topology · placement · connector geometry · anchoring ·
+     the final SVG envelope · fonts and letter-spacing, which are CSS-derived
+     and stay with the engine that owns the stylesheet.
 
-   MEASUREMENT PARITY IS THE FIRST GATE. measure() reproduces what each engine's
-   preMeasure does today, letter-spacing compensation included, so a string that
-   does not wrap measures byte-for-byte as it did before this file existed. That
-   is what lets the no-wrap case prove A == L rather than merely look unchanged.
+   MEASUREMENT PARITY IS THE FIRST GATE. For a string that does not wrap, the
+   returned width must equal what each engine's preMeasure produced before this
+   file existed, letter-spacing compensation included — colMaxW is a max over
+   those widths and colX accumulates them, so a sub-pixel difference relocates
+   every column before placement is reached. The floor fails at measurement or
+   not at all.
 */
 (function () {
   'use strict';
 
-  var VERSION = '1.0.0';
+  var VERSION = '2.0.0';
+
+  var TARGETS = ['diagram-static-H', 'diagram-static-V', 'diagram-static-SEQ'];
+  var EXCLUDED = ['diagram-static-FLOW', 'diagram-interactive-spine'];
+
+  /* ROLE METRICS — owned here, requested by role.
+
+     cap        maximum rendered text width in px before wrapping. A MAXIMUM,
+                never a target: text is not padded toward it and lines are not
+                balanced, so the same string at the same cap always produces the
+                same lines regardless of what surrounds it.
+     lineHeight line advance when a run wraps, mirroring the rendered font-size
+                in diagrams.css so a wrapped line cannot collide with the next.
+
+     Selected on REAL RENDERS against both excess emptiness and fitted
+     readability. `label` is deliberately loose: a tighter 420 was measured and
+     rejected because these diagrams are height-constrained when fitted, so
+     trading width for height loses. The fleet percentiles behind the selection
+     belong in the PR evidence, not in runtime source. */
+  var ROLE_METRICS = {
+    root:       { cap: 420, lineHeight: 17 },
+    section:    { cap: 400, lineHeight: 13 },
+    sectionTag: { cap: 400, lineHeight: 12 },
+    label:      { cap: 700, lineHeight: 16 },
+    note:       { cap: 720, lineHeight: 12 }
+  };
+
+  /* Per-target shape. SEQ is a linear stacked run with no section branch: every
+     non-root node renders as a label, and a `kind: 'section'` record there is an
+     ordinary node that DOES render its note. H and V draw a section as
+     label + rule + tag and never its note. That difference is the whole reason
+     the predicate is target-aware rather than global. */
+  var TARGET_SHAPE = {
+    'diagram-static-H':   { sections: true },
+    'diagram-static-V':   { sections: true },
+    'diagram-static-SEQ': { sections: false }
+  };
+
+  function shapeOf(target) {
+    var s = TARGET_SHAPE[target];
+    if (!s) throw new Error('diagrams-text-layout: unknown target "' + target + '"');
+    return s;
+  }
 
   /* One canvas context for the life of the page. Creating one per call is the
      obvious cost, but the real reason to share it is determinism: a context
@@ -42,8 +101,7 @@
   var ctx = document.createElement('canvas').getContext('2d');
 
   /* canvas.measureText DROPS CSS letter-spacing, which the SVG text then
-     applies. Each engine already compensates by adding length x spacing; the
-     helper carries that same correction so a vendored engine and this file
+     applies. The correction lives here so a vendored engine and this file
      cannot drift apart on it. ls is px-per-character, i.e. em x font-size,
      computed by the caller from diagrams.css. */
   function measure(text, font, ls) {
@@ -55,76 +113,183 @@
     return w;
   }
 
-  /* Deterministic greedy break on existing whitespace. Two rules make it
-     deterministic rather than merely reasonable:
+  function rtrim(s) { return s.replace(/\s+$/, ''); }
 
-       1. a token is NEVER split. A single token wider than the cap occupies its
-          own line and overflows it. Splitting mid-token would corrupt an
-          identifier, a path or a repo slug — the exact strings these diagrams
-          exist to name — and no cap is worth that. The engine's column width
-          accounts for the overflow through the returned width.
+  /* ---------- the approved break contract ----------
 
-       2. the cap is a MAXIMUM, never a target. Text is not padded toward it and
-          lines are not balanced, so the same string with the same cap always
-          produces the same lines regardless of what surrounds it.
+     Delimiters are matched LONGEST-FIRST — `//` before `/` — breaking AFTER the
+     delimiter; force-break only a single token that still exceeds its cap
+     alone; an authored `\n` stays a hard break.
 
-     A falsy maxWidth disables wrapping entirely. Every role in every current
-     consumer passes a finite cap, so that path is available rather than
-     exercised — do not read it as a supported no-wrap mode.
+     A visual line boundary does not corrupt an identifier: no source character
+     is inserted, removed, reordered or normalized. `segments` is the exact
+     partition — segments.join('') reproduces the source byte for byte — while
+     `lines` is the rendered payload, which drops only trailing whitespace at a
+     boundary so a `text-anchor: middle` run centres on its glyphs. Keeping the
+     two apart is what lets the preservation gate assert exact identity without
+     pushing stray whitespace into the DOM. */
 
-     Returns the measured width of the WIDEST line, which is what a column
-     needs — not the cap, and not the unwrapped width. */
-  function breakLines(text, font, ls, maxWidth) {
-    var s = String(text === null || text === undefined ? '' : text);
-    if (!s) return { lines: [''], width: 0 };
-    var full = measure(s, font, ls);
-    if (!maxWidth || full <= maxWidth) return { lines: [s], width: full };
-
-    var words = s.split(/(\s+)/).filter(function (t) { return t.length; });
-    var lines = [];
-    var cur = '';
-    for (var i = 0; i < words.length; i++) {
-      var w = words[i];
-      if (/^\s+$/.test(w)) { if (cur) cur += w; continue; }
-      var trial = cur ? cur + w : w;
-      if (!cur || measure(trial.replace(/\s+$/, ''), font, ls) <= maxWidth) {
-        cur = trial;
-      } else {
-        lines.push(cur.replace(/\s+$/, ''));
-        cur = w;
+  /* Atoms are the units a line is built from. An atom boundary is a legal break
+     point AFTER that atom, so the delimiter or the whitespace stays with the
+     line it ends — which is what "break after the delimiter" means, and what
+     makes concatenation exact. */
+  function atomize(s) {
+    var atoms = [], cur = '', i = 0;
+    while (i < s.length) {
+      var c = s.charAt(i);
+      if (c === '/') {
+        if (s.charAt(i + 1) === '/') { cur += '//'; i += 2; }   // longest-first
+        else { cur += '/'; i += 1; }
+        atoms.push(cur); cur = '';
+        continue;
       }
+      if (/\s/.test(c)) {
+        while (i < s.length && /\s/.test(s.charAt(i))) { cur += s.charAt(i); i++; }
+        atoms.push(cur); cur = '';
+        continue;
+      }
+      cur += c; i++;
     }
-    if (cur) lines.push(cur.replace(/\s+$/, ''));
-    if (!lines.length) lines = [s];
+    if (cur !== '') atoms.push(cur);
+    return atoms;
+  }
 
-    var widest = 0;
-    for (var j = 0; j < lines.length; j++) {
-      var lw = measure(lines[j], font, ls);
+  /* Force-break, applied ONLY to a single atom that still exceeds the cap on a
+     line of its own. Greedy by character; a single character wider than the cap
+     is placed anyway rather than looping forever. */
+  function forceBreak(atom, font, ls, cap) {
+    var out = [], cur = '';
+    for (var i = 0; i < atom.length; i++) {
+      var ch = atom.charAt(i);
+      if (cur !== '' && measure(rtrim(cur + ch), font, ls) > cap) { out.push(cur); cur = ch; }
+      else cur += ch;
+    }
+    if (cur !== '') out.push(cur);
+    return out.length ? out : [atom];
+  }
+
+  function breakSegment(body, font, ls, cap) {
+    var atoms = atomize(body), segs = [], cur = '';
+    function place(a) {
+      if (measure(rtrim(a), font, ls) > cap) {
+        var pieces = forceBreak(a, font, ls, cap);
+        for (var k = 0; k < pieces.length - 1; k++) segs.push(pieces[k]);
+        cur = pieces[pieces.length - 1];
+      } else cur = a;
+    }
+    for (var i = 0; i < atoms.length; i++) {
+      var a = atoms[i];
+      if (cur === '') { place(a); continue; }
+      if (measure(rtrim(cur + a), font, ls) <= cap) cur = cur + a;
+      else { segs.push(cur); place(a); }
+    }
+    if (cur !== '') segs.push(cur);
+    return segs.length ? segs : [body];
+  }
+
+  function breakLines(text, font, ls, cap) {
+    var s = String(text === null || text === undefined ? '' : text);
+    if (!s) return { segments: [''], lines: [''], width: 0 };
+
+    /* The no-wrap fast path returns the source VERBATIM — no atomizing, no
+       trimming — so a string that does not wrap emits exactly the DOM it
+       emitted before this file existed. */
+    if (s.indexOf('\n') === -1) {
+      var full = measure(s, font, ls);
+      if (!cap || full <= cap) return { segments: [s], lines: [s], width: full };
+    }
+
+    /* Authored newlines are HARD breaks. The `\n` stays at the end of its own
+       segment so the exact source is reconstructible by concatenation. */
+    var parts = s.split('\n'), segs = [];
+    for (var h = 0; h < parts.length; h++) {
+      var body = parts[h];
+      var sub = (!cap || measure(rtrim(body), font, ls) <= cap)
+        ? [body] : breakSegment(body, font, ls, cap);
+      if (h < parts.length - 1) sub[sub.length - 1] = sub[sub.length - 1] + '\n';
+      for (var q = 0; q < sub.length; q++) segs.push(sub[q]);
+    }
+
+    var lines = [], widest = 0;
+    for (var j = 0; j < segs.length; j++) {
+      var ln = rtrim(segs[j]);
+      lines.push(ln);
+      var lw = measure(ln, font, ls);
       if (lw > widest) widest = lw;
     }
-    return { lines: lines, width: widest };
+    return { segments: segs, lines: lines, width: widest };
+  }
+
+  /* ---------- role-aware entry points ---------- */
+
+  function metricsFor(target, role) {
+    shapeOf(target);
+    var m = ROLE_METRICS[role];
+    if (!m) throw new Error('diagrams-text-layout: unknown role "' + role + '"');
+    return m;
+  }
+
+  /* The label role a node takes on a given target. */
+  function roleFor(target, node) {
+    var kind = (node && node.kind) || 'node';
+    if (kind === 'root') return 'root';
+    if (kind === 'section' && shapeOf(target).sections) return 'section';
+    return 'label';
+  }
+
+  /* Does this node actually RENDER a note / a tag on this target? These are the
+     predicates that decide both measured width and granted box height, so a
+     divergence between them and the render branch shows up as empty space
+     nobody asked for. */
+  function rendersNote(target, node) {
+    if (!node || !node.note) return false;
+    var kind = node.kind || 'node';
+    return !(shapeOf(target).sections && kind === 'section');
+  }
+
+  function rendersTag(target, node) {
+    if (!node || !node.tag) return false;
+    var kind = node.kind || 'node';
+    return !!(shapeOf(target).sections && kind === 'section');
+  }
+
+  /* True when the node renders ANY secondary run beneath its label — the
+     has-note predicate the engines used to each define for themselves. */
+  function hasRenderedSecondary(target, node) {
+    return rendersNote(target, node) || rendersTag(target, node);
   }
 
   /* The one call an engine makes per string.
 
-     spec = { text, font, ls, maxWidth, lineHeight }
+       spec = { target, role, text, font, letterSpacing }
 
-     Returns { lines, count, width, height, wrapped }.
+     Returns { lines, segments, count, width, addedHeight, lineHeight, cap, wrapped }.
 
-     height is the ADDED height beyond a single line, not the total: an engine
+     addedHeight is the height beyond a SINGLE line, not the total: an engine
      already knows what one line costs inside its own box model, and returning a
-     total would make the helper responsible for box geometry it does not own.
-     At no wrap height is 0 and wrapped is false, which is what keeps the
-     no-wrap path byte-identical. */
-  function layout(spec) {
-    var r = breakLines(spec.text, spec.font, spec.ls || 0, spec.maxWidth || 0);
+     total would make this file responsible for box geometry it does not own. At
+     no wrap addedHeight is 0 and wrapped is false, which is what keeps the
+     no-wrap path byte-identical.
+
+     NOTE FOR CONSUMERS: because addedHeight is what the box GREW by, a run
+     anchored to the box's bottom or centre must subtract its own addedHeight.
+     Anchoring the FIRST baseline to a grown edge deposits the new height as
+     dead space at one end and pushes the remaining lines out of the box at the
+     other. That failure is silent — nothing collides, nothing leaves the
+     viewBox — so only a containment assertion catches it. */
+  function layoutRole(spec) {
+    var m = metricsFor(spec.target, spec.role);
+    var ls = spec.letterSpacing || 0;
+    var r = breakLines(spec.text, spec.font, ls, m.cap);
     var count = r.lines.length;
-    var lh = spec.lineHeight || 0;
     return {
       lines: r.lines,
+      segments: r.segments,
       count: count,
       width: r.width,
-      height: count > 1 ? (count - 1) * lh : 0,
+      addedHeight: count > 1 ? (count - 1) * m.lineHeight : 0,
+      lineHeight: m.lineHeight,
+      cap: m.cap,
       wrapped: count > 1
     };
   }
@@ -155,10 +320,14 @@
 
   window.DIAGRAM_TEXT_LAYOUT = {
     VERSION: VERSION,
-    TARGETS: ['diagram-static-H', 'diagram-static-V', 'diagram-static-SEQ'],
-    EXCLUDED: ['diagram-static-FLOW', 'diagram-interactive-spine'],
+    TARGETS: TARGETS,
+    EXCLUDED: EXCLUDED,
     measure: measure,
-    layout: layout,
+    layoutRole: layoutRole,
+    roleFor: roleFor,
+    rendersNote: rendersNote,
+    rendersTag: rendersTag,
+    hasRenderedSecondary: hasRenderedSecondary,
     emit: emit
   };
 })();
