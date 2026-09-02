@@ -45,7 +45,11 @@
      error names nothing useful. */
   if (!window.DIAGRAM_TEXT_LAYOUT
       || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
-      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.roleFor !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersNote !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersTag !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.hasRenderedSecondary !== 'function'
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
@@ -61,13 +65,15 @@
       + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
   }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
+  /* This engine's identity in the shared contract. Role caps, line heights and
+     the rendered-secondary predicate are RESOLVED BY THE HELPER against it —
+     this file deliberately keeps no copy of any of them. */
+  const TARGET = 'diagram-static-V';
 
-  /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
-     REAL RENDERS in U6 against both excess emptiness and fitted readability.
-     This engine keeps its OWN geometry contract: it consumes wrapped width and
-     wrapped height from the shared helper and does not import H's anchor solver. */
-  const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
-  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
+  /* Role caps and line heights are NOT defined here. They live in
+     diagrams-text-layout.js and are requested by role, because three engines
+     each holding their own copy is precisely the divergence the shared contract
+     exists to remove. */
   /* ---------- layout constants ---------- */
   const DEPTH_GAP = 58;      // vertical gap between depth bands (room for edges)
   const SIB_GAP   = 30;      // min horizontal gap between sibling boxes
@@ -110,9 +116,9 @@
      the run's remaining lines out the other. A label/note PAIR is centred as
      one block, so each is offset by half the pair's combined growth and the
      gap between them is preserved exactly. */
-  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
-  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
-  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.addedHeight   : 0);
   const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
@@ -144,7 +150,11 @@
     function build(node, depth, parentIdx) {
       const kind = node.kind || 'node';
       const status = node.status || 'earned';
-      const hasNote = !!(node.note || (kind === 'section' && node.tag));
+      /* Resolved by the helper. This engine previously counted a SECTION's note
+         here even though its section branch draws label + rule + tag and never a
+         note, so a section with a note was granted BOX_H_NOTE for text no reader
+         sees. That is the divergence three private predicates produce. */
+      const hasNote = TL.hasRenderedSecondary(TARGET, node);
 
       // measured content width
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
@@ -152,24 +162,23 @@
       /* Measured through the shared helper. A non-wrapping string returns EXACTLY
          what the local measure() returned before, letter-spacing compensation
          included — that parity is what lets the no-wrap case prove identity. */
-      const labelRole = kind === 'root' ? 'root' : kind === 'section' ? 'section' : 'label';
-      const labelLay = TL.layout({ text: displayLabel, font: fontFor(node),
-        ls: kind === 'section' ? LS_SECTION : 0, maxWidth: CAP[labelRole],
-        lineHeight: LINE_H[labelRole] });
+      const labelLay = TL.layoutRole({ target: TARGET, role: TL.roleFor(TARGET, node),
+        text: displayLabel, font: fontFor(node),
+        letterSpacing: kind === 'section' ? LS_SECTION : 0 });
       const labelW = labelLay.width;
       let noteW = 0, noteLay = null, tagLay = null;
       /* Only measure notes for kinds that actually render them. The section
          branch draws label + rule + tag and never a note, so measuring one
          here would widen the band and inflate boxH for text no reader ever
          sees. H guards the same case for the same reason. */
-      if (node.note && kind !== 'section') {
-        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
-          maxWidth: CAP.note, lineHeight: LINE_H.note });
+      if (TL.rendersNote(TARGET, node)) {
+        noteLay = TL.layoutRole({ target: TARGET, role: 'note',
+          text: node.note, font: FONT_NOTE, letterSpacing: LS_NOTE });
         noteW = noteLay.width;
       }
-      if (kind === 'section' && node.tag) {
-        tagLay = TL.layout({ text: '// ' + node.tag, font: FONT_TAG, ls: LS_TAG,
-          maxWidth: CAP.sectionTag, lineHeight: LINE_H.sectionTag });
+      if (TL.rendersTag(TARGET, node)) {
+        tagLay = TL.layoutRole({ target: TARGET, role: 'sectionTag',
+          text: '// ' + node.tag, font: FONT_TAG, letterSpacing: LS_TAG });
         noteW = Math.max(noteW, tagLay.width);
       }
       const contentW = Math.max(labelW, noteW);
@@ -178,7 +187,7 @@
          max boxH at a depth, and horizontal packing takes boxW. Both absorb the
          growth without any anchor solver — V has no same-depth vertical
          adjacency to solve, because every depth IS one horizontal band. */
-      const grow = (labelLay.height) + (noteLay ? noteLay.height : 0) + (tagLay ? tagLay.height : 0);
+      const grow = (labelLay.addedHeight) + (noteLay ? noteLay.addedHeight : 0) + (tagLay ? tagLay.addedHeight : 0);
 
       // box width / height per kind. Sections have no box; their footprint is
       // the wider of the centered label/tag and the centered rule.
@@ -326,7 +335,7 @@
           x: n.cx, y: labelY,
           'text-anchor': 'middle',
           class: 'node-label section',
-        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.section }));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
         nodeLayer.appendChild(el('line', {
           x1: n.cx - SECTION_RULE_HALF, y1: labelY + 11 + labelDrop,
           x2: n.cx + SECTION_RULE_HALF, y2: labelY + 11 + labelDrop,
@@ -338,7 +347,7 @@
             x: n.cx, y: labelY + 24 + labelDrop,
             'text-anchor': 'middle',
             class: 'section-tag',
-          }), n.lay.tag.lines, { x: n.cx, lineHeight: LINE_H.sectionTag }));
+          }), n.lay.tag.lines, { x: n.cx, lineHeight: n.lay.label.lineHeightTag }));
         }
         continue;
       }
@@ -354,13 +363,13 @@
           x: n.cx, y: n.hasNote ? n.cy - 8 - gPair(n) : n.cy - gLabel(n) / 2,
           'text-anchor': 'middle',
           class: 'node-label root',
-        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.root }));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
         if (n.note) {
           nodeLayer.appendChild(TL.emit(el('text', {
             x: n.cx, y: n.cy + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'middle',
             class: 'node-note',
-          }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));
+          }), n.lay.note.lines, { x: n.cx, lineHeight: n.lay.note.lineHeight }));
         }
         continue;
       }
@@ -377,7 +386,7 @@
           x: n.cx, y: n.cy,
           'text-anchor': 'middle',
           class: 'node-label',
-        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.label }));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
         continue;
       }
 
@@ -393,14 +402,14 @@
         x: n.cx, y: n.hasNote ? n.cy - 7 - gPair(n) : n.cy - gLabel(n) / 2,
         'text-anchor': 'middle',
         class: labelClass,
-      }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.label }));
+      }), n.lay.label.lines, { x: n.cx, lineHeight: n.lay.label.lineHeight }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: n.cy + 9 + gLabel(n) - gPair(n),
           'text-anchor': 'middle',
           class: noteClass,
-        }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));
+        }), n.lay.note.lines, { x: n.cx, lineHeight: n.lay.note.lineHeight }));
       }
     }
 

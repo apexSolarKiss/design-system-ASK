@@ -29,7 +29,11 @@
      truthiness test and then fail deep inside layout, where the error names nothing useful. */
   if (!window.DIAGRAM_TEXT_LAYOUT
       || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
-      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.roleFor !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersNote !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersTag !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.hasRenderedSecondary !== 'function'
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
@@ -45,6 +49,10 @@
       + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
   }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
+  /* This engine's identity in the shared contract. Role caps, line heights and
+     the rendered-secondary predicate are RESOLVED BY THE HELPER against it —
+     this file deliberately keeps no copy of any of them. */
+  const TARGET = 'diagram-static-H';
   /* ---------- layout constants ---------- */
   const GAP_WITHIN  = 6;    // vertical gap between sibling boxes of the SAME parent (within a group)
   const GAP_BETWEEN = 18;   // vertical gap at a group / section boundary (parent change) — keeps groups distinct
@@ -71,25 +79,10 @@
   const LS_TAG     = 1.44;  // .section-tag         letter-spacing:0.16em × font-size:9px   (FONT_TAG)
   const LS_NOTE    = 0.2;   // .node-note           letter-spacing:0.02em × font-size:10px  (FONT_NOTE)
 
-  /* ROLE CAPS — maximum rendered text width in px, per role, before wrapping.
-     Selected on REAL RENDERS in U6 against both excess emptiness and fitted
-     readability, not chosen to minimize canvas area: a narrower page that needs
-     more zoom to read is not an improvement. Infinity disables wrapping for a
-     role, which is also the value that makes the no-wrap identity trivially
-     reachable for any role U6 leaves uncapped. */
-  const CAP = {
-    root:        420,   // fleet max 264px — no current root wraps; the bound governs FUTURE content
-    section:     400,   // fleet p90 312px
-    sectionTag:  400,   // fleet p90 759px, max 1626px
-    label:       700,   // fleet max 660px — no current label wraps; a future-content guard.
-                        // A tighter 420 was measured and REJECTED: it added 18 wrapped runs and
-                        // regressed fitted zoom on two pages, because these diagrams are
-                        // height-constrained when fitted, so trading width for height loses.
-    note:        720,   // the emptiness driver: fleet median 421px, max 3487px
-  };
-  /* Line advance per role when a string wraps. Each mirrors the rendered
-     font-size in diagrams.css; a wrapped line must not collide with the next. */
-  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
+  /* Role caps and line heights are NOT defined here. They live in
+     diagrams-text-layout.js and are requested by role, because three engines
+     each holding their own copy is precisely the divergence the shared contract
+     exists to remove. */
 
   /* Text measurement lives ENTIRELY in diagrams-text-layout.js. This engine
      keeps no local canvas context and no local measure(): a second
@@ -103,9 +96,9 @@
      grown edge deposits the new height as dead space on one side and pushes
      the run's remaining lines out the other. A run anchored to the box TOP
      needs no correction, because it grows in the direction the box grew. */
-  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
-  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
-  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.addedHeight   : 0);
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -142,10 +135,9 @@
          the local measure() returned before this file consumed the plane — that
          parity is the first no-wrap gate. The width a column needs is the widest
          RESULTING line, never the cap and never the unwrapped width. */
-      const labelRole = kind === 'root' ? 'root' : kind === 'section' ? 'section' : 'label';
-      const labelLay = TL.layout({ text: displayLabel, font: fontFor(node),
-        ls: kind === 'section' ? LS_SECTION : 0, maxWidth: CAP[labelRole],
-        lineHeight: LINE_H[labelRole] });
+      const labelLay = TL.layoutRole({ target: TARGET, role: TL.roleFor(TARGET, node),
+        text: displayLabel, font: fontFor(node),
+        letterSpacing: kind === 'section' ? LS_SECTION : 0 });
       const labelW = labelLay.width;
       // Only measure notes for kinds that actually render them. The section branch
       // renders label + tag + rule but NOT the note, so a section note must not affect
@@ -153,14 +145,14 @@
       // spans (see the regression case in diagram-static-H.source.js). Section tags ARE
       // rendered, so they are still measured just below.
       let noteW = 0, noteLay = null, tagLay = null;
-      if (node.note && kind !== 'section') {
-        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
-          maxWidth: CAP.note, lineHeight: LINE_H.note });
+      if (TL.rendersNote(TARGET, node)) {
+        noteLay = TL.layoutRole({ target: TARGET, role: 'note',
+          text: node.note, font: FONT_NOTE, letterSpacing: LS_NOTE });
         noteW = noteLay.width;
       }
-      if (kind === 'section' && node.tag) {
-        tagLay = TL.layout({ text: '// ' + node.tag, font: FONT_TAG, ls: LS_TAG,
-          maxWidth: CAP.sectionTag, lineHeight: LINE_H.sectionTag });
+      if (TL.rendersTag(TARGET, node)) {
+        tagLay = TL.layoutRole({ target: TARGET, role: 'sectionTag',
+          text: '// ' + node.tag, font: FONT_TAG, letterSpacing: LS_TAG });
         noteW = Math.max(noteW, tagLay.width);
       }
       /* Cache the resolved lines on the SOURCE node so place() and render() reuse
@@ -195,28 +187,29 @@
     const nodes = [];
     const edges = [];
     let yCursor = PAGE_PAD_Y;
+    /* The SECOND cursor. yCursor consumes baseH and produces L, the exact anchor
+       today's renderer makes. a0Cursor consumes boxH and produces A0, the
+       provisional skeleton once wrapped leaf heights enter. A0 is NOT the legacy
+       render once any growth is non-zero, and nothing here calls it that. */
+    let a0Cursor = PAGE_PAD_Y;
     let prevLeafParent;            // parent idx of the previously placed leaf (undefined before the first)
+    let lastLeafIdx = null;        // previous leaf in TRAVERSAL order — may be at another depth
     function place(node, depth, parent) {
       const kind = node.kind || 'node';
       const status = node.status || 'earned';
-      // True when this kind actually RENDERS a second line under its label — the same
-      // predicate preMeasure uses for width, so measured and rendered content stay in
-      // step on both axes. The section branch draws label + tag + rule but never the
-      // note, so a section note earns neither width nor height; a section tag earns
-      // both. Every other kind renders its note.
-      const hasNote = !!(
-        (kind !== 'section' && node.note) ||
-        (kind === 'section' && node.tag)
-      );
+      // Whether this node RENDERS a second line under its label — resolved by the
+      // helper, on the same terms preMeasure used for width, so measured and
+      // rendered content cannot drift apart on either axis.
+      const hasNote = TL.hasRenderedSecondary(TARGET, node);
       /* TWO HEIGHTS, deliberately. baseH is what the CURRENT renderer produces and
          is what the legacy anchors L are measured from; boxH additionally carries
          wrapped growth. At no wrap they are equal, which is why the solver below
          resolves to L exactly rather than approximately. */
       const baseH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
       const lay = LAY.get(node) || {};
-      const grow = (lay.label ? lay.label.height : 0)
-                 + (lay.note ? lay.note.height : 0)
-                 + (lay.tag ? lay.tag.height : 0);
+      const grow = (lay.label ? lay.label.addedHeight : 0)
+                 + (lay.note ? lay.note.addedHeight : 0)
+                 + (lay.tag ? lay.tag.addedHeight : 0);
       const boxH = baseH + grow;
       const boxW = colMaxW[depth];
       const x = colX[depth];
@@ -224,7 +217,8 @@
       const idx = nodes.length;
       const rec = {
         ...node, depth, x, boxW, boxH, baseH, hasNote, lay,
-        status, kind, childIndices: [], centerY: 0, y: 0, L: 0,
+        status, kind, childIndices: [], centerY: 0, y: 0, L: 0, A0: 0,
+        leafGap: 0, prevLeafIdx: null,
       };
       nodes.push(rec);
       if (parent !== null && parent !== undefined) {
@@ -233,18 +227,30 @@
       }
 
       if (!node.children || node.children.length === 0) {
-        // leaf — advance the cursor; tight within a group, wider across a boundary
-        if (prevLeafParent !== undefined) {
-          yCursor += (parent === prevLeafParent) ? GAP_WITHIN : GAP_BETWEEN;
-        }
+        /* Leaf. Both cursors advance under the SAME existing gap predicate —
+           tight within a group, wider across a boundary. A wrapped leaf needs no
+           new rule: a0Cursor already consumes boxH, so a taller leaf displaces
+           what follows by exactly its own growth. When every growth is 0,
+           boxH === baseH and A0 === L for every node, by construction. */
+        const gap = (prevLeafParent === undefined)
+          ? 0
+          : ((parent === prevLeafParent) ? GAP_WITHIN : GAP_BETWEEN);
+        yCursor  += gap;
+        a0Cursor += gap;
         rec.y = yCursor;
-        rec.L = yCursor + baseH / 2;          // the EXACT legacy anchor
+        rec.L  = yCursor  + baseH / 2;        // the EXACT legacy anchor
+        rec.A0 = a0Cursor + boxH  / 2;        // the provisional wrapped anchor
         rec.centerY = rec.L;
-        yCursor += baseH;
+        rec.leafGap = gap;                    // the gap that applied BEFORE this leaf
+        rec.prevLeafIdx = lastLeafIdx;        // adjacency in TRAVERSAL order
+        yCursor  += baseH;
+        a0Cursor += boxH;
+        lastLeafIdx = idx;
         prevLeafParent = parent;
       } else {
         for (const c of node.children) place(c, depth + 1, idx);
-        rec.L = nodes[rec.childIndices[0]].L;              // top-aligned to first child
+        rec.L  = nodes[rec.childIndices[0]].L;             // top-aligned to first child
+        rec.A0 = nodes[rec.childIndices[0]].A0;            // the same relation on A0
         rec.centerY = rec.L;
         rec.y = rec.centerY - boxH / 2;
       }
@@ -306,6 +312,19 @@
         byDepth.get(n.depth).push(i);
       });
 
+      /* TWO CONSTRAINT FAMILIES. Neither subsumes the other, and the drawing is
+         wrong without both:
+
+           same-depth adjacency   two boxes in one column may be separated by
+                                  many leaves in traversal order
+           adjacent leaves        two leaves adjacent in traversal order may sit
+                                  at DIFFERENT depths, where no same-depth pair
+                                  constraint exists at all
+
+         A wrapped leaf inside a group followed by a leaf in the next group is
+         exactly the second case: no column edge joins them, so without the leaf
+         family the established gap silently shrinks as the first leaf grows, and
+         PASS 4 cannot restore a relative gap PASS 3 never constrained. */
       const edges3 = [];
       for (const [, idxs] of byDepth) {
         const col = idxs.slice().sort((p, q) =>
@@ -319,14 +338,36 @@
           });
         }
       }
+      /* A[next leaf] - A[prev leaf] >= gap + ( boxH[next] + boxH[prev] ) / 2,
+         where gap is the EXISTING prevLeafParent predicate that placed them —
+         GAP_WITHIN inside a group, GAP_BETWEEN across a boundary. The leaf
+         cursor satisfies this with equality by construction, which is why it is
+         tight at L when nothing wraps. */
+      for (let i = 0; i < nodes.length; i++) {
+        const b = nodes[i];
+        if (b.prevLeafIdx === null || b.prevLeafIdx === undefined) continue;
+        const a = nodes[b.prevLeafIdx];
+        edges3.push({
+          from: find(b.prevLeafIdx), to: find(i),
+          w: b.leafGap + (a.boxH + b.boxH) / 2,
+        });
+      }
 
       /* Pointwise-minimal solution by relaxation in topological order, seeded at
-         the legacy anchor of each class. Seeding at L rather than at zero is what
-         makes an unconstrained class stay exactly where it was. */
+         A0 — the constraint A[n] >= A0[n] IS the seed. Seeding at the provisional
+         wrapped skeleton rather than at zero is what makes an unconstrained class
+         stay exactly where the skeleton put it; and because A0 === L for every
+         node when nothing wraps, the no-wrap floor is reached exactly.
+
+         The class seed takes the MAX over its members: A0 is a floor, so a class
+         must clear the highest floor any member carries. Members of an anchor
+         class share an A0 by construction, so max and min coincide today — the
+         max is written because it is the one that stays correct if they ever
+         do not. */
       const A = new Map();
       for (let i = 0; i < nodes.length; i++) {
         const r = find(i);
-        if (!A.has(r) || nodes[i].L < A.get(r)) A.set(r, nodes[i].L);
+        if (!A.has(r) || nodes[i].A0 > A.get(r)) A.set(r, nodes[i].A0);
       }
       const outs = new Map(), indeg = new Map();
       for (const c of A.keys()) { outs.set(c, []); indeg.set(c, 0); }
@@ -410,7 +451,7 @@
           y: n.hasNote ? n.y + 14 : n.centerY - (gLabel(n) + gTag(n)) / 2,
           class: 'node-label section',
         });
-        TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.section });
+        TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(secText);
         if (n.tag) {
           const tagText = el('text', {
@@ -418,7 +459,7 @@
             y: n.y + n.boxH - 12 - gTag(n),
             class: 'section-tag',
           });
-          TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.sectionTag });
+          TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeightTag });
           nodeLayer.appendChild(tagText);
         }
         nodeLayer.appendChild(el('line', {
@@ -442,7 +483,7 @@
           y: n.hasNote ? n.y + 19 : n.centerY - gLabel(n) / 2,
           class: 'node-label root',
         });
-        TL.emit(rootText, n.lay.label.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.root });
+        TL.emit(rootText, n.lay.label.lines, { x: n.x + ROOT_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(rootText);
         if (n.note) {
           const rootNote = el('text', {
@@ -450,7 +491,7 @@
             y: n.y + n.boxH - 12 - gNote(n),
             class: 'node-note',
           });
-          TL.emit(rootNote, n.lay.note.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.note });
+          TL.emit(rootNote, n.lay.note.lines, { x: n.x + ROOT_PAD_X, lineHeight: n.lay.note.lineHeight });
           nodeLayer.appendChild(rootNote);
         }
         continue;
@@ -469,7 +510,7 @@
           y: n.hasNote ? n.y + 16 : n.centerY - gLabel(n) / 2,
           class: 'node-label',
         });
-        TL.emit(grpText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
+        TL.emit(grpText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
         nodeLayer.appendChild(grpText);
         if (n.note) {
           const grpNote = el('text', {
@@ -477,7 +518,7 @@
             y: n.y + n.boxH - 10 - gNote(n),
             class: 'node-note',
           });
-          TL.emit(grpNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });
+          TL.emit(grpNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.note.lineHeight });
           nodeLayer.appendChild(grpNote);
         }
         continue;
@@ -496,7 +537,7 @@
         y: n.hasNote ? n.y + 16 : n.centerY - gLabel(n) / 2,
         class: labelClass,
       });
-      TL.emit(nodeText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
+      TL.emit(nodeText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.label.lineHeight });
       nodeLayer.appendChild(nodeText);
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
@@ -505,7 +546,7 @@
           y: n.y + n.boxH - 10 - gNote(n),
           class: noteClass,
         });
-        TL.emit(nodeNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });
+        TL.emit(nodeNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: n.lay.note.lineHeight });
         nodeLayer.appendChild(nodeNote);
       }
     }

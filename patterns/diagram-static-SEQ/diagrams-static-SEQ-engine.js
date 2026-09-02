@@ -43,7 +43,11 @@
      error names nothing useful. */
   if (!window.DIAGRAM_TEXT_LAYOUT
       || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
-      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.roleFor !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersNote !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersTag !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.hasRenderedSecondary !== 'function'
       || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
     throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
   }
@@ -59,18 +63,15 @@
       + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
   }
   const TL = window.DIAGRAM_TEXT_LAYOUT;
+  /* This engine's identity in the shared contract. Role caps, line heights and
+     the rendered-secondary predicate are RESOLVED BY THE HELPER against it —
+     this file deliberately keeps no copy of any of them. */
+  const TARGET = 'diagram-static-SEQ';
 
-  /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
-     REAL RENDERS in U6 against both excess emptiness and fitted readability.
-     This engine keeps its OWN geometry contract: it consumes wrapped width and
-     wrapped height from the shared helper and does not import H's anchor solver.
-
-     SEQ EXERCISES ONLY `root` AND `label`. It has no section branch: every
-     non-root node renders as a label, so `section` / `sectionTag` are carried
-     here for VECTOR PARITY with H and V — the three tables are meant to be
-     diffable at a glance — and tuning them changes nothing on this engine. */
-  const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
-  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
+  /* Role caps and line heights are NOT defined here. They live in
+     diagrams-text-layout.js and are requested by role, because three engines
+     each holding their own copy is precisely the divergence the shared contract
+     exists to remove. */
   /* ---------- layout constants ---------- */
   const LEFT_PAD      = 80;   // page left padding = shared left edge of all boxes
   const PAGE_PAD_Y    = 56;
@@ -107,9 +108,9 @@
      the run's remaining lines out the other. A label/note PAIR is centred as
      one block, so each is offset by half the pair's combined growth and the
      gap between them is preserved exactly. */
-  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.height : 0);
-  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.height  : 0);
-  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.height   : 0);
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
+  const gTag   = (n) => (n.lay && n.lay.tag   ? n.lay.tag.addedHeight   : 0);
   const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
@@ -151,26 +152,29 @@
     const nodes = seq.map((node) => {
       const kind = node.kind || 'node';
       const status = node.status || 'earned';
-      const hasNote = !!node.note;
+      /* Resolved by the helper. SEQ declares no section branch, so a
+         `kind: 'section'` record here is an ordinary node that DOES render its
+         note — the helper knows that from this engine's target id rather than
+         from a local convention. */
+      const hasNote = TL.hasRenderedSecondary(TARGET, node);
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
       /* Measured through the shared helper. This engine keeps its OWN contract:
          a linear stacked run, not a sibling tree, so wrapped width feeds boxW and
          the gutter calculation while wrapped height feeds the stack. It imports no
          anchor solver — there is no same-depth adjacency here to solve. */
-      const labelRole = kind === 'root' ? 'root' : 'label';
-      const labelLay = TL.layout({ text: node.label, font: fontFor(node),
-        maxWidth: CAP[labelRole], lineHeight: LINE_H[labelRole] });
+      const labelLay = TL.layoutRole({ target: TARGET, role: TL.roleFor(TARGET, node),
+        text: node.label, font: fontFor(node) });
       const labelW = labelLay.width;
       let noteW = 0, noteLay = null;
-      if (node.note) {
-        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
-          maxWidth: CAP.note, lineHeight: LINE_H.note });
+      if (TL.rendersNote(TARGET, node)) {
+        noteLay = TL.layoutRole({ target: TARGET, role: 'note',
+          text: node.note, font: FONT_NOTE, letterSpacing: LS_NOTE });
         noteW = noteLay.width;
       }
       const lay = { label: labelLay, note: noteLay };
       const boxW = Math.max(labelW, noteW) + padX * 2;
       const boxH = (kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H))
-                 + labelLay.height + (noteLay ? noteLay.height : 0);
+                 + labelLay.addedHeight + (noteLay ? noteLay.addedHeight : 0);
       return { ...node, kind, status, hasNote, padX, boxW, boxH, lay, top: 0 };
     });
 
@@ -359,12 +363,12 @@
         nodeLayer.appendChild(TL.emit(el('text', {
           x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
           'text-anchor': 'start', class: 'node-label root',
-        }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.root }));
+        }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
         if (n.note) {
           nodeLayer.appendChild(TL.emit(el('text', {
             x: textX, y: n.top + n.boxH / 2 + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'start', class: 'node-note',
-          }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
+          }), n.lay.note.lines, { x: textX, lineHeight: n.lay.note.lineHeight }));
         }
         continue;
       }
@@ -378,13 +382,13 @@
       nodeLayer.appendChild(TL.emit(el('text', {
         x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
         'text-anchor': 'start', class: labelClass,
-      }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.label }));
+      }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
         nodeLayer.appendChild(TL.emit(el('text', {
           x: textX, y: n.top + n.boxH / 2 + 9 + gLabel(n) - gPair(n),
           'text-anchor': 'start', class: noteClass,
-        }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
+        }), n.lay.note.lines, { x: textX, lineHeight: n.lay.note.lineHeight }));
       }
     }
 
