@@ -37,6 +37,24 @@
   if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
     throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
   }
+  /* FAIL-CLOSED on the text-layout carrier, on the same terms as the fit carrier.
+     The INTERFACE is checked, not merely the global: a stale mirror that predates a
+     method would pass a truthiness test and then fail deep inside layout, where the
+     error names nothing useful. */
+  if (!window.DIAGRAM_TEXT_LAYOUT
+      || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
+    throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
+  }
+  const TL = window.DIAGRAM_TEXT_LAYOUT;
+
+  /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
+     REAL RENDERS in U6 against both excess emptiness and fitted readability.
+     This engine keeps its OWN geometry contract: it consumes wrapped width and
+     wrapped height from the shared helper and does not import H's anchor solver. */
+const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
+  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
   /* ---------- layout constants ---------- */
   const LEFT_PAD      = 80;   // page left padding = shared left edge of all boxes
   const PAGE_PAD_Y    = 56;
@@ -60,13 +78,10 @@
   const FONT_NOTE        = '300 10px "JetBrains Mono", monospace';
   const LS_NOTE = 0.2;  // letter-spacing(em)×size — mirrors diagrams.css .node-note
 
-  const measureCtx = document.createElement('canvas').getContext('2d');
-  function measure(text, font, ls = 0) {
-    measureCtx.font = font;
-    let w = measureCtx.measureText(text).width;
-    if (ls) w += text.length * ls;
-    return w;
-  }
+  /* Text measurement lives ENTIRELY in diagrams-text-layout.js. This engine
+     keeps no local canvas context and no local measure(): a second
+     measurement path is exactly how a shared contract silently forks, and a
+     dead one is worse than none because it reads as available. */
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -109,11 +124,25 @@
       const status = node.status || 'earned';
       const hasNote = !!node.note;
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
-      const labelW = measure(node.label, fontFor(node));
-      const noteW = node.note ? measure(node.note, FONT_NOTE, LS_NOTE) : 0;
+      /* Measured through the shared helper. This engine keeps its OWN contract:
+         a linear stacked run, not a sibling tree, so wrapped width feeds boxW and
+         the gutter calculation while wrapped height feeds the stack. It imports no
+         anchor solver — there is no same-depth adjacency here to solve. */
+      const labelRole = kind === 'root' ? 'root' : 'label';
+      const labelLay = TL.layout({ text: node.label, font: fontFor(node),
+        maxWidth: CAP[labelRole], lineHeight: LINE_H[labelRole] });
+      const labelW = labelLay.width;
+      let noteW = 0, noteLay = null;
+      if (node.note) {
+        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
+          maxWidth: CAP.note, lineHeight: LINE_H.note });
+        noteW = noteLay.width;
+      }
+      const lay = { label: labelLay, note: noteLay };
       const boxW = Math.max(labelW, noteW) + padX * 2;
-      const boxH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
-      return { ...node, kind, status, hasNote, padX, boxW, boxH, top: 0 };
+      const boxH = (kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H))
+                 + labelLay.height + (noteLay ? noteLay.height : 0);
+      return { ...node, kind, status, hasNote, padX, boxW, boxH, lay, top: 0 };
     });
 
     /* ---------- vertical placement: stacked, left-aligned ---------- */
@@ -291,15 +320,15 @@
           x: left, y: n.top, width: n.boxW, height: n.boxH,
           rx: 4, ry: 4, class: 'node-box root',
         }));
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 : n.top + n.boxH / 2,
           'text-anchor': 'start', class: 'node-label root',
-        }, [n.label]));
+        }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.root }));
         if (n.note) {
-          nodeLayer.appendChild(el('text', {
+          nodeLayer.appendChild(TL.emit(el('text', {
             x: textX, y: n.top + n.boxH / 2 + 12,
             'text-anchor': 'start', class: 'node-note',
-          }, [n.note]));
+          }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
         }
         continue;
       }
@@ -310,16 +339,16 @@
         x: left, y: n.top, width: n.boxW, height: n.boxH,
         rx: 4, ry: 4, class: boxClass,
       }));
-      nodeLayer.appendChild(el('text', {
+      nodeLayer.appendChild(TL.emit(el('text', {
         x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 : n.top + n.boxH / 2,
         'text-anchor': 'start', class: labelClass,
-      }, [n.label]));
+      }), n.lay.label.lines, { x: textX, lineHeight: LINE_H.label }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: textX, y: n.top + n.boxH / 2 + 9,
           'text-anchor': 'start', class: noteClass,
-        }, [n.note]));
+        }), n.lay.note.lines, { x: textX, lineHeight: LINE_H.note }));
       }
     }
 

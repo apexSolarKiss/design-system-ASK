@@ -39,6 +39,24 @@
   if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
     throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
   }
+  /* FAIL-CLOSED on the text-layout carrier, on the same terms as the fit carrier.
+     The INTERFACE is checked, not merely the global: a stale mirror that predates a
+     method would pass a truthiness test and then fail deep inside layout, where the
+     error names nothing useful. */
+  if (!window.DIAGRAM_TEXT_LAYOUT
+      || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
+    throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
+  }
+  const TL = window.DIAGRAM_TEXT_LAYOUT;
+
+  /* ROLE CAPS — maximum rendered text width in px before wrapping. Selected on
+     REAL RENDERS in U6 against both excess emptiness and fitted readability.
+     This engine keeps its OWN geometry contract: it consumes wrapped width and
+     wrapped height from the shared helper and does not import H's anchor solver. */
+const CAP = { root: 420, section: 400, sectionTag: 400, label: 700, note: 720 };
+  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
   /* ---------- layout constants ---------- */
   const DEPTH_GAP = 58;      // vertical gap between depth bands (room for edges)
   const SIB_GAP   = 30;      // min horizontal gap between sibling boxes
@@ -68,13 +86,10 @@
   const LS_TAG     = 1.44;  // .section-tag         letter-spacing:0.16em × font-size:9px   (FONT_TAG)
   const LS_NOTE    = 0.2;   // .node-note           letter-spacing:0.02em × font-size:10px  (FONT_NOTE)
 
-  const measureCtx = document.createElement('canvas').getContext('2d');
-  function measure(text, font, ls = 0) {
-    measureCtx.font = font;
-    let w = measureCtx.measureText(text).width;
-    if (ls) w += text.length * ls;  // canvas.measureText ignores CSS letter-spacing
-    return w;
-  }
+  /* Text measurement lives ENTIRELY in diagrams-text-layout.js. This engine
+     keeps no local canvas context and no local measure(): a second
+     measurement path is exactly how a shared contract silently forks, and a
+     dead one is worse than none because it reads as available. */
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -110,27 +125,47 @@
       // measured content width
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
       const displayLabel = kind === 'section' ? '/ ' + node.label.toUpperCase() : node.label;
-      const labelW = measure(displayLabel, fontFor(node), kind === 'section' ? LS_SECTION : 0);
-      let noteW = node.note ? measure(node.note, FONT_NOTE, LS_NOTE) : 0;
+      /* Measured through the shared helper. A non-wrapping string returns EXACTLY
+         what the local measure() returned before, letter-spacing compensation
+         included — that parity is what lets the no-wrap case prove identity. */
+      const labelRole = kind === 'root' ? 'root' : kind === 'section' ? 'section' : 'label';
+      const labelLay = TL.layout({ text: displayLabel, font: fontFor(node),
+        ls: kind === 'section' ? LS_SECTION : 0, maxWidth: CAP[labelRole],
+        lineHeight: LINE_H[labelRole] });
+      const labelW = labelLay.width;
+      let noteW = 0, noteLay = null, tagLay = null;
+      if (node.note) {
+        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
+          maxWidth: CAP.note, lineHeight: LINE_H.note });
+        noteW = noteLay.width;
+      }
       if (kind === 'section' && node.tag) {
-        noteW = Math.max(noteW, measure('// ' + node.tag, FONT_TAG, LS_TAG));
+        tagLay = TL.layout({ text: '// ' + node.tag, font: FONT_TAG, ls: LS_TAG,
+          maxWidth: CAP.sectionTag, lineHeight: LINE_H.sectionTag });
+        noteW = Math.max(noteW, tagLay.width);
       }
       const contentW = Math.max(labelW, noteW);
+      const lay = { label: labelLay, note: noteLay, tag: tagLay };
+      /* Wrapped growth feeds this engine's OWN contract: band height takes the
+         max boxH at a depth, and horizontal packing takes boxW. Both absorb the
+         growth without any anchor solver — V has no same-depth vertical
+         adjacency to solve, because every depth IS one horizontal band. */
+      const grow = (labelLay.height) + (noteLay ? noteLay.height : 0) + (tagLay ? tagLay.height : 0);
 
       // box width / height per kind. Sections have no box; their footprint is
       // the wider of the centered label/tag and the centered rule.
       let boxW, boxH;
       if (kind === 'section') {
         boxW = Math.max(contentW, SECTION_RULE_HALF * 2);
-        boxH = node.tag ? SECTION_H_TAG : SECTION_H;
+        boxH = (node.tag ? SECTION_H_TAG : SECTION_H) + grow;
       } else {
         boxW = contentW + padX * 2;
-        boxH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
+        boxH = (kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H)) + grow;
       }
 
       const idx = nodes.length;
       nodes.push({
-        ...node, kind, status, depth, hasNote,
+        ...node, kind, status, depth, hasNote, lay,
         boxW, boxH, cx: 0, cy: 0, childIndices: [],
       });
       if (parentIdx !== null && parentIdx !== undefined) {
@@ -258,11 +293,11 @@
 
       if (n.kind === 'section') {
         const labelY = n.tag ? top + 9 : n.cy - 3;
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: labelY,
           'text-anchor': 'middle',
           class: 'node-label section',
-        }, ['/ ' + n.label.toUpperCase()]));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.section }));
         nodeLayer.appendChild(el('line', {
           x1: n.cx - SECTION_RULE_HALF, y1: labelY + 11,
           x2: n.cx + SECTION_RULE_HALF, y2: labelY + 11,
@@ -270,11 +305,11 @@
           'stroke-opacity': 0.4,
         }));
         if (n.tag) {
-          nodeLayer.appendChild(el('text', {
+          nodeLayer.appendChild(TL.emit(el('text', {
             x: n.cx, y: labelY + 24,
             'text-anchor': 'middle',
             class: 'section-tag',
-          }, ['// ' + n.tag]));
+          }), n.lay.tag.lines, { x: n.cx, lineHeight: LINE_H.sectionTag }));
         }
         continue;
       }
@@ -286,17 +321,17 @@
           rx: 4, ry: 4,
           class: 'node-box root',
         }));
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: n.hasNote ? n.cy - 8 : n.cy,
           'text-anchor': 'middle',
           class: 'node-label root',
-        }, [n.label]));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.root }));
         if (n.note) {
-          nodeLayer.appendChild(el('text', {
+          nodeLayer.appendChild(TL.emit(el('text', {
             x: n.cx, y: n.cy + 12,
             'text-anchor': 'middle',
             class: 'node-note',
-          }, [n.note]));
+          }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));
         }
         continue;
       }
@@ -309,11 +344,11 @@
           class: 'node-box',
           'fill-opacity': 0.5,
         }));
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: n.cy,
           'text-anchor': 'middle',
           class: 'node-label',
-        }, [n.label]));
+        }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.label }));
         continue;
       }
 
@@ -325,18 +360,18 @@
         rx: 4, ry: 4,
         class: boxClass,
       }));
-      nodeLayer.appendChild(el('text', {
+      nodeLayer.appendChild(TL.emit(el('text', {
         x: n.cx, y: n.hasNote ? n.cy - 7 : n.cy,
         'text-anchor': 'middle',
         class: labelClass,
-      }, [n.label]));
+      }), n.lay.label.lines, { x: n.cx, lineHeight: LINE_H.label }));
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
-        nodeLayer.appendChild(el('text', {
+        nodeLayer.appendChild(TL.emit(el('text', {
           x: n.cx, y: n.cy + 9,
           'text-anchor': 'middle',
           class: noteClass,
-        }, [n.note]));
+        }), n.lay.note.lines, { x: n.cx, lineHeight: LINE_H.note }));
       }
     }
 

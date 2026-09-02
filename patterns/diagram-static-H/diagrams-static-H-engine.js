@@ -22,6 +22,18 @@
   if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
     throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
   }
+  /* FAIL-CLOSED on the text-layout carrier, for the same reason and on the same terms.
+     diagrams-text-layout.js is a generated mirror of patterns/_diagram-shared/ and must be
+     copied alongside this engine and loaded immediately BEFORE it. The interface is checked,
+     not merely the global: a stale mirror that predates a method would otherwise pass a
+     truthiness test and then fail deep inside layout, where the error names nothing useful. */
+  if (!window.DIAGRAM_TEXT_LAYOUT
+      || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layout !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
+    throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
+  }
+  const TL = window.DIAGRAM_TEXT_LAYOUT;
   /* ---------- layout constants ---------- */
   const GAP_WITHIN  = 6;    // vertical gap between sibling boxes of the SAME parent (within a group)
   const GAP_BETWEEN = 18;   // vertical gap at a group / section boundary (parent change) — keeps groups distinct
@@ -48,13 +60,30 @@
   const LS_TAG     = 1.44;  // .section-tag         letter-spacing:0.16em × font-size:9px   (FONT_TAG)
   const LS_NOTE    = 0.2;   // .node-note           letter-spacing:0.02em × font-size:10px  (FONT_NOTE)
 
-  const measureCtx = document.createElement('canvas').getContext('2d');
-  function measure(text, font, ls = 0) {
-    measureCtx.font = font;
-    let w = measureCtx.measureText(text).width;
-    if (ls) w += text.length * ls;  // canvas.measureText ignores CSS letter-spacing
-    return w;
-  }
+  /* ROLE CAPS — maximum rendered text width in px, per role, before wrapping.
+     Selected on REAL RENDERS in U6 against both excess emptiness and fitted
+     readability, not chosen to minimise canvas area: a narrower page that needs
+     more zoom to read is not an improvement. Infinity disables wrapping for a
+     role, which is also the value that makes the no-wrap identity trivially
+     reachable for any role U6 leaves uncapped. */
+  const CAP = {
+    root:        420,   // fleet max 264px — no current root wraps; the bound governs FUTURE content
+    section:     400,   // fleet p90 312px
+    sectionTag:  400,   // fleet p90 759px, max 1626px
+    label:       700,   // fleet max 660px — no current label wraps; a future-content guard.
+                        // A tighter 420 was measured and REJECTED: it added 18 wrapped runs and
+                        // regressed fitted zoom on two pages, because these diagrams are
+                        // height-constrained when fitted, so trading width for height loses.
+    note:        720,   // the emptiness driver: fleet median 421px, max 3487px
+  };
+  /* Line advance per role when a string wraps. Each mirrors the rendered
+     font-size in diagrams.css; a wrapped line must not collide with the next. */
+  const LINE_H = { root: 17, section: 13, sectionTag: 12, label: 16, note: 12 };
+
+  /* Text measurement lives ENTIRELY in diagrams-text-layout.js. This engine
+     keeps no local canvas context and no local measure(): a second
+     measurement path is exactly how a shared contract silently forks, and a
+     dead one is worse than none because it reads as available. */
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -81,23 +110,46 @@
   function render(TREE) {
     /* ---------- pre-measure per-depth widths ---------- */
     const colMaxW = {};
+    const LAY = new Map();          // source node -> resolved line layouts
+    let anyWrapped = false;         // true once any governed string breaks
     function preMeasure(node, depth) {
       const kind = node.kind || 'node';
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
       const displayLabel = kind === 'section' ? '/ ' + node.label.toUpperCase() : node.label;
-      const labelW = measure(displayLabel, fontFor(node), kind === 'section' ? LS_SECTION : 0);
+      /* Measured through the helper so a non-wrapping string returns EXACTLY what
+         the local measure() returned before this file consumed the plane — that
+         parity is the first no-wrap gate. The width a column needs is the widest
+         RESULTING line, never the cap and never the unwrapped width. */
+      const labelRole = kind === 'root' ? 'root' : kind === 'section' ? 'section' : 'label';
+      const labelLay = TL.layout({ text: displayLabel, font: fontFor(node),
+        ls: kind === 'section' ? LS_SECTION : 0, maxWidth: CAP[labelRole],
+        lineHeight: LINE_H[labelRole] });
+      const labelW = labelLay.width;
       // Only measure notes for kinds that actually render them. The section branch
       // renders label + tag + rule but NOT the note, so a section note must not affect
       // column width — otherwise an invisible note stretches the column and its connector
       // spans (see the regression case in diagram-static-H.source.js). Section tags ARE
       // rendered, so they are still measured just below.
-      let noteW = (node.note && kind !== 'section') ? measure(node.note, FONT_NOTE, LS_NOTE) : 0;
-      if (kind === 'section' && node.tag) {
-        noteW = Math.max(noteW, measure('// ' + node.tag, FONT_TAG, LS_TAG));
+      let noteW = 0, noteLay = null, tagLay = null;
+      if (node.note && kind !== 'section') {
+        noteLay = TL.layout({ text: node.note, font: FONT_NOTE, ls: LS_NOTE,
+          maxWidth: CAP.note, lineHeight: LINE_H.note });
+        noteW = noteLay.width;
       }
+      if (kind === 'section' && node.tag) {
+        tagLay = TL.layout({ text: '// ' + node.tag, font: FONT_TAG, ls: LS_TAG,
+          maxWidth: CAP.sectionTag, lineHeight: LINE_H.sectionTag });
+        noteW = Math.max(noteW, tagLay.width);
+      }
+      /* Cache the resolved lines on the SOURCE node so place() and render() reuse
+         the identical break decision. Re-running the break later would risk a
+         different result if anything about the context changed, and the whole
+         contract rests on one deterministic answer per string. */
+      LAY.set(node, { label: labelLay, note: noteLay, tag: tagLay });
       const contentW = Math.max(labelW, noteW);
       const totalW = contentW + padX * 2;
       colMaxW[depth] = Math.max(colMaxW[depth] || 0, totalW);
+      if (labelLay.wrapped || (noteLay && noteLay.wrapped) || (tagLay && tagLay.wrapped)) anyWrapped = true;
       for (const c of (node.children || [])) preMeasure(c, depth + 1);
     }
     preMeasure(TREE, 0);
@@ -134,14 +186,23 @@
         (kind !== 'section' && node.note) ||
         (kind === 'section' && node.tag)
       );
-      const boxH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
+      /* TWO HEIGHTS, deliberately. baseH is what the CURRENT renderer produces and
+         is what the legacy anchors L are measured from; boxH additionally carries
+         wrapped growth. At no wrap they are equal, which is why the solver below
+         resolves to L exactly rather than approximately. */
+      const baseH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
+      const lay = LAY.get(node) || {};
+      const grow = (lay.label ? lay.label.height : 0)
+                 + (lay.note ? lay.note.height : 0)
+                 + (lay.tag ? lay.tag.height : 0);
+      const boxH = baseH + grow;
       const boxW = colMaxW[depth];
       const x = colX[depth];
 
       const idx = nodes.length;
       const rec = {
-        ...node, depth, x, boxW, boxH, hasNote,
-        status, kind, childIndices: [], centerY: 0, y: 0,
+        ...node, depth, x, boxW, boxH, baseH, hasNote, lay,
+        status, kind, childIndices: [], centerY: 0, y: 0, L: 0,
       };
       nodes.push(rec);
       if (parent !== null && parent !== undefined) {
@@ -155,18 +216,137 @@
           yCursor += (parent === prevLeafParent) ? GAP_WITHIN : GAP_BETWEEN;
         }
         rec.y = yCursor;
-        rec.centerY = yCursor + boxH / 2;
-        yCursor += boxH;
+        rec.L = yCursor + baseH / 2;          // the EXACT legacy anchor
+        rec.centerY = rec.L;
+        yCursor += baseH;
         prevLeafParent = parent;
       } else {
         for (const c of node.children) place(c, depth + 1, idx);
-        rec.centerY = nodes[rec.childIndices[0]].centerY;   // top-aligned to first child
+        rec.L = nodes[rec.childIndices[0]].L;              // top-aligned to first child
+        rec.centerY = rec.L;
         rec.y = rec.centerY - boxH / 2;
       }
       return idx;
     }
     place(TREE, 0, null);
-    const height = yCursor + PAGE_PAD_Y;
+
+    /* ---------- legacy envelope, recorded from the CURRENT renderer ---------- */
+    const legacyHeight = yCursor + PAGE_PAD_Y;
+    let legacyTop = Infinity, legacyBottom = -Infinity;
+    for (const n of nodes) {
+      legacyTop = Math.min(legacyTop, n.L - n.baseH / 2);
+      legacyBottom = Math.max(legacyBottom, n.L + n.baseH / 2);
+    }
+
+    let height;
+    if (!anyWrapped) {
+      /* NO WRAP TAKES THE LEGACY PATH ITSELF, not a path that agrees with it.
+         boxH === baseH here, so A === L, topShift === 0 and finalHeight ===
+         legacyHeight are facts about which code ran, not claims to be checked
+         afterwards. That is the whole reason the two heights are tracked apart. */
+      for (const n of nodes) { n.centerY = n.L; n.y = n.centerY - n.boxH / 2; }
+      height = legacyHeight;
+    } else {
+      /* ---------- PASS 3 // solve anchors under the legacy separations ----------
+         constraint   A[b] - A[a] >= legacySep(a,b) + ( boxH[a] + boxH[b] ) / 2
+         legacySep    ( L[b] - baseH[b]/2 ) - ( L[a] + baseH[a]/2 )      SIGNED
+
+         The sign is kept. An existing overlap is NOT clamped to zero inside a
+         max(): that would repair legacy geometry anonymously, under cover of a
+         wrapping change nobody asked to change spacing. The U5-entry census
+         measured every governed pair on the 16 H pages that render — of 17 that
+         load this engine; tests/legend-export-fixture.html renders nothing,
+         on main as well as here, because it never loads diagrams-fit.js — and
+         found none negative. LEGACY_REPAIR_SET is therefore NONE and no pair
+         carries an override. The bound is the censused set, not a claim about
+         trees this engine has never been given. */
+
+      /* Anchor equality is a CONSTRAINT, not a post-step: an internal node is
+         top-aligned to its first child, so the two anchors are one unknown.
+         Contracting equality classes first is what keeps the constraint graph
+         acyclic — solving over the raw node graph would have to reconcile a
+         two-way relation with a longest-path walk that assumes one direction. */
+      const uf = nodes.map((_, i) => i);
+      const find = (i) => { while (uf[i] !== i) { uf[i] = uf[uf[i]]; i = uf[i]; } return i; };
+      const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) uf[rb] = ra; };
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].childIndices.length) union(i, nodes[i].childIndices[0]);
+      }
+
+      const byDepth = new Map();
+      nodes.forEach((n, i) => {
+        if (!byDepth.has(n.depth)) byDepth.set(n.depth, []);
+        byDepth.get(n.depth).push(i);
+      });
+
+      const edges3 = [];
+      for (const [, idxs] of byDepth) {
+        const col = idxs.slice().sort((p, q) =>
+          (nodes[p].L - nodes[q].L) || (p - q));
+        for (let k = 0; k + 1 < col.length; k++) {
+          const a = nodes[col[k]], b = nodes[col[k + 1]];
+          const legacySep = (b.L - b.baseH / 2) - (a.L + a.baseH / 2);
+          edges3.push({
+            from: find(col[k]), to: find(col[k + 1]),
+            w: legacySep + (a.boxH + b.boxH) / 2,
+          });
+        }
+      }
+
+      /* Pointwise-minimal solution by relaxation in topological order, seeded at
+         the legacy anchor of each class. Seeding at L rather than at zero is what
+         makes an unconstrained class stay exactly where it was. */
+      const A = new Map();
+      for (let i = 0; i < nodes.length; i++) {
+        const r = find(i);
+        if (!A.has(r) || nodes[i].L < A.get(r)) A.set(r, nodes[i].L);
+      }
+      const outs = new Map(), indeg = new Map();
+      for (const c of A.keys()) { outs.set(c, []); indeg.set(c, 0); }
+      for (const e of edges3) {
+        if (e.from === e.to) continue;               // equal anchors, no ordering
+        outs.get(e.from).push(e);
+        indeg.set(e.to, indeg.get(e.to) + 1);
+      }
+      const queue = [...A.keys()].filter((c) => indeg.get(c) === 0);
+      const order = [];
+      while (queue.length) {
+        const c = queue.shift();
+        order.push(c);
+        for (const e of outs.get(c)) {
+          if (A.get(e.to) < A.get(c) + e.w) A.set(e.to, A.get(c) + e.w);
+          indeg.set(e.to, indeg.get(e.to) - 1);
+          if (indeg.get(e.to) === 0) queue.push(e.to);
+        }
+      }
+      /* FAIL CLOSED on a cycle rather than iterate to a fixed point. A cycle means
+         the equality classes and the same-depth ordering disagree about direction,
+         which is a structural fault in the source — silently relaxing it would
+         move geometry for a reason no one could later reconstruct. */
+      if (order.length !== A.size) {
+        throw new Error('Diagram H layout: cyclic anchor constraints after equality contraction.');
+      }
+
+      /* ---------- PASS 4 // final envelope ----------
+         PASS 3 fixes relative positions and says nothing about containment. The
+         legacy height came from the leaf cursor, which PASS 3 has just
+         invalidated, and nothing yet stopped a grown box crossing the top edge. */
+      let preliminaryTop = Infinity;
+      for (let i = 0; i < nodes.length; i++) {
+        preliminaryTop = Math.min(preliminaryTop, A.get(find(i)) - nodes[i].boxH / 2);
+      }
+      const topShift = Math.max(0, legacyTop - preliminaryTop);
+      let finalBottom = -Infinity;
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        n.centerY = A.get(find(i)) + topShift;
+        n.y = n.centerY - n.boxH / 2;
+        finalBottom = Math.max(finalBottom, n.centerY + n.boxH / 2);
+      }
+      /* The bottom margin is CARRIED, not recomputed, so an existing margin —
+         including an unusual one — survives instead of being normalized. */
+      height = legacyHeight + Math.max(0, finalBottom - legacyBottom);
+    }
 
     /* ---------- render ---------- */
     const svg = document.getElementById('svg');
@@ -198,17 +378,21 @@
 
     for (const n of nodes) {
       if (n.kind === 'section') {
-        nodeLayer.appendChild(el('text', {
+        const secText = el('text', {
           x: n.x + BOX_PAD_X,
           y: n.hasNote ? n.y + 14 : n.centerY,
           class: 'node-label section',
-        }, ['/ ' + n.label.toUpperCase()]));
+        });
+        TL.emit(secText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.section });
+        nodeLayer.appendChild(secText);
         if (n.tag) {
-          nodeLayer.appendChild(el('text', {
+          const tagText = el('text', {
             x: n.x + BOX_PAD_X,
             y: n.y + n.boxH - 12,
             class: 'section-tag',
-          }, ['// ' + n.tag]));
+          });
+          TL.emit(tagText, n.lay.tag.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.sectionTag });
+          nodeLayer.appendChild(tagText);
         }
         nodeLayer.appendChild(el('line', {
           x1: n.x, y1: n.y + n.boxH,
@@ -226,17 +410,21 @@
           rx: 4, ry: 4,
           class: 'node-box root',
         }));
-        nodeLayer.appendChild(el('text', {
+        const rootText = el('text', {
           x: n.x + ROOT_PAD_X,
           y: n.hasNote ? n.y + 19 : n.centerY,
           class: 'node-label root',
-        }, [n.label]));
+        });
+        TL.emit(rootText, n.lay.label.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.root });
+        nodeLayer.appendChild(rootText);
         if (n.note) {
-          nodeLayer.appendChild(el('text', {
+          const rootNote = el('text', {
             x: n.x + ROOT_PAD_X,
             y: n.y + n.boxH - 12,
             class: 'node-note',
-          }, [n.note]));
+          });
+          TL.emit(rootNote, n.lay.note.lines, { x: n.x + ROOT_PAD_X, lineHeight: LINE_H.note });
+          nodeLayer.appendChild(rootNote);
         }
         continue;
       }
@@ -249,17 +437,21 @@
           class: 'node-box',
           'fill-opacity': 0.5,
         }));
-        nodeLayer.appendChild(el('text', {
+        const grpText = el('text', {
           x: n.x + BOX_PAD_X,
           y: n.hasNote ? n.y + 16 : n.centerY,
           class: 'node-label',
-        }, [n.label]));
+        });
+        TL.emit(grpText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
+        nodeLayer.appendChild(grpText);
         if (n.note) {
-          nodeLayer.appendChild(el('text', {
+          const grpNote = el('text', {
             x: n.x + BOX_PAD_X,
             y: n.y + n.boxH - 10,
             class: 'node-note',
-          }, [n.note]));
+          });
+          TL.emit(grpNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });
+          nodeLayer.appendChild(grpNote);
         }
         continue;
       }
@@ -272,18 +464,22 @@
         rx: 4, ry: 4,
         class: boxClass,
       }));
-      nodeLayer.appendChild(el('text', {
+      const nodeText = el('text', {
         x: n.x + BOX_PAD_X,
         y: n.hasNote ? n.y + 16 : n.centerY,
         class: labelClass,
-      }, [n.label]));
+      });
+      TL.emit(nodeText, n.lay.label.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.label });
+      nodeLayer.appendChild(nodeText);
       if (n.note) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
-        nodeLayer.appendChild(el('text', {
+        const nodeNote = el('text', {
           x: n.x + BOX_PAD_X,
           y: n.y + n.boxH - 10,
           class: noteClass,
-        }, [n.note]));
+        });
+        TL.emit(nodeNote, n.lay.note.lines, { x: n.x + BOX_PAD_X, lineHeight: LINE_H.note });
+        nodeLayer.appendChild(nodeNote);
       }
     }
 
