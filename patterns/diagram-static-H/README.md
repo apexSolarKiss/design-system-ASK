@@ -6,15 +6,31 @@ This is a **Class A static** diagram scaffold (system / architecture diagram tem
 
 ## What this pattern is
 
-A small consumption pattern. Seven files:
+A small consumption pattern. Eight files:
 
 - `README.md` — this file
 - `diagram-static-H.html` — the shell page (header, canvas, legend, HUD, caption)
 - `diagram-static-H.source.js` — the tree data, expressed as a single `window.TREE_DIAGRAM` literal
 - `diagrams-static-H-engine.js` — shared layout + pan/zoom engine. When it computes column widths it (a) measures against the actual Inter / JetBrains Mono fonts, waiting for them to load first, and (b) adds the CSS `letter-spacing` that `canvas.measureText` ignores (section labels carry `0.18em`). Both are required so first-level labels never bleed into the next column; columns stretch to fit the real rendered text. **If you change a `letter-spacing` value in `diagrams.css`, update the matching `LS_*` constant in the engine.**
 - `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* caption / legend and HUD glass panels and, **only when the figure would actually collide with one**, centres it in the edge-safe region that remains. A placement that already clears the chrome is kept exactly as-is — reservation is overlap-gated, so a figure is never shrunk to avoid chrome it does not reach, so a wide, short figure no longer renders its top band underneath the corner panels. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the prior fit formula is preserved exactly while each available axis is at least twice its requested total clearance. On a more constrained axis (a canvas smaller than twice its clearance) the clearance degrades proportionally and consumes at most half the available space. Within a fixed available rectangle and panel-reservation state, reducing that axis cannot increase its clearance-limited scale contribution — so the Fit stays on-canvas and positive where the old absolute-clearance model produced a non-positive or direction-reversing result.
+- `diagrams-text-layout.js` — **DS-owned shared text-layout support, a GENERATED MIRROR.** Canonical source is `patterns/_diagram-shared/diagrams-text-layout.js`; this copy is emitted by `tools/sync-diagram-shared.mjs` and is **byte-identical** to it. It owns line breaking (delimiters matched longest-first, `//` before `/`, breaking after the delimiter; force-break only a token that still exceeds its cap alone; an authored newline is a hard break), measurement, **role metrics — per-role cap, line height and the has-note predicate** — and tspan emission. This engine keeps **no** cap table, **no** line-height table and **no** rendered-secondary predicate of its own: it requests layout by role and receives the resolved metrics, because three engines each holding a private copy is the divergence the shared contract exists to remove — the engine keeps source grammar, topology, placement, connector geometry and the final SVG envelope, because H, V and SEQ have genuinely different geometry contracts. **Load it immediately BEFORE the engine**, after `diagrams-fit.js`; the engine throws a named error if it is missing or its interface is incomplete, rather than silently falling back. **Never hand-edit this file** — `node tools/sync-diagram-shared.mjs --check` exits non-zero on any divergence, so an edit here fails loudly instead of surviving as a silent fork. Its declared target set is H, V and SEQ; `diagram-static-FLOW` and `diagram-interactive-spine` are explicitly excluded.
 - `diagrams.css` — diagram-specific style layer (page chrome + SVG nodes/edges) plus diagram-only token additions (`--node-fill`, `--line-strong`) and the `--diagram-*` legibility tokens (which alias the foundation foreground ramp); **byte-identical to the `-V` / `-SEQ` / `-FLOW` copies**; inherits Tier 1 + Tier 2 from the local `colors_and_type.css` mirror
 - `export-png.js` — 3840×2880 PNG export with header, caveat, legend, and the rendered diagram
+
+**Load order is a contract, not a convention.** The page loads
+`<source> → diagrams-fit.js → diagrams-text-layout.js → engine → fonts-embedded.js → export-png.js`.
+Both support carriers fail **closed**: an engine loaded without either throws a named error and
+renders nothing, so a partial re-vendor is visible immediately rather than looking current while
+carrying old geometry. The text-layout check tests the **role-aware interface and the declared target set**,
+not just that the global exists — a mirror can be complete, load cleanly, and still be the wrong
+member (vendored from a sibling plane, or from a later version that dropped this pattern), and
+that case passes a truthiness test and fails nowhere.
+
+**What not to edit here.** `diagrams-text-layout.js` is a generated mirror — edit the canonical in
+`patterns/_diagram-shared/` and re-emit. `diagrams-fit.js` and `diagrams.css` are shared by
+convention and are byte-identical across the sibling patterns; re-vendor them alongside the engine
+rather than diverging one copy. A consumer receipt resolves a vendored mirror's bytes to the
+canonical plus the owner commit it was emitted from.
 
 **Zoom floor tracks Fit.** The ordinary zoom-out floor is this pattern's historical base scale, but the panel-aware fit can legitimately land below it on a constrained viewport. When it does, the live floor becomes the fitted scale, so zoom-out is a no-op at Fit rather than *increasing* the scale (which would reverse the control's direction). Fit itself is never clamped — clamping it would restore the panel collision the helper exists to avoid.
 
@@ -22,7 +38,7 @@ The pattern is **not** a component library, a generator, a build pipeline, an np
 
 ## How to use it
 
-1. Copy the seven files in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar).
+1. Copy the **complete eight-file bundle** in `patterns/diagram-static-H/` into your consuming project (typically under `docs/diagrams/` or similar). **All eight, including `diagrams-text-layout.js`** — the engine fails closed on a missing support carrier, so a seven-file copy renders nothing and names the file it wants.
 2. Sync `colors_and_type.css`, fonts, and any required project-approved assets from design-system-ASK into a local mirror alongside the diagram bundle (for example `./_dsa-tokens/colors_and_type.css`, `./_dsa-tokens/fonts/*.woff2`, and `./_dsa-tokens/fonts-embedded.js` — the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server), pinned to a known upstream commit SHA. The HTML expects `./_dsa-tokens/colors_and_type.css`; adjust the path if your mirror lives elsewhere.
 3. Rename `diagram-static-H.html` and `diagram-static-H.source.js` to match your project (e.g. `[your-project]_architecture-tree.html` and `[your-project]_architecture-tree.source.js`); update the `<script src>` reference in the HTML accordingly.
 4. Edit `diagram-static-H.source.js`: replace the placeholder tree with your project's actual structure. The tree shape is `{ kind, label, note?, tag?, status?, children? }`. **`tag` is valid only on `kind: 'section'`** (it renders as the section's `// <tag>` subtitle); the engine does not read `tag` on `root`, `group`, or ordinary `node` records. For secondary text beneath a root, group, or ordinary node, use **`note`**.

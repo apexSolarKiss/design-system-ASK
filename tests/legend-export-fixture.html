@@ -107,6 +107,11 @@ window.TREE_DIAGRAM = {
   ],
 };
 </script>
+<!-- Shared DS support, in contract order. The engine checks BOTH carriers and
+     throws before rendering if either is absent, so the fit carrier is not
+     optional here even though this fixture exercises the legend and export. -->
+<script src="../patterns/diagram-static-H/diagrams-fit.js"></script>
+<script src="../patterns/diagram-static-H/diagrams-text-layout.js"></script>
 <script src="../patterns/diagram-static-H/diagrams-static-H-engine.js"></script>
 <!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://). -->
 <script src="../fonts-embedded.js"></script>

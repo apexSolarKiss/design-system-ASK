@@ -37,6 +37,47 @@
   if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
     throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
   }
+  /* FAIL-CLOSED on the text-layout carrier, on the same terms as the fit carrier.
+     The INTERFACE is checked, not merely the global: a stale mirror that predates a
+     method would pass a truthiness test and then fail deep inside layout, where the
+     error names nothing useful. The check covers every CALLABLE member plus the
+     declared TARGETS, including members this engine never calls itself — `measure` is
+     the contract's measurement primitive, and SEQ gates `rendersTag` although it
+     renders no tags. A mirror missing any of them is incomplete, and an incomplete
+     mirror should fail here rather than in whichever consumer does use the missing
+     member. VERSION and EXCLUDED are published metadata, not gated: nothing branches
+     on them, so failing closed on them would be ceremony. */
+  if (!window.DIAGRAM_TEXT_LAYOUT
+      || typeof window.DIAGRAM_TEXT_LAYOUT.measure !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.layoutRole !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.roleFor !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersNote !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.rendersTag !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.hasRenderedSecondary !== 'function'
+      || typeof window.DIAGRAM_TEXT_LAYOUT.emit !== 'function') {
+    throw new Error('Diagram text-layout support is missing or incomplete. Load diagrams-text-layout.js before the diagram engine.');
+  }
+  /* The helper DECLARES which patterns it serves. Check membership rather than
+     trusting the filename: a mirror can be complete, load cleanly, and still be
+     the wrong member — vendored from a sibling plane, or from a future version
+     that dropped this pattern. That case passes an interface check and fails
+     nowhere, so it is the one the metadata exists to catch. */
+  if (!Array.isArray(window.DIAGRAM_TEXT_LAYOUT.TARGETS)
+      || window.DIAGRAM_TEXT_LAYOUT.TARGETS.indexOf('diagram-static-SEQ') === -1) {
+    throw new Error('Diagram text-layout support does not declare diagram-static-SEQ as a target'
+      + ' (declared: ' + JSON.stringify(window.DIAGRAM_TEXT_LAYOUT.TARGETS) + ').'
+      + ' Re-vendor diagrams-text-layout.js from patterns/_diagram-shared/.');
+  }
+  const TL = window.DIAGRAM_TEXT_LAYOUT;
+  /* This engine's identity in the shared contract. Role caps, line heights and
+     the rendered-secondary predicate are RESOLVED BY THE HELPER against it —
+     this file deliberately keeps no copy of any of them. */
+  const TARGET = 'diagram-static-SEQ';
+
+  /* Role caps and line heights are NOT defined here. They live in
+     diagrams-text-layout.js and are requested by role, because three engines
+     each holding their own copy is precisely the divergence the shared contract
+     exists to remove. */
   /* ---------- layout constants ---------- */
   const LEFT_PAD      = 80;   // page left padding = shared left edge of all boxes
   const PAGE_PAD_Y    = 56;
@@ -60,13 +101,22 @@
   const FONT_NOTE        = '300 10px "JetBrains Mono", monospace';
   const LS_NOTE = 0.2;  // letter-spacing(em)×size — mirrors diagrams.css .node-note
 
-  const measureCtx = document.createElement('canvas').getContext('2d');
-  function measure(text, font, ls = 0) {
-    measureCtx.font = font;
-    let w = measureCtx.measureText(text).width;
-    if (ls) w += text.length * ls;
-    return w;
-  }
+  /* Text measurement lives ENTIRELY in diagrams-text-layout.js. This engine
+     keeps no local canvas context and no local measure(): a second
+     measurement path is exactly how a shared contract silently forks, and a
+     dead one is worse than none because it reads as available. */
+
+  /* ADDED height of a wrapped run — 0 when it did not wrap.
+
+     boxH already carries this growth, so a run anchored to the box CENTRE or
+     BOTTOM must subtract its own growth: anchoring the FIRST baseline to a
+     grown edge deposits the new height as dead space on one side and pushes
+     the run's remaining lines out the other. A label/note PAIR is centred as
+     one block, so each is offset by half the pair's combined growth and the
+     gap between them is preserved exactly. */
+  const gLabel = (n) => (n.lay && n.lay.label ? n.lay.label.addedHeight : 0);
+  const gNote  = (n) => (n.lay && n.lay.note  ? n.lay.note.addedHeight  : 0);
+  const gPair  = (n) => (gLabel(n) + gNote(n)) / 2;
 
   function fontFor(node) {
     const status = node.status || 'earned';
@@ -107,13 +157,30 @@
     const nodes = seq.map((node) => {
       const kind = node.kind || 'node';
       const status = node.status || 'earned';
-      const hasNote = !!node.note;
+      /* Resolved by the helper. SEQ declares no section branch, so a
+         `kind: 'section'` record here is an ordinary node that DOES render its
+         note — the helper knows that from this engine's target id rather than
+         from a local convention. */
+      const hasNote = TL.hasRenderedSecondary(TARGET, node);
       const padX = kind === 'root' ? ROOT_PAD_X : BOX_PAD_X;
-      const labelW = measure(node.label, fontFor(node));
-      const noteW = node.note ? measure(node.note, FONT_NOTE, LS_NOTE) : 0;
+      /* Measured through the shared helper. This engine keeps its OWN contract:
+         a linear stacked run, not a sibling tree, so wrapped width feeds boxW and
+         the gutter calculation while wrapped height feeds the stack. It imports no
+         anchor solver — there is no same-depth adjacency here to solve. */
+      const labelLay = TL.layoutRole({ target: TARGET, role: TL.roleFor(TARGET, node),
+        text: node.label, font: fontFor(node) });
+      const labelW = labelLay.width;
+      let noteW = 0, noteLay = null;
+      if (TL.rendersNote(TARGET, node)) {
+        noteLay = TL.layoutRole({ target: TARGET, role: 'note',
+          text: node.note, font: FONT_NOTE, letterSpacing: LS_NOTE });
+        noteW = noteLay.width;
+      }
+      const lay = { label: labelLay, note: noteLay };
       const boxW = Math.max(labelW, noteW) + padX * 2;
-      const boxH = kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H);
-      return { ...node, kind, status, hasNote, padX, boxW, boxH, top: 0 };
+      const boxH = (kind === 'root' ? ROOT_BOX_H : (hasNote ? BOX_H_NOTE : BOX_H))
+                 + labelLay.addedHeight + (noteLay ? noteLay.addedHeight : 0);
+      return { ...node, kind, status, hasNote, padX, boxW, boxH, lay, top: 0 };
     });
 
     /* ---------- vertical placement: stacked, left-aligned ---------- */
@@ -273,6 +340,13 @@
         d: `M ${toRight + ARROW_H} ${yTo - ARROW_W / 2} L ${toRight + ARROW_H} ${yTo + ARROW_W / 2} L ${toRight} ${yTo} Z`,
         class: 'edge-arrowhead',
       }));
+      /* NOT governed text. This is an EDGE annotation, not a node role, so it is
+         never measured, capped, wrapped, or counted toward gutter width — the
+         one `el('text')` in this engine that does not go through the helper.
+         It carries `class: 'node-note'` for VISUAL consistency only; the shared
+         class is why it looks governed, and it is not. Pre-existing behaviour,
+         unchanged here. Bringing edge labels into the contract would be a
+         separate decision about a different text class. */
       if (e.label) {
         edgeLayer.appendChild(el('text', {
           x: e.gx + 11, y: (yFrom + yTo) / 2,
@@ -291,15 +365,15 @@
           x: left, y: n.top, width: n.boxW, height: n.boxH,
           rx: 4, ry: 4, class: 'node-box root',
         }));
-        nodeLayer.appendChild(el('text', {
-          x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 : n.top + n.boxH / 2,
+        nodeLayer.appendChild(TL.emit(el('text', {
+          x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 8 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
           'text-anchor': 'start', class: 'node-label root',
-        }, [n.label]));
-        if (n.note) {
-          nodeLayer.appendChild(el('text', {
-            x: textX, y: n.top + n.boxH / 2 + 12,
+        }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
+        if (TL.rendersNote(TARGET, n)) {
+          nodeLayer.appendChild(TL.emit(el('text', {
+            x: textX, y: n.top + n.boxH / 2 + 12 + gLabel(n) - gPair(n),
             'text-anchor': 'start', class: 'node-note',
-          }, [n.note]));
+          }), n.lay.note.lines, { x: textX, lineHeight: n.lay.note.lineHeight }));
         }
         continue;
       }
@@ -310,16 +384,16 @@
         x: left, y: n.top, width: n.boxW, height: n.boxH,
         rx: 4, ry: 4, class: boxClass,
       }));
-      nodeLayer.appendChild(el('text', {
-        x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 : n.top + n.boxH / 2,
+      nodeLayer.appendChild(TL.emit(el('text', {
+        x: textX, y: n.hasNote ? n.top + n.boxH / 2 - 7 - gPair(n) : n.top + n.boxH / 2 - gLabel(n) / 2,
         'text-anchor': 'start', class: labelClass,
-      }, [n.label]));
-      if (n.note) {
+      }), n.lay.label.lines, { x: textX, lineHeight: n.lay.label.lineHeight }));
+      if (TL.rendersNote(TARGET, n)) {
         const noteClass = 'node-note' + (n.status === 'legacy' ? ' legacy' : '');
-        nodeLayer.appendChild(el('text', {
-          x: textX, y: n.top + n.boxH / 2 + 9,
+        nodeLayer.appendChild(TL.emit(el('text', {
+          x: textX, y: n.top + n.boxH / 2 + 9 + gLabel(n) - gPair(n),
           'text-anchor': 'start', class: noteClass,
-        }, [n.note]));
+        }), n.lay.note.lines, { x: textX, lineHeight: n.lay.note.lineHeight }));
       }
     }
 
