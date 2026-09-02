@@ -68,6 +68,10 @@
           lines are not balanced, so the same string with the same cap always
           produces the same lines regardless of what surrounds it.
 
+     A falsy maxWidth disables wrapping entirely. Every role in every current
+     consumer passes a finite cap, so that path is available rather than
+     exercised — do not read it as a supported no-wrap mode.
+
      Returns the measured width of the WIDEST line, which is what a column
      needs — not the cap, and not the unwrapped width. */
   function breakLines(text, font, ls, maxWidth) {

@@ -36,7 +36,18 @@ const MEMBERS = [
 ];
 
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
-const check = process.argv.includes('--check');
+
+/* Reject unknown flags. Without this, `--chek` falls through to the WRITE
+   path and exits 0 — turning the divergence guard into an auto-fix that
+   always passes, which is the exact failure --check exists to prevent. */
+const ARGS = process.argv.slice(2);
+const KNOWN = new Set(['--check']);
+const unknown = ARGS.filter((a) => !KNOWN.has(a));
+if (unknown.length) {
+  console.error(`unknown argument(s): ${unknown.join(' ')}\nusage: sync-diagram-shared.mjs [--check]`);
+  process.exit(2);
+}
+const check = ARGS.includes('--check');
 
 let missing = 0, differing = 0, written = 0;
 const report = [];

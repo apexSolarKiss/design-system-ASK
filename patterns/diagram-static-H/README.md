@@ -21,7 +21,10 @@ A small consumption pattern. Eight files:
 `<source> → diagrams-fit.js → diagrams-text-layout.js → engine → fonts-embedded.js → export-png.js`.
 Both support carriers fail **closed**: an engine loaded without either throws a named error and
 renders nothing, so a partial re-vendor is visible immediately rather than looking current while
-carrying old geometry.
+carrying old geometry. The text-layout check tests the **interface and the declared target set**,
+not just that the global exists — a mirror can be complete, load cleanly, and still be the wrong
+member (vendored from a sibling plane, or from a later version that dropped this pattern), and
+that case passes a truthiness test and fails nowhere.
 
 **What not to edit here.** `diagrams-text-layout.js` is a generated mirror — edit the canonical in
 `patterns/_diagram-shared/` and re-emit. `diagrams-fit.js` and `diagrams.css` are shared by

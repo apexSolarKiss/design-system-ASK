@@ -53,3 +53,18 @@ names.
 **Measurement parity is the first gate.** A string that does not wrap must measure exactly
 as it did before this plane existed, letter-spacing compensation included. That is what
 lets the no-wrap case prove geometric identity rather than merely look unchanged.
+
+## What the helper does not own — and the trap that follows
+
+The helper returns **added** height (`height` is 0 when a run does not wrap). The consuming engine
+adds that to its own box, which means **the engine, not the helper, owns where a wrapped run is
+anchored**.
+
+That split has one sharp edge, and every consumer hits it: once a box has grown, a run anchored to
+the box's **bottom or centre** must subtract its own growth. Anchoring the *first* baseline to a
+grown edge deposits the new height as dead space at one end and pushes the run's remaining lines
+out the other. A run anchored to the box **top** needs no correction, because it grows in the same
+direction the box did.
+
+The failure is quiet: nothing collides, nothing leaves the viewBox, and the text wraps correctly —
+it simply renders outside its own box. A containment assertion is the only check that sees it.
