@@ -281,10 +281,15 @@
   var handle = doc.createElement('div');
   handle.className = 'surface-nav-handle';
   handle.setAttribute('aria-hidden', 'true');
-  inner.appendChild(handle);
 
   var head = doc.createElement('div');
   head.className = 'surface-nav-head';
+  /* The handle SHARES the close control's line rather than occupying a row of
+     its own. A separate full-width strip above the head spent panel height and
+     width on an affordance that only needs to be reachable, and pushed the
+     hierarchy down for it. Inside the head it sits on the control line the
+     panel already required. */
+  head.appendChild(handle);
   head.appendChild(buildTree());
 
   /* An EXPLICIT close control, always. Outside dismissal and Escape are

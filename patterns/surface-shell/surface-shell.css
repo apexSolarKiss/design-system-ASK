@@ -886,15 +886,34 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    inert visual handle would advertise a gesture that does nothing. */
 .surface-nav-handle { display: none; }
 
+/* MOBILE HEAD IS A CONTROL LINE PLUS THE HIERARCHY. Three columns with equal
+   1fr flanks put the handle at the panel's true centre while the close control
+   end-aligns in the right flank — centring without absolute positioning, so the
+   target can never be laid over the hierarchy. The tree spans the full width on
+   its own row beneath, at its usable width. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas:
+    "lead handle close"
+    "tree tree   tree";
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: var(--space-4);
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-handle { grid-area: handle; }
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-tree   { grid-area: tree; }
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-close  { grid-area: close; justify-self: end; }
+
 :root[data-surface-nav-mode="mobile"] .surface-nav-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
-  align-self: stretch;                           /* full sheet width to aim at */
-  height: 2.75rem;                               /* a finger, not a line */
-  margin-block-start: calc(var(--space-4) * -1); /* sits tight to the sheet edge */
-  margin-block-end: calc(var(--space-4) * -1);   /* without opening a gap below  */
+  /* COMPACT and finger-sized — not a full-width strip. A full-width target was
+     an overcorrection: reachability needs a comfortable box, not the whole
+     panel. Sized from the spacing scale so it tracks the system. */
+  inline-size: var(--space-8);                   /* 64 */
+  block-size: var(--space-7);                    /* 48 */
   touch-action: none;                            /* SCOPED — see note above */
   cursor: grab;
 }
