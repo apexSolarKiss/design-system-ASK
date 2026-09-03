@@ -761,14 +761,22 @@ keyboard user walks is the one the markup states; only the boxes move.
 The mobile sheet carries a visible drag handle. A downward drag on it dismisses
 the panel; the explicit close button remains, unchanged and mandatory.
 
-**Interaction geometry is not visible geometry.** The bar a reader sees is
-`2.25rem × 0.25rem`; the element that accepts the pointer is `2.75rem` high and
-spans the sheet's available width. Both scale with the root font size — in the
-current owner preview they measure 54 × 6px and 324 × 66px respectively.
+**The control line is the target; the close button is the hole in it.** The bar a
+reader sees is `2.25rem × 0.25rem`, centred on the panel. The element that
+accepts the pointer is the whole top control line — handle and close share one
+grid cell, the handle spanning the row's full width and the close control painted
+over it, end-aligned, keeping its own pointer box.
+
+They are siblings rather than nested, so a press on close simply never reaches
+the handle's listener: there is no drag to cancel and no event-cancellation
+trick. The row is already as tall as the handle's block size, so the broad target
+costs no panel height.
 
 Sizing the target *to the bar* leaves only the bar's own height to land on, which
-makes a correctly implemented gesture feel broken. The visible bar is a
-pseudo-element of the target, so this costs no authored node and no tab stop.
+makes a correctly implemented gesture feel broken. A compact box floating in a
+wide landscape panel is the opposite error — needlessly precise. The visible bar
+is a pseudo-element of the target, so none of this costs an authored node or a
+tab stop.
 
 That order matters. The gesture is discoverable only by trying it, has no
 keyboard equivalent, and is invisible to assistive technology by design — the

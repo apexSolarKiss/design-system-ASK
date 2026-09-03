@@ -893,28 +893,38 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
    its own row beneath, at its usable width. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-head {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  grid-template-areas:
-    "lead handle close"
-    "tree tree   tree";
+  grid-template-columns: 1fr;
   align-items: center;
-  column-gap: var(--space-3);
   row-gap: var(--space-4);
 }
-:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-handle { grid-area: handle; }
-:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-tree   { grid-area: tree; }
-:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-close  { grid-area: close; justify-self: end; }
+/* THE CONTROL LINE IS THE TARGET; THE CLOSE BUTTON IS THE HOLE IN IT. Handle and
+   close share ONE grid cell: the handle spans the row's full width, and the close
+   control is painted over it, end-aligned, keeping its own pointer box. They are
+   siblings rather than nested, so a press on close simply never reaches the
+   handle's listener — no drag to cancel, and no event-cancellation trick.
+
+   A 64px target floating in a wide landscape panel was needlessly precise. This
+   costs no height: the row is already as tall as the handle's block size. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-handle {
+  grid-row: 1; grid-column: 1;
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-close {
+  grid-row: 1; grid-column: 1;
+  justify-self: end;
+  position: relative;                            /* so the stacking is declared, */
+  z-index: 1;                                    /* not left to paint order      */
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-tree {
+  grid-row: 2; grid-column: 1;
+}
 
 :root[data-surface-nav-mode="mobile"] .surface-nav-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* COMPACT and finger-sized — not a full-width strip. A full-width target was
-     an overcorrection: reachability needs a comfortable box, not the whole
-     panel. Sized from the spacing scale so it tracks the system. */
-  inline-size: var(--space-8);                   /* 64 */
-  block-size: var(--space-7);                    /* 48 */
-  touch-action: none;                            /* SCOPED — see note above */
+  inline-size: auto;                             /* the whole control line */
+  block-size: var(--space-7);                    /* the row's height, unchanged */
+  touch-action: none;                            /* SCOPED to the control line */
   cursor: grab;
 }
 /* INTERACTION GEOMETRY IS NOT VISIBLE GEOMETRY. The element above is the pointer
