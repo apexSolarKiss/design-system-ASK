@@ -876,6 +876,36 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 :root[data-surface-nav-mode="mobile"] .surface-nav-panel-inner {
   padding-bottom: calc(var(--space-6) + var(--surface-nav-inset-b));
 }
+/* ---------- Mobile drag handle + swipe-to-close ----------
+   The handle is the ONLY element that captures the drag. `touch-action: none`
+   is scoped to it and appears nowhere else: putting it on the panel, the
+   hierarchy or the utility region would take the browser's own scrolling away
+   from the content, which is the failure this placement exists to avoid.
+
+   Hidden outside mobile — a desktop drawer has no swipe affordance, and an
+   inert visual handle would advertise a gesture that does nothing. */
+.surface-nav-handle { display: none; }
+
+:root[data-surface-nav-mode="mobile"] .surface-nav-handle {
+  display: block;
+  flex: 0 0 auto;
+  align-self: center;
+  width: 2.25rem;
+  height: 0.25rem;
+  margin-block-end: calc(var(--space-3) * -1);   /* rides in the inner's gap */
+  border-radius: 999px;
+  background: var(--fg-3, currentColor);
+  opacity: 0.35;
+  touch-action: none;                            /* SCOPED — see note above */
+  cursor: grab;
+}
+
+/* While a finger is on the handle the sheet tracks the pointer directly, so the
+   easing that governs open/close motion must not also be interpolating toward
+   each move event — that reads as lag against the finger. Restored the moment
+   the gesture ends, which is what makes the insufficient-drag return animate. */
+.surface-nav-panel.is-dragging { transition: none; }
+
 /* The open state has to OUTRANK the mode rules that set the closed transform.
    Both of those are :root + attribute + class, so a bare
    `.surface-nav-panel.is-open` loses on specificity and the panel stays parked

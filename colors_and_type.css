@@ -261,7 +261,7 @@
    but cannot be correct here: custom properties inherit downward, so a
    `.theme-dark` on `body` would resolve dark for the subtree while `html` — the
    element that actually owns the canvas — kept the light edge, giving dark
-   content inside a white browser edge. These selectors therefore match the root
+   content inside the root-owned browser edge. These selectors therefore match the root
    only, and a descendant `.theme-dark` deliberately leaves the canvas alone. */
 :root {
   --bg-edge: var(--ask-lavender-light);
