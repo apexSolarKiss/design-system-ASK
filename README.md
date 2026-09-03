@@ -117,7 +117,9 @@ The prohibition above is about **UI surfaces**. The **browser icon** is not one:
 
 These are **Tier-3 implementation assets**. The visual decision stays with the identity canonical (`visual-identity-system.md`); this repo owns the reusable package, its verification, and the integration contract. The glyph geometry **derives from `assets/logo-ASK.svg` without redraw** — `tools/browser-icons.mjs --check` fails if any glyph path diverges from the wordmark, if the field or ink colour moves, if a fourth glyph or a wedge-only mark appears, or if the ICO stops matching the 32 px composition. Regenerate the ICO with `node tools/browser-icons.mjs`; it is byte-deterministic.
 
-Conventional head block, conventional root filenames:
+Two integration profiles, because ASK browser surfaces are not all origins.
+
+**A — deployed origin.** The full four-file package at the origin root, root-absolute head paths:
 
 ```html
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -126,6 +128,16 @@ Conventional head block, conventional root filenames:
 ```
 
 `/favicon.ico` needs no declaration — it answers the browser's automatic root probe and covers pages that declare nothing.
+
+**B — package-local browser artifact.** A mutable operator package a reader opens directly from its own directory rather than over an origin. Paths are relative to the artifact HTML at the package root, because a leading `/` there resolves to the filesystem or origin root, not to the package:
+
+```html
+<!-- Package-local browser artifact — paths relative to this HTML file -->
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+```
+
+Two files only. **No apple-touch icon** — there is no home-screen role. **No root-probe guarantee** is claimed under `file://`, so a package-local `.ico` is not required unless a concrete local-browser need is demonstrated. The visual bytes are the same canonical owner bytes; only the carrier subset and the path form differ.
 
 **A surface uses this package only where it is assigned ASK's own Tier 3.** A surface that resolves a different Tier 3 supplies its own browser icon; carrying ASK's icon does not make a project ASK-the-entity, and **`surface-shell` remains Tier-3-neutral** — it ships a mark slot and supplies no favicon value. Downstream consumers **vendor these exact bytes** rather than redrawing or re-extracting a mark.
 

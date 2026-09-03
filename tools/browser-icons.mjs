@@ -10,6 +10,19 @@
  * WRAPPING the exact bytes of favicon-32.png in an ICO container — PNG-in-ICO — so it introduces
  * no resampling and no pixel that is not already in a ratified asset. That is also what makes it
  * byte-deterministic: the payload is a copy, not a render.
+ *
+ * WHY THE THREE SOURCE ASSETS ARE PINNED BY FULL SHA-256, and not merely described.
+ * Semantic checks alone cannot establish the ratified COMPOSITION. A verifier that only asserts
+ * "viewBox present · lavender hex occurs once · three glyph paths equal logo-ASK.svg · PNG is
+ * 32x32" will pass an icon whose wordmark has been scaled to 11%, translated off the canvas or
+ * hidden at opacity 0, whose lavender rect no longer covers the square, or whose rasters have been
+ * replaced wholesale at the same dimensions. All six were reproduced against an earlier revision of
+ * this file. Because consumers are told to vendor EXACT owner bytes, the honest owner guard is the
+ * exact byte identity; the semantic checks are retained on top of it, so a pin updated to the wrong
+ * artwork still fails.
+ *
+ * An intentional visual revision updates the asset bytes AND these constants in the SAME reviewed
+ * owner PR. That is the point: the change becomes visible in review instead of passing silently.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +32,14 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const P = (f) => path.join(ROOT, f);
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
+
+/* Full identities of the three RATIFIED source assets, adopted byte-identical from
+   apexSolarKiss/ASK (origin/main 0f11ede) where this expression has been live. */
+const RATIFIED = {
+  'favicon.svg':          '1033f1c23123d78b8650de49ea413c85e1937014c866812229552c89d645cc6b',
+  'favicon-32.png':       '9f08639c0523fae1aa7a782567b66d3ca5a9ac0929150a72deca9455f397d390',
+  'apple-touch-icon.png': 'e2fc718650c99c9e610ad232a30dcf9308dcd5223094e06f04eeb502f2313b5d',
+};
 
 const FIELD = '#d4c6e1';      /* lavender-ASK, baked */
 const INK   = '#ffffff';      /* wordmark pairing */
@@ -86,6 +107,13 @@ function check() {
     (cond ? console.log : (m) => { console.log(m); fail.push(label); })(
       `  ${cond ? 'PASS' : 'FAIL'}  ${label}${detail ? '  — ' + detail : ''}`);
   };
+
+  /* EXACT RATIFIED IDENTITY — the guard that actually pins the composition. */
+  for (const [f, want] of Object.entries(RATIFIED)) {
+    const got = sha(fs.readFileSync(P(f)));
+    ok(got === want, `${f} is the exact ratified asset`,
+       got === want ? got.slice(0, 16) + '…' : `got ${got.slice(0, 16)}… want ${want.slice(0, 16)}…`);
+  }
 
   /* SVG */
   const svg = fs.readFileSync(P('favicon.svg'), 'utf8');
