@@ -756,6 +756,84 @@ element scrolls, the close stays at its upper-right corner, and the padding it
 does carry is the safe-area inset rather than close-button clearance. **DOM order is unchanged in both modes**, so the tab order a
 keyboard user walks is the one the markup states; only the boxes move.
 
+### Swipe-to-close, and why it is only ever an enhancement
+
+The mobile sheet carries a visible drag handle. A downward drag on it dismisses
+the panel; the explicit close button remains, unchanged and mandatory.
+
+**The control line is the target; the close button is the hole in it.** The bar a
+reader sees is `2.25rem × 0.25rem`, centred on the panel. The element that
+accepts the pointer is the whole top control line — handle and close share one
+grid cell, the handle spanning the row's full width and the close control painted
+over it, end-aligned, keeping its own pointer box.
+
+They are siblings rather than nested, so a press on close simply never reaches
+the handle's listener: there is no drag to cancel and no event-cancellation
+trick. The row is already as tall as the handle's block size, so the broad target
+costs no panel height.
+
+Sizing the target *to the bar* leaves only the bar's own height to land on, which
+makes a correctly implemented gesture feel broken. A compact box floating in a
+wide landscape panel is the opposite error — needlessly precise. The visible bar
+is a pseudo-element of the target, so none of this costs an authored node or a
+tab stop.
+
+That order matters. The gesture is discoverable only by trying it, has no
+keyboard equivalent, and is invisible to assistive technology by design — the
+handle is `aria-hidden` and carries no tab stop, because announcing a control
+that only a finger can operate would be worse than not announcing it. So the
+gesture never becomes the means of dismissal; it becomes a *second* means
+alongside a button that every input can reach.
+
+**Two thresholds, either of which commits.** A single threshold fails a whole
+class of natural gesture in one direction or the other: a quick flick never
+travels far, and a careful drag is never fast.
+
+| | value | commits on |
+| --- | --- | --- |
+| distance | `88px` | a slow, deliberate pull, at any speed |
+| velocity | `0.55px/ms` downward at release | a short, fast flick |
+
+**Velocity measures the sheet's own clamped displacement**, not raw pointer Y,
+through the release sample over the recent 120ms window. Upward travel is clamped
+to zero, so a finger that goes up and snaps back to its start would otherwise
+produce a large raw-Y velocity while the sheet never moved — dismissing on a
+gesture with zero net displacement. The quantity that commits is the one the
+sheet actually performed. The release carries its own coordinates and timestamp, so movement
+between the last `pointermove` and `pointerup` counts toward both arms; samples
+older than the window are dropped, always retaining one predecessor. Reading only
+the move stream averaged a final flick across any earlier stationary hold —
+failing exactly the gesture this arm exists for.
+
+Both thresholds are named constants in one place in `surface-shell.js`. This is
+deliberately not a physics model or a tuning surface.
+
+**Upward travel is clamped to zero**, not tracked — the sheet is bottom-anchored,
+so following a pointer upward would lift it off its own edge. A
+horizontal-dominant movement is a swipe *across* the handle rather than down it,
+and does not commit.
+
+**The handle is the only drag origin.** `touch-action: none` is scoped to the
+handle and appears nowhere else. Placing it on the panel, the hierarchy or the
+utility region would take the browser's own scrolling away from the content —
+which is exactly why the capture is constrained rather than the surface.
+
+**A committed swipe routes through the existing `closePanel()`**, so open-state
+bookkeeping, exit motion, focus return, dialog closure and queued-frame
+cancellation are the ones already reviewed. There is no second close path. An
+insufficient drag returns the sheet to its exact open position and clears every
+temporary class, inline property and capture.
+
+**Mouse is excluded.** A desktop drawer has no swipe affordance, and a mouse drag
+that dismissed it would be an undiscoverable action with no visible handle. The
+handle is `display: none` outside mobile mode, where mobile keeps the runtime's
+existing definition — narrow, *or* short and coarse — not a width-only test.
+
+While a finger is down the panel's transition is suppressed, so the sheet tracks
+the pointer directly instead of easing toward each move event. It is restored the
+moment the gesture ends, which is what makes the insufficient-drag return
+animate. Under reduced motion the settle simply snaps.
+
 ### Focus is established the same way; only its *presentation* varies
 
 Opening the panel always moves focus to the first destination — a modal needs an

@@ -272,8 +272,24 @@
   var inner = doc.createElement('div');
   inner.className = 'surface-nav-panel-inner';
 
+  /* MOBILE DRAG HANDLE. Presentational only: it carries no tab stop, no label
+     and no role, because it is an ENHANCEMENT over a dismissal that already
+     works. The explicit close button below remains the operable control, and a
+     pointer that cannot drag (mouse, or any desktop-mode pointer) loses
+     nothing. The handle is also the ONLY drag origin — capture starts here and
+     nowhere else — which is what keeps ordinary content scrolling intact. */
+  var handle = doc.createElement('div');
+  handle.className = 'surface-nav-handle';
+  handle.setAttribute('aria-hidden', 'true');
+
   var head = doc.createElement('div');
   head.className = 'surface-nav-head';
+  /* The handle SHARES the close control's line rather than occupying a row of
+     its own. A separate full-width strip above the head spent panel height and
+     width on an affordance that only needs to be reachable, and pushed the
+     hierarchy down for it. Inside the head it sits on the control line the
+     panel already required. */
+  head.appendChild(handle);
   head.appendChild(buildTree());
 
   /* An EXPLICIT close control, always. Outside dismissal and Escape are
@@ -570,6 +586,10 @@
   function closePanel() {
     if (!isOpen) return;
     isOpen = false;
+    /* A dismissal from ANY source ends the gesture: the inline transform must
+       not survive into the exit, or the sheet exits from wherever the finger
+       left it and returns there on reopen. */
+    if (typeof dragReset === 'function') dragReset(true);
     clearPointerEntryFocus();   /* the entrance state does not outlive the panel */
     /* Whether an EXIT is even possible has to be read BEFORE the class is
        removed. If the entrance never landed — a synchronous dismissal, or one
@@ -623,6 +643,104 @@
     closeTimer = setTimeout(finish, Math.round(longest * 1000) + 60);
   }
 
+  /* ------------------------------------------------------- swipe-to-close --
+     A downward drag on the handle dismisses the mobile sheet. Two thresholds,
+     either of which commits: a DISTANCE for a slow deliberate pull, and a
+     VELOCITY for a short fast flick. One without the other makes a whole class
+     of natural gesture fail — a quick flick never travels far, and a careful
+     drag is never fast.
+
+     Both are named constants in ONE place. This is deliberately not a physics
+     model or a tuning surface: two numbers, read once, documented here. */
+  var SWIPE_COMMIT_PX = 88;      /* distance alone commits, at any speed       */
+  var SWIPE_COMMIT_VPX = 0.55;   /* px/ms downward at release alone commits    */
+  var SWIPE_SAMPLE_MS = 120;     /* velocity window; older samples are dropped */
+
+  var drag = null;
+
+  /* SAMPLES CARRY SHEET DISPLACEMENT, NOT RAW POINTER Y. The sheet's travel is
+     clamped at zero upward, so a finger that goes up and snaps back to its start
+     produces a large raw-Y velocity while the sheet never moved at all — and the
+     velocity arm would dismiss on a gesture with zero net displacement. The
+     quantity that commits has to be the one the sheet actually performed.
+
+     Drop samples that fall outside the release window, ALWAYS retaining one
+     predecessor to measure against. Without the release sample appended this
+     could never fire on a hold-then-flick — two samples remained, the stale
+     pointerdown one among them, and the flick's speed was averaged across the
+     whole stationary hold. That is the case the velocity arm exists for. */
+  function trimSamples(samples, now) {
+    while (samples.length > 2 && now - samples[0].t > SWIPE_SAMPLE_MS) samples.shift();
+  }
+
+  function dragReset(restore) {
+    if (!drag) return;
+    var id = drag.id;
+    drag = null;
+    panel.classList.remove('is-dragging');
+    if (restore) panel.style.transform = '';
+    try { if (handle.hasPointerCapture && handle.hasPointerCapture(id)) handle.releasePointerCapture(id); }
+    catch (err) { /* capture already gone — nothing to release */ }
+  }
+
+  handle.addEventListener('pointerdown', function (e) {
+    /* Mouse is excluded on purpose: a desktop drawer has no swipe affordance,
+       and a mouse drag that dismissed it would be an undiscoverable action
+       with no visible handle. Touch and pen only, primary pointer only. */
+    if (!MOBILE() || !isOpen || drag) return;
+    if (e.pointerType === 'mouse' || !e.isPrimary) return;
+    drag = { id: e.pointerId, y0: e.clientY, x0: e.clientX, dy: 0, dx: 0,
+             samples: [{ t: e.timeStamp, d: 0 }] };
+    panel.classList.add('is-dragging');
+    try { handle.setPointerCapture(e.pointerId); } catch (err) { /* non-fatal */ }
+  });
+
+  handle.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dx = e.clientX - drag.x0;
+    /* Upward travel is CLAMPED, not tracked: the sheet is bottom-anchored, so
+       following a pointer upward would lift it off its own edge. */
+    drag.dy = Math.max(0, e.clientY - drag.y0);
+    drag.samples.push({ t: e.timeStamp, d: drag.dy });
+    trimSamples(drag.samples, e.timeStamp);
+    panel.style.transform = 'translateY(' + drag.dy + 'px)';
+  });
+
+  function dragEnd(e) {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    /* THE RELEASE ITSELF IS A SAMPLE. Movement between the last pointermove and
+       pointerup is real travel, and reading only the move stream discards it
+       from both arms of the decision. */
+    if (e) {
+      drag.dx = e.clientX - drag.x0;
+      drag.dy = Math.max(0, e.clientY - drag.y0);
+      drag.samples.push({ t: e.timeStamp, d: drag.dy });
+      trimSamples(drag.samples, e.timeStamp);
+    }
+    var dy = drag.dy, dx = drag.dx, sm = drag.samples;
+    var first = sm[0], last = sm[sm.length - 1];
+    var dt = last.t - first.t;
+    var v = dt > 0 ? (last.d - first.d) / dt : 0;   /* px/ms of SHEET travel */
+    /* A horizontal-dominant gesture is a swipe ACROSS the handle, not down it. */
+    var vertical = Math.abs(dy) >= Math.abs(dx);
+    var commit = vertical && (dy >= SWIPE_COMMIT_PX || v >= SWIPE_COMMIT_VPX);
+
+    if (commit) {
+      /* Hand the inline transform back BEFORE closing so the exit transition
+         runs from the stylesheet's own closed value, exactly as every other
+         dismissal does. The gesture commits to the EXISTING lifecycle; it does
+         not implement a second one. */
+      dragReset(true);
+      closePanel();
+      return;
+    }
+    dragReset(true);   /* insufficient: return to the exact open position */
+  }
+
+  handle.addEventListener('pointerup', dragEnd);
+  handle.addEventListener('pointercancel', function (e) { if (drag && e.pointerId === drag.id) dragReset(true); });
+  handle.addEventListener('lostpointercapture', function (e) { if (drag && e.pointerId === drag.id) dragReset(true); });
+
   function toggle(e) { isOpen ? closePanel() : openPanel(e.currentTarget); }
   trigger.addEventListener('click', toggle);
   seatBtn.addEventListener('click', toggle);
@@ -648,6 +766,10 @@
   /* Commit a mode: publish it, then re-derive everything that depends on it. */
   function commitMode(next) {
     mode = next;
+    /* A rotation or a mode flip mid-drag changes which edge the sheet is
+       anchored to. Any in-flight gesture is abandoned and the inline transform
+       dropped, so the panel resolves to whatever the new mode's rules say. */
+    dragReset(true);
     root.setAttribute('data-surface-nav-mode', mode);
     remeasure();
     var t = visibleTrigger();

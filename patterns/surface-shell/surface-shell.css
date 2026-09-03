@@ -876,6 +876,79 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 :root[data-surface-nav-mode="mobile"] .surface-nav-panel-inner {
   padding-bottom: calc(var(--space-6) + var(--surface-nav-inset-b));
 }
+/* ---------- Mobile drag handle + swipe-to-close ----------
+   The handle is the ONLY element that captures the drag. `touch-action: none`
+   is scoped to it and appears nowhere else: putting it on the panel, the
+   hierarchy or the utility region would take the browser's own scrolling away
+   from the content, which is the failure this placement exists to avoid.
+
+   Hidden outside mobile — a desktop drawer has no swipe affordance, and an
+   inert visual handle would advertise a gesture that does nothing. */
+.surface-nav-handle { display: none; }
+
+/* MOBILE HEAD IS A CONTROL LINE PLUS THE HIERARCHY. Three columns with equal
+   1fr flanks put the handle at the panel's true centre while the close control
+   end-aligns in the right flank — centring without absolute positioning, so the
+   target can never be laid over the hierarchy. The tree spans the full width on
+   its own row beneath, at its usable width. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  row-gap: var(--space-4);
+}
+/* THE CONTROL LINE IS THE TARGET; THE CLOSE BUTTON IS THE HOLE IN IT. Handle and
+   close share ONE grid cell: the handle spans the row's full width, and the close
+   control is painted over it, end-aligned, keeping its own pointer box. They are
+   siblings rather than nested, so a press on close simply never reaches the
+   handle's listener — no drag to cancel, and no event-cancellation trick.
+
+   A 64px target floating in a wide landscape panel was needlessly precise. This
+   costs no height: the row is already as tall as the handle's block size. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-handle {
+  grid-row: 1; grid-column: 1;
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-close {
+  grid-row: 1; grid-column: 1;
+  justify-self: end;
+  position: relative;                            /* so the stacking is declared, */
+  z-index: 1;                                    /* not left to paint order      */
+}
+:root[data-surface-nav-mode="mobile"] .surface-nav-head > .surface-nav-tree {
+  grid-row: 2; grid-column: 1;
+}
+
+:root[data-surface-nav-mode="mobile"] .surface-nav-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: auto;                             /* the whole control line */
+  block-size: var(--space-7);                    /* the row's height, unchanged */
+  touch-action: none;                            /* SCOPED to the control line */
+  cursor: grab;
+}
+/* INTERACTION GEOMETRY IS NOT VISIBLE GEOMETRY. The element above is the pointer
+   target and is finger-sized; the bar a reader actually sees is this
+   pseudo-element. Sizing the visible bar as the target left only the bar's own
+   height to land on, which made the gesture feel broken even though it was
+   implemented correctly. The pseudo-element carries no box of its own in the a11y tree and
+   adds no node to author. */
+:root[data-surface-nav-mode="mobile"] .surface-nav-handle::before {
+  content: "";
+  display: block;
+  width: 2.25rem;                                /* the visible bar */
+  height: 0.25rem;
+  border-radius: 999px;
+  background: var(--fg-3, currentColor);
+  opacity: 0.35;
+}
+
+/* While a finger is on the handle the sheet tracks the pointer directly, so the
+   easing that governs open/close motion must not also be interpolating toward
+   each move event — that reads as lag against the finger. Restored the moment
+   the gesture ends, which is what makes the insufficient-drag return animate. */
+.surface-nav-panel.is-dragging { transition: none; }
+
 /* The open state has to OUTRANK the mode rules that set the closed transform.
    Both of those are :root + attribute + class, so a bare
    `.surface-nav-panel.is-open` loses on specificity and the panel stays parked
