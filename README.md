@@ -75,6 +75,8 @@ A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
 | `assets/logo-ASK-white.png` | Raster wordmark in `#FFFFFF`, on transparent (light-mode pairing / fallback) |
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
+| `favicon.svg` · `favicon-32.png` · `favicon.ico` · `apple-touch-icon.png` | Browser-icon package — the wordmark on the baked `#D4C6E1` square. Tier-3 implementation assets; see **Logo placement** |
+| `tools/browser-icons.mjs` | Generates `favicon.ico`; `--check` verifies the package against `assets/logo-ASK.svg` |
 | `preview/styleguide.html` | Live token styleguide — the single canonical preview surface |
 | `styleguide-theme-control.js` | The style guide's forced-mode selector (auto / light / dark). **Style-guide-only; not vendored, and not part of `surface-shell`.** An inspection surface needs to hold a mode fixed; ordinary public surfaces follow the operating system and load nothing. |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
@@ -101,6 +103,33 @@ A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits
 In any UI surface — page, card, preview, component — the mark goes on the gradient. The fixed `#D4C6E1` lavender-ASK field is **only** for the standalone exported asset (the JPG/vector deliverable). It is not a UI background. Do not place the wordmark on a flat lavender-ASK block anywhere in the system.
 
 `logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so one vector file can be used for both mode pairings when its container sets the correct wordmark color. The two PNGs are raster pairings/fallbacks.
+
+### Browser icons — the one other exported-asset instance
+
+The prohibition above is about **UI surfaces**. The **browser icon** is not one: like the standalone exported deliverable, it is a fixed asset, and it carries the wordmark on the flat `#D4C6E1` field by design — fitted to a square. It is the *compact square application of the exported-asset treatment*, not a third wordmark treatment and not a new logo.
+
+| File | Role |
+| --- | --- |
+| `favicon.svg` | 512 × 512, white wordmark on the baked `#D4C6E1` square — the primary |
+| `favicon-32.png` | 32 × 32 raster fallback |
+| `favicon.ico` | root-probe carrier; a container around `favicon-32.png`, byte-for-byte |
+| `apple-touch-icon.png` | 180 × 180, iOS home screen |
+
+These are **Tier-3 implementation assets**. The visual decision stays with the identity canonical (`visual-identity-system.md`); this repo owns the reusable package, its verification, and the integration contract. The glyph geometry **derives from `assets/logo-ASK.svg` without redraw** — `tools/browser-icons.mjs --check` fails if any glyph path diverges from the wordmark, if the field or ink colour moves, if a fourth glyph or a wedge-only mark appears, or if the ICO stops matching the 32 px composition. Regenerate the ICO with `node tools/browser-icons.mjs`; it is byte-deterministic.
+
+Conventional head block, conventional root filenames:
+
+```html
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```
+
+`/favicon.ico` needs no declaration — it answers the browser's automatic root probe and covers pages that declare nothing.
+
+**A surface uses this package only where it is assigned ASK's own Tier 3.** A surface that resolves a different Tier 3 supplies its own browser icon; carrying ASK's icon does not make a project ASK-the-entity, and **`surface-shell` remains Tier-3-neutral** — it ships a mark slot and supplies no favicon value. Downstream consumers **vendor these exact bytes** rather than redrawing or re-extracting a mark.
+
+A web app manifest, PWA 192/512 icons, and `mask-icon` are **not** part of the package: none of the consuming surfaces is an installable app, and nothing here needs one.
 
 ---
 
