@@ -653,7 +653,13 @@
 
   var drag = null;
 
-  /* Drop samples that fall outside the release window, ALWAYS retaining one
+  /* SAMPLES CARRY SHEET DISPLACEMENT, NOT RAW POINTER Y. The sheet's travel is
+     clamped at zero upward, so a finger that goes up and snaps back to its start
+     produces a large raw-Y velocity while the sheet never moved at all — and the
+     velocity arm would dismiss on a gesture with zero net displacement. The
+     quantity that commits has to be the one the sheet actually performed.
+
+     Drop samples that fall outside the release window, ALWAYS retaining one
      predecessor to measure against. Without the release sample appended this
      could never fire on a hold-then-flick — two samples remained, the stale
      pointerdown one among them, and the flick's speed was averaged across the
@@ -679,7 +685,7 @@
     if (!MOBILE() || !isOpen || drag) return;
     if (e.pointerType === 'mouse' || !e.isPrimary) return;
     drag = { id: e.pointerId, y0: e.clientY, x0: e.clientX, dy: 0, dx: 0,
-             samples: [{ t: e.timeStamp, y: e.clientY }] };
+             samples: [{ t: e.timeStamp, d: 0 }] };
     panel.classList.add('is-dragging');
     try { handle.setPointerCapture(e.pointerId); } catch (err) { /* non-fatal */ }
   });
@@ -690,7 +696,7 @@
     /* Upward travel is CLAMPED, not tracked: the sheet is bottom-anchored, so
        following a pointer upward would lift it off its own edge. */
     drag.dy = Math.max(0, e.clientY - drag.y0);
-    drag.samples.push({ t: e.timeStamp, y: e.clientY });
+    drag.samples.push({ t: e.timeStamp, d: drag.dy });
     trimSamples(drag.samples, e.timeStamp);
     panel.style.transform = 'translateY(' + drag.dy + 'px)';
   });
@@ -703,13 +709,13 @@
     if (e) {
       drag.dx = e.clientX - drag.x0;
       drag.dy = Math.max(0, e.clientY - drag.y0);
-      drag.samples.push({ t: e.timeStamp, y: e.clientY });
+      drag.samples.push({ t: e.timeStamp, d: drag.dy });
       trimSamples(drag.samples, e.timeStamp);
     }
     var dy = drag.dy, dx = drag.dx, sm = drag.samples;
     var first = sm[0], last = sm[sm.length - 1];
     var dt = last.t - first.t;
-    var v = dt > 0 ? (last.y - first.y) / dt : 0;   /* px/ms, positive = downward */
+    var v = dt > 0 ? (last.d - first.d) / dt : 0;   /* px/ms of SHEET travel */
     /* A horizontal-dominant gesture is a swipe ACROSS the handle, not down it. */
     var vertical = Math.abs(dy) >= Math.abs(dx);
     var commit = vertical && (dy >= SWIPE_COMMIT_PX || v >= SWIPE_COMMIT_VPX);

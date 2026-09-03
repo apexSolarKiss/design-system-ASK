@@ -761,12 +761,14 @@ keyboard user walks is the one the markup states; only the boxes move.
 The mobile sheet carries a visible drag handle. A downward drag on it dismisses
 the panel; the explicit close button remains, unchanged and mandatory.
 
-**Interaction geometry is not visible geometry.** The bar a reader sees is about
-36 × 4px; the element that accepts the pointer is finger-sized and spans the
-sheet's width. Sizing the target to the bar leaves a four-pixel-high strip to
-land on, which makes a correctly implemented gesture feel broken. The visible bar
-is a pseudo-element of the target, so this costs no authored node and no tab
-stop.
+**Interaction geometry is not visible geometry.** The bar a reader sees is
+`2.25rem × 0.25rem`; the element that accepts the pointer is `2.75rem` high and
+spans the sheet's available width. Both scale with the root font size — in the
+current owner preview they measure 54 × 6px and 324 × 66px respectively.
+
+Sizing the target *to the bar* leaves only the bar's own height to land on, which
+makes a correctly implemented gesture feel broken. The visible bar is a
+pseudo-element of the target, so this costs no authored node and no tab stop.
 
 That order matters. The gesture is discoverable only by trying it, has no
 keyboard equivalent, and is invisible to assistive technology by design — the
@@ -784,8 +786,12 @@ travels far, and a careful drag is never fast.
 | distance | `88px` | a slow, deliberate pull, at any speed |
 | velocity | `0.55px/ms` downward at release | a short, fast flick |
 
-**Velocity is measured through the release sample**, over the recent 120ms
-window. The release carries its own coordinates and timestamp, so movement
+**Velocity measures the sheet's own clamped displacement**, not raw pointer Y,
+through the release sample over the recent 120ms window. Upward travel is clamped
+to zero, so a finger that goes up and snaps back to its start would otherwise
+produce a large raw-Y velocity while the sheet never moved — dismissing on a
+gesture with zero net displacement. The quantity that commits is the one the
+sheet actually performed. The release carries its own coordinates and timestamp, so movement
 between the last `pointermove` and `pointerup` counts toward both arms; samples
 older than the window are dropped, always retaining one predecessor. Reading only
 the move stream averaged a final flick across any earlier stationary hold —

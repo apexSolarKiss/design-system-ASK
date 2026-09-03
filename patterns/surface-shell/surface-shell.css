@@ -892,7 +892,7 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
   justify-content: center;
   flex: 0 0 auto;
   align-self: stretch;                           /* full sheet width to aim at */
-  height: 2.75rem;                               /* 44px — a finger, not a line */
+  height: 2.75rem;                               /* a finger, not a line */
   margin-block-start: calc(var(--space-4) * -1); /* sits tight to the sheet edge */
   margin-block-end: calc(var(--space-4) * -1);   /* without opening a gap below  */
   touch-action: none;                            /* SCOPED — see note above */
@@ -900,15 +900,15 @@ button.surface-mark[data-surface-nav-pointer-focus]:focus-visible {
 }
 /* INTERACTION GEOMETRY IS NOT VISIBLE GEOMETRY. The element above is the pointer
    target and is finger-sized; the bar a reader actually sees is this
-   pseudo-element. Sizing the visible bar as the target left a 4px-high strip to
-   land on, which made the gesture feel broken even though it was implemented
-   correctly. The pseudo-element carries no box of its own in the a11y tree and
+   pseudo-element. Sizing the visible bar as the target left only the bar's own
+   height to land on, which made the gesture feel broken even though it was
+   implemented correctly. The pseudo-element carries no box of its own in the a11y tree and
    adds no node to author. */
 :root[data-surface-nav-mode="mobile"] .surface-nav-handle::before {
   content: "";
   display: block;
-  width: 2.25rem;                                /* ~36px visible bar */
-  height: 0.25rem;                               /* ~4px */
+  width: 2.25rem;                                /* the visible bar */
+  height: 0.25rem;
   border-radius: 999px;
   background: var(--fg-3, currentColor);
   opacity: 0.35;
