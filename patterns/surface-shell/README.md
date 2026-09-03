@@ -761,6 +761,13 @@ keyboard user walks is the one the markup states; only the boxes move.
 The mobile sheet carries a visible drag handle. A downward drag on it dismisses
 the panel; the explicit close button remains, unchanged and mandatory.
 
+**Interaction geometry is not visible geometry.** The bar a reader sees is about
+36 × 4px; the element that accepts the pointer is finger-sized and spans the
+sheet's width. Sizing the target to the bar leaves a four-pixel-high strip to
+land on, which makes a correctly implemented gesture feel broken. The visible bar
+is a pseudo-element of the target, so this costs no authored node and no tab
+stop.
+
 That order matters. The gesture is discoverable only by trying it, has no
 keyboard equivalent, and is invisible to assistive technology by design — the
 handle is `aria-hidden` and carries no tab stop, because announcing a control
@@ -777,7 +784,14 @@ travels far, and a careful drag is never fast.
 | distance | `88px` | a slow, deliberate pull, at any speed |
 | velocity | `0.55px/ms` downward at release | a short, fast flick |
 
-Both are named constants in one place in `surface-shell.js`. This is
+**Velocity is measured through the release sample**, over the recent 120ms
+window. The release carries its own coordinates and timestamp, so movement
+between the last `pointermove` and `pointerup` counts toward both arms; samples
+older than the window are dropped, always retaining one predecessor. Reading only
+the move stream averaged a final flick across any earlier stationary hold —
+failing exactly the gesture this arm exists for.
+
+Both thresholds are named constants in one place in `surface-shell.js`. This is
 deliberately not a physics model or a tuning surface.
 
 **Upward travel is clamped to zero**, not tracked — the sheet is bottom-anchored,

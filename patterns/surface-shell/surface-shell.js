@@ -653,6 +653,15 @@
 
   var drag = null;
 
+  /* Drop samples that fall outside the release window, ALWAYS retaining one
+     predecessor to measure against. Without the release sample appended this
+     could never fire on a hold-then-flick — two samples remained, the stale
+     pointerdown one among them, and the flick's speed was averaged across the
+     whole stationary hold. That is the case the velocity arm exists for. */
+  function trimSamples(samples, now) {
+    while (samples.length > 2 && now - samples[0].t > SWIPE_SAMPLE_MS) samples.shift();
+  }
+
   function dragReset(restore) {
     if (!drag) return;
     var id = drag.id;
@@ -682,12 +691,21 @@
        following a pointer upward would lift it off its own edge. */
     drag.dy = Math.max(0, e.clientY - drag.y0);
     drag.samples.push({ t: e.timeStamp, y: e.clientY });
-    while (drag.samples.length > 2 && e.timeStamp - drag.samples[0].t > SWIPE_SAMPLE_MS) drag.samples.shift();
+    trimSamples(drag.samples, e.timeStamp);
     panel.style.transform = 'translateY(' + drag.dy + 'px)';
   });
 
   function dragEnd(e) {
     if (!drag || (e && e.pointerId !== drag.id)) return;
+    /* THE RELEASE ITSELF IS A SAMPLE. Movement between the last pointermove and
+       pointerup is real travel, and reading only the move stream discards it
+       from both arms of the decision. */
+    if (e) {
+      drag.dx = e.clientX - drag.x0;
+      drag.dy = Math.max(0, e.clientY - drag.y0);
+      drag.samples.push({ t: e.timeStamp, y: e.clientY });
+      trimSamples(drag.samples, e.timeStamp);
+    }
     var dy = drag.dy, dx = drag.dx, sm = drag.samples;
     var first = sm[0], last = sm[sm.length - 1];
     var dt = last.t - first.t;
