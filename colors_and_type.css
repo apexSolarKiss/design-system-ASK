@@ -77,7 +77,7 @@
   /* ==== TIER 2 — ASK design language (palette values + named lavender-ASK) ==== */
   /* ---------- Core set — backgrounds, wordmark, dark-mode text ---------- */
   --ask-white:          #FFFFFF;   /* light-mode WORDMARK (brand mark) — not body text */
-  --ask-lavender-light: #E2D3F0;   /* light gradient, top-right */
+  --ask-lavender-light: #E2D3F0;   /* light gradient, top-right; also the light browser / under-page edge */
   --ask-lavender-dark:  #D4C6E1;   /* lavender-ASK — light gradient bottom-left + dark-mode text */
   --ask-ink-light:      #201D26;   /* dark gradient, bottom-left */
   --ask-ink-dark:       #0A090C;   /* dark gradient, top-right */
@@ -264,7 +264,7 @@
    content inside a white browser edge. These selectors therefore match the root
    only, and a descendant `.theme-dark` deliberately leaves the canvas alone. */
 :root {
-  --bg-edge: var(--ask-white);
+  --bg-edge: var(--ask-lavender-light);
   color-scheme: light;
 }
 :root[data-theme="dark"],
