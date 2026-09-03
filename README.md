@@ -155,7 +155,7 @@ render scrollbars and form controls. Both signals are page-wide, so the foundati
 **on the root** and nowhere else.
 
 `--bg-edge` is the Tier-1 semantic role that carries the value. It binds existing palette
-values and creates none: `--ask-white` in light, `--ask-ink-dark` in dark. The base reset
+values and creates none: `--ask-lavender-light` in light, `--ask-ink-dark` in dark. The base reset
 paints it on `html` **beneath** the gradient, so nothing visible on the page changes — the
 gradient still covers the viewport, and the solid shows only where the browser reaches past
 the document.
@@ -179,8 +179,8 @@ This is a **foundation** property, not a pattern feature. A pattern or surface m
 | Token | Hex | Use |
 | --- | --- | --- |
 | `--ask-fg-light` | `#6A637F` | **Default light-mode foreground** (body text — the approved dark purple) |
-| `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) and the **light browser / under-page edge** (`--bg-edge`) — **not** body text |
-| `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right |
+| `--ask-white` | `#FFFFFF` | Light-mode wordmark (brand mark) — **not** body text |
+| `--ask-lavender-light` | `#E2D3F0` | Light gradient, top-right; also the **light browser / under-page edge** (`--bg-edge`) |
 | `--ask-lavender-dark` | `#D4C6E1` | **lavender-ASK** — light gradient start; dark-mode text |
 | `--ask-ink-light` | `#201D26` | Dark gradient, bottom-left; also the opt-in high-contrast foreground role (`--fg-high-contrast`). Approved uses are registered below — see **High-contrast foreground — registered uses** |
 | `--ask-ink-dark` | `#0A090C` | Dark gradient, top-right; also the **dark browser / under-page edge** (`--bg-edge`) |
