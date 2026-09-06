@@ -880,7 +880,7 @@ Public `CONSUMERS.md` is landed-public-only. It is not the complete propagation 
 
 ## Upstream propagation trigger
 
-design-system-ASK is the **owner** of these foundations, primitives, artifact scaffolds, and surface patterns, not a downstream consumer: it carries the propagation *trigger*, not a recipient grant. Recipient grants live in each consumer's own `AGENTS.md`.
+design-system-ASK is the **owner** of these foundations, primitives, artifact scaffolds, and surface patterns, not a downstream consumer: it carries the propagation *trigger*, not a recipient grant. The optional standing upstream-conformance grant, where adopted by a separately operated repository, is carried in that repository's own `AGENTS.md`. Other consumers remain governed through their actual owning surfaces and applicable authorization and mutation contracts. A consumption relationship alone confers no write jurisdiction and creates no requirement to install a recipient grant or create an `AGENTS.md`.
 
 On a merged change to a vendored foundation, engine, helper, stylesheet, exporter, font carrier, semantic primitive, artifact-scaffold contract, or surface-pattern contract, produce an **owner-delta manifest** and invoke the control-surface propagation-wave protocol (`control-surface/AGENTS.md` §Cross-Repo Propagation Waves and `control-surface/prompts/cross-repo-propagation-wave.md`).
 
