@@ -19,7 +19,7 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.1 — first authored, awaiting first-consumer proving.** Authorized by ASK source-of-intent (2026-07-12). The first consumer will be [`method-ASK`](https://github.com/apexSolarKiss/method-ASK)'s bounded-generativity figure (by reference); [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK) is the intended second consumer and the portability pressure test. Provisional-but-portable: the mappings are the stable, portable part; the role list is fixed at three.
+> **Status: v0.1 — first authored.** Authorized by ASK source-of-intent (2026-07-12). Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md); the first consumer's binding is documented in the worked example below. A landed consumption record is not, by itself, a portability, usability, or generality verdict. Provisional-but-portable: the mappings are the stable, portable part; the role list is fixed at three.
 
 ## The three roles
 
