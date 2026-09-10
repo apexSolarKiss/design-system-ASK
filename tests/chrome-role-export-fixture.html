@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // chrome-role export regression fixture</title>
+<meta name="description" content="Exporter regression fixture: exported page chrome (header, caption, legend) must resolve the SEMANTIC diagram roles --diagram-ink / --diagram-muted, falling back to --fg-1 / --fg-2. Guards export-png.js against correcting the live page while leaving the raster on the foundation ramp.">
+<!-- Foundations + the H pattern engine/exporter, referenced from the repo root
+     (serve from the repo root:  python3 -m http.server 8080  →  /tests/chrome-role-export-fixture.html). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
+<style>
+  /* ===== The unit under test =====
+     diagrams.css aliases the semantic roles to the foundation ramp. A consumer with a
+     registered need may rebind ONLY the semantic roles for its own surface — never the
+     foundation ramp. This fixture holds both states: default (aliased) and overridden.
+     The override value is deliberately conspicuous so a raster that ignored it is
+     obvious both to the eye and to the pixel check below. ===== */
+  :root[data-role-override] {
+    --diagram-ink:   #007A33;   /* fixture-only. NOT an ASK palette value — it exists to be */
+    --diagram-muted: #B34700;   /* unmistakable in a raster, not to be looked at.           */
+  }
+  .probe {
+    position: fixed; left: 18px; bottom: 18px; z-index: 9;
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.65;
+    color: var(--diagram-ink); background: rgba(0,0,0,.28);
+    border: 1px solid var(--diagram-line); border-radius: 10px; padding: 12px 14px; max-width: 560px;
+  }
+  .probe button {
+    font-family: var(--font-mono); font-size: 11px; cursor: pointer;
+    background: transparent; color: inherit;
+    border: 1px solid var(--diagram-line); border-radius: 6px; padding: 4px 9px; margin-right: 6px;
+  }
+  .probe .ok   { color: #2ecc71; font-weight: 500; }
+  .probe .bad  { color: #ff5c5c; font-weight: 500; }
+  .probe pre   { margin: 9px 0 0; white-space: pre-wrap; font: inherit; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="bar">
+    <div class="mark">apexSolarKiss<span class="sep">/</span>design-system-ASK</div>
+    <div class="title-block">
+      <div class="t">Chrome Role Export Fixture</div>
+      <div class="s">regression guard · exported chrome must follow the semantic diagram roles</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="stamp">
+      <div><span class="k">source-v1</span> // <span class="k">render-v1</span></div>
+      <div>2026-09-10</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="stage" id="stage">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="corner-tick tl"></div>
+    <div class="corner-tick tr"></div>
+    <div class="corner-tick bl"></div>
+    <div class="corner-tick br"></div>
+
+    <div class="legend glass">
+      <div class="h"><span>Chrome roles</span><span class="fig">two states</span></div>
+      <div class="row">
+        <div class="sw"><div class="box-solid"></div></div>
+        <div><span class="lbl">label</span><span class="sub">drawn from --diagram-ink / --diagram-muted</span></div>
+      </div>
+    </div>
+
+    <!-- export-png.js injects its `PNG page` / `PNG diagram` controls into this container
+         on DOMContentLoaded; without it the exporter loads but is never reachable. -->
+    <div class="hud glass">
+      <button id="zoomOut" title="Zoom out">−</button>
+      <div class="pct" id="zoomPct">100%</div>
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomFit" title="Fit">⤢</button>
+    </div>
+
+    <div class="caption glass">
+      <b>chrome role export fixture</b><br>
+      header, caption and legend text must carry the same colour live and in the export.<br>
+      toggle the override, export, and compare.
+    </div>
+  </div>
+</div>
+
+<div class="probe" id="probe">
+  <button id="btnToggle">toggle role override</button>
+  <button id="btnCheck">run pixel check</button>
+  <span id="mode"></span>
+  <pre id="out">Two cases must both hold.
+
+  DEFAULT    --diagram-ink / --diagram-muted alias --fg-1 / --fg-2,
+             so the exported chrome is unchanged from before this contract.
+
+  OVERRIDE   a consumer rebinds only the semantic roles; the exported chrome
+             must follow them, exactly as the live page already does.
+
+"run pixel check" exports the page, scans the header band of the raster, and reports
+which candidate colour the exported chrome actually used.</pre>
+</div>
+
+<script>
+window.TREE_DIAGRAM = {
+  kind: 'root',
+  label: 'fixture-root',
+  note: 'minimal body — the page CHROME is the unit under test',
+  children: [
+    { kind: 'section', label: 'left',  children: [ { label: 'alpha', note: 'a note' }, { label: 'beta' } ] },
+    { kind: 'section', label: 'right', children: [ { label: 'gamma' }, { label: 'delta', status: 'held', note: 'held' } ] },
+  ],
+};
+</script>
+<script src="../patterns/diagram-static-H/diagrams-fit.js"></script>
+<script src="../patterns/diagram-static-H/diagrams-text-layout.js"></script>
+<script src="../patterns/diagram-static-H/diagrams-static-H-engine.js"></script>
+<!-- DS embedded-font carrier — lets PNG export embed fonts with no server (file://). -->
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-static-H/export-png.js"></script>
+<script>
+window.DIAGRAMS.render(window.TREE_DIAGRAM);
+
+(function () {
+  var root = document.documentElement;
+  var out = document.getElementById('out');
+  var modeEl = document.getElementById('mode');
+
+  function V(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+  function rgb(v) {
+    var d = document.createElement('div');
+    d.style.color = v; document.body.appendChild(d);
+    var c = getComputedStyle(d).color; d.remove();
+    var m = c.match(/[\d.]+/g).map(Number);
+    return [m[0], m[1], m[2]];
+  }
+  var dist = function (a, b) {
+    return Math.sqrt(Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
+  };
+  function showMode() {
+    modeEl.textContent = root.hasAttribute('data-role-override') ? 'mode: OVERRIDE' : 'mode: DEFAULT';
+  }
+  showMode();
+
+  document.getElementById('btnToggle').onclick = function () {
+    if (root.hasAttribute('data-role-override')) root.removeAttribute('data-role-override');
+    else root.setAttribute('data-role-override', '');
+    showMode();
+  };
+
+  // Capture the exporter's own canvas. The blob URL is revoked synchronously after the
+  // anchor click, so tee toBlob and suppress the download instead of racing it.
+  function capture() {
+    return new Promise(function (resolve, reject) {
+      var realToBlob = HTMLCanvasElement.prototype.toBlob;
+      var realClick = HTMLAnchorElement.prototype.click;
+      var done = false;
+      HTMLCanvasElement.prototype.toBlob = function (cb) {
+        var args = [].slice.call(arguments, 1);
+        return realToBlob.apply(this, [function (b) {
+          if (!done) { done = true; resolve(b); }
+          cb(b);
+        }].concat(args));
+      };
+      HTMLAnchorElement.prototype.click = function () { if (this.download) return; return realClick.call(this); };
+      var restore = function () {
+        HTMLCanvasElement.prototype.toBlob = realToBlob;
+        HTMLAnchorElement.prototype.click = realClick;
+      };
+      var btn = [].slice.call(document.querySelectorAll('button'))
+        .filter(function (b) { return b.textContent.trim() === 'PNG page'; })[0];
+      if (!btn) { restore(); reject(new Error('PNG page control not found')); return; }
+      btn.click();
+      setTimeout(function () { restore(); if (!done) reject(new Error('export produced no blob')); }, 25000);
+    });
+  }
+
+  document.getElementById('btnCheck').onclick = async function () {
+    var overridden = root.hasAttribute('data-role-override');
+    var semantic = rgb(V('--diagram-ink'));
+    var foundation = rgb(V('--fg-1'));
+    out.textContent = 'exporting…';
+    try {
+      var blob = await capture();
+      var bmp = await createImageBitmap(blob);
+      var c = document.createElement('canvas');
+      c.width = bmp.width; c.height = bmp.height;
+      c.getContext('2d').drawImage(bmp, 0, 0);
+      // HEADER_H is 240 on the static page export; the mark/title live inside that band.
+      var d = c.getContext('2d').getImageData(0, 0, bmp.width, 240).data;
+      var bestSem = 1e9, bestFnd = 1e9;
+      for (var i = 0; i < d.length; i += 4) {
+        var p = [d[i], d[i+1], d[i+2]];
+        var s = dist(p, semantic); if (s < bestSem) bestSem = s;
+        var f = dist(p, foundation); if (f < bestFnd) bestFnd = f;
+      }
+      var lines = [];
+      lines.push('raster              ' + bmp.width + 'x' + bmp.height + ', header band scanned');
+      lines.push('--diagram-ink       ' + V('--diagram-ink') + '  -> closest header pixel ' + bestSem.toFixed(1));
+      lines.push('--fg-1              ' + V('--fg-1') + '  -> closest header pixel ' + bestFnd.toFixed(1));
+      var pass, verdict;
+      if (!overridden) {
+        pass = dist(semantic, foundation) < 1 && bestSem < 12;
+        verdict = pass
+          ? 'PASS  DEFAULT: the roles alias, and the exported chrome carries that shared value. '
+            + 'Existing export presentation is unchanged.'
+          : 'FAIL  DEFAULT: the roles should alias and the header should carry that value.';
+      } else {
+        pass = bestSem < 12 && bestSem < bestFnd;
+        verdict = pass
+          ? 'PASS  OVERRIDE: the exported chrome followed --diagram-ink, not --fg-1.'
+          : 'FAIL  OVERRIDE: the exported chrome ignored --diagram-ink and kept the foundation ramp — '
+            + 'this is the regression the contract exists to prevent.';
+      }
+      lines.push('');
+      lines.push(verdict);
+      out.innerHTML = lines.slice(0, -1).join('\n') + '\n<span class="' + (pass ? 'ok' : 'bad') + '">' + verdict + '</span>';
+    } catch (e) {
+      out.textContent = 'check could not run: ' + e.message;
+    }
+  };
+})();
+</script>
+
+</body>
+</html>
