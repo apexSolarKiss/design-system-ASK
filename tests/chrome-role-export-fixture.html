@@ -91,16 +91,21 @@
   <button id="btnToggle">toggle role override</button>
   <button id="btnCheck">run pixel check</button>
   <span id="mode"></span>
-  <pre id="out">Two cases must both hold.
+  <pre id="out">FOUR limbs, each biting independently. A pass on INK must never mask a
+failure on MUTED — the exporter resolves the two roles on two separate
+lines, so one can regress while the other stays correct.
 
-  DEFAULT    --diagram-ink / --diagram-muted alias --fg-1 / --fg-2,
-             so the exported chrome is unchanged from before this contract.
+  DEFAULT  / INK     --diagram-ink aliases --fg-1, and that value is in the
+                     exported primary chrome (mark, title, stamp key).
+  DEFAULT  / MUTED   --diagram-muted aliases --fg-2, and that value is in the
+                     exported secondary chrome (subtitle, date line).
+  OVERRIDE / INK     exported primary chrome follows --diagram-ink, not --fg-1.
+  OVERRIDE / MUTED   exported secondary chrome follows --diagram-muted, not --fg-2.
 
-  OVERRIDE   a consumer rebinds only the semantic roles; the exported chrome
-             must follow them, exactly as the live page already does.
-
-"run pixel check" exports the page, scans the header band of the raster, and reports
-which candidate colour the exported chrome actually used.</pre>
+"run pixel check" exports the page and scans the HEADER BAND only. That
+isolation is load-bearing: the diagram body is styled from the same semantic
+roles, so scanning it would satisfy every assertion no matter what the
+exporter did, and the test would stop biting.</pre>
 </div>
 
 <script>
@@ -129,16 +134,33 @@ window.DIAGRAMS.render(window.TREE_DIAGRAM);
   var modeEl = document.getElementById('mode');
 
   function V(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
-  function rgb(v) {
+  // Resolve any CSS colour to [r,g,b,a]. --fg-2 is a translucent role, so it only
+  // becomes comparable to a raster pixel after compositing over the page ground.
+  function rgba(v) {
     var d = document.createElement('div');
     d.style.color = v; document.body.appendChild(d);
     var c = getComputedStyle(d).color; d.remove();
     var m = c.match(/[\d.]+/g).map(Number);
-    return [m[0], m[1], m[2]];
+    return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1];
+  }
+  function over(f, b) {
+    return [0,1,2].map(function (i) { return f[i]*f[3] + b[i]*(1-f[3]); });
   }
   var dist = function (a, b) {
     return Math.sqrt(Math.pow(a[0]-b[0],2) + Math.pow(a[1]-b[1],2) + Math.pow(a[2]-b[2],2));
   };
+  // A role's best-case distance: composited over whichever ground flatters it most.
+  function nearest(px, role, grounds) {
+    return Math.min.apply(null, grounds.map(function (g) {
+      var want = over(role, g), best = 1e9;
+      for (var i = 0; i < px.length; i += 4) {
+        var d = dist([px[i], px[i+1], px[i+2]], want);
+        if (d < best) best = d;
+      }
+      return best;
+    }));
+  }
+  var HIT = 12;   // a glyph core reproduces its fill almost exactly; 12 is slack for AA
   function showMode() {
     modeEl.textContent = root.hasAttribute('data-role-override') ? 'mode: OVERRIDE' : 'mode: DEFAULT';
   }
@@ -179,44 +201,65 @@ window.DIAGRAMS.render(window.TREE_DIAGRAM);
 
   document.getElementById('btnCheck').onclick = async function () {
     var overridden = root.hasAttribute('data-role-override');
-    var semantic = rgb(V('--diagram-ink'));
-    var foundation = rgb(V('--fg-1'));
-    out.textContent = 'exporting…';
+    // The two roles are resolved on two SEPARATE lines in the exporter, so they are
+    // measured on two separate lines here. An INK pass must never stand in for MUTED.
+    var semInk = rgba(V('--diagram-ink')),   fndInk = rgba(V('--fg-1'));
+    var semMut = rgba(V('--diagram-muted')), fndMut = rgba(V('--fg-2'));
+    var grounds = [rgba(V('--bg-from')), rgba(V('--bg-to'))];
+    out.textContent = 'exporting\u2026';
     try {
       var blob = await capture();
       var bmp = await createImageBitmap(blob);
       var c = document.createElement('canvas');
       c.width = bmp.width; c.height = bmp.height;
       c.getContext('2d').drawImage(bmp, 0, 0);
-      // HEADER_H is 240 on the static page export; the mark/title live inside that band.
-      var d = c.getContext('2d').getImageData(0, 0, bmp.width, 240).data;
-      var bestSem = 1e9, bestFnd = 1e9;
-      for (var i = 0; i < d.length; i += 4) {
-        var p = [d[i], d[i+1], d[i+2]];
-        var s = dist(p, semantic); if (s < bestSem) bestSem = s;
-        var f = dist(p, foundation); if (f < bestFnd) bestFnd = f;
-      }
-      var lines = [];
-      lines.push('raster              ' + bmp.width + 'x' + bmp.height + ', header band scanned');
-      lines.push('--diagram-ink       ' + V('--diagram-ink') + '  -> closest header pixel ' + bestSem.toFixed(1));
-      lines.push('--fg-1              ' + V('--fg-1') + '  -> closest header pixel ' + bestFnd.toFixed(1));
-      var pass, verdict;
+      // HEADER BAND ONLY (HEADER_H = 240 on the static page export). The band carries both
+      // roles — mark / title / stamp key on fg1, subtitle / date line on fg2 — and carries
+      // no diagram body. That isolation is the whole test: the body is styled from the same
+      // semantic roles, so a full-page scan would satisfy every limb regardless of what the
+      // exporter did, and the fixture would silently stop biting.
+      var px = c.getContext('2d').getImageData(0, 0, bmp.width, 240).data;
+      var dSemInk = nearest(px, semInk, grounds), dFndInk = nearest(px, fndInk, grounds);
+      var dSemMut = nearest(px, semMut, grounds), dFndMut = nearest(px, fndMut, grounds);
+      var inkAliases = dist(over(semInk, grounds[0]), over(fndInk, grounds[0])) < 1;
+      var mutAliases = dist(over(semMut, grounds[0]), over(fndMut, grounds[0])) < 1;
+
+      var limbs;
       if (!overridden) {
-        pass = dist(semantic, foundation) < 1 && bestSem < 12;
-        verdict = pass
-          ? 'PASS  DEFAULT: the roles alias, and the exported chrome carries that shared value. '
-            + 'Existing export presentation is unchanged.'
-          : 'FAIL  DEFAULT: the roles should alias and the header should carry that value.';
+        limbs = [
+          { n: 'DEFAULT  / INK  ', ok: inkAliases && dSemInk < HIT,
+            why: inkAliases ? 'roles alias; that value is in the exported primary chrome'
+                            : '--diagram-ink does not alias --fg-1 in the default state' },
+          { n: 'DEFAULT  / MUTED', ok: mutAliases && dSemMut < HIT,
+            why: mutAliases ? 'roles alias; that value is in the exported secondary chrome'
+                            : '--diagram-muted does not alias --fg-2 in the default state' },
+        ];
       } else {
-        pass = bestSem < 12 && bestSem < bestFnd;
-        verdict = pass
-          ? 'PASS  OVERRIDE: the exported chrome followed --diagram-ink, not --fg-1.'
-          : 'FAIL  OVERRIDE: the exported chrome ignored --diagram-ink and kept the foundation ramp — '
-            + 'this is the regression the contract exists to prevent.';
+        limbs = [
+          { n: 'OVERRIDE / INK  ', ok: dSemInk < HIT && dSemInk < dFndInk,
+            why: 'exported primary chrome must follow --diagram-ink, not --fg-1' },
+          { n: 'OVERRIDE / MUTED', ok: dSemMut < HIT && dSemMut < dFndMut,
+            why: 'exported secondary chrome must follow --diagram-muted, not --fg-2' },
+        ];
       }
-      lines.push('');
-      lines.push(verdict);
-      out.innerHTML = lines.slice(0, -1).join('\n') + '\n<span class="' + (pass ? 'ok' : 'bad') + '">' + verdict + '</span>';
+
+      var L = [];
+      L.push('raster            ' + bmp.width + 'x' + bmp.height + ', header band only');
+      L.push('--diagram-ink     ' + V('--diagram-ink')   + '   nearest ' + dSemInk.toFixed(1));
+      L.push('--fg-1            ' + V('--fg-1')          + '   nearest ' + dFndInk.toFixed(1));
+      L.push('--diagram-muted   ' + V('--diagram-muted') + '   nearest ' + dSemMut.toFixed(1));
+      L.push('--fg-2            ' + V('--fg-2')          + '   nearest ' + dFndMut.toFixed(1));
+      L.push('');
+      var all = limbs.every(function (l) { return l.ok; });
+      var html = L.join('\n') + '\n' + limbs.map(function (l) {
+        return '<span class="' + (l.ok ? 'ok' : 'bad') + '">' + (l.ok ? 'PASS  ' : 'FAIL  ')
+             + l.n + '</span>  ' + l.why;
+      }).join('\n');
+      html += '\n\n<span class="' + (all ? 'ok' : 'bad') + '">'
+           + (all ? 'PASS  both limbs of this state hold.'
+                  : 'FAIL  at least one limb failed \u2014 a passing INK limb does not rescue MUTED.')
+           + '</span>';
+      out.innerHTML = html;
     } catch (e) {
       out.textContent = 'check could not run: ' + e.message;
     }
