@@ -232,6 +232,7 @@ This is a **foundation** property, not a pattern feature. A pattern or surface m
    - participant ink and search-highlight text on the sanctioned colored fills;
    - in the AA-compliant **light** theme, essential page chrome, the archive title, and the focus indicator, where the ordinary foreground roles fail. In dark those page-level roles return to the normal dark foreground role.
 2. `--fg-on-card` — text on the fixed `--surface-solid` role, which does not flip with the theme and so takes a foreground that does not either.
+3. `method-ASK` D11 `system-ASK` hero — in the light theme, the figure-local diagram text roles opt into `--fg-high-contrast` after measured normal-text failure against the lavender gradient. Dark remains on the ordinary diagram roles. This is a bounded consumer-local use; it does not rebind `--fg-1` / `--fg-2` / `--fg-3`, alter the shared diagram patterns, or authorize another surface.
 
 A new use requires all three of the following before merge: measured evidence that the ordinary foreground roles are insufficient for the exact bounded element or region; explicit ASK source-of-intent authorization; and registration in this list. Density, legal, tabular, accessibility, or a comparable context may create the pressure that justifies *proposing* a use — none of them authorizes one on its own.
 
