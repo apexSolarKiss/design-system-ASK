@@ -25,10 +25,11 @@
    STATUS: v0.2 — semantic generation. Authorized by ASK source-of-intent
    (2026-07-12; source-role correction 2026-09-11). Landed public consumption
    is recorded in CONSUMERS.md, which remains the record of what consumers
-   have actually landed; the v0.2 bounded-generativity binding is documented
-   in three-functions.md as the upstream semantic contract. A landed
-   consumption record is not, by itself, a portability, usability, or
-   generality verdict.
+   have actually landed. three-functions.md documents the upstream
+   FUNCTION-ADMISSIBILITY CRITERIA and illustrates them through bounded
+   generativity; each consumer owns its CONCRETE ELEMENT BINDING under those
+   criteria. A landed consumption record is not, by itself, a portability,
+   usability, or generality verdict.
    v0.2 CHANGES WHICH ELEMENTS QUALIFY FOR `legislative`, NOT HOW THE ROLE
    RENDERS ONCE ASSIGNED. No role token, palette binding, selector, cascade
    or resolved value changes — the two comment blocks are the whole
