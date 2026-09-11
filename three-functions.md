@@ -19,17 +19,47 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.1 — first authored.** Authorized by ASK source-of-intent (2026-07-12). Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md); the first consumer's binding is documented in the worked example below. A landed consumption record is not, by itself, a portability, usability, or generality verdict. Provisional-but-portable: the mappings are the stable, portable part; the role list is fixed at three.
+> **Status: v0.2 — semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that colouring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
 
 ## The three roles
 
 | Role | Function it marks | ASK mapping |
 | --- | --- | --- |
-| `--function-legislative` | authors / carries the governing rule and the grant of permitted variance (the aperture) | `--ask-emphasis-magenta` · `#FF00FF` |
+| `--function-legislative` | adopts or authorizes the governing standard, or carries it into operative scope through a grammar, brief, rule, or grant; the grant produces the aperture | `--ask-emphasis-magenta` · `#FF00FF` |
 | `--function-executive` | realizes candidates under the rule; does not author it and does not judge the result | theme-neutral — `#FFFFFF` light · lavender-ASK `#D4C6E1` dark |
 | `--function-judicial` | evaluates candidates against the standard, selects one, ratifies, and closes | `--ask-emphasis-cyan` · `#00BEFF` |
 
 These are the three classical separation-of-powers functions read as color: who **makes** the rule, who **executes** under it, who **judges** against it. They are structural functions, invariant for an element — not states it passes through.
+
+### What performs the legislative function, and what sits around it
+
+`legislative` is one function, and more than one kind of thing stands near it. Some of those things **perform** it; the rest sit outside it and take no role colour. The role colour does not draw this line, so the surface must.
+
+```text
+source-of-intent / normative-apex ROLE     constitutive legislative source — it adopts or
+                                           authorizes the governing standard
+grammar · brief · rule · grant             delegated legislative apparatus, WHERE IT CARRIES THE
+                                           GOVERNING STANDARD INTO OPERATIVE SCOPE
+artifact of intent                         classified by WHAT IT DOES: legislative where it acts
+                                           as the grammar, brief, rule or grant — NOT legislative
+                                           merely because it carries intent
+─────────────────────────────────────────  ──────────────────────────────────────────────────────
+standing intent                            adopted normative content. NO function colour merely
+                                           because it is normative content
+passive storage · citation · routing ·     neutral carriage
+  relay · preservation
+aperture                                   bounded permission PRODUCED BY the grant — a neutral
+                                           quantity, not apparatus
+aperture dimension · iris geometry         neutral representation of that quantity
+```
+
+The entries above the divider identify things that perform the legislative function **under the stated conditions**. The entries below do not, and none takes `--function-legislative`.
+
+**The grant and the aperture are two objects.** The grant is apparatus and may be legislative; the aperture is the permission the grant produces, and colouring a quantity would make it look like an actor.
+
+**The role is not the actor.** Classifying a *role* within a function makes neither the role identical to the function nor the person or institution occupying it exhausted by that function. The same actor may occupy a legislative role and a judicial one without collapsing either, so this contract does **not** say that an occupying actor is legislative only.
+
+**Constitutive and delegated legislation share one identity.** Both take `--function-legislative`. Hierarchy between them is carried by topology, labels and geometry — never by a second magenta, an opacity rank, or a fourth role.
 
 ### The executive is deliberately hue-less
 
@@ -116,23 +146,24 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
 3. Keep labels at `--fg-1` and structural edges neutral. Color only the parts that perform a function; leave everything else on the neutral field.
 4. If the surface also carries state or evidence color, assign them to different channels (outline / marker / rail), never the same fill.
 
-## Worked example — the bounded-generativity figure (first consumer)
+## Worked example — bounded-generativity binding
 
-[`method-ASK`](https://github.com/apexSolarKiss/method-ASK)'s bounded-generativity figure binds the three functions to its domain parts:
+For the bounded-generativity model, Three Functions v0.2 applies the upstream admissibility rule as follows. **The owner fixes which kinds of thing qualify for each function; each consumer owns which concrete element instantiates those kinds.** [`method-ASK`](https://github.com/apexSolarKiss/method-ASK) was the first to instantiate it. Landed state is recorded in [`CONSUMERS.md`](CONSUMERS.md), not here.
 
-- **legislative → the `grammar / brief` box** — it grants the aperture (authors the rule).
+- **legislative → the source-of-intent / normative-apex role as constitutive source, and the `grammar / brief` box as delegated apparatus** — the apex adopts or authorizes the governing standard; the `grammar / brief` carries it into operative scope, and its grant produces the aperture.
 - **executive → the bounded-realization chamber** — the apparatus carries a 30% executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
 - **judicial → the selection ring and the candidate it ratifies** — evaluation, selection, closure. The ratified candidate is judicial's closed output, no longer neutral chamber variance — which is why it, alone among the glyphs, takes a role fill.
 
 Everything else stays **neutral**, and those exclusions are load-bearing:
 
-- **source of intent / normative apex** — coloring it legislative would collapse *source of intent* into the legislative function;
 - **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like an actor;
 - **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
 
-Artifact governance stays downstream and outside the three-function palette — it is not a fourth color. This binding is **consumer-local**: the primitive is the three identity-free roles; the domain mapping and the neutral exclusions belong to the consuming figure.
+Artifact governance stays downstream and outside the three-function palette — it is not a fourth color. The **classification rule** applied above is upstream. Its **concrete realization is consumer-local**: the consuming figure owns its domain labels, element identity, additional neutral structural elements, geometry and layout — but may not redefine the upstream admissibility rule.
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the three role names, their ASK mappings, the per-theme executive resolution, the rendering contract, and the channel-coexistence rule. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
-- **Consumer-local (e.g. [`method-ASK`](https://github.com/apexSolarKiss/method-ASK), [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)):** which element performs which function, the domain vocabulary, the neutral exclusions, and the surface layout. Those are the application, not the color system.
+- **Upstream (this repo):** the three role names, their ASK mappings, the per-theme executive resolution, the rendering contract, the channel-coexistence rule, and the **function-admissibility criteria** — which *kinds* of thing qualify for each function, and which do not. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
+- **Consumer-local (e.g. [`method-ASK`](https://github.com/apexSolarKiss/method-ASK), [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)):** which **concrete element** instantiates a classified role, the domain vocabulary, additional neutral structural elements, geometry, and surface layout — all conforming to the upstream criteria. Those are the application, not the color system.
+
+**The limit runs one way.** A consumer-local realization may *specialize* the upstream rule; it may not contradict or redefine it. Naming the element is the consumer's; deciding what may be named is not.
