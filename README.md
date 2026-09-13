@@ -57,6 +57,16 @@ A primitive may carry sanctioned **profiles** for adjacent semantic domains. The
 
 A second opt-in primitive, **ASK Three Functions** (`three-functions.css`), sits **alongside** Spectral State on a different axis: where Spectral State encodes an element's *state*, Three Functions encodes its *function* — `legislative` / `executive` / `judicial`, the three separation-of-powers roles read as color. It is a **sibling** primitive, not a Spectral State profile, and it expands no palette: the three roles bind to existing ASK values (magenta, the neutral white / lavender-ASK, cyan).
 
+### Accessibility and compliance scope
+
+The ASK design system expresses ASK's approved visual identity. Its default design language makes **no general claim** of accessibility conformance, WCAG conformance, or regulatory compliance. Consuming its tokens or patterns does not establish such conformance for an application.
+
+Accessibility and compliance requirements are **application-specific**. A documented requirement, or an explicitly authorized claim for a particular pattern, profile, or application, governs that bounded use only. It does not impose a system-wide redesign requirement and does not change the default ASK aesthetic.
+
+The approved palette, typography, materials, and interaction treatments are **not provisional choices awaiting a compliance audit**. `--fg-1` is the default light foreground; `--fg-high-contrast` is a bounded opt-in for separately registered uses, never the default and never selected automatically by font size. Existing high-contrast registrations and other expressly approved bounded treatments remain valid within their stated scope.
+
+Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibility and compliance scope discipline.
+
 ---
 
 ## Index

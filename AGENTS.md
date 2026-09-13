@@ -910,6 +910,22 @@ Public `CONSUMERS.md` is landed-public-only. It is not the complete propagation 
 - **Public registry discipline.** `CONSUMERS.md` records landed public consumption relationships only. Do not add pins, private consumer names, future-state claims, or operator-only propagation details to public repo surfaces.
 - **Wall rule.** Private/firewalled payloads never enter this repo. Public surfaces may acknowledge a private operator-internal consumer only in the already-approved abstract form; details live operator-side.
 
+## Accessibility and compliance scope discipline
+
+Apply `README.md` §Accessibility and compliance scope to design, implementation, generation, and review.
+
+Do not initiate an accessibility or compliance audit, add conformity thresholds to acceptance criteria, or turn a measured threshold failure into a blocking defect by default.
+
+Such work is in scope only when ASK explicitly requests it, or a specific application has a documented, applicable requirement within the authorized task. **Name the application, the requirement, and the bounded scope before auditing.** Generic relevance to websites, interfaces, documents, small text, dense reading, or public use is not sufficient. Where a concrete application concern is identified but its requirement is unresolved, surface it for a scope decision rather than launch an audit.
+
+**A measurement is evidence, not authorization.** Do not replace approved colors, typography, backgrounds, emphasis, or interaction treatments to satisfy a criterion the task has not adopted, and do not compensate by altering approved background, size, weight, opacity, or accent values to reach the same withdrawn target. Do not require ASK to approve an "exception" to an unadopted criterion. Where an audit *is* authorized, proposed design changes remain subject to the ordinary source-of-intent and review gates.
+
+Do not repeatedly reopen a settled ASK aesthetic decision because the same measurement remains below an external benchmark. Reconsideration requires a changed applicable requirement or explicit ASK direction.
+
+Preserve ordinary functional, semantic, source-fidelity, and rendering checks. This rule authorizes no broken control, missing content, lost focus state, or false verification claim. Preserve existing explicitly scoped accessibility requirements and high-contrast registrations; neither generalize nor revoke them through this rule.
+
+Make no conformance claim beyond the exact scope supported by the applicable requirement and the evidence actually gathered.
+
 ## Upstream propagation trigger
 
 design-system-ASK is the **owner** of these foundations, primitives, artifact scaffolds, and surface patterns, not a downstream consumer: it carries the propagation *trigger*, not a recipient grant. The optional standing upstream-conformance grant, where adopted by a separately operated repository, is carried in that repository's own `AGENTS.md`. Other consumers remain governed through their actual owning surfaces and applicable authorization and mutation contracts. A consumption relationship alone confers no write jurisdiction and creates no requirement to install a recipient grant or create an `AGENTS.md`.

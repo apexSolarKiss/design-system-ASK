@@ -8,6 +8,8 @@ This skill is a downstream implementation of ASK's canonical `visual-identity-sy
 
 Read the README.md file within this skill, and explore the other available files.
 
+**Accessibility/compliance is not a default audit or redesign objective.** This system makes no general conformance claim, and a contrast or conformity measurement is evidence — never authorization to change an approved color, type, background, emphasis, or interaction treatment. Read `README.md` §Accessibility and compliance scope and `AGENTS.md` §Accessibility and compliance scope discipline before introducing any such requirement.
+
 Key files:
 - `surface-panel.css` — shared presentation contract for live content panels
 - `surface-action.css` — shared presentation + interaction contract for compact action controls
