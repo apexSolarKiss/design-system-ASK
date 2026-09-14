@@ -87,11 +87,13 @@ Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming s
 ```text
 role stroke       full role value
 role fill         30%  ·  color-mix(in srgb, <role> 30%, transparent)
-label             standard theme foreground (--fg-1) — never the role hue
+label             --fg-1, the standard theme foreground, by default; a foreground registered
+                  in README.md (High-contrast foreground — registered uses) only within that
+                  registration's scope — never the role hue
 structural edges  neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
 ```
 
-Every **role-bearing apparatus** — a labelled box, a bounded field or chamber, a selected node — carries a **30%** fill and the full role value as stroke. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it — not because its wash is lighter. Labels stay the theme foreground so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+Every **role-bearing apparatus** — a labelled box, a bounded field or chamber, a selected node — carries a **30%** fill and the full role value as stroke. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it — not because its wash is lighter. Labels stay on `--fg-1`, or on a registered foreground within its scope, so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
 
 **Semantic function color attaches to the role-bearing apparatus, not automatically to the artifacts produced inside it.** A function that *produces* things — an executive field emitting candidates — colors the **field**; the candidates it emits stay neutral content, rendered as **negative cutouts** (holes) through the field with neutral outlines, never a second role fill. The 30% fill is the rendering contract, not a palette addition — the three role colors are unchanged.
 
@@ -143,7 +145,7 @@ evidence state  → evidence marker, rail, dash, or labelled annotation
    }
    ```
 
-3. Keep labels at `--fg-1` and structural edges neutral. Color only the parts that perform a function; leave everything else on the neutral field.
+3. Keep labels at `--fg-1` — or at a foreground registered for that exact bounded use in [`README.md`](README.md) (*High-contrast foreground — registered uses*), within that registration's scope — and keep structural edges neutral. A registration never makes a label take the role hue. Color only the parts that perform a function; leave everything else on the neutral field.
 4. If the surface also carries state or evidence color, assign them to different channels (outline / marker / rail), never the same fill.
 
 ## Worked example — bounded-generativity binding
@@ -156,6 +158,7 @@ For the bounded-generativity model, Three Functions v0.2 applies the upstream ad
 
 Everything else stays **neutral**, and those exclusions are load-bearing:
 
+- **an actor envelope, where the figure draws the occupying actor separately from the role** — the actor is trans-functional, not exhausted by or reducible to the function of any role it occupies, so coloring its envelope with legislative magenta would collapse the actor into that function, while the source-of-intent role it occupies stays legislative;
 - **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like an actor;
 - **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
 
