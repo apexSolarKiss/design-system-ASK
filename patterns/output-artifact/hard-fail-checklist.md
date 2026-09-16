@@ -47,5 +47,5 @@ A static output artifact fails [design-system-ASK](../../README.md) inheritance 
 
 ## Tier boundary fails
 
-- Visible design-system-ASK Tier 3 instance identity — the "ASK Design System" branding or the `logo-ASK` wordmark — is propagated into the consuming project's artifact unless the consuming project is itself an ASK-instance surface and has explicitly accepted that overlay.
+- Visible design-system-ASK Tier 3 instance identity — the "ASK Design System" branding or the `logo-ASK` wordmark — is propagated into the consuming project's artifact unless the consuming project is itself an ASK-instance surface and has explicitly accepted that overlay, or, for the `logo-ASK` wordmark alone, ASK has explicitly assigned that wordmark to the consuming project as its locally supplied Tier 3 and the artifact falls within the assignment's recorded scope. An assignment does not make that project ASK-the-entity.
 - The consuming project's own Tier 3 identity is fused with the upstream Tier 2 design language rather than layered cleanly on top
