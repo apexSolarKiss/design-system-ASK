@@ -79,7 +79,7 @@ A consumer may also keep a stable canonical copy under a consumer-owned name for
 
 - Bind to foundation tokens (`--fg-*`, `--artifact-line`, type/spacing tokens). Do not redefine Tier 1/2 tokens.
 - Stay inside the closed palette; introduce no new hues.
-- Do **not** propagate the design-system's own identity (`logo-ASK`, the ASK wordmark, "ASK Design System" chrome) into the artifact unless the consuming project is itself an ASK-instance surface that has explicitly accepted that overlay.
+- Do **not** propagate the design-system's own identity (`logo-ASK`, the ASK wordmark, "ASK Design System" chrome) into the artifact unless the consuming project is itself an ASK-instance surface that has explicitly accepted that overlay, or, for the `logo-ASK` wordmark alone, ASK has explicitly assigned that wordmark to the consuming project as its locally supplied Tier 3 and the artifact falls within the assignment's recorded scope. An assignment is not inheritance, and it does not make that project ASK-the-entity.
 
 A project that needs a distinct aesthetic (e.g. a sub-brand) layers it here as Tier 3, or maintains a child design-system layer — it does **not** fork this shared Class B foundation.
 
