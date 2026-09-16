@@ -19,7 +19,7 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.2 — semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that colouring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
+> **Status: v0.2 — semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that coloring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
 
 ## The three roles
 
@@ -33,7 +33,7 @@ These are the three classical separation-of-powers functions read as color: who 
 
 ### What performs the legislative function, and what sits around it
 
-`legislative` is one function, and more than one kind of thing stands near it. Some of those things **perform** it; the rest sit outside it and take no role colour. The role colour does not draw this line, so the surface must.
+`legislative` is one function, and more than one kind of thing stands near it. Some of those things **perform** it; the rest sit outside it and take no role color. The role color does not draw this line, so the surface must.
 
 ```text
 source-of-intent / normative-apex ROLE     constitutive legislative source — it adopts or
@@ -44,7 +44,7 @@ artifact of intent                         classified by WHAT IT DOES: legislati
                                            as the grammar, brief, rule or grant — NOT legislative
                                            merely because it carries intent
 ─────────────────────────────────────────  ──────────────────────────────────────────────────────
-standing intent                            adopted normative content. NO function colour merely
+standing intent                            adopted normative content. NO function color merely
                                            because it is normative content
 passive storage · citation · routing ·     neutral carriage
   relay · preservation
@@ -55,7 +55,7 @@ aperture dimension · iris geometry         neutral representation of that quant
 
 The entries above the divider identify things that perform the legislative function **under the stated conditions**. The entries below do not, and none takes `--function-legislative`.
 
-**The grant and the aperture are two objects.** The grant is apparatus and may be legislative; the aperture is the permission the grant produces, and colouring a quantity would make it look like an actor.
+**The grant and the aperture are two objects.** The grant is apparatus and may be legislative; the aperture is the permission the grant produces, and coloring a quantity would make it look like role-bearing apparatus.
 
 **The role is not the actor.** Classifying a *role* within a function makes neither the role identical to the function nor the person or institution occupying it exhausted by that function. The same actor may occupy a legislative role and a judicial one without collapsing either, so this contract does **not** say that an occupying actor is legislative only.
 
@@ -87,13 +87,17 @@ Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming s
 ```text
 role stroke       full role value
 role fill         30%  ·  color-mix(in srgb, <role> 30%, transparent)
-label             --fg-1, the standard theme foreground, by default; a foreground registered
-                  in README.md (High-contrast foreground — registered uses) only within that
-                  registration's scope — never the role hue
+label             the role-identifying name set on a role-bearing apparatus: --fg-1, the standard
+                  theme foreground, by default; a foreground registered in README.md
+                  (High-contrast foreground — registered uses) only within that registration's
+                  scope — never the role hue
+notes · tags      explanatory notes, and flow, section or relationship tags — including a tag
+                  that names a role from beside its apparatus — are not labels: they keep their
+                  own neutral foreground roles, never the role hue
 structural edges  neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
 ```
 
-Every **role-bearing apparatus** — a labelled box, a bounded field or chamber, a selected node — carries a **30%** fill and the full role value as stroke. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it — not because its wash is lighter. Labels stay on `--fg-1`, or on a registered foreground within its scope, so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+Every **role-bearing apparatus** — a labeled box, a bounded field or chamber, a selected node — carries a **30%** fill and the full role value as stroke. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it — not because its wash is lighter. Labels stay on `--fg-1`, or on a registered foreground within its scope, so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
 
 **Semantic function color attaches to the role-bearing apparatus, not automatically to the artifacts produced inside it.** A function that *produces* things — an executive field emitting candidates — colors the **field**; the candidates it emits stay neutral content, rendered as **negative cutouts** (holes) through the field with neutral outlines, never a second role fill. The 30% fill is the rendering contract, not a palette addition — the three role colors are unchanged.
 
@@ -101,7 +105,7 @@ Every **role-bearing apparatus** — a labelled box, a bounded field or chamber,
 
 A consuming surface often contains consequential elements that are **not** functions — most commonly a **downstream governance** step that binds the accepted result. Represent these in the **existing neutral structural treatment**; they take no role color.
 
-When a legend or key enumerates the three functions, a prominent neutral element (a governance box, an output node) can be left unexplained. If so, key it with **one neutral exemplar** under a separated, explicitly-labelled heading — a dotted legend-only divider, then a single neutral swatch (matching the scale and grammar of the three function swatches) under a label such as *"downstream — not a fourth function."* The key identifies the element's **visual treatment**; it does **not** reproduce the consuming surface's topology (no process chain, no arrows), and it is never a fourth colored swatch.
+When a legend or key enumerates the three functions, a prominent neutral element (a governance box, an output node) can be left unexplained. If so, key it with **one neutral exemplar** under a separated, explicitly-labeled heading — a dotted legend-only divider, then a single neutral swatch (matching the scale and grammar of the three function swatches) under a label such as *"downstream — not a fourth function."* The key identifies the element's **visual treatment**; it does **not** reproduce the consuming surface's topology (no process chain, no arrows), and it is never a fourth colored swatch.
 
 This creates **no fourth role and no fourth color.** There is no `--function-governance`. The separated row is explanatory: it teaches the reader that a consequential element sits *outside* the three functions — exactly the boundary the primitive holds.
 
@@ -120,7 +124,7 @@ Channel contract when more than one system is present on an element:
 ```text
 function role   → fill / principal node treatment
 state           → outline, badge, or separate state marker
-evidence state  → evidence marker, rail, dash, or labelled annotation
+evidence state  → evidence marker, rail, dash, or labeled annotation
 ```
 
 ## Tiers
@@ -159,7 +163,7 @@ For the bounded-generativity model, Three Functions v0.2 applies the upstream ad
 Everything else stays **neutral**, and those exclusions are load-bearing:
 
 - **an actor envelope, where the figure draws the occupying actor separately from the role** — the actor is trans-functional, not exhausted by or reducible to the function of any role it occupies, so coloring its envelope with legislative magenta would collapse the actor into that function, while the source-of-intent role it occupies stays legislative;
-- **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like an actor;
+- **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like role-bearing apparatus;
 - **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
 
 Artifact governance stays downstream and outside the three-function palette — it is not a fourth color. The **classification rule** applied above is upstream. Its **concrete realization is consumer-local**: the consuming figure owns its domain labels, element identity, additional neutral structural elements, geometry and layout — but may not redefine the upstream admissibility rule.
