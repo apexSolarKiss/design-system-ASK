@@ -337,15 +337,16 @@ thickness and offset change. `--fg-1` is the existing theme-resolving default
 foreground role: no new token, no `--fg-high-contrast` registration, and the same
 treatment on the quieter `.org` home link as on an ordinary ancestor.
 
-**Two focus anatomies, and they are not interchangeable.** A fragmenting inline
-link cannot carry a ring; a box can. Do not describe one anatomy across both:
+**Fragment-native and box indicators are not interchangeable.** A fragmenting
+inline link cannot carry a ring; a box can. Do not describe one anatomy across
+both:
 
 | Role | Focus indicator | Rest underline during focus |
 | --- | --- | --- |
 | `.surface-title a` (breadcrumb) | the same decoration, recolored to `--fg-1` at 2px / 2px | becomes the indicator |
 | `.surface-text-link` (module) | `--fg-1` decoration at 2px / 2px | becomes the indicator |
 | the identity mark | the white `box-shadow` ring | n/a |
-| footer destinations | `surface-action.css`'s own focus limb | n/a — they carry no underline |
+| footer destinations | `surface-action.css`'s attention edge, shared with its hover | n/a — they carry no underline |
 
 Two properties are worth naming so they are not mistaken for defects.
 `text-decoration-skip-ink` stays at its initial `auto`, so the underline breaks
@@ -366,8 +367,8 @@ Measured at 320 / 360 / 375 / 393 / 414px in both themes:
 | fragment count, line breaks, width, title and header height, page overflow | identical focused and unfocused |
 
 The identity mark does not fragment and keeps the box-shadow glow. Footer
-destinations keep a ring too, but it is `surface-action.css`'s, not this
-pattern's.
+destinations take `surface-action.css`'s attention edge — a magenta border, with
+a 0.5px ring in light only — not this pattern's.
 
 This is a surface-pattern exception for wrapping text, not a general retirement
 of press feedback. The identity mark is a block-level slot, and a footer
@@ -841,7 +842,7 @@ internal focus destination, and that does not change with input modality. What
 varies is whether a **keyboard indicator** is painted:
 
 ```text
-opened by pointer / touch   focus moves · keyboard ring suppressed
+opened by pointer / touch   focus moves · keyboard indicator suppressed
 opened by keyboard          focus moves · keyboard ring visible
 first keypress after a      suppression clears immediately, so a hardware
   pointer open              keyboard gets its indicator the moment it is used
@@ -851,9 +852,12 @@ Escape closes               focus returns to the invoking mark, visibly
 iOS Safari matches `:focus-visible` on programmatic focus whatever began the
 interaction, so a tapped-open panel painted a white ring around the first row
 and implied a selection the user never made. The suppression is scoped to that
-one element by a bounded attribute and removes **only** `outline` and
-`box-shadow`: the row keeps its resting destination underline, its hover and
-active feedback, and its real focus. The trigger carries the equivalent
+one element by a bounded attribute and removes **only** the keyboard indicator:
+`outline` and `box-shadow` on a row, and — on the close control, which the driver
+focuses when the tree has no link and which is a compact action — its
+attention-edge border too, while it is not hovered. The element keeps its
+resting destination underline where it has one, its hover and active feedback,
+and its real focus. The trigger carries the equivalent
 treatment on the *return* path, under a separate attribute — the two states are
 cleared by different events, and sharing one would let each clear the other's.
 
