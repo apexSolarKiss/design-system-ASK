@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document register — key</title>
+<meta name="description" content="Visual key for the document register. Reads surface-document.css live.">
+<!-- Visual key for the document register (surface-document.css, with the optional
+     surface-document-overflow.js helper). Reads the foundation, the compact-action
+     module and the register live; theme-aware (light default · dark via
+     prefers-color-scheme / [data-theme="dark"]). Open directly. -->
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="surface-action.css">
+<link rel="stylesheet" href="surface-document.css">
+<style>
+  /* Page ground. Not background-attachment: fixed — on a page taller than the
+     viewport a fixed gradient covers only the first screen. */
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+
+  /* Page-local demonstrations of a clear reading area — not module classes.
+     A decorative rule stops at its label and resumes after it. A connector that
+     asserts a relation runs unbroken between its two ends, and its label takes its
+     own grid row above it, so the clearance comes from layout and holds however
+     many lines the label wraps to. The stroke takes the secondary foreground. */
+  .o-rule { border: 0; border-top: 1px solid var(--line-2); margin: 0; }
+  .o-routed { display: flex; align-items: center; gap: var(--space-3); }
+  .o-routed > .o-rule { flex: 1 1 auto; }
+
+  .o-relation {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-3);
+    align-items: center;
+    margin: 0;
+  }
+  .o-rel-from      { grid-column: 1; grid-row: 2; }
+  .o-rel-to        { grid-column: 3; grid-row: 2; }
+  .o-rel-label     { grid-column: 2; grid-row: 1; align-self: end; justify-self: center;
+                     text-align: center; margin-bottom: var(--space-2); }
+  .o-rel-connector { grid-column: 2; grid-row: 2; display: flex; align-items: center; }
+  .o-rel-shaft     { flex: 1 1 auto; height: 0; border-top: 1px solid var(--fg-2); }
+  .o-rel-head      { flex: 0 0 auto; width: 0; height: 0;
+                     border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+                     border-left: 7px solid var(--fg-2); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="doc-flow">
+
+    <header class="doc-titled">
+      <p class="doc-label">design system · document register</p>
+      <h1 class="doc-title">Document register</h1>
+      <p class="doc-lede">Text roles, the space between them, and the rails that carry depth. The owner
+        demonstrates the rules it expects its consumers to follow — including on its own key pages.</p>
+    </header>
+
+    <section class="doc-section" id="rule-axes">
+      <div class="doc-labeled">
+        <p class="doc-label">rule · surface axes</p>
+        <h2 class="doc-section-title">Attachment, elevation and material are chosen separately</h2>
+      </div>
+
+      <p class="doc-body">A surface treatment is not one recipe. Attachment governs which corners are
+        rounded. Elevation governs whether the reader should perceive the object as sitting above
+        its backing. Material governs fill, blur, and the foreground that stays readable over it.
+        They compose, and none silently determines another.</p>
+
+      <!-- DEEP HEADING — the h4 treatment. Shares 18px with body copy and is still
+           unambiguous: heavier, tighter, and preceded by section space. -->
+      <div class="doc-section" id="population">
+        <h3 class="doc-subsection-title">Population</h3>
+        <p class="doc-body">Every live surface composed against the page field or a canvas.</p>
+
+        <div class="doc-section">
+          <h4 class="doc-deep-title">Excluded</h4>
+          <p class="doc-body">Diagram nodes and artifact-scaffold cards. They are rectangles, not
+            surfaces, and they carry their own semantics.</p>
+        </div>
+      </div>
+
+      <!-- EXAMPLE / COUNTEREXAMPLE — a paired structure that reads as ONE object.
+           Subordinate grouping, not two panels. -->
+      <div class="doc-hierarchy doc-group" id="example">
+        <div class="doc-labeled">
+          <p class="doc-label">example</p>
+          <p class="doc-body">A navigation drawer hanging from the top edge rounds only its free corners;
+            its material is chosen separately. Whether it also casts a shadow is a separate choice,
+            made for its role — its attachment settles its corners and says nothing about its depth.</p>
+        </div>
+        <div class="doc-labeled">
+          <p class="doc-label">counterexample</p>
+          <p class="doc-body">Giving that same drawer a full radius would round a joined edge and
+            visually detach it from the surface it hangs from.</p>
+        </div>
+      </div>
+
+      <blockquote class="doc-quote">
+        <p>Same role and same context resolve to the same treatment. A different treatment must
+          correspond to a named difference in role, context or approved profile — never to the
+          pattern in which someone happened to implement it.</p>
+        <footer>the governing rule</footer>
+      </blockquote>
+
+      <div class="doc-group">
+        <p class="doc-label">exclusions</p>
+        <p class="doc-body">This rule governs presentation. It owns no markup and no semantics: two
+          semantic forms may share an appearance while sharing neither structure nor behavior.</p>
+      </div>
+    </section>
+
+    <!-- The two small-label roles, the same phrase in each, named in plain words. -->
+    <section class="doc-section" id="tracking">
+      <h2 class="doc-section-title">Letter spacing for small labels</h2>
+      <p class="doc-body">Small uppercase labels carry a little extra space between their letters. There
+        are exactly two settings. Each is fixed to its role and is never chosen per artifact; prose,
+        headings and literal addresses keep their own spacing. The same phrase is shown under both.</p>
+      <div class="doc-hierarchy doc-group">
+        <div class="doc-labeled">
+          <p class="doc-label">step 2 of 3</p>
+          <p class="doc-body">Typewriter-style label — operative labels, metadata and status. 0.08em.</p>
+        </div>
+        <div class="doc-labeled">
+          <p class="caption">step 2 of 3</p>
+          <p class="doc-body">Regular-font uppercase caption — the Caption role. 0.14em.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEEP HEADINGS — ONE treatment for h4 and every deeper level. Depth is
+         carried by the hierarchy rail, recursively, to level 8 here: past h6,
+         where the structure declares its own level. -->
+    <section class="doc-section" id="depth">
+      <h2 class="doc-section-title">Hierarchy rail</h2>
+      <p class="doc-body">The hierarchy rail says "this belongs inside the level above." Below h3 the type
+        stops changing: every deeper heading uses the h4 treatment, and a deeper level is that same
+        section nested one step further inside the rail — heading and content together, to any depth.
+        The same rail carries structured text whose indentation is structure, such as the lines that
+        belong beneath a label in an outline or a definition list, so a preformatted passage needs no
+        separate code-block treatment. It is assigned by that relationship, not to every preformatted
+        block; spaces that only align columns are not levels; and inside an emphasis rail it sits one
+        inset further in, never on the same edge.</p>
+      <h3 class="doc-subsection-title">h3 — subsection</h3>
+      <p class="doc-body">Body copy at the small step, weight 200.</p>
+      <div class="doc-section" id="depth-4">
+        <h4 class="doc-deep-title">h4 — deep heading</h4>
+        <p class="doc-body">The deep treatment, flush with its parent.</p>
+        <div class="doc-hierarchy doc-section" id="depth-5">
+          <h5 class="doc-deep-title">h5 — one level in</h5>
+          <p class="doc-body">The same lettering as h4. Only its place in the structure differs.</p>
+          <div class="doc-hierarchy doc-section" id="depth-6">
+            <h6 class="doc-deep-title">h6 — two levels in</h6>
+            <p class="doc-body">The same treatment again, one rail further in.</p>
+            <div class="doc-hierarchy doc-section" id="depth-7">
+              <p class="doc-deep-title" role="heading" aria-level="7">level 7 — past h6</p>
+              <p class="doc-body">HTML stops at h6. The structure does not, so a deeper level declares
+                its level instead.</p>
+              <div class="doc-hierarchy doc-section" id="depth-8">
+                <p class="doc-deep-title" role="heading" aria-level="8">level 8</p>
+                <p class="doc-body">No ceiling — the rail nests again.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LONG HEADINGS — every role keeps its size when its text outruns its
+         column. A heading wraps inside its measure, and at depth inside its rail. -->
+    <section class="doc-section" id="long-headings">
+      <h2 class="doc-section-title">A section title long enough to wrap at every supported width keeps its role, its size and its measure</h2>
+      <p class="doc-body">Long headings wrap inside their column. They never shrink to fit.</p>
+      <h3 class="doc-subsection-title">A subsection title long enough to wrap keeps the subsection step and its weight</h3>
+      <div class="doc-section" id="long-depth-4">
+        <h4 class="doc-deep-title">A deep heading long enough to wrap keeps the Small step and its weight at every depth</h4>
+        <div class="doc-hierarchy doc-section" id="long-depth-5">
+          <h5 class="doc-deep-title">One level in, the same deep heading wraps inside a narrower rail</h5>
+          <div class="doc-hierarchy doc-section" id="long-depth-6">
+            <h6 class="doc-deep-title">Two levels in, the measure narrows again while the size does not</h6>
+            <div class="doc-hierarchy doc-section" id="long-depth-7">
+              <p class="doc-deep-title" role="heading" aria-level="7">Past h6 the structure declares its own level, and the heading still wraps</p>
+              <div class="doc-hierarchy doc-section" id="long-depth-8">
+                <p class="doc-deep-title" role="heading" aria-level="8">A deep heading at the eighth level of nesting that is long enough to wrap inside its rail at a narrow width</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STRUCTURED TEXT — one scroll box whose indentation is structure. Each level
+         is one hierarchy rail; data-lead-lines keeps a blank source line's slot. -->
+    <section class="doc-section" id="structured">
+      <h2 class="doc-section-title">Structured text</h2>
+      <p class="doc-body">Where a preformatted passage's indentation is structure, each level is one more
+        hierarchy rail inside the same scroll box, and a blank source line keeps its slot. At a narrow
+        width the block scrolls and says so; its lines and its text size stay as they are.</p>
+      <div class="doc-pre doc-pre--structured" id="structured-sample">
+        <pre class="doc-pre-part">FOUNDATION</pre>
+        <div class="doc-hierarchy" data-lead-lines="1"><pre class="doc-pre-part">tokens
+&gt;&gt;
+roles that name what each value is for</pre><div class="doc-hierarchy"><pre class="doc-pre-part">role
+&gt;&gt;
+one complete text style per role</pre></div></div>
+        <pre class="doc-pre-part" data-lead-lines="2">CONSUMER</pre>
+        <div class="doc-hierarchy" data-lead-lines="1"><pre class="doc-pre-part">markup
+&gt;&gt;
+classes that select a role, never a raw size</pre></div>
+      </div>
+    </section>
+
+    <!-- A CLEAR READING AREA. A decorative rule may simply stop at its label: the
+         routed rule in this section does that. The labeled connector asserts a
+         directed relation, so it runs unbroken from one node to the other, and its
+         label takes its own grid row above it. The clearance is a property of the
+         layout, not a pinned offset, so it holds when the label wraps. That is one
+         appropriate remedy for this connector, not the only valid one. -->
+    <section class="doc-section" id="reading-area">
+      <h2 class="doc-section-title">A labeled connector</h2>
+      <p class="doc-body">A decorative rule can simply stop at its label. A line that asserts a relation
+        carries meaning, so its remedy has to keep that meaning — its ends, its direction and its path.
+        Here the connector runs unbroken and the label takes its own row above it: one way to keep the
+        relation, not the only one.</p>
+      <div class="o-routed" id="reading-area-routed"><span class="doc-label" id="reading-area-routed-label">locator</span><hr class="o-rule" id="reading-area-routed-rule"></div>
+      <figure class="o-relation" id="reading-area-relation">
+        <span class="o-rel-from doc-label" id="reading-area-from">intent</span>
+        <span class="o-rel-label doc-meta" id="reading-area-label">governs, within its declared scope</span>
+        <span class="o-rel-connector" id="reading-area-connector" aria-hidden="true"><span class="o-rel-shaft"></span><span class="o-rel-head"></span></span>
+        <span class="o-rel-to doc-label" id="reading-area-to">execution</span>
+      </figure>
+    </section>
+
+    <!-- LONG UNBROKEN TOKENS — the stress case. These are not invented lengths: a
+         SHA-256 digest is 64 characters, and documents carry repository paths and
+         digests in running text. Declaring overflow-wrap without rendering one of
+         these would leave the rule stated but not demonstrated. -->
+    <section class="doc-section" id="long-tokens">
+      <h2 class="doc-section-title">Long unbroken tokens</h2>
+      <p class="doc-body">A 64-character digest, a deep repository path and a full URL, set in the
+        roles that actually carry them. None may force a horizontal scroll at 420px.</p>
+      <div class="doc-hierarchy doc-group">
+        <div class="doc-labeled">
+          <p class="doc-label">digest</p>
+          <p class="doc-meta">a64665da40b1ca21bf8113e01b6233717ee1acd5895031d7fc50c32220971226</p>
+        </div>
+        <div class="doc-labeled">
+          <p class="doc-label">path</p>
+          <code class="doc-code">apexSolarKiss/design-system-ASK/patterns/diagram-interactive-spine/diagrams-interactive-spine-engine.js</code>
+        </div>
+        <div class="doc-labeled">
+          <p class="doc-label">link</p>
+          <p class="doc-body"><a href="#long">https://example.invalid/apexSolarKiss/design-system-ASK/patterns/surface-shell/surface-shell.template.html</a></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="doc-actions">
+      <a class="surface-action" href="#preview">preview</a>
+      <a class="surface-action surface-action--secondary" href="#readme">README</a>
+    </footer>
+
+  </div>
+</div>
+<script src="surface-document-overflow.js"></script>
+</body>
+</html>

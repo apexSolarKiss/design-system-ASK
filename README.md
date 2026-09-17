@@ -39,6 +39,8 @@ This repo carries three kinds of material:
 
 The distinction in 2 versus 3 is the lifecycle, and it is load-bearing. An artifact scaffold produces something finished and frozen. A surface pattern produces something that keeps running. Do not apply sealing, freezing, or generation-time inheritance rules to a surface pattern.
 
+The document register (`surface-document.css`) serves both lifecycles: a live surface references or vendors it and re-syncs, and an artifact scaffold may inline it at generation time, after which the sealed copy does not re-sync.
+
 These are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. The catalog holds **two artifact classes plus one separate surface-pattern group**:
 
 - **Class A** — system / architecture diagram templates, in two kinds:
@@ -80,6 +82,9 @@ Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibil
 | `surface-panel.css` | **Opt-in live-surface visual rule** — the shared visual contract for live content panels: chrome (`.surface-panel`), primary label (`.surface-panel-title`), supporting copy (`.surface-panel-support`), and the interaction contract for a panel that is *itself* a link (`a.surface-panel`). It owns **presentation only** — no markup, no semantics, no template, no generated preview. Two semantic forms can share this appearance without sharing structure or behavior: a full-panel native link, and an inert panel containing consumer-owned links or actions. It deliberately does **not** own support-copy foreground, and it assigns no interaction to inert panels. Not a component, not a surface pattern, not an artifact scaffold |
 | `surface-action.css` | **Opt-in live-surface visual rule** — the shared visual contract for compact action controls, and the sibling of `surface-panel.css` on the action axis: the control itself (`.surface-action`), its foreground-only quieter variant (`.surface-action--secondary`), and one inherited hover / press / focus contract. It owns **presentation and interaction only** — never element type, destination, copy, action-row layout, or placement, so the same grammar styles an `<a>` that navigates and a `<button>` that acts without changing what either one is. Not for full-panel links, theme selectors, lightbox or gallery-overlay triggers, badges, or non-interactive labels — and not for inline text links, which `surface-text-link.css` owns. Not a component, not a surface pattern, not an artifact scaffold |
 | `surface-text-link.css` | **Opt-in live-surface visual rule** — the shared visual contract for the **unboxed textual traversal affordance** (`.surface-text-link`): a link inside running prose or a structural title, which unlike a panel or a compact action has no geometry announcing that it is operable. It owns **presentation only** — no markup, no semantics, no destination, no layout, no template, no generated preview — and it deliberately declares **no text color**, so an ordinary link inherits its context's foreground and a role-colored anchor keeps its own. The resting underline is the emphasis accent at partial opacity — the accent's own hue at a reduced dose, never mixed toward the foreground; hover raises it to full opacity; focus is an independent high-contrast indicator. This is the **default-ASK** treatment and **no strict AA non-text-contrast claim is made for its resting state in either theme** — the module's own header carries the measured disposition. Opt-in **by class** on purpose: the excluded set — panels, actions, cards, gallery launches, marks, linked figures — is open-ended, and a missing class degrades to a visible foundation underline while a too-narrow deny-list would silently give a shaped object the textual grammar. Not a component, not a surface pattern, not an artifact scaffold |
+| `surface-document.css` | **Opt-in visual rule for both lifecycles** — the document register: document text roles, the compositions that carry the space between them, the hierarchy rail, quotation anatomy, preformatted and structured text, and the overflow cue. It owns **presentation only** — no markup, no semantics, no template, no generated preview. A live surface references or vendors it and re-syncs; an artifact scaffold may inline it at generation time. Layers on top of `colors_and_type.css`. Not a component, not a surface pattern, not an artifact scaffold |
+| `surface-document-overflow.js` | **Optional** helper for `surface-document.css`: reports whether a preformatted block is wider than its box, and on which side, so the stylesheet can draw the overflow cue. Without it a block still scrolls and shows no cue |
+| `surface-document.html` | Rendered visual key for the document register |
 | `fonts/InterVariable.woff2` + italic | Inter variable webfont, OFL |
 | `fonts/JetBrainsMono.woff2` + italic | JetBrains Mono variable webfont, OFL |
 | `assets/logo-ASK.svg` | Vector wordmark, **primary** — `fill: currentColor`; the consuming surface sets `currentColor` to the mode-specific wordmark pairing |
@@ -282,6 +287,7 @@ The **current live-surface allocation**:
 | foundation utility | `code` · `kbd` · `pre` · `samp` · `.mono` · `[data-mono]` · `.tabular` | code, technical and tabular literals |
 | `surface-action.css` | `.surface-action` | compact operative control |
 | `surface-shell` | `.surface-title` · `.surface-badge` · `.surface-nav-row` | structural title, status badge, panel hierarchy row |
+| `surface-document.css` | `.doc-label` · `.doc-meta` · `.doc-quote > footer` · `.doc-code` · `.doc-pre` · the overflow cue | operative label, metadata, quotation attribution, code and preformatted text in the document register |
 | a consuming surface | its own explicitly named operative control | e.g. the style guide's `.surface-theme` mode selector |
 
 Everything else on a live surface is Inter unless the owner of a selector says otherwise, and a generic utility class is not a license to make prose mono.
@@ -290,9 +296,11 @@ That table is the live-surface allocation, **not a repo-wide census**. The artif
 
 Type hierarchy is **role-driven**. The defined scale steps distinguish semantic roles; do not invent an ad-hoc size merely to add emphasis. Within a role, weight and foreground carry contrast.
 
-Generic H1/H2 display roles use 400. H3 and both primary-label implementations use 300. Body uses 200; Small uses 300; Caption uses 400. Light weights are deliberate. No thick typefaces.
+Generic H1 and H2 roles use 400. H3 and both primary-label implementations use 300. Body uses 200; Small uses 300; Caption uses 400. The document register assigns weight by its own roles: document title 400; section and subsection titles 300; deep heading 500; lede and document body 200; strong emphasis in document text 500. Light weights are deliberate. No thick typefaces.
 
 **Element name does not override the explicit role:** an `h1` or `h2` carrying `.surface-title` or `.surface-panel-title` remains a primary label at 300, and conforming it to the generic heading weight is a defect rather than a repair.
+
+**Element name does not override a document-register role either.** An `h1` carrying `.doc-title` is a document title at 36 / 400. An `h2` carrying `.doc-section-title` is a section title at 28 / 300, and an `h3` carrying `.doc-subsection-title` is a subsection title at 24 / 300. An `h4`, `h5`, `h6` or `[role="heading"]` element carrying `.doc-deep-title` is a deep heading at 18 / 500, at every depth. Each role is a complete text style — family, size, weight, leading, tracking, foreground and margin — so the element's own foundation rule contributes nothing. The generic H1 and H2 rows govern headings that carry no explicit role. Conforming a document-register heading to the generic heading size or weight is a defect rather than a repair. Uppercase mono is never a content heading, and a heading is never smaller than the prose it governs; depth is carried by the hierarchy rail, not by a smaller, lighter or recolored heading.
 
 The **24px primary label over 18px supporting copy** pair is a sanctioned distinction between two defined roles — not ad-hoc sizing, and not a case where a weight difference should be substituted for the size step. Both sit at 300, and the pair separates on role.
 
@@ -310,6 +318,20 @@ The **24px primary label over 18px supporting copy** pair is a sanctioned distin
 | **Compact action** | **JetBrains Mono** | **300** | **14 / 1.20** | **0** |
 | Code / inline-code | JetBrains Mono | 300 | 0.9× host | 0 |
 | Tabular numerals | JetBrains Mono | inherit | inherit | 0 |
+| Document title | Inter | 400 | 36 / 1.12 | -0.02em |
+| Section title | Inter | 300 | 28 / 1.12 | -0.02em |
+| Subsection title | Inter | 300 | 24 / 1.12 | -0.01em |
+| Deep heading — h4 and deeper | Inter | 500 | 18 / 1.12 | 0 |
+| Lede | Inter | 200 | 24 / 1.45 | 0 |
+| Document body | Inter | 200 | 18 / 1.45 | 0 |
+| Operative label | JetBrains Mono | 300 | 14 / 1.20, UPPERCASE | 0.08em |
+| Metadata | JetBrains Mono | 300 | 14 / 1.40 | 0.08em |
+
+Inside document compositions, Caption sets 1.30 leading and no margin.
+
+**Document compositions carry the space between roles.** Every document role sets `margin: 0`. `.doc-flow` (`--space-8`), `.doc-section` and `.doc-titled` and `.doc-group` (`--space-3`), `.doc-prose` (`--space-4`) and `.doc-labeled` (`--space-2`) set it as a gap; a section nested in a section leads by `--space-4` more. `.doc-hierarchy` is the neutral hierarchy rail: it carries a whole section, one rail per level, to any depth, and a structured preformatted block uses the same rail for indentation that is structure. `data-lead-lines` records one to three blank source lines.
+
+**Text keeps a clear reading area.** A decorative boundary stops at its label (`surface-document.html` #reading-area-routed). A meaning-bearing connector keeps its ends, direction and path (#reading-area-relation). Both are demonstrations, not module classes.
 
 The **primary-label role** names a thing the system has — a surface, a route, a panel, a named primitive — rather than setting prose. Its **shared core** is 24 / 300 / -0.02em, on Body rather than an H-step because a label is a locator and not display type, and its **default leading** is 1.12 — which the panel implementation takes and the structural locator overrides. It has **two implementations**, and each owns its **family** through its **selector**.
 
@@ -327,9 +349,10 @@ The **compact-action role** is the label on a small control — a chip, a route 
 
 | Tracking | Token | Roles |
 | --- | --- | --- |
-| -0.02em | `--tracking-tight` | H1 · H2 · H3 · structural locator (`.surface-title`) · panel primary label (`.surface-panel-title`) · panel hierarchy row (`.surface-nav-row`) |
-| 0 | `--tracking-normal` | Body · Small · supporting copy (`.surface-panel-support`) · compact action (`.surface-action`) · code and inline code · tabular numerals |
-| 0.08em | `--tracking-wide` | mono operative labels and metadata · status badge (`.surface-badge`) |
+| -0.02em | `--tracking-tight` | H1 · H2 · H3 · document title (`.doc-title`) · section title (`.doc-section-title`) · structural locator (`.surface-title`) · panel primary label (`.surface-panel-title`) · panel hierarchy row (`.surface-nav-row`) |
+| -0.01em | registered literal | subsection title (`.doc-subsection-title`) |
+| 0 | `--tracking-normal` | Body · Small · supporting copy (`.surface-panel-support`) · lede (`.doc-lede`) · document body (`.doc-body`) · deep heading (`.doc-deep-title`) · preformatted text (`.doc-pre`) · compact action (`.surface-action`) · code and inline code · tabular numerals |
+| 0.08em | `--tracking-wide` | mono operative labels and metadata (`.doc-label`, `.doc-meta`) · status badge (`.surface-badge`) · overflow cue (`.doc-pre` `::after`) · quotation attribution (`.doc-quote > footer`) |
 | 0.14em | `--tracking-caption` | Caption — Inter, uppercase (`.caption`) · the pattern gallery's group and card-class labels (`.group-label`, `.card .cls` in `patterns/index.html`) — Inter uppercase labels that share Caption's register and tracking but keep their own weight and foreground, so they are not the Caption role |
 | -0.035em | `--tracking-display` | Display |
 
