@@ -87,6 +87,7 @@ Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibil
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `favicon.svg` · `favicon-32.png` · `favicon.ico` · `apple-touch-icon.png` | Browser-icon package — the wordmark on the baked `#D4C6E1` square. Tier-3 implementation assets; see **Logo placement** |
 | `tools/browser-icons.mjs` | Generates `favicon.ico`; `--check` verifies the package against `assets/logo-ASK.svg` |
+| `tools/check-custom-properties.mjs` | Fails when a `var(--name)` with no fallback cannot resolve — each vendorable stylesheet against its declared dependencies, each page against its own load graph. `--check`, `--self-test`; `--root`, `--page` and `--dep` run it against another repository's pages. Static only: it does not prove scope and does not resolve values built at runtime |
 | `preview/styleguide.html` | Live token styleguide — the single canonical preview surface |
 | `styleguide-theme-control.js` | The style guide's forced-mode selector (auto / light / dark). **Style-guide-only; not vendored, and not part of `surface-shell`.** An inspection surface needs to hold a mode fixed; ordinary public surfaces follow the operating system and load nothing. |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
