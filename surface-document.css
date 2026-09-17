@@ -216,9 +216,9 @@
   color: var(--fg-3);
   margin: 0;
 }
-/* Code is relative to its host: 0.9x a sized document role. Placed where no
-   sized role governs it, it falls back to the Caption step rather than to the
-   browser default. */
+/* Inside a sized document role, code is 0.9x its parent's computed font size.
+   Ordinary inline wrappers preserve that role's size. With no sized-role
+   ancestor, code falls back to the Caption step rather than the browser default. */
 .doc-code {
   font-family: var(--font-mono);
   font-size: 0.9em;
