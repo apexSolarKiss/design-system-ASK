@@ -392,7 +392,7 @@ grows into. A per-surface measure is the consuming surface's call.
 Implementation detail belongs in the payload.
 
 The lede is **not** Caption text. Caption is the 14px uppercase label role: the
-`.caption` utility sets 400 weight, wide tracking, and uppercase over the
+`.caption` utility sets 400 weight, 0.14em tracking, and uppercase over the
 foundation's inherited Inter. The lede is prose a reader reads, so it sits on
 the supporting-text step instead.
 
@@ -1048,9 +1048,13 @@ delta legible as a delta.
 Your own identity mark must be reachable from the consuming surface — from
 wherever your repo already keeps it. Nothing about it is vendored from here:
 `design-system-ASK` ships the slot, not the mark. A surface that legitimately
-fills this slot with the `logo-ASK` wordmark does so because it is itself an
-ASK-instance surface carrying ASK's own Tier 3 — a property of that consumer,
-never an instruction from this pattern.
+fills this slot with the `logo-ASK` wordmark does so on one of two bases, each a
+property of that consumer and never an instruction from this pattern: the
+surface is itself an ASK-instance surface carrying ASK's own Tier 3, or ASK has
+explicitly assigned the `logo-ASK` wordmark to the consuming project as its
+locally supplied Tier 3 and the surface falls within the assignment's recorded
+scope. An assignment does not make that project ASK-the-entity, and this
+pattern makes no assignment.
 
 When `surface-shell.css` changes upstream, each downstream consumer re-syncs on
 its own schedule. Consumption relationships are recorded in

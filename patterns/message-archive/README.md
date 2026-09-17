@@ -185,7 +185,7 @@ Foundation tokens are consumed by reference and are not restated here. The value
 | `rgba(255,255,255,.24)` / `rgba(212,198,225,.08)` | day-header + control chip fill, light / dark | both |
 | `rgba(212,198,225,.58)` / `rgba(16,14,20,.72)` | sticky-bar backdrop, light / dark | both |
 | `rgba(255,255,255,.55)` / `rgba(212,198,225,.14)` | AA control fill, light / dark | `AA-compliant` |
-| `rgba(32,29,38,.65)` / `rgba(212,198,225,.65)` | AA control boundary, light / dark | `AA-compliant` |
+| `rgba(32,29,38,.75)` / `rgba(212,198,225,.65)` | AA control boundary, light / dark | `AA-compliant` |
 
 The bubble **foregrounds** and translucent chrome fills are implementation-local surface values, not identity colors: they carry no participant meaning and were not part of the ratified identity ramp. They are recorded here so the template holds no undocumented color.
 

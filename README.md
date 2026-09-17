@@ -87,6 +87,7 @@ Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibil
 | `assets/logo-ASK-lavender-ASK.png` | Raster wordmark in lavender-ASK (`#D4C6E1`), on transparent (dark-mode pairing / fallback) |
 | `favicon.svg` · `favicon-32.png` · `favicon.ico` · `apple-touch-icon.png` | Browser-icon package — the wordmark on the baked `#D4C6E1` square. Tier-3 implementation assets; see **Logo placement** |
 | `tools/browser-icons.mjs` | Generates `favicon.ico`; `--check` verifies the package against `assets/logo-ASK.svg` |
+| `tools/check-custom-properties.mjs` | Fails when a `var(--name)` with no fallback cannot resolve — each vendorable stylesheet against its declared dependencies, each page against its own load graph. `--check`, `--self-test`; `--root`, `--page` and `--dep` run it against another repository's pages. Static only: it does not prove scope and does not resolve values built at runtime |
 | `preview/styleguide.html` | Live token styleguide — the single canonical preview surface |
 | `styleguide-theme-control.js` | The style guide's forced-mode selector (auto / light / dark). **Style-guide-only; not vendored, and not part of `surface-shell`.** An inspection surface needs to hold a mode fixed; ordinary public surfaces follow the operating system and load nothing. |
 | `SKILL.md` | Agent-skill manifest for cross-tool reuse |
@@ -162,7 +163,7 @@ The README, card labels, and any docs in this repo speak in a **calm, declarativ
 | Trait | Treatment |
 | --- | --- |
 | Person | Impersonal / declarative. Do not invent a studio "we" — ASK is a personal meta-brand, not a collective. Describe the system as a thing that exists, not a thing "we made". |
-| Casing | Sentence case in headings and body. UPPERCASE only for tiny labels (≤14px) with wide tracking (~0.14em). |
+| Casing | Sentence case in headings and body. UPPERCASE only for small labels (≤14px), tracked by role: Inter Caption at 0.14em, mono operative labels at 0.08em. |
 | Length | Short. One idea per sentence. |
 | Punctuation | Periods, em-dashes, commas. No exclamation marks. No "Introducing:" lead-ins. |
 | Numerals | Spell out one through nine in copy; figures in UI labels and prices. |
@@ -322,6 +323,18 @@ Supporting copy under either stays on the Small Inter step, so that pair separat
 
 The **compact-action role** is the label on a small control — a chip, a route action, a `preview` or `README` button. `.surface-action` in `surface-action.css` is its canonical implementation. It is **Caption-sized, not the Caption role**, and the distinction is load-bearing: Caption is 14px Inter at 400, uppercased, on 0.14em tracking, and it labels things; the compact action is 14px mono at 300, **sentence- or lower-cased, on zero tracking**, and it is something you click. Conforming a compact action to Caption's uppercase, tracking, or weight — or to Inter — is a defect rather than a repair. This role also does not govern the 18px Inter **CTA** specimen in the style guide, which is a separate and deliberately different object.
 
+**Tracking is assigned by role and never chosen per artifact.** Two small uppercase registers exist and never trade values: the Inter Caption at 0.14em and mono operative labels at 0.08em. A label takes its tracking from its role, not from its size — Caption-sized is not the Caption role. Specialized patterns — the Class A diagram scaffolds and the message archive — own pattern-local label metrics that do not extend to any other surface; a diagram scaffold's `.caption` overlay is one of those, not the Caption role. A new value enters this account only with a named role.
+
+| Tracking | Token | Roles |
+| --- | --- | --- |
+| -0.02em | `--tracking-tight` | H1 · H2 · H3 · structural locator (`.surface-title`) · panel primary label (`.surface-panel-title`) · panel hierarchy row (`.surface-nav-row`) |
+| 0 | `--tracking-normal` | Body · Small · supporting copy (`.surface-panel-support`) · compact action (`.surface-action`) · code and inline code · tabular numerals |
+| 0.08em | `--tracking-wide` | mono operative labels and metadata · status badge (`.surface-badge`) |
+| 0.14em | `--tracking-caption` | Caption — Inter, uppercase (`.caption`) · the pattern gallery's group and card-class labels (`.group-label`, `.card .cls` in `patterns/index.html`) — Inter uppercase labels that share Caption's register and tracking but keep their own weight and foreground, so they are not the Caption role |
+| -0.035em | `--tracking-display` | Display |
+
+**Registered exception.** The style guide's `.badge` component specimen is Inter, uppercase, at `--tracking-wide`. It is neither the Caption role nor a mono operative label, and it is not a precedent for either register.
+
 ### Spacing & layout
 - 4-px base unit. Tokens at 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128.
 - 12-column grid, 96px outer margin on desktop.
@@ -354,7 +367,7 @@ The **compact-action role** is the label on a small control — a chip, a route 
   **Hover and focus share this paint and nothing else.** They remain independent states answering different questions, so a shaped object that is hovered and focused shows one edge rather than two competing indicators, and the 0.92 opacity drop stays hover's alone. Two objects, one hovered and one focused, show the same edge; only hover's opacity drop tells them apart.
 
   **The list is closed.** Compact actions and full-panel links share the attention treatment, and generic anchors alone keep the foreground-bound one; a future bordered control inherits neither by being interactive, and joins only by being named here. Inert panels do not hover.
-- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. The fragmenting population is exactly `.surface-text-link` and breadcrumb links (`.surface-title a`); they press without geometry, hover raising the underline to full opacity and holding element opacity at 1, so on them the 0.92 drop reads as press rather than as hover. The identity mark is a box and keeps the scale; so do footer destinations, through `surface-action.css` rather than through a rule of the shell's. `patterns/surface-shell/README.md` carries the state model.
+- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. The fragmenting population is exactly `.surface-text-link` and breadcrumb links (`.surface-title a`); they press without geometry, hover raising the underline to full opacity and holding element opacity at 1, so on them the 0.92 drop reads as press rather than as hover. The identity mark is a box and keeps the scale; so do footer destinations, through `surface-action.css` rather than through a rule of the shell's. `patterns/surface-shell/README.md` carries the state model. **Reduced motion.** Under `prefers-reduced-motion: reduce`, compact actions and full-panel links drop their transitions and their press scale; their hover and focus paint still applies, instantly. The shell's own reduced-motion rules stay the shell's.
 - **Focus** — never the browser default. Across the live-surface modules and the shell there are **three anatomies by role**, which are not interchangeable; artifact patterns such as `message-archive` own pattern-local indicators:
 
   | role | focus indicator |
