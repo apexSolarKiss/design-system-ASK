@@ -3,15 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Document register — key</title>
-<meta name="description" content="Visual key for the document register. Reads surface-document.css live.">
+<title>Document register and surface treatments — key</title>
+<meta name="description" content="Visual key for the document register and the surface treatments. Reads surface-document.css and surface-treatments.css live.">
 <!-- Visual key for the document register (surface-document.css, with the optional
-     surface-document-overflow.js helper). Reads the foundation, the compact-action
-     module and the register live; theme-aware (light default · dark via
-     prefers-color-scheme / [data-theme="dark"]). Open directly. -->
+     surface-document-overflow.js helper) and the surface treatments
+     (surface-treatments.css, which extends surface-panel.css). Reads the foundation,
+     the compact-action and panel modules, the register and the treatments live;
+     theme-aware (light default · dark via prefers-color-scheme /
+     [data-theme="dark"]). Open directly. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-action.css">
+<link rel="stylesheet" href="surface-panel.css">
 <link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-treatments.css">
 <style>
   /* Page ground. Not background-attachment: fixed — on a page taller than the
      viewport a fixed gradient covers only the first screen. */
@@ -45,6 +49,16 @@
   .o-rel-head      { flex: 0 0 auto; width: 0; height: 0;
                      border-top: 4px solid transparent; border-bottom: 4px solid transparent;
                      border-left: 7px solid var(--fg-2); }
+
+  /* Page-local fixture layout — not module classes. Two surfaces that exist to be
+     compared sit side by side. */
+  .cmp-pair { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .cmp-pair > * { flex: 1 1 240px; }
+
+  /* Page-local, and consumer-owned in any real surface: the grid of the repeated
+     collection and its column count. The space between its items is the shared
+     composition's gap, which a grid applies to rows and columns alike. */
+  .o-collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
 </style>
 </head>
 <body>
@@ -52,10 +66,11 @@
   <div class="doc-flow">
 
     <header class="doc-titled">
-      <p class="doc-label">design system · document register</p>
-      <h1 class="doc-title">Document register</h1>
-      <p class="doc-lede">Text roles, the space between them, and the rails that carry depth. The owner
-        demonstrates the rules it expects its consumers to follow — including on its own key pages.</p>
+      <p class="doc-label">design system · document register · surface treatments</p>
+      <h1 class="doc-title">Document register and surface treatments</h1>
+      <p class="doc-lede">Text roles, the space between them and the rails that carry depth; surfaces
+        composed from three axes; disclosure and content emphasis. The owner demonstrates the rules it
+        expects its consumers to follow — including on its own key pages.</p>
     </header>
 
     <section class="doc-section" id="rule-axes">
@@ -110,6 +125,163 @@
         <p class="doc-body">This rule governs presentation. It owns no markup and no semantics: two
           semantic forms may share an appearance while sharing neither structure nor behavior.</p>
       </div>
+
+      <details class="surface-disclosure surface-material-panel surface-attach-free surface-elevation-flush" id="measured-census">
+        <summary><span class="surface-disclosure-label">measured census</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></summary>
+        <div class="surface-disclosure-body doc-prose">
+          <p class="doc-body">Six objects compared across the catalog. Attachment predicted corner
+            treatment in all six. One of the six carried a shadow — which describes the compared
+            set, not a catalog-wide count, and a shadowless object is not thereby
+            under-elevated.</p>
+          <p class="doc-meta">one blur value for materials that blur · 14 and 8 serve separate roles</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ATTACHMENT — corner treatment only. Every plane in the first group takes the
+         same material and elevation, so only its corners differ; the pair after it keeps
+         one attachment and changes the other two axes. The page-local rule each plane
+         touches stands for the edge it is joined to. -->
+    <section class="doc-section" id="attachment">
+      <div class="doc-labeled">
+        <p class="doc-label">rule · attachment</p>
+        <h2 class="doc-section-title">Attachment settles corners and nothing else</h2>
+      </div>
+      <p class="doc-body">An attached surface rounds only its free corners. Each plane below takes the
+        page material and flush elevation, so only its corners differ, and the line it touches marks
+        the edge it is joined to. Attachment changes no fill, blur, edge or shadow. Pills belong to
+        interactive elements; the chip plane shows that value's corners only.</p>
+      <div class="doc-group" id="attach-values">
+        <div id="attach-free-row">
+          <div class="surface-separate surface-material-page surface-attach-free surface-elevation-flush doc-labeled" id="attach-free">
+            <p class="doc-label">surface-attach-free</p>
+            <p class="doc-body">Free-standing: every corner rounds.</p>
+          </div>
+        </div>
+        <div id="attach-top-row">
+          <hr class="o-rule">
+          <div class="surface-separate surface-material-page surface-attach-top surface-elevation-flush doc-labeled" id="attach-top">
+            <p class="doc-label">surface-attach-top</p>
+            <p class="doc-body">Joined at its top edge, like a drawer hanging from it: the two bottom corners round.</p>
+          </div>
+        </div>
+        <div id="attach-bottom-row">
+          <div class="surface-separate surface-material-page surface-attach-bottom surface-elevation-flush doc-labeled" id="attach-bottom">
+            <p class="doc-label">surface-attach-bottom</p>
+            <p class="doc-body">Joined at its bottom edge, like a sheet rising from it: the two top corners round.</p>
+          </div>
+          <hr class="o-rule">
+        </div>
+        <div id="attach-full-width-row">
+          <hr class="o-rule">
+          <div class="surface-separate surface-material-page surface-attach-full-width surface-elevation-flush doc-labeled" id="attach-full-width">
+            <p class="doc-label">surface-attach-full-width</p>
+            <p class="doc-body">Joined along its full width: no corner rounds.</p>
+          </div>
+          <hr class="o-rule">
+        </div>
+        <div id="attach-chip-row">
+          <div class="surface-separate surface-material-page surface-attach-chip surface-elevation-flush doc-labeled" id="attach-chip">
+            <p class="doc-label">surface-attach-chip</p>
+            <p class="doc-body">A chip: pill corners.</p>
+          </div>
+        </div>
+      </div>
+      <p class="doc-body">The same attachment keeps its corners when the other two axes change. Both
+        planes below hang from the top edge; one is flush on the page material, the other raised on
+        the panel material.</p>
+      <div class="cmp-pair" id="attach-independent">
+        <div>
+          <hr class="o-rule">
+          <div class="surface-separate surface-material-page surface-attach-top surface-elevation-flush doc-labeled" id="attach-top-page-flush">
+            <p class="doc-label">page material · flush</p>
+            <p class="doc-body">The bottom corners round.</p>
+          </div>
+        </div>
+        <div>
+          <hr class="o-rule">
+          <div class="surface-separate surface-material-panel surface-attach-top surface-elevation-raised doc-labeled" id="attach-top-panel-raised">
+            <p class="doc-label">panel material · raised</p>
+            <p class="doc-body">The same corners, over a different fill and depth.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A LINKED PANEL beside an inert plane, so the difference is visible. The linked
+         panel is the complete surface-panel component; the inert plane is composed from
+         the treatment axes. -->
+    <section class="doc-section" id="related">
+      <h2 class="doc-section-title">Related</h2>
+      <a class="surface-panel" href="#text-roles" id="related-link">
+        <p class="doc-label">rule · text roles</p>
+        <p class="doc-subsection-title">A text role resolves a complete style</p>
+        <p class="doc-body">Family, size, weight, leading, tracking and foreground — and the spacing
+          between one role and the next.</p>
+        <span class="doc-meta">read the rule →</span>
+      </a>
+
+      <div class="surface-separate surface-material-page surface-attach-free surface-elevation-flush doc-group" id="related-inert">
+        <p class="doc-label">inert · not a control</p>
+        <p class="doc-body">The same page material and free corners, composed from the treatment axes:
+          flush, and with no interaction affordance. The linked panel above is the complete
+          surface-panel component, whose pressable form rests on a fainter edge and a larger inset.</p>
+      </div>
+    </section>
+
+    <!-- A REPEATED COLLECTION. The item anatomy, the space between items, the inset each
+         item's content aligns to and the place its actions take come from the shared
+         rules. The grid, its column count, the order of the items and their words are
+         this page's, as they would be a consumer's. -->
+    <section class="doc-section" id="collections">
+      <div class="doc-labeled">
+        <p class="doc-label">composition · repeated collection</p>
+        <h2 class="doc-section-title">A repeated collection</h2>
+      </div>
+      <p class="doc-body">Every item has one anatomy: an operative label, the surface panel's title and
+        supporting copy, and a row of compact actions. The shared rules set that anatomy, the space between items, the
+        inset every item's content starts from and the place its actions take, after its copy. The
+        grid, how many columns it has, the order of the items and what they say belong to the
+        consuming surface.</p>
+      <div class="doc-group o-collection" id="collection">
+        <article class="surface-panel" id="collection-item-1">
+          <p class="doc-label">rule</p>
+          <h3 class="surface-panel-title">Text roles</h3>
+          <p class="surface-panel-support">One complete style per role, whatever the element.</p>
+          <div class="doc-actions">
+            <a class="surface-action" href="#tracking">tracking</a>
+            <a class="surface-action surface-action--secondary" href="#depth">depth</a>
+          </div>
+        </article>
+        <article class="surface-panel" id="collection-item-2">
+          <p class="doc-label">rule</p>
+          <h3 class="surface-panel-title">Surface axes</h3>
+          <p class="surface-panel-support">Material, attachment and elevation, chosen separately.</p>
+          <div class="doc-actions">
+            <a class="surface-action" href="#rule-axes">axes</a>
+            <a class="surface-action surface-action--secondary" href="#attachment">attachment</a>
+          </div>
+        </article>
+        <article class="surface-panel" id="collection-item-3">
+          <p class="doc-label">treatment</p>
+          <h3 class="surface-panel-title">Content emphasis</h3>
+          <p class="surface-panel-support">Persistent and assigned by role; never an interaction state.</p>
+          <div class="doc-actions">
+            <a class="surface-action" href="#emphasis">emphasis</a>
+          </div>
+        </article>
+        <article class="surface-panel" id="collection-item-4">
+          <p class="doc-label">treatment</p>
+          <h3 class="surface-panel-title">Structured text</h3>
+          <p class="surface-panel-support">Indentation that is structure, one rail per level.</p>
+          <div class="doc-actions">
+            <a class="surface-action" href="#structured">structured</a>
+            <a class="surface-action surface-action--secondary" href="#long-tokens">long tokens</a>
+          </div>
+        </article>
+      </div>
+      <p class="doc-meta">consumer-owned here: the grid, its column count, the order of the items and
+        their words</p>
     </section>
 
     <!-- The two small-label roles, the same phrase in each, named in plain words. -->
@@ -127,6 +299,85 @@
           <p class="caption">step 2 of 3</p>
           <p class="doc-body">Regular-font uppercase caption — the Caption role. 0.14em.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- BLUR — one value for every material that blurs. Navigation composed over another
+         surface and small floating chips are different roles and keep their own values. -->
+    <section class="doc-section" id="blur">
+      <h2 class="doc-section-title">Blur — one value</h2>
+      <p class="doc-body">Where a surface's material blurs, it blurs at 20px — the panels set on the
+        page material here do. No second value serves the same role. Blur belongs to the material, not to every container: the disclosure takes the panel
+        material, which does not blur, and this value does not reach it.</p>
+      <p class="doc-meta">Navigation composed over another surface (14px) and small floating chips (8px)
+        are separate roles and are unchanged.</p>
+    </section>
+
+    <!-- INTERACTION versus CONTENT EMPHASIS — two signals, not two intensities. The
+         border-only edge is the interaction language and the bloom is content emphasis, so
+         each is shown doing its own job. -->
+    <section class="doc-section" id="interaction">
+      <h2 class="doc-section-title">Interaction attention</h2>
+      <p class="doc-body">Hover these and Tab through them. Hover and keyboard focus share ONE treatment,
+        because they mean the same thing — you are addressing this control. Their state logic stays
+        independent: focus survives the pointer leaving, and a control that is both hovered and focused
+        shows one edge, not two.</p>
+      <div class="doc-actions">
+        <a class="surface-action" href="#a1">compact action</a>
+        <a class="surface-action surface-action--secondary" href="#a2">secondary</a>
+      </div>
+      <a class="surface-panel" href="#p1" id="interaction-panel">
+        <p class="doc-label">linked panel</p>
+        <p class="doc-body">The same language at panel scale, with its resting shadow kept under hover
+          and focus rather than replaced by it.</p>
+      </a>
+      <p class="doc-meta">The apparent edge is 1.50px magenta in light and 1.00px in dark. No measurement
+        threshold sets either value, and nothing is added to it for focus.</p>
+    </section>
+
+    <section class="doc-section" id="emphasis">
+      <h2 class="doc-section-title">Content emphasis</h2>
+      <p class="doc-body">Persistent, role-driven, and not interactive. None of the objects below is
+        clickable, and none carries hover, press or animation behavior.</p>
+
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Emphasis panel</h3>
+        <div class="surface-separate surface-emphasis surface-emphasis--magenta surface-material-page surface-attach-free surface-elevation-flush doc-group" id="emphasis-panel">
+          <p class="surface-emphasis-chip">read this first</p>
+          <p class="doc-body">Apparent hard edge 1.50px in light and 1.00px in dark; bloom alpha 0.28 and
+            0.50. The two themes are deliberately not numerically equal, because equal numbers do not
+            read as equal emphasis.</p>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Emphasis rail, in ordinary flow</h3>
+        <div class="surface-emphasis-rail surface-emphasis--magenta doc-group" id="emphasis-rail">
+          <p class="surface-emphasis-chip">read this first</p>
+          <p class="doc-body">The same content as a bounded passage inside the reading flow. No perimeter,
+            no halo, no second wash — a vertical accent rule and an inset. Use the least elaborate
+            treatment that expresses the distinction.</p>
+        </div>
+      </div>
+
+      <!-- A COMPARISON FIXTURE, declared as one: two accents side by side exist to be
+           compared, so their layout is the page-local .cmp-pair, not a treatment. -->
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">The accent is an IA role, not a decoration</h3>
+        <div class="cmp-pair" id="emphasis-accents">
+          <div class="surface-separate surface-emphasis surface-emphasis--violet surface-material-page surface-attach-free surface-elevation-flush doc-group" id="emphasis-violet">
+            <p class="surface-emphasis-chip">assigned by role</p>
+            <p class="doc-body">Violet, where a consuming surface's content role assigns it.</p>
+          </div>
+          <div class="surface-separate surface-emphasis surface-emphasis--cyan surface-material-page surface-attach-free surface-elevation-flush doc-group" id="emphasis-cyan">
+            <p class="surface-emphasis-chip">assigned by role</p>
+            <p class="doc-body">Cyan, where a consuming surface's content role assigns it.</p>
+          </div>
+        </div>
+        <p class="doc-meta">The treatment accepts the accent its content's role supplies; it does not
+          invent the role. The accent is carried by the perimeter and the chip's border. The chip's
+          words are set in the primary text role rather than in the accent, so the reading layer stays
+          in the document's own foreground and the accent stays a marker.</p>
       </div>
     </section>
 
