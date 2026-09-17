@@ -81,3 +81,39 @@ python3 -m http.server 8080
 
 Click **`PNG page`** in the HUD and compare the exported raster against the live
 legend. Toggle `data-theme` on `<html>` (or your OS appearance) to check both themes.
+
+## doc-code-size-fixture.html
+
+Guards **`surface-document.css` code sizing**. `.doc-code` is 0.9x the document role
+that governs it, and the Caption step where no sized role governs it. An ordinary inline
+wrapper — `strong`, `em`, `a`, a bare `span` — carries no role class and must change
+nothing: code in a link inside 18px document body is 16.2px, and code in a span inside
+the 36px document title is 32.4px. A fallback that tested only the immediate parent
+dropped both to 14px.
+
+The page measures every case against its computed expectation and reports one overall
+verdict, with a row per case:
+
+```text
+host      0.9x the computed size of the nearest [data-host] role: every sized role,
+          direct and through a wrapper, a role nested inside another role, and a
+          span carrying .doc-code, so the register's own 0.9em is exercised rather
+          than the foundation's rule for the code element
+caption   the Caption step: plain containers, compositions with no role, and a
+          wrapper where no sized role governs
+```
+
+**Run it** (served from the repo root, so the `../` foundations resolve):
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/doc-code-size-fixture.html
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases.
+
+**Verifying the fixture still bites.** Restore the immediate-parent fallback
+(`:where(:not(<sized roles>)) > .doc-code`) and every wrapped `host` case fails while
+every direct case and every `caption` case still passes. Remove `.doc-code`'s own
+`font-size: 0.9em` and the two `span.doc-code` cases fail at the host's full size; the
+`code` cases do not, because the foundation's code rule also sets 0.9em.

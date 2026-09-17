@@ -10,27 +10,26 @@
      prefers-color-scheme / [data-theme="dark"]). Open directly. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="spectral-state.css">
+<link rel="stylesheet" href="surface-document.css">
 <style>
   body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed;
          color: var(--fg-1); font-family: var(--font-sans); font-weight: 200; padding: 48px 56px; }
-  h1 { font-size: var(--fs-h3); font-weight: 300; letter-spacing: -0.02em; margin: 0 0 4px; }
-  .sub { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: 0.1em; text-transform: uppercase;
-         color: var(--fg-2); margin-bottom: 36px; }
+  .sub { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+         color: var(--fg-2); margin-top: var(--space-1); margin-bottom: 36px; }
   /* auto-fit rather than a fixed column count. `minmax(0, 1fr)` let a column
      shrink below its own content, which at a phone width drove the role text
      back across the swatch dot once the labels moved to the Caption step. The
      minimum below is set so the desktop column count is unchanged; narrow
      viewports now drop to fewer columns instead of overlapping. */
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 22px; max-width: 960px; }
-  .arc-label { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: 0.16em; text-transform: uppercase;
+  .arc-label { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
                color: var(--fg-2); grid-column: 1 / -1; margin: 18px 0 0; }
   .swatch { display: flex; align-items: center; gap: 12px; }
   .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
   .meta { display: flex; flex-direction: column; }
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
-  .hue  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: 0.04em; }
+  .hue  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
   .demo { margin-top: 44px; }
-  .demo h2 { font-size: var(--fs-caption); font-weight: 400; letter-spacing: 0.04em; margin: 0 0 6px; }
   .demo p { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); margin: 0 0 16px; }
   .nodes { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   .node { width: 22px; height: 22px; border-radius: 6px; background: var(--state-neutral); border: 1px solid var(--fg-3); }
@@ -38,7 +37,7 @@
 </style>
 </head>
 <body>
-  <h1>Spectral State</h1>
+  <h1 class="doc-title">Spectral State</h1>
   <div class="sub">v1.1 · restructured · neon on the lavender field</div>
 
   <div class="grid">
@@ -56,8 +55,10 @@
   </div>
 
   <div class="demo">
-    <h2>Sparse-signal discipline</h2>
-    <p>most nodes neutral // neon only to say something</p>
+    <div class="doc-section">
+      <h2 class="doc-section-title">Sparse-signal discipline</h2>
+      <p>most nodes neutral // neon only to say something</p>
+    </div>
     <div class="nodes">
       <div class="node"></div>
       <div class="node on" style="background:var(--state-earned)"></div>

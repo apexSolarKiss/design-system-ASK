@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // document code size regression fixture</title>
+<meta name="description" content="Regression fixture for surface-document.css .doc-code sizing: 0.9x the governing document role through ordinary inline wrappers, and the Caption step where no sized role governs the code.">
+<!-- Foundation, then the document register, in the module's load order
+     (serve from the repo root:  python3 -m http.server 8080  →  /tests/doc-code-size-fixture.html). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-document.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Document code size</h1>
+    <p class="doc-body">Each marked code element is measured against its expectation. <code>host</code>:
+      0.9x the computed size of the nearest sized document role (marked <code>data-host</code>).
+      <code>caption</code>: the Caption step, where no sized role governs the code. An ordinary
+      inline wrapper carries no role class and changes nothing.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Document body</h2>
+    <p class="doc-body" data-host>direct <code class="doc-code" data-case="body / direct" data-expect="host">code</code></p>
+    <p class="doc-body" data-host>strong <strong><code class="doc-code" data-case="body / strong" data-expect="host">code</code></strong></p>
+    <p class="doc-body" data-host>em <em><code class="doc-code" data-case="body / em" data-expect="host">code</code></em></p>
+    <p class="doc-body" data-host>link <a href="#overall"><code class="doc-code" data-case="body / link" data-expect="host">code</code></a></p>
+    <p class="doc-body" data-host>span <span><code class="doc-code" data-case="body / span" data-expect="host">code</code></span></p>
+    <p class="doc-body" data-host>two wrappers <a href="#overall"><strong><code class="doc-code" data-case="body / link > strong" data-expect="host">code</code></strong></a></p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Every sized role, direct and wrapped</h2>
+    <h1 class="doc-title" data-host>title <code class="doc-code" data-case="title / direct" data-expect="host">code</code></h1>
+    <h1 class="doc-title" data-host>title <span><code class="doc-code" data-case="title / span" data-expect="host">code</code></span></h1>
+    <h2 class="doc-section-title" data-host>section <code class="doc-code" data-case="section title / direct" data-expect="host">code</code></h2>
+    <h2 class="doc-section-title" data-host>section <em><code class="doc-code" data-case="section title / em" data-expect="host">code</code></em></h2>
+    <h3 class="doc-subsection-title" data-host>subsection <code class="doc-code" data-case="subsection title / direct" data-expect="host">code</code></h3>
+    <h3 class="doc-subsection-title" data-host>subsection <span><code class="doc-code" data-case="subsection title / span" data-expect="host">code</code></span></h3>
+    <h4 class="doc-deep-title" data-host>deep <code class="doc-code" data-case="deep title / direct" data-expect="host">code</code></h4>
+    <h4 class="doc-deep-title" data-host>deep <strong><code class="doc-code" data-case="deep title / strong" data-expect="host">code</code></strong></h4>
+    <p class="doc-lede" data-host>lede <code class="doc-code" data-case="lede / direct" data-expect="host">code</code></p>
+    <p class="doc-lede" data-host>lede <a href="#overall"><code class="doc-code" data-case="lede / link" data-expect="host">code</code></a></p>
+    <p class="doc-meta" data-host>meta <code class="doc-code" data-case="meta / direct" data-expect="host">code</code></p>
+    <p class="doc-meta" data-host>meta <span><code class="doc-code" data-case="meta / span" data-expect="host">code</code></span></p>
+    <p class="doc-label" data-host>label <code class="doc-code" data-case="label / direct" data-expect="host">code</code></p>
+    <p class="doc-label" data-host>label <em><code class="doc-code" data-case="label / em" data-expect="host">code</code></em></p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">The register's own rule</h2>
+    <p class="doc-body" data-host>span element <span class="doc-code" data-case="register / body > span.doc-code" data-expect="host">code</span></p>
+    <p class="doc-body" data-host>span element in a link <a href="#overall"><span class="doc-code" data-case="register / body > a > span.doc-code" data-expect="host">code</span></a></p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Nested roles</h2>
+    <p class="doc-body">body <span>wrapper <span class="doc-meta" data-host>meta <code class="doc-code" data-case="nested / body > span > meta" data-expect="host">code</code></span></span></p>
+    <h1 class="doc-title">title <span><span class="doc-label" data-host>label <em><code class="doc-code" data-case="nested / title > span > label > em" data-expect="host">code</code></em></span></span></h1>
+    <div class="doc-lede" data-host>lede <div>role-less block <code class="doc-code" data-case="nested / lede > div" data-expect="host">code</code></div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">No sized role</h2>
+    <div><code class="doc-code" data-case="standalone / div" data-expect="caption">code</code></div>
+    <div><strong><code class="doc-code" data-case="standalone / div > strong" data-expect="caption">code</code></strong></div>
+    <div class="doc-prose"><code class="doc-code" data-case="standalone / prose" data-expect="caption">code</code></div>
+    <div class="doc-prose"><p>plain paragraph <span><code class="doc-code" data-case="standalone / prose > p > span" data-expect="caption">code</code></span></p></div>
+    <div class="doc-labeled">
+      <p class="doc-label">path</p>
+      <code class="doc-code" data-case="standalone / labeled" data-expect="caption">code</code>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <table class="verdict"><tbody id="verdict"></tbody></table>
+  </section>
+
+</main>
+<script>
+  (function () {
+    var px = function (el) { return parseFloat(getComputedStyle(el).fontSize); };
+    var probe = document.createElement('span');
+    probe.style.fontSize = 'var(--fs-caption)';
+    document.body.appendChild(probe);
+    var caption = px(probe);
+    probe.remove();
+    var failed = 0;
+    var rows = document.getElementById('verdict');
+    document.querySelectorAll('.doc-code[data-case]').forEach(function (code) {
+      var host = code.parentElement.closest('[data-host]');
+      var expected = code.dataset.expect === 'host' ? (host ? 0.9 * px(host) : NaN) : caption;
+      var actual = px(code);
+      var pass = Math.abs(actual - expected) < 0.01;
+      if (!pass) failed++;
+      code.dataset.result = pass ? 'PASS' : 'FAIL';
+      var tr = document.createElement('tr');
+      [pass ? 'PASS' : 'FAIL', code.dataset.case, actual.toFixed(2) + 'px', 'expected ' + expected.toFixed(2) + 'px']
+        .forEach(function (text) { var td = document.createElement('td'); td.textContent = text; tr.appendChild(td); });
+      rows.appendChild(tr);
+    });
+    var overall = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    document.getElementById('overall').textContent = overall;
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+  })();
+</script>
+</body>
+</html>
