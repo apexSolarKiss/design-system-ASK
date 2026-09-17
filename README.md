@@ -420,6 +420,56 @@ Three questions, asked in order; the first two inform the third and do not decid
 ### Aesthetic anchors
 Linear.app, Stripe, Apple. Structural elegance, mathematical clarity, refined light typography. Avoid: playful or bloated visuals, thick typefaces, emotional/empathic design tropes.
 
+### Catalog dispositions
+
+Each rule file, key, page and pattern in the catalog carries one disposition against the type roles, document compositions and surface treatments above. The attachment axis spans two rule files and has its own row. A disposition describes the item as it is.
+
+- **conforming** — it follows the shared rules that apply to it.
+- **extended** — it carries a shared value added for those rules.
+- **new** — it is a source of those rules, or their rendered key.
+- **specialized** — it keeps pattern-local rules that differ from the shared ones, and its row names them. They are not sanctioned variants for any other surface.
+- **generated** — a tool writes it from canonical sources, and it is never edited by hand.
+
+| Item | Disposition | Detail |
+| --- | --- | --- |
+| `colors_and_type.css` | extended | `--tracking-caption` (0.14em) carries the Caption role's tracking, and `.caption` uses it |
+| `surface-panel.css` | extended | the one authored source of the glass recipe: the page material, panel material, free attachment and raised elevation classes share its declarations by selector grouping; the linked panel's hover and focus rules and the composed emphasis shadow name its raised-elevation token again |
+| `surface-action.css` · `surface-text-link.css` | conforming | the compact-action and textual-link roles, as described above |
+| `surface-document.css` · `surface-document-overflow.js` · `surface-treatments.css` · `surface-document.html` | new | the document register, its optional overflow helper, the surface treatments and their rendered key. The key renders every attachment value, labeled pairs (`.doc-labeled`), long headings from the section title to the eighth level that wrap within their column, and a repeated collection whose grid, column count, order and words it marks as consumer-owned |
+| the attachment axis | new | five values, corner treatment only: `.surface-attach-free` in `surface-panel.css`; `.surface-attach-top`, `.surface-attach-bottom`, `.surface-attach-full-width` and `.surface-attach-chip` in `surface-treatments.css`. A surface chooses its attachment independently of its material and its elevation |
+| `spectral-state.*` · `evidence-state.*` · `three-functions.*` | conforming | the Spectral State, Evidence State and Three Functions primitives. Their rendered keys set the page title and the section titles through `.doc-title` and `.doc-section-title`, and their page-local labels take the role tracking tokens |
+| `patterns/surface-shell/` | specialized | its navigation panel keeps its own material for navigation composed over another surface: the `--surface-glass-2` fill with a 14px blur. It realizes the attachment corner rule pattern-locally — the desktop drawer rounds its bottom corners, and the mobile sheet its top corners. It also drops the border on its joined edge. It does not consume the attachment classes |
+| `patterns/_diagram-shared/` | conforming | the one canonical text-layout source for the H, V and SEQ static diagram engines. `tools/sync-diagram-shared.mjs` generates its mirrors, and `--check` verifies them. The caps and line heights it owns serve those diagrams' own register; fonts and letter-spacing stay with each engine's stylesheet |
+| `patterns/diagram-static-H/` · `patterns/diagram-static-V/` · `patterns/diagram-static-SEQ/` · `patterns/diagram-static-FLOW/` | specialized | a compact register of their own in `diagrams.css`: 9–15px text, tracking from -0.01em to 0.18em, and a 10px caption overlay at 0.06em that is not the Caption role. The four `diagrams.css` copies are byte-identical and shared by convention; no tool keeps them in step |
+| `patterns/diagram-interactive-spine/` | specialized | a compact register for its top bar, nodes, inspector, legend and controls: 8.5–15px text, and glass panels with a 14px radius and a `--surface-glass-2` edge. Its caption band keeps `--tracking-wide` (0.08em) rather than Caption's tracking, and its mono uppercase labels (node groups, inspector and legend headings, field labels) keep 0.14–0.16em |
+| `patterns/message-archive/` | specialized | its participant-identity ramp, its focus outlines and its chrome metrics are pattern-local. Its sticky control bar blurs at 20px, the shared material value; its day-heading chips keep 8px |
+| `patterns/output-artifact/` | specialized | not migrated to the document register, and its rules are not sanctioned variants for other surfaces. Its differences from the shared rules include a leading `+` / `−` disclosure indicator, a quotation rule in `--artifact-line` with the quoted text in `--fg-2`, a bordered `pre`, table header labels at weight 500, and a title and prose set by the foundation's element rules rather than by document roles |
+| `patterns/_preview/` | generated | `tools/gen-pattern-previews.mjs` writes it from the canonical templates, and `--check` verifies it |
+| `index.html` · `patterns/index.html` · `preview/styleguide.html` | conforming | `tools/check-type-roles.mjs` governs all three. The tracking account above records the gallery's and the style guide's page-local Inter labels, and the style guide's registered `.badge` exception |
+
+### Adopting the document register
+
+A surface adopts the register by replacing raw sizes with roles. A raw value maps by what the text is, never by the nearest size. These rules are generic; a surface's own selector map stays with that surface.
+
+| Raw pattern | Role |
+| --- | --- |
+| a 10–12px mono uppercase label | `.doc-label` |
+| the same label used as an accent status flag | `.surface-emphasis-chip` — the words in the primary text role, the accent on its border |
+| 10–12px mono metadata, not uppercase | `.doc-meta` |
+| inline code sized in em | `.doc-code`, inside a sized role |
+| a raw 36px or 48px title | `.doc-title` or `.doc-section-title`, chosen by its level in the document, not by its old size |
+| a code or diagram block at a raw size | `.doc-pre` |
+| a disclosure summary used as a label | `details.surface-disclosure > summary` |
+| control sizes inside an interactive application, and glyph sizes set in em | not text roles |
+
+**Structured text.** A preformatted passage whose indentation is structure is one scroll box, `.doc-pre.doc-pre--structured`. Its lines sit in `.doc-pre-part` elements. The lines beneath a line sit in a `.doc-hierarchy`, one rail per level of indentation, nested in source order. A level is assigned by what the lines mean to one another; spaces that only align columns are not levels. A block takes `.doc-pre` on purpose, never through a blanket `pre` or code selector. `data-lead-lines` on a part or a rail records one to three blank source lines before it.
+
+**Overflow helper.** `surface-document-overflow.js` is optional. Without it a wide block still scrolls in its own box and shows no cue. With it, the helper marks which sides of a wide block hold hidden content, and the stylesheet draws the cue.
+
+**Sealed use.** An artifact scaffold may inline the register at generation time. After the foundation it already carries, it inlines `surface-document.css`. An artifact that also uses the surface treatments inlines `surface-panel.css`, `surface-document.css` and `surface-treatments.css`, in that order — the order in which `surface-document.html` loads them. Each is inlined verbatim: none carries `url()` or `@import`. The sealed copy does not re-sync, and the helper stays optional.
+
+**Accent.** An emphasis accent comes from the consuming surface's information architecture: the role its content plays there selects `.surface-emphasis--magenta`, `.surface-emphasis--violet` or `.surface-emphasis--cyan`. The treatment accepts that accent and never chooses one.
+
 ---
 
 ## Iconography
