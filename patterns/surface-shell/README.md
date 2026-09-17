@@ -392,7 +392,7 @@ grows into. A per-surface measure is the consuming surface's call.
 Implementation detail belongs in the payload.
 
 The lede is **not** Caption text. Caption is the 14px uppercase label role: the
-`.caption` utility sets 400 weight, wide tracking, and uppercase over the
+`.caption` utility sets 400 weight, 0.14em tracking, and uppercase over the
 foundation's inherited Inter. The lede is prose a reader reads, so it sits on
 the supporting-text step instead.
 

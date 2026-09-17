@@ -60,7 +60,7 @@
      local 14px / 22px 22px 18px. */
   /* Card metadata, variants and actions stay on Caption; the title and its
      description take the shared panel roles. */
-  .card .cls { font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+  .card .cls { font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--fg-3); }
 
   /* Foreground only — the supporting type role is the shared contract's. */
   .card p { color: var(--fg-2); }
@@ -88,7 +88,7 @@
      because the shared contract deliberately owns the controls and not the
      composition around them. */
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
-  .group-label { grid-column: 1 / -1; font-size: var(--fs-caption); letter-spacing: 0.14em; text-transform: uppercase;
+  .group-label { grid-column: 1 / -1; font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase;
                  color: var(--fg-3); margin: 8px 0 -6px; }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
      below it, right-aligned. */

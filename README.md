@@ -163,7 +163,7 @@ The README, card labels, and any docs in this repo speak in a **calm, declarativ
 | Trait | Treatment |
 | --- | --- |
 | Person | Impersonal / declarative. Do not invent a studio "we" — ASK is a personal meta-brand, not a collective. Describe the system as a thing that exists, not a thing "we made". |
-| Casing | Sentence case in headings and body. UPPERCASE only for tiny labels (≤14px) with wide tracking (~0.14em). |
+| Casing | Sentence case in headings and body. UPPERCASE only for small labels (≤14px), tracked by role: Inter Caption at 0.14em, mono operative labels at 0.08em. |
 | Length | Short. One idea per sentence. |
 | Punctuation | Periods, em-dashes, commas. No exclamation marks. No "Introducing:" lead-ins. |
 | Numerals | Spell out one through nine in copy; figures in UI labels and prices. |
@@ -322,6 +322,18 @@ The **primary-label role** names a thing the system has — a surface, a route, 
 Supporting copy under either stays on the Small Inter step, so that pair separates on size rather than weight. `colors_and_type.css` is unchanged by this role: its generic `.mono` utility remains for code, technical and tabular use, and the mono **structural-locator** exception is applied only through `.surface-title`. The compact action (`.surface-action`) is a **separate** mono exception, with its own metric and its own canonical selector — it is not an implementation of this role.
 
 The **compact-action role** is the label on a small control — a chip, a route action, a `preview` or `README` button. `.surface-action` in `surface-action.css` is its canonical implementation. It is **Caption-sized, not the Caption role**, and the distinction is load-bearing: Caption is 14px Inter at 400, uppercased, on 0.14em tracking, and it labels things; the compact action is 14px mono at 300, **sentence- or lower-cased, on zero tracking**, and it is something you click. Conforming a compact action to Caption's uppercase, tracking, or weight — or to Inter — is a defect rather than a repair. This role also does not govern the 18px Inter **CTA** specimen in the style guide, which is a separate and deliberately different object.
+
+**Tracking is assigned by role and never chosen per artifact.** Two small uppercase registers exist and never trade values: the Inter Caption at 0.14em and mono operative labels at 0.08em. A label takes its tracking from its role, not from its size — Caption-sized is not the Caption role. Specialized patterns — the Class A diagram scaffolds and the message archive — own pattern-local label metrics that do not extend to any other surface; a diagram scaffold's `.caption` overlay is one of those, not the Caption role. A new value enters this account only with a named role.
+
+| Tracking | Token | Roles |
+| --- | --- | --- |
+| -0.02em | `--tracking-tight` | H1 · H2 · H3 · structural locator (`.surface-title`) · panel primary label (`.surface-panel-title`) · panel hierarchy row (`.surface-nav-row`) |
+| 0 | `--tracking-normal` | Body · Small · supporting copy (`.surface-panel-support`) · compact action (`.surface-action`) · code and inline code · tabular numerals |
+| 0.08em | `--tracking-wide` | mono operative labels and metadata · status badge (`.surface-badge`) |
+| 0.14em | `--tracking-caption` | Caption — Inter, uppercase (`.caption`) · the pattern gallery's group and card-class labels (`.group-label`, `.card .cls` in `patterns/index.html`) — Inter uppercase labels that share Caption's register and tracking but keep their own weight and foreground, so they are not the Caption role |
+| -0.035em | `--tracking-display` | Display |
+
+**Registered exception.** The style guide's `.badge` component specimen is Inter, uppercase, at `--tracking-wide`. It is neither the Caption role nor a mono operative label, and it is not a precedent for either register.
 
 ### Spacing & layout
 - 4-px base unit. Tokens at 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128.
