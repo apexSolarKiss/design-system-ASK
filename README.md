@@ -428,6 +428,7 @@ Each rule file, key, page and pattern in the catalog carries one disposition aga
 - **extended** — it carries a shared value added for those rules.
 - **new** — it is a source of those rules, or their rendered key.
 - **specialized** — it keeps pattern-local rules that differ from the shared ones, and its row names them. They are not sanctioned variants for any other surface.
+- **migration pending** — A required migration remains open; this is not a final specialization or conformance disposition.
 - **generated** — a tool writes it from canonical sources, and it is never edited by hand.
 
 | Item | Disposition | Detail |
@@ -443,7 +444,7 @@ Each rule file, key, page and pattern in the catalog carries one disposition aga
 | `patterns/diagram-static-H/` · `patterns/diagram-static-V/` · `patterns/diagram-static-SEQ/` · `patterns/diagram-static-FLOW/` | specialized | a compact register of their own in `diagrams.css`: 9–15px text, tracking from -0.01em to 0.18em, and a 10px caption overlay at 0.06em that is not the Caption role. The four `diagrams.css` copies are byte-identical and shared by convention; no tool keeps them in step |
 | `patterns/diagram-interactive-spine/` | specialized | a compact register for its top bar, nodes, inspector, legend and controls: 8.5–15px text, and glass panels with a 14px radius and a `--surface-glass-2` edge. Its caption band keeps `--tracking-wide` (0.08em) rather than Caption's tracking, and its mono uppercase labels (node groups, inspector and legend headings, field labels) keep 0.14–0.16em |
 | `patterns/message-archive/` | specialized | its participant-identity ramp, its focus outlines and its chrome metrics are pattern-local. Its sticky control bar blurs at 20px, the shared material value; its day-heading chips keep 8px |
-| `patterns/output-artifact/` | specialized | not migrated to the document register, and its rules are not sanctioned variants for other surfaces. Its differences from the shared rules include a leading `+` / `−` disclosure indicator, a quotation rule in `--artifact-line` with the quoted text in `--fg-2`, a bordered `pre`, table header labels at weight 500, and a title and prose set by the foundation's element rules rather than by document roles |
+| `patterns/output-artifact/` | migration pending | not migrated to the document register, and its rules are not sanctioned variants for other surfaces. Its differences from the shared rules include a leading `+` / `−` disclosure indicator, a quotation rule in `--artifact-line` with the quoted text in `--fg-2`, a bordered `pre`, table header labels at weight 500, and a title and prose set by the foundation's element rules rather than by document roles |
 | `patterns/_preview/` | generated | `tools/gen-pattern-previews.mjs` writes it from the canonical templates, and `--check` verifies it |
 | `index.html` · `patterns/index.html` · `preview/styleguide.html` | conforming | `tools/check-type-roles.mjs` governs all three. The tracking account above records the gallery's and the style guide's page-local Inter labels, and the style guide's registered `.badge` exception |
 
