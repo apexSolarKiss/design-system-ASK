@@ -240,7 +240,11 @@
 
 /* The rail: a bounded passage inside the reading flow or inside an existing
    surface. No perimeter, no bloom, no second wash. It marks attention, not a
-   change of voice, so it is not quotation. */
+   change of voice, so it is not quotation. surface-document.css reuses its
+   geometry — width, style and inset — for the passage rail of a quotation and
+   a preformatted block, but not its meaning: a quotation's rail is neutral and
+   only a preformatted block's is magenta like this one. check-type-roles.mjs
+   (R7) keeps the geometry equal and does not require the colors to be. */
 .surface-emphasis-rail {
   --surface-emphasis-accent: var(--ask-emphasis-magenta);
   border-left: 2px solid var(--surface-emphasis-accent);

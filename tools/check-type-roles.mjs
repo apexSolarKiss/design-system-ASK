@@ -44,6 +44,31 @@
        var(--tracking-wide), Inter var(--tracking-caption). A departure passes
        only as a registered exception carrying its reason
        (TRACKING_EXCEPTIONS).
+   R7  The document-register lock (ROLE_MATRIX). In surface-document.css each
+       role is declared by exactly one rule that sets its size, and every rule
+       on that exact selector declares only its matrix family, size, weight,
+       leading, tracking and foreground. Independently of the matrix: document
+       body, lede and quotation text sit on --fs-body; no heading role is
+       declared smaller than document body; no other rule that targets a
+       quotation sets a type metric; each passage rail is declared by exactly
+       one rule, which sets the rail only through border-left and
+       padding-left (and, for the block, its accent), and no other rule on a
+       quotation or block sets a rail — a rule that names one only inside
+       :is(), :where(), :not() or :has() may remove a rail, never draw or
+       recolor one; .surface-emphasis-rail keeps its registered magenta accent
+       (EMPHASIS_RAIL_ACCENT); both passage rails take its GEOMETRY (width,
+       style, inset), the block rail also its magenta accent in the same
+       words, and the quotation rail the registered neutral color
+       (QUOTE_RAIL_COLOR) — each role's color is pinned, and no role is
+       required to share another's; .doc-hierarchy is declared by exactly one
+       rail rule, the registered 1px neutral hierarchy rail (HIERARCHY_RAIL),
+       and no other rule on it sets a rail; the matrix
+       tools/role-conformance.js checks rendered pages against equals this
+       one; and its link-state matrix (LINK_STATES) equals the rest, hover and
+       focus-visible declarations of surface-text-link.css.
+       The rendered half — which elements carry which role, and how each link
+       behaves under a real pointer and real keyboard focus — is
+       tools/role-conformance.js with tools/check-role-conformance.mjs.
    A registration that matches no rule in a governed file that exists fails
    as stale, so a registration cannot outlive the rule it excuses.
 
@@ -97,9 +122,7 @@ const REGISTERED_SIZE = [
     { file: FOUNDATION, selector, value: '0.9em', reason: 'code and technical text are 0.9x their host' })),
   { file: 'surface-document.css', selector: '.doc-code', value: '0.9em', reason: 'code is 0.9x the document role that hosts it' },
 ];
-const REGISTERED_TRACKING = [
-  { file: 'surface-document.css', selector: '.doc-subsection-title', value: '-0.01em', reason: 'subsection title' },
-];
+const REGISTERED_TRACKING = [];
 
 /* R4 */
 const LABEL_CLASSES = ['caption', 'doc-label', 'doc-meta', 'surface-badge', 'surface-action', 'surface-emphasis-chip'];
@@ -126,6 +149,47 @@ const TRACKING_EXCEPTIONS = [
     reason: 'The style guide\'s .badge component specimen is Inter, uppercase, at --tracking-wide. It is neither the Caption role nor a mono operative label, and it is not a precedent for either register.',
   },
 ];
+
+/* R7: the document-register lock. One row per role; values are the exact
+   declarations surface-document.css must carry. tools/role-conformance.js holds
+   the same matrix in token names for rendered pages. */
+const DOCUMENT = 'surface-document.css';
+const TREATMENTS = 'surface-treatments.css';
+const SANS = 'var(--font-sans)';
+const MONO = 'var(--font-mono)';
+const ROLE_MATRIX = [
+  { selector: '.doc-title',            family: SANS, size: 'var(--fs-h1)',      weight: 'var(--fw-regular)',    lh: 'var(--lh-heading)', tracking: 'var(--tracking-tight)',  color: 'var(--fg-1)', heading: true },
+  { selector: '.doc-section-title',    family: SANS, size: 'var(--fs-h2)',      weight: 'var(--fw-regular)',    lh: 'var(--lh-heading)', tracking: 'var(--tracking-tight)',  color: 'var(--fg-1)', heading: true },
+  { selector: '.doc-subsection-title', family: SANS, size: 'var(--fs-h3)',      weight: 'var(--fw-light)',      lh: 'var(--lh-heading)', tracking: 'var(--tracking-tight)',  color: 'var(--fg-1)', heading: true },
+  { selector: '.doc-deep-title',       family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-medium)',     lh: 'var(--lh-heading)', tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', heading: true },
+  { selector: '.doc-body',             family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
+  { selector: '.doc-lede',             family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
+  { selector: '.doc-quote > p',        family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
+  { selector: '.doc-quote > footer',   family: MONO, size: 'var(--fs-caption)', weight: 'var(--fw-light)',      lh: '1.4',               tracking: 'var(--tracking-wide)',   color: 'var(--fg-3)' },
+  { selector: '.doc-label',            family: MONO, size: 'var(--fs-caption)', weight: 'var(--fw-light)',      lh: 'var(--lh-tight)',   tracking: 'var(--tracking-wide)',   color: 'var(--fg-3)' },
+  { selector: '.doc-meta',             family: MONO, size: 'var(--fs-caption)', weight: 'var(--fw-light)',      lh: '1.4',               tracking: 'var(--tracking-wide)',   color: 'var(--fg-3)' },
+  { selector: '.doc-pre',              family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
+  { selector: '.doc-toc-link',         family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-tight)',   tracking: 'var(--tracking-tight)',  color: 'var(--fg-1)' },
+  { selector: '.doc-table-cell',       family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
+];
+const ROLE_PROPS = { family: 'font-family', size: 'font-size', weight: 'font-weight', lh: 'line-height', tracking: 'letter-spacing', color: 'color' };
+const PASSAGE_SELECTORS = ['.doc-quote', '.doc-pre'];
+const RAIL_PROPS = /^(border-left(-width|-style|-color)?|border|border-width|border-style|border-color|padding-left|padding|--surface-emphasis-accent)$/;
+/* The quotation rail's color: the neutral boundary role, registered here so a
+   change to it is a reviewed change to this checker. */
+const QUOTE_RAIL_COLOR = 'var(--line-1)';
+/* The explicit emphasis rail stays magenta; an accent modifier may still name
+   violet or cyan on the element that carries it. */
+const EMPHASIS_RAIL_ACCENT = 'var(--ask-emphasis-magenta)';
+/* The hierarchy rail: one level beneath a line, neutral and thinner than a
+   passage rail. */
+const HIERARCHY = '.doc-hierarchy';
+const HIERARCHY_RAIL = { border: '1px solid var(--line-2)', inset: 'var(--space-4)' };
+const RENDERED_MATRIX = 'tools/role-conformance.js';
+const TEXT_LINK = 'surface-text-link.css';
+/* A class token in a selector outside :is() / :where() / :not() / :has(). */
+const outsidePseudo = (selector) => { let t = selector; for (let k = 0; k < 4; k++) t = t.replace(/:(is|where|not|has)\([^()]*\)/g, ''); return t; };
+const hasClass = (selector, cls) => new RegExp('\\.' + cls + '(?![\\w-])').test(outsidePseudo(selector));
 
 const HEADING_TAG = /^h[1-6]$/;
 
@@ -430,6 +494,188 @@ function tokenValue(value, prefix, known) {
 const registered = (list, file, selector, value) =>
   list.find((r) => r.file === file && normSelector(r.selector) === selector && (value === undefined || r.value === value));
 
+function sizeSteps(ctx) {
+  const px = new Map();
+  if (!ctx.exists(FOUNDATION)) return px;
+  for (const m of stripCss(ctx.read(FOUNDATION)).matchAll(/(?<![\w-])(--fs-[A-Za-z0-9-]+)\s*:\s*([\d.]+)px/g)) px.set(m[1], Number(m[2]));
+  return px;
+}
+
+function roleMatrix(ctx) {
+  const findings = [];
+  if (!ctx.exists(DOCUMENT)) return findings;
+  const src = ctx.read(DOCUMENT);
+  const starts = lineStarts(src);
+  const rules = parseCss(stripCss(src), 0);
+  const steps = sizeSteps(ctx);
+  const stepPx = (v) => { const m = /^var\(\s*(--fs-[A-Za-z0-9-]+)\s*\)$/.exec(v || ''); return m ? steps.get(m[1]) : undefined; };
+  const declared = new Map();
+  for (const row of ROLE_MATRIX) {
+    const owning = rules.filter((r) => r.selectors.includes(row.selector) && r.decls.some((d) => d.property === 'font-size'));
+    if (owning.length !== 1) {
+      findings.push({ rule: 'R7', file: DOCUMENT, selector: row.selector, value: String(owning.length),
+        message: `a role must be declared by exactly one rule that sets its size; found ${owning.length}` });
+      continue;
+    }
+    const r = owning[0];
+    const got = {};
+    for (const [k, prop] of Object.entries(ROLE_PROPS)) {
+      const d = r.decls.filter((x) => x.property === prop).pop();
+      got[k] = d ? d.value : undefined;
+      if (got[k] !== row[k]) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d ? d.offset : r.offset), selector: row.selector,
+        property: prop, value: got[k] ?? '(not declared)', expected: row[k], message: 'a role declares a value other than its matrix value' });
+    }
+    for (const other of rules.filter((x) => x !== r && x.selectors.includes(row.selector))) {
+      for (const d of other.decls) {
+        const k = Object.keys(ROLE_PROPS).find((key) => ROLE_PROPS[key] === d.property);
+        if (k && d.value !== row[k]) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset), selector: row.selector,
+          property: d.property, value: d.value, expected: row[k], message: 'a later rule on a role selector sets a value other than its matrix value' });
+      }
+    }
+    declared.set(row.selector, { ...got, row });
+  }
+  /* invariants, from the declared values rather than the matrix */
+  const body = declared.get('.doc-body');
+  const bodyPx = body && stepPx(body.size);
+  for (const [selector, got] of declared) {
+    if (got.row.body && got.size !== 'var(--fs-body)') findings.push({ rule: 'R7', file: DOCUMENT, selector, value: got.size,
+      message: 'reading text is not declared on the Body step' });
+    const own = stepPx(got.size);
+    if (got.row.heading && bodyPx !== undefined && own !== undefined && own < bodyPx) findings.push({ rule: 'R7', file: DOCUMENT, selector,
+      value: got.size, message: 'a heading role is declared smaller than document body' });
+  }
+  /* no other rule that targets a quotation sets a type metric */
+  const metricProps = [...Object.values(ROLE_PROPS), 'font'];
+  for (const r of rules) for (const selector of r.selectors) {
+    if (selector === '.doc-quote > p' || selector === '.doc-quote > footer') continue;
+    if (!/\.doc-quote(--[\w-]+)?(?![\w-])/.test(outsidePseudo(selector))) continue;
+    for (const d of r.decls) if (metricProps.includes(d.property)) findings.push({ rule: 'R7', file: DOCUMENT,
+      line: lineAt(starts, d.offset), selector, property: d.property, value: d.value, message: 'a rule targeting a quotation changes the quotation metric' });
+  }
+  /* passage rails: one owning rule each; the emphasis rail's geometry; the
+     block also its accent; the quotation the registered neutral color */
+  const railRules = new Map(PASSAGE_SELECTORS.map((p) => [p, rules.filter((r) => r.selectors.includes(p) && r.decls.some((d) => d.property === 'border-left'))]));
+  const owningRails = new Set([...railRules.values()].flat());
+  const hierarchyRules = rules.filter((r) => r.selectors.includes(HIERARCHY) && r.decls.some((d) => d.property === 'border-left'));
+  const isReset = (d) => (/^(border-left|border)$/.test(d.property) && /^(none|0|0px)$/.test(d.value.trim())) ||
+    (/^(padding-left|border-left-width|border-width)$/.test(d.property) && /^(0|0px)$/.test(d.value.trim())) ||
+    (/^(border-left-style|border-style)$/.test(d.property) && d.value.trim() === 'none');
+  const namesPassage = /\.doc-(quote|pre)(?![\w-])/;
+  for (const r of rules) {
+    if (owningRails.has(r)) {
+      const own = r.selectors.find((s) => PASSAGE_SELECTORS.includes(s));
+      for (const d of r.decls) if (RAIL_PROPS.test(d.property) && !['border-left', 'padding-left'].includes(d.property) &&
+        !(own === '.doc-pre' && d.property === '--surface-emphasis-accent')) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset),
+        selector: own, property: d.property, value: d.value, message: 'a passage rail rule sets its rail through a property other than border-left and padding-left' });
+      continue;
+    }
+    for (const selector of r.selectors) {
+      if (hasClass(selector, 'doc-quote') || hasClass(selector, 'doc-pre')) {
+        for (const d of r.decls) if (RAIL_PROPS.test(d.property)) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset),
+          selector, property: d.property, value: d.value, message: 'a rule other than the passage rail sets a rail on a quotation or block' });
+      } else if (namesPassage.test(selector)) {
+        for (const d of r.decls) if (RAIL_PROPS.test(d.property) && !isReset(d)) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset),
+          selector, property: d.property, value: d.value, message: 'a rule that names a quotation or block inside a pseudo-class may remove a rail, never draw or recolor one' });
+      }
+      if (!hierarchyRules.includes(r) && hasClass(selector, 'doc-hierarchy')) {
+        for (const d of r.decls) if (RAIL_PROPS.test(d.property) && d.property !== 'padding-left' && d.property !== 'padding') findings.push({ rule: 'R7', file: DOCUMENT,
+          line: lineAt(starts, d.offset), selector, property: d.property, value: d.value, message: 'a rule other than the hierarchy rail sets a rail on a hierarchy level' });
+      }
+    }
+  }
+  if (hierarchyRules.length !== 1) {
+    findings.push({ rule: 'R7', file: DOCUMENT, selector: HIERARCHY, value: String(hierarchyRules.length), message: 'the hierarchy rail must be declared by exactly one rule' });
+  } else {
+    const h = hierarchyRules[0];
+    const hb = (h.decls.filter((d) => d.property === 'border-left').pop() || {}).value;
+    const hi = (h.decls.filter((d) => d.property === 'padding-left').pop() || {}).value;
+    if ((hb || '').replace(/\s+/g, ' ').trim() !== HIERARCHY_RAIL.border || hi !== HIERARCHY_RAIL.inset) findings.push({ rule: 'R7', file: DOCUMENT,
+      line: lineAt(starts, h.offset), selector: HIERARCHY, value: `${hb} · ${hi}`, expected: `${HIERARCHY_RAIL.border} · ${HIERARCHY_RAIL.inset}`,
+      message: 'the hierarchy rail is not the registered 1px neutral rail' });
+  }
+  const tsrc = ctx.exists(TREATMENTS) ? ctx.read(TREATMENTS) : '';
+  const trule = parseCss(stripCss(tsrc), 0).filter((r) => r.selectors.includes('.surface-emphasis-rail') && r.decls.some((d) => d.property === 'border-left'));
+  const last = (r, prop) => (r.decls.filter((d) => d.property === prop).pop() || {}).value;
+  const geometry = (v) => (v || '').trim().split(/\s+/).slice(0, 2).join(' ');
+  const railColor = (v) => (v || '').trim().split(/\s+/).slice(2).join(' ');
+  if (trule.length !== 1) {
+    findings.push({ rule: 'R7', file: TREATMENTS, selector: '.surface-emphasis-rail', value: String(trule.length),
+      message: '.surface-emphasis-rail must be declared by exactly one rule' });
+  } else if (last(trule[0], '--surface-emphasis-accent') !== EMPHASIS_RAIL_ACCENT || railColor(last(trule[0], 'border-left')) !== 'var(--surface-emphasis-accent)') {
+    findings.push({ rule: 'R7', file: TREATMENTS, selector: '.surface-emphasis-rail', value: `${last(trule[0], '--surface-emphasis-accent')} · ${last(trule[0], 'border-left')}`,
+      expected: `${EMPHASIS_RAIL_ACCENT} · 2px solid var(--surface-emphasis-accent)`, message: 'the emphasis rail no longer draws its registered magenta accent' });
+  }
+  for (const [p, owning] of railRules) {
+    if (owning.length !== 1) {
+      findings.push({ rule: 'R7', file: DOCUMENT, selector: p, value: String(owning.length),
+        message: 'a passage rail must be declared by exactly one rule' });
+      continue;
+    }
+    if (trule.length !== 1) continue;
+    const r = owning[0], t = trule[0];
+    const got = { border: last(r, 'border-left'), inset: last(r, 'padding-left'), accent: last(r, '--surface-emphasis-accent') };
+    const want = { border: last(t, 'border-left'), inset: last(t, 'padding-left'), accent: last(t, '--surface-emphasis-accent') };
+    const bad = [];
+    if (geometry(got.border) !== geometry(want.border)) bad.push(`width/style ${geometry(got.border)} (emphasis rail: ${geometry(want.border)})`);
+    if (got.inset !== want.inset) bad.push(`inset ${got.inset} (emphasis rail: ${want.inset})`);
+    if (p === '.doc-pre') {
+      if (got.border !== want.border || got.accent !== want.accent) bad.push(`accent ${got.accent} · ${got.border} (emphasis rail: ${want.accent} · ${want.border})`);
+    } else if (railColor(got.border) !== QUOTE_RAIL_COLOR) {
+      bad.push(`color ${railColor(got.border)} (registered: ${QUOTE_RAIL_COLOR})`);
+    }
+    if (bad.length) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, r.offset), selector: p, value: bad.join('; '),
+      message: p === '.doc-pre' ? 'the block rail differs from .surface-emphasis-rail' : 'the quotation rail leaves the shared geometry or its registered neutral color' });
+  }
+  /* the rendered link-state matrix equals surface-text-link.css */
+  if (ctx.exists(RENDERED_MATRIX) && ctx.exists(TEXT_LINK)) {
+    const js = ctx.read(RENDERED_MATRIX);
+    const states = {};
+    for (const m of js.matchAll(/^\s*(rest|hover|focus):\s*\{\s*line:\s*'([^']+)',\s*thickness:\s*'([^']+)',\s*color:\s*'([^']+)'(?:,\s*opacity:\s*'([^']+)')?\s*\},?\s*$/gm)) {
+      states[m[1]] = { line: m[2], thickness: m[3], color: m[4], opacity: m[5] };
+    }
+    const lrules = parseCss(stripCss(ctx.read(TEXT_LINK)), 0);
+    const ldecl = (selector, prop) => { const rs = lrules.filter((r) => r.selectors.includes(selector)); let v; for (const r of rs) for (const d of r.decls) if (d.property === prop) v = d.value; return v; };
+    const norm = (v) => (v === undefined ? undefined : v.replace(/\s+/g, ' ').trim());
+    const base = (prop) => norm(ldecl('.surface-text-link', prop));
+    const colorOf = (v) => { const m = /^var\(\s*(--surface-text-link-underline)\s*\)$/.exec(v || ''); return m ? base(m[1]) : v; };
+    const css = {
+      rest: { line: base('text-decoration-line'), thickness: base('text-decoration-thickness'), color: colorOf(base('text-decoration-color')), opacity: base('opacity') ?? '1' },
+      hover: { line: norm(ldecl('.surface-text-link:hover', 'text-decoration-line')) ?? base('text-decoration-line'),
+        thickness: norm(ldecl('.surface-text-link:hover', 'text-decoration-thickness')) ?? base('text-decoration-thickness'),
+        color: colorOf(norm(ldecl('.surface-text-link:hover', 'text-decoration-color'))), opacity: norm(ldecl('.surface-text-link:hover', 'opacity')) ?? '1' },
+      focus: { line: norm(ldecl('.surface-text-link:focus-visible', 'text-decoration-line')) ?? base('text-decoration-line'),
+        thickness: norm(ldecl('.surface-text-link:focus-visible', 'text-decoration-thickness')) ?? base('text-decoration-thickness'),
+        color: colorOf(norm(ldecl('.surface-text-link:focus-visible', 'text-decoration-color'))) },
+    };
+    for (const state of ['rest', 'hover', 'focus']) {
+      const g = states[state];
+      const drift = !g ? ['(absent)'] : Object.keys(css[state]).filter((k) => norm(g[k]) !== css[state][k]);
+      if (drift.length) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: `LINK_STATES.${state}`, value: drift.join(','),
+        expected: JSON.stringify(css[state]), message: `the rendered link-state matrix differs from ${TEXT_LINK}` });
+    }
+  }
+  /* the rendered matrix equals this one */
+  if (!ctx.exists(RENDERED_MATRIX)) {
+    findings.push({ rule: 'R7', file: RENDERED_MATRIX, message: 'the rendered-page matrix is missing' });
+  } else {
+    const js = ctx.read(RENDERED_MATRIX);
+    const tok = (v) => (v === 'SANS' ? SANS : v === 'MONO' ? MONO : /^[\d.]+$/.test(v) ? v : `var(${v})`);
+    const seen = new Map();
+    for (const m of js.matchAll(/\{\s*role:\s*'[^']+',\s*sel:\s*'([^']+)',\s*family:\s*(SANS|MONO),\s*size:\s*'([^']+)',\s*weight:\s*'([^']+)',\s*lh:\s*('([^']+)'|[\d.]+),\s*tracking:\s*'([^']+)',\s*color:\s*'([^']+)'/g)) {
+      seen.set(m[1], { family: tok(m[2]), size: tok(m[3]), weight: tok(m[4]), lh: m[6] ? tok(m[6]) : m[5], tracking: tok(m[7]), color: tok(m[8]) });
+    }
+    for (const row of ROLE_MATRIX) {
+      const g = seen.get(row.selector);
+      const drift = !g ? ['(absent)'] : Object.keys(ROLE_PROPS).filter((k) => g[k] !== row[k]);
+      if (drift.length) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: row.selector, value: drift.join(','),
+        message: 'the rendered-page matrix differs from ROLE_MATRIX' });
+    }
+    for (const sel of seen.keys()) if (!ROLE_MATRIX.some((r) => r.selector === sel)) findings.push({ rule: 'R7', file: RENDERED_MATRIX,
+      selector: sel, message: 'the rendered-page matrix has a role ROLE_MATRIX lacks' });
+  }
+  return findings;
+}
+
 function run(ctx) {
   const findings = [];
   const tokens = foundationTokens(ctx);
@@ -529,6 +775,8 @@ function run(ctx) {
     perFile.push({ file, rules: rules.length, declarations, elements: elements.length });
   }
 
+  findings.push(...roleMatrix(ctx));
+
   for (const [name, list] of Object.entries({ REGISTERED_SIZE, REGISTERED_TRACKING, MONO_UPPERCASE, TRACKING_EXCEPTIONS })) {
     for (const reg of list) {
       if (used.has(reg) || !ctx.exists(reg.file)) continue;
@@ -546,6 +794,7 @@ function run(ctx) {
     clean: findings.length === 0,
     findings_by_rule: byRule,
     findings,
+    role_matrix: ROLE_MATRIX.length,
     registered: {
       size: REGISTERED_SIZE.length,
       tracking: REGISTERED_TRACKING.length,
@@ -593,10 +842,10 @@ function selfTest(root) {
   {
     const em = added(append('surface-panel.css', '.x { letter-spacing: 0.1em; }'));
     const zero = added(append('surface-panel.css', '.x { letter-spacing: 0; }'));
-    const elsewhere = added(append('surface-panel.css', '.doc-subsection-title { letter-spacing: -0.01em; }'));
+    const elsewhere = added(append('surface-panel.css', '.doc-code { font-size: 0.9em; }'));
     record('0.1em fails R2; 0 passes; a registered literal fails outside its file',
-      one(em, 'R2') && zero.length === 0 && one(elsewhere, 'R2'),
-      'one R2; none; one R2', { em, zero, elsewhere });
+      one(em, 'R2') && zero.length === 0 && one(elsewhere, 'R1'),
+      'one R2; none; one R1 for the 0.9em size literal registered only in surface-document.css', { em, zero, elsewhere });
   }
   {
     const commented = added(append('surface-panel.css', '/* .x { font-size: 13px; } */'));
@@ -652,6 +901,64 @@ function selfTest(root) {
     const fontFace = added(append('surface-panel.css', '@font-face { font-family: "X"; font-size: 13px; }'));
     record('an @media block is descended; an @font-face block is not read as properties',
       one(media, 'R1') && fontFace.length === 0, 'one R1; none', { media, fontFace });
+  }
+
+  {
+    const doc = read('surface-document.css');
+    const inRule = (selector, from, to) => {
+      const i = doc.indexOf(`\n${selector} {`);
+      const j = doc.indexOf('}', i);
+      if (i < 0 || !doc.slice(i, j).includes(from)) throw new Error(`self-test anchor missing: ${selector} ${from}`);
+      return { 'surface-document.css': doc.slice(0, i) + doc.slice(i, j).replace(from, to) + doc.slice(j) };
+    };
+    const allR7 = (got) => got.length > 0 && got.every((k) => k.startsWith('R7 '));
+    const body = added(inRule('.doc-body', 'font-size: var(--fs-body)', 'font-size: var(--fs-small)'));
+    const deep = added(inRule('.doc-deep-title', 'font-size: var(--fs-body)', 'font-size: var(--fs-small)'));
+    const display = added(append('surface-document.css', '.doc-quote--display > p { font-size: var(--fs-body); line-height: var(--lh-heading); }'));
+    const toc = added(inRule('.doc-toc-link', 'font-family: var(--font-mono)', 'font-family: var(--font-sans)'));
+    const railSrc = read('surface-treatments.css');
+    const rail = added({ 'surface-treatments.css': railSrc.replace(/(\.surface-emphasis-rail \{[^}]*padding-left: )var\(--space-4\)/, '$1var(--space-3)') });
+    const later = added(append('surface-document.css', '.doc-body { color: var(--fg-3); }'));
+    const descendant = added(append('surface-document.css', '.doc-quote p { font-size: var(--fs-small); }'));
+    const neutral = added(append('surface-document.css', '.doc-quote { border-left: 1px solid var(--line-2); }'));
+    const jsDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace("sel: '.doc-body',             family: SANS, size: '--fs-body'", "sel: '.doc-body',             family: SANS, size: '--fs-small'") });
+    record('R7: body at Small, a deep heading at Small, a display-quote size, a sans contents link, a drifted emphasis-rail inset (breaking both passages), a later role rule, a descendant quotation size, a second rail rule and a drifted rendered matrix each fail',
+      allR7(body) && body.length === 2 && allR7(deep) && deep.length === 2 && allR7(display) && display.length === 2 &&
+      allR7(toc) && toc.length === 1 && allR7(rail) && rail.length === 2 && allR7(later) && later.length === 1 &&
+      allR7(descendant) && descendant.length === 1 && allR7(neutral) && neutral.length === 1 && allR7(jsDrift) && jsDrift.length === 1,
+      'body: matrix + Body invariant (2); deep: matrix + smaller-than-body (2); display: one per metric (2); toc: matrix (1); rail: quotation geometry + block parity (2); later rule (1); descendant (1); second rail rule (1); rendered matrix (1)',
+      { body, deep, display, toc, rail, later, descendant, neutral, jsDrift });
+
+    const quoteMagenta = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 2px solid var(--ask-emphasis-magenta)'));
+    const quoteThin = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 1px solid var(--line-1)'));
+    const preNeutral = added(inRule('.doc-pre', 'border-left: 2px solid var(--surface-emphasis-accent)', 'border-left: 2px solid var(--line-1)'));
+    const preViolet = added(inRule('.doc-pre', '--surface-emphasis-accent: var(--ask-emphasis-magenta)', '--surface-emphasis-accent: var(--ask-emphasis-violet)'));
+    record('R7 rails: a magenta quotation rail, a 1px quotation rail, a neutral block rail and a violet block rail each fail once',
+      allR7(quoteMagenta) && quoteMagenta.length === 1 && allR7(quoteThin) && quoteThin.length === 1 &&
+      allR7(preNeutral) && preNeutral.length === 1 && allR7(preViolet) && preViolet.length === 1,
+      'one R7 each', { quoteMagenta, quoteThin, preNeutral, preViolet });
+
+    const tsrc = read('surface-treatments.css');
+    const emphasisNeutral = added({ 'surface-treatments.css': tsrc.replace(/(\.surface-emphasis-rail \{\s*--surface-emphasis-accent: )var\(--ask-emphasis-magenta\)/, '$1var(--line-1)') });
+    const hierarchyMagenta = added(inRule('.doc-hierarchy', 'border-left: 1px solid var(--line-2)', 'border-left: 2px solid var(--ask-emphasis-magenta)'));
+    const hierarchyLater = added(append('surface-document.css', '.doc-section > .doc-hierarchy { border-left-color: var(--ask-emphasis-magenta); }'));
+    const quoteLonghand = added(inRule('.doc-quote', 'padding-left: var(--space-4)', 'padding-left: var(--space-4);\n  border-left-color: var(--ask-emphasis-magenta)'));
+    const whereRecolor = added(append('surface-document.css', ':where(.doc-quote) { border-left-color: var(--ask-emphasis-magenta); }'));
+    record('R7 rails beyond the passages: a neutral emphasis accent (which also breaks the block parity), a magenta hierarchy rail, a second hierarchy rail rule, a longhand inside the quotation rail rule and a recolor wrapped in :where() each fail',
+      allR7(emphasisNeutral) && emphasisNeutral.length === 2 && allR7(hierarchyMagenta) && hierarchyMagenta.length === 1 &&
+      allR7(hierarchyLater) && hierarchyLater.length === 1 && allR7(quoteLonghand) && quoteLonghand.length === 1 && allR7(whereRecolor) && whereRecolor.length === 1,
+      'emphasis: registered accent + block parity (2); hierarchy (1); second hierarchy rule (1); longhand (1); :where() recolor (1)',
+      { emphasisNeutral, hierarchyMagenta, hierarchyLater, quoteLonghand, whereRecolor });
+
+    const linkSrc = read('surface-text-link.css');
+    const hoverLost = added({ 'surface-text-link.css': linkSrc.replace('.surface-text-link:hover  { opacity: 1;    text-decoration-color: var(--ask-emphasis-magenta); }', '.surface-text-link:hover  { opacity: 1;    text-decoration-color: var(--fg-1); }') });
+    const focusThin = added({ 'surface-text-link.css': linkSrc.replace(/(\.surface-text-link:focus-visible \{[^}]*text-decoration-thickness: )2px/, '$11px') });
+    const statesDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace("hover: { line: 'underline', thickness: '1px', color: 'var(--ask-emphasis-magenta)'", "hover: { line: 'underline', thickness: '1px', color: 'var(--fg-1)'") });
+    const statesGone = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace(/^\s*focus:\s*\{[^\n]*\n/m, '') });
+    record('R7 link states: a hover that loses its magenta, a 1px focus underline, a drifted rendered hover state and a missing rendered focus state each fail once',
+      allR7(hoverLost) && hoverLost.length === 1 && allR7(focusThin) && focusThin.length === 1 &&
+      allR7(statesDrift) && statesDrift.length === 1 && allR7(statesGone) && statesGone.length === 1,
+      'one R7 each (LINK_STATES.hover; .focus; .hover; .focus absent)', { hoverLost, focusThin, statesDrift, statesGone });
   }
 
   const failed = cases.filter((c) => !c.pass).length;

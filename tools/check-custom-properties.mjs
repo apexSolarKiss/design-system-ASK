@@ -62,7 +62,7 @@ const DEPENDENCIES = {
   'surface-action.css':                                                [FOUNDATION],
   'surface-panel.css':                                                 [FOUNDATION],
   'surface-text-link.css':                                             [FOUNDATION, SELF],
-  'surface-document.css':                                              [FOUNDATION],
+  'surface-document.css':                                              [FOUNDATION, SELF],
   'surface-treatments.css':                                            [FOUNDATION, 'surface-panel.css', SELF],
   'three-functions.css':                                               [FOUNDATION, SELF],
   'spectral-state.css':                                                [FOUNDATION, SELF],

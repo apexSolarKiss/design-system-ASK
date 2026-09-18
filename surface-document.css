@@ -13,6 +13,8 @@
    no @import, so it inlines verbatim.
 
    LOAD ORDER   colors_and_type.css -> surface-document.css
+                A table of contents also needs surface-text-link.css, which its
+                entries compose for their interaction.
 
    It introduces no token and no palette value. Family, size, weight, leading,
    tracking, foreground, space and rule color resolve through the foundation,
@@ -31,8 +33,9 @@
      meaning         a complete text style selected by what the text is in the
                      document, never by its element, its size or its payload
      population      document title, section / subsection / deep headings,
-                     lede, document body, operative label, metadata, inline
-                     code; Caption through the foundation's .caption
+                     lede, document body, quotation text, operative label,
+                     metadata, inline code, table-of-contents entry, dense
+                     table cell; Caption through the foundation's .caption
      owner           this module; the Caption role stays the foundation's
      reuses          foundation family, size, weight, leading, tracking and
                      foreground tokens
@@ -41,6 +44,14 @@
                      compact actions and diagram chrome keep their own owners
      example         an h4 and an h6 carrying .doc-deep-title render alike
      counterexample  an uppercase mono label standing in for a content heading
+
+   THE LADDER. Document body is the foundation's Body step, the same 24 / 200
+   as a plain paragraph. Each heading role sits on one of the foundation's own
+   steps: the title on H1, the section on H2, the subsection on H3, and the
+   deep heading on Body itself, distinguished from body by weight (500 against
+   200) and by the space before it. No content heading is smaller than the
+   prose it governs. The ladder is checked, role by role, by tools/check-type-roles.mjs
+   (R7) and on rendered pages by tools/role-conformance.js.
 
    TEXT RELATIONSHIP
      meaning         the space between one role and the next, carried by a
@@ -73,15 +84,19 @@
 
    QUOTATION
      meaning         a change of voice, with optional attribution
-     population      quoted statements in document text; .doc-quote--display
-                     for a short statement whose speaker the prose already names
+     population      quoted statements in document text, long or short
      owner           this module
-     reuses          --space-4 inset, 2px --line-2 rule, document body metrics,
-                     mono caption attribution at --tracking-wide
-     variation       .doc-quote--display
+     reuses          the passage rail's geometry in the neutral quotation
+                     color (--line-1), document body metrics, metadata metrics
+                     for the attribution
+     variation       none. .doc-quote--display is RETIRED (2026-09-18): it set
+                     a short statement larger than the prose around it, while
+                     the plain quotation set smaller. A quotation is body-sized
+                     at every length; the rail says it is set apart, and its
+                     neutral color says it is another voice, not an emphasis
      exclusions      not a container: no wash, no blur, no shadow
      example         a governing rule quoted with a footer naming its source
-     counterexample  a borrowed heading class with a hand-drawn left border
+     counterexample  a quotation smaller or larger than the prose it sits in
 
    PREFORMATTED AND STRUCTURED TEXT
      meaning         a block whose line structure is the content
@@ -89,15 +104,97 @@
                      carry meaning; .doc-pre--structured where indentation is
                      structure
      owner           this module
-     reuses          mono at the Small step, --lh-body, --fg-1; the hierarchy
-                     rail for structured levels
+     reuses          mono at the Small step, --lh-body, --fg-1; the passage
+                     rail in the magenta emphasis color outside the block; the
+                     hierarchy rail for structured levels inside it
      variation       .doc-pre--structured; data-lead-lines 1, 2 or 3
      exclusions      not a container; never assigned by a blanket pre or code
                      selector; a block scrolls itself rather than widening its
                      parent
      example         lines beneath a label one rail in, a level beneath those
                      one rail further
-     counterexample  leading spaces standing in for a level
+     counterexample  leading spaces standing in for a level; a block with no
+                     rail, whose lines read as loose text in the prose
+
+   PASSAGE RAIL
+     meaning         "this passage is set apart from the reading flow and is
+                     one unit" — the outer rail of a quotation and of a
+                     preformatted block. The GEOMETRY is shared; the COLOR
+                     says which kind of passage it is
+     population      .doc-quote and .doc-pre, plain or structured
+     owner           this module. Its geometry is surface-treatments'
+                     .surface-emphasis-rail geometry — one 2px solid rule,
+                     --space-4 inset — and an owner check (check-type-roles
+                     R7) keeps the two equal. Color identity is NOT shared:
+       quotation     --line-1, the neutral boundary role: a change of voice is
+                     not an emphasis
+       preformatted  the magenta emphasis rail, declared exactly as
+                     .surface-emphasis-rail declares it: the line structure is
+                     the content and is set apart as such
+       emphasis      .surface-emphasis-rail stays surface-treatments' own
+                     magenta rail; "pay special attention" belongs to it
+     reuses          2px solid, --space-4 inset; --line-1 for a quotation;
+                     --surface-emphasis-accent set to --ask-emphasis-magenta for
+                     a preformatted block
+     variation       none: a quotation's rail is always neutral and a block's
+                     always magenta
+     exclusions      a quotation or preformatted block inside a railed passage
+                     (another .doc-quote or .doc-pre, or a .surface-emphasis-
+                     rail) draws no rail of its own: the outer rail already
+                     carries the passage. Two railed passages in a row are held
+                     apart by --space-5, as two emphasis rails are. Not the
+                     hierarchy rail, which stays neutral inside the block. No
+                     wash, no blur, no shadow
+     example         a structured block with the magenta rail outside and a
+                     neutral hierarchy rail for each level inside; a quotation
+                     beside it on the same geometry in --line-1
+     counterexample  a rule too faint to read as a boundary in either theme;
+                     one magenta rail on every set-apart passage, so a
+                     quotation reads as an emphasis and an emphasis stops
+                     standing out
+
+   TABLE OF CONTENTS
+     meaning         structural navigation: where each part of this document
+                     starts
+     population      .doc-toc-list for the list, a nested .doc-toc-list that is
+                     also a .doc-hierarchy for each level beneath it, and
+                     .doc-toc-link for each entry
+     owner           this module for the entry's type and the list's rhythm;
+                     surface-text-link.css for the entry's interaction, composed
+                     as class="doc-toc-link surface-text-link"
+     reuses          the surface-shell navigation row's text metrics (mono,
+                     Small, 300, tight leading, tight tracking, --fg-1) without
+                     its padding, fill, radius or focus ring; the hierarchy
+                     rail for nested levels
+     variation       depth only
+     exclusions      a table-of-contents entry is never document body and never
+                     uppercase; its interaction is never restated here
+     example         a two-level contents list inside a disclosure, each entry
+                     with the partial magenta underline at rest
+     counterexample  a bare anchor inside a body-text list item
+
+   DENSE TABLE
+     meaning         a table whose values are tabular, technical payload — a
+                     review matrix, a status ledger — declared as such. Being a
+                     table does not make a table dense
+     population      table.doc-dense-table, a population marker the consumer
+                     sets. Its td carry .doc-table-cell and its th .doc-label;
+                     .doc-table-cell appears nowhere else
+     owner           this module for the cell's type only; the marker draws
+                     nothing. Table geometry — rules, padding, the stacked
+                     narrow-width layout — stays with the consuming surface,
+                     and a table without the marker (a narrative comparison, a
+                     prose table) is not this role; it stays outside the
+                     register until the shared table work admits a
+                     composition for it
+     reuses          mono at the Small step, 300, --lh-body, --fg-1, tabular
+                     numerals
+     variation       none
+     exclusions      a dense table's cell never carries the document body role;
+                     the marker is never implied by the td or th element
+     example         a status, a date and a digest in one row, all mono
+     counterexample  every table on a page set mono because it is a table; a
+                     dense table whose cells are set as body prose
 
    OVERFLOW CUE
      meaning         the block is wider than its box, and which side holds
@@ -114,10 +211,9 @@
      counterexample  shrinking a diagram's type until it fits
 
    REGISTERED LITERALS — no token expresses these values
-     -0.01em               subsection title tracking
-     1.4                   metadata leading
+     1.4                   metadata and quotation-attribution leading
      1.3                   Caption leading inside document compositions
-     1px, 2px              hierarchy rail and quotation rule widths
+     1px, 2px              hierarchy rail and passage rail widths
      #000, transparent     overflow mask stops: alpha only, never paint
      0.9em                 inline code, the foundation code rule's own size
      1lh, 2lh, 3lh         blank source lines in structured text
@@ -135,7 +231,7 @@
 
 .doc-title {
   font-family: var(--font-sans);
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h1);
   font-weight: var(--fw-regular);
   line-height: var(--lh-heading);
   letter-spacing: var(--tracking-tight);
@@ -144,8 +240,8 @@
 }
 .doc-section-title {
   font-family: var(--font-sans);
-  font-size: var(--fs-h3);
-  font-weight: var(--fw-light);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-regular);
   line-height: var(--lh-heading);
   letter-spacing: var(--tracking-tight);
   color: var(--fg-1);
@@ -153,32 +249,34 @@
 }
 .doc-subsection-title {
   font-family: var(--font-sans);
-  font-size: var(--fs-body);
+  font-size: var(--fs-h3);
   font-weight: var(--fw-light);
   line-height: var(--lh-heading);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-tight);
   color: var(--fg-1);
   margin: 0;
 }
-/* h4 and every deeper level: h5, h6, and past h6 through role="heading"
-   aria-level. It shares the Small step with body copy and stays distinct by
-   weight and by the section space before it. It never changes with depth — no
-   smaller size, no lighter weight, no foreground step. Depth is the hierarchy
-   rail's. */
+/* The title, section and subsection roles sit on the foundation's H1, H2 and
+   H3 steps. The deep heading — h4 and every deeper level: h5, h6, and past h6
+   through role="heading" aria-level — shares the Body step with body copy and
+   stays distinct by weight (500 against 200) and by the section space before
+   it. It never changes with depth — no smaller size, no lighter weight, no
+   foreground step. Depth is the hierarchy rail's. */
 .doc-deep-title {
   font-family: var(--font-sans);
-  font-size: var(--fs-small);
+  font-size: var(--fs-body);
   font-weight: var(--fw-medium);
   line-height: var(--lh-heading);
   letter-spacing: var(--tracking-normal);
   color: var(--fg-1);
   margin: 0;
 }
-/* Body copy is primary reading text and takes --fg-1. The hierarchy between a
-   heading and its body is carried by size and weight. */
+/* Body copy is primary reading text: the foundation's Body step and --fg-1, the
+   same metric as a plain paragraph. Every heading above it is at least this
+   size. The lede shares the metric; composition, not size, makes it the lede. */
 .doc-body {
   font-family: var(--font-sans);
-  font-size: var(--fs-small);
+  font-size: var(--fs-body);
   font-weight: var(--fw-extralight);
   line-height: var(--lh-body);
   letter-spacing: var(--tracking-normal);
@@ -225,18 +323,18 @@
   font-weight: var(--fw-light);
   color: var(--fg-2);
 }
-.doc-code:where(:not(:is(.doc-body, .doc-meta, .doc-label, .doc-deep-title, .doc-subsection-title, .doc-section-title, .doc-lede, .doc-title) *)) {
+.doc-code:where(:not(:is(.doc-body, .doc-meta, .doc-label, .doc-deep-title, .doc-subsection-title, .doc-section-title, .doc-lede, .doc-title, .doc-quote, .doc-toc-link, .doc-table-cell) *)) {
   font-size: var(--fs-caption);
 }
 
 /* Inline emphasis inside document text. Weight carries it: 500 against body
    copy at 200, rather than the browser's bolder step. Scoped to the register,
    so strong and em elsewhere keep their own styling. */
-:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre) strong {
+:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link) strong {
   font-weight: var(--fw-medium);
   color: var(--fg-1);
 }
-:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre) em {
+:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link) em {
   font-style: italic;
 }
 
@@ -269,6 +367,61 @@
 
 .doc-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 
+/* ---- Table of contents ------------------------------------------------ */
+
+/* Structural navigation. The entry takes the surface-shell navigation row's
+   text metrics — mono, Small, 300, tight leading and tracking — without the
+   row's padding, fill, radius or focus ring, and composes surface-text-link
+   for its interaction: class="doc-toc-link surface-text-link" — the partial
+   magenta underline at rest, the full magenta underline on hover and the
+   module's own keyboard-focus underline, all owned by surface-text-link.css
+   and checked in each state on rendered pages. The list
+   carries the same family, size and leading, so each entry's line box is the
+   tight one and a wrapped entry keeps it; the anchor stays inline so its
+   underline follows every line. A nested list that is also a .doc-hierarchy is
+   one level down; this rule sits before the hierarchy rail in source order, so
+   the rail's inset wins where both apply. */
+.doc-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  line-height: var(--lh-tight);
+}
+.doc-toc-list .doc-toc-list { margin-top: var(--space-2); }
+.doc-toc-link {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+  margin: 0;
+}
+
+/* ---- Dense table ------------------------------------------------------ */
+
+/* A value in a dense table is tabular payload: mono at the Small step, with
+   tabular numerals. The population is declared, never inferred from the
+   element: the consumer marks the table table.doc-dense-table, puts
+   .doc-table-cell on its td and .doc-label on its th. The marker has no rule
+   here because it draws nothing; table geometry stays with the consuming
+   surface, and an unmarked table is not this role. */
+.doc-table-cell {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-normal);
+  color: var(--fg-1);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
 /* ---- Hierarchy rail --------------------------------------------------- */
 
 /* The internal rhythm is a zero-specificity default, so a composition class
@@ -280,20 +433,63 @@
   border-left: 1px solid var(--line-2);
 }
 
+/* ---- Passage rail ----------------------------------------------------- */
+
+/* A quotation and a preformatted block are set apart from the reading flow,
+   each as one unit, on the geometry surface-treatments.css gives
+   .surface-emphasis-rail: a 2px solid rule and a --space-4 inset. The color is
+   the role's, not shared. A quotation is a change of voice, so its rail is the
+   neutral boundary role --line-1. A preformatted block's line structure is the
+   content, so it takes the magenta emphasis rail, declared exactly as the
+   emphasis rail declares it. An explicit .surface-emphasis-rail stays magenta,
+   and so still stands apart from the quotations around it. */
+.doc-quote {
+  border-left: 2px solid var(--line-1);
+  padding-left: var(--space-4);
+}
+.doc-pre {
+  --surface-emphasis-accent: var(--ask-emphasis-magenta);
+  border-left: 2px solid var(--surface-emphasis-accent);
+  padding-left: var(--space-4);
+}
+/* A passage inside a railed passage draws no rail of its own: the outer rail
+   already carries it, and a second rail would read as a second passage. The
+   selector is a descendant one, so it holds through any container inside the
+   outer passage. */
+:is(.doc-quote, .doc-pre, .surface-emphasis-rail) :is(.doc-quote, .doc-pre) {
+  border-left: none;
+  padding-left: 0;
+}
+/* Two railed passages in a row would read as one passage. A passage directly
+   after a railed passage takes the same buffer surface-treatments.css gives a
+   rail after a rail, added to whatever gap its parent supplies. Passages inside
+   a railed passage draw no rails, so they take no buffer. A consumer that sets
+   passages side by side in a row resets this margin. */
+:is(.doc-quote, .doc-pre, .surface-emphasis-rail):not(:is(.doc-quote, .doc-pre, .surface-emphasis-rail) *) + :is(.doc-quote, .doc-pre, .surface-emphasis-rail) { margin-top: var(--space-5); }
+
 /* ---- Quotation -------------------------------------------------------- */
 
-.doc-quote { padding-left: var(--space-4); border-left: 2px solid var(--line-2); margin: 0; }
-.doc-quote > p { font-size: var(--fs-small); line-height: var(--lh-body); color: var(--fg-1); margin: 0; }
+/* The quoted text is body-sized at every length: the rail sets it apart, not a
+   size step. The attribution takes the metadata metrics. */
+.doc-quote { margin: 0; }
+.doc-quote > p {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-extralight);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-normal);
+  color: var(--fg-1);
+  margin: 0;
+}
 .doc-quote > footer {
   margin-top: var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  line-height: 1.4;
   letter-spacing: var(--tracking-wide);
   color: var(--fg-3);
 }
-/* A short quoted statement set larger, with no attribution: the surrounding
-   prose already names the speaker. */
-.doc-quote--display > p { font-size: var(--fs-body); line-height: var(--lh-heading); }
 
 /* ---- Preformatted and structured text --------------------------------- */
 
