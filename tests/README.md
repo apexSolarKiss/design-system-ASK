@@ -87,8 +87,8 @@ legend. Toggle `data-theme` on `<html>` (or your OS appearance) to check both th
 Guards **`surface-document.css` code sizing**. `.doc-code` is 0.9x the document role
 that governs it, and the Caption step where no sized role governs it. An ordinary inline
 wrapper — `strong`, `em`, `a`, a bare `span` — carries no role class and must change
-nothing: code in a link inside 18px document body is 16.2px, and code in a span inside
-the 36px document title is 32.4px. A fallback that tested only the immediate parent
+nothing: code in a link inside 24px document body is 21.6px, and code in a span inside
+the 48px document title is 43.2px. A fallback that tested only the immediate parent
 dropped both to 14px.
 
 The page measures every case against its computed expectation and reports one overall
@@ -117,3 +117,110 @@ The label under the title reads `PASS`, or `FAIL` with the number of failing cas
 every direct case and every `caption` case still passes. Remove `.doc-code`'s own
 `font-size: 0.9em` and the two `span.doc-code` cases fail at the host's full size; the
 `code` cases do not, because the foundation's code rule also sets 0.9em.
+
+## role-conformance-fixture.html
+
+Guards **the document-register lock** on a rendered page: `tools/role-conformance.js`,
+the check that proves which elements carry which role and what each computes to, and
+`tools/check-role-conformance.mjs`, which drives each governed link's states with real
+input. A static read of `surface-document.css` (`check-type-roles.mjs` R7) cannot see a
+consuming page — a local size override, a table of contents built from bare anchors, a
+dense table set as body prose, a block with no rail, a quotation on the emphasis color,
+smaller text tucked inside body copy, a hover rule that drops the magenta, a region that
+swaps a token. This page can.
+
+It holds one **conforming specimen** — every governed role except the title, which the
+page's own heading carries: a quotation on the neutral rail with its attribution, a plain
+and a structured block on the magenta rail, a block inside an emphasis rail, a two-level
+table of contents, a declared dense table and an unmarked prose table, and links in body,
+metadata, a quotation and a dense cell — which must return no finding at rest or in any
+link state. After it come **controls**: 71 negative controls, one per failure branch,
+each of which must fail with exactly the reason codes it names, no more and no fewer;
+and 2 positive controls — an unmarked prose table and a complete profile declaration —
+which must return no finding:
+
+```text
+C0.token                    a region that redefines --fs-body, alone and around body
+                            text (with C1.lh C1.size C2.body) · one that swaps
+                            --font-sans around body text · one that makes
+                            --ask-emphasis-magenta gray around a link · one that
+                            makes --line-1 magenta around a quotation; each finding
+                            must name its token, and each of the last three is the
+                            only finding, because every other rule resolves the
+                            swapped token in the same context
+C1.lh C1.size C2.body       body copy at the Small step · a quotation set small
+C1.lh C1.size C2.heading    a deep heading smaller than its body
+C1.color · C1.weight ·      body in the tertiary foreground · body at 300 · body on
+C1.lh · C1.tracking ·       tight leading · body tracked out · a label without
+C1.case · C1.family         uppercase · a contents link in sans
+C3.missing · C3.color ·     a block with no rail · a block on the neutral quotation
+C3.color · C3.width ·       rail · a quotation on the magenta emphasis rail · a 1px
+C3.inset · C3.double ·      quotation rail · an inset too small · a second rail
+C3.double · C3.color ·      inside a rail · an emphasis rail inside a quotation ·
+C3.width · C3.hierarchy     an emphasis rail on the neutral quotation color · a 1px
+                            emphasis rail · a hierarchy level drawn as a 2px
+                            magenta rail
+C4.class · C4.entry ·       a contents link without the text-link class, in a list
+C4.body · C4.underline ·    and outside one · a contents anchor without its role ·
+C4.underline-color          a contents entry set as body · an underline removed ·
+                            a neutral underline (these two also fail their link
+                            states: C9.rest, C9.hover, and C9.focus where focus
+                            is lost too)
+C4.body C4.entry C7.class   a contents list set as body list items with bare anchors
+C4.entry C7.class           a bare contents anchor wrapped in a span inside its entry
+C4.body                     a contents link whose text is set in document body
+C5.body · C5.cell ·         in a table.doc-dense-table: a cell set as body · a cell
+C5.head · C5.scope ·        with no role · a header without the label role; the
+C5.scope                    dense cell role in an unmarked table · the dense marker
+                            on something that is not a table
+C5.body · C5.body           a dense cell holding body text · a dense header holding
+                            a lede
+(none)                      an ordinary prose table: unmarked, so not the dense role
+C6.display                  the retired display quotation
+C7.class                    a bare link in body text · in a subsection heading · in
+                            a dense table header
+C8.size · C8.family         smaller text inside body · undeclared mono inside body
+C9.hover                    a contents link and a body link whose hover loses the
+                            full magenta
+C9.rest                     a resting underline already at full magenta
+C9.focus                    keyboard focus that looks like rest · like hover · with
+                            no indicator
+C9.leave                    a hover a script keeps lit after the pointer leaves
+C9.unreached                a governed link taken out of the Tab order
+C9.unhittable               a governed link under a transparent overlay
+C9.unrendered               a governed link inside a paragraph that never renders
+C9.class                    a bare link a script adds when its disclosure opens, so
+                            the resting check never saw it
+C9.hover                    a lost hover in the first member of an exclusive
+                            disclosure group, which the pass must open together
+                            with the second rather than close
+(none)                      mono text inside body, declared as a complete profile
+C10.role + its defect       a profile that captures .doc-body cannot hide body at
+                            the Small step (C1.lh C1.size C2.body still fire)
+C10.zero                    a profile matching nothing (its region holds no defect,
+                            so C10.zero is its only finding)
+C10.count · C10.field ·     a miscounted profile · one without an owner · one
+C10.field · C10.broad ·     without a reason · one naming an element type · one
+C10.broad · C10.selector ·  capturing a container · one whose selector is a list ·
+C10.selector · C10.broad ·  one whose list hides inside :where() · span:not(.zz) ·
+C10.broad · C10.broad       .doc-body :not(.zz) · span[style]; each also leaves its
+                            C8.family finding in place, because an invalid profile
+                            exempts nothing
+C8.family C8.size C8.weight a valid profile whose member holds a nested run in
+                            another face: a profile exempts its member's own text,
+                            never the text inside it
+```
+
+The page judges each case's **resting** codes itself and writes them to
+`window.__roleFixture` and `body[data-result]`; the C9 link-state codes need a real
+pointer and real Tab focus, so only the headless runner gives the full verdict. It merges
+each case's resting codes with the link-state codes it observes in that case and requires
+the union to equal the case's `data-expect` exactly.
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/role-conformance-fixture.html
+node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
+```

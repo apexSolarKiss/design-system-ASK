@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // document role conformance fixture</title>
+<meta name="description" content="Regression fixture for tools/role-conformance.js: a conforming specimen of the document-register roles must pass, and each deliberately wrong mapping must fail with exactly its own reason codes.">
+<!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/role-conformance-fixture.html
+     Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
+     The page judges each case's resting (static) codes itself. The C9 link-state codes need real pointer and
+     keyboard input, so only the headless runner gives the full verdict. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../surface-document.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); border-collapse: collapse; }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  [data-control] { padding: var(--space-3) 0; }
+  /* Control-scoped breakage for the C9 link-state controls. Each rule reaches only its own control. */
+  [data-control="contents link that loses its magenta on hover"] .doc-toc-link:hover { text-decoration-color: var(--fg-1); }
+  [data-control="body link that loses its magenta on hover"] .surface-text-link:hover { text-decoration-color: var(--surface-text-link-underline); }
+  [data-control="resting underline already at full magenta"] .surface-text-link:not(:hover):not(:focus-visible) { text-decoration-color: var(--ask-emphasis-magenta); }
+  [data-control="keyboard focus that looks like rest"] .surface-text-link:focus-visible { text-decoration-color: var(--surface-text-link-underline); text-decoration-thickness: 1px; }
+  [data-control="keyboard focus that looks like hover"] .surface-text-link:focus-visible { text-decoration-color: var(--ask-emphasis-magenta); text-decoration-thickness: 1px; }
+  [data-control="keyboard focus with no indicator"] .surface-text-link:focus-visible { text-decoration-line: none; }
+  .fx-stuck:not(:focus-visible) { text-decoration-color: var(--ask-emphasis-magenta) !important; }
+  .fx-nohover.surface-text-link:hover { text-decoration-color: var(--surface-text-link-underline); }
+  .fx-cover { position: relative; }
+  .fx-cover::after { content: ""; position: absolute; inset: 0; }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Document role conformance</h1>
+    <p class="doc-body">The conforming specimen below carries every governed role except the title,
+      which this page's own heading carries, and must return no finding at rest or in any link state.
+      Each control after it is one deliberately wrong mapping and must fail with exactly the reason
+      codes it names in <code class="doc-code">data-expect</code>, no more and no fewer.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section" id="conforming">
+    <h2 class="doc-section-title">Conforming specimen</h2>
+    <p class="doc-lede">A lede on the Body step.</p>
+    <p class="doc-body">Body text with a <a class="surface-text-link" href="#conforming">textual link</a>
+      and <code class="doc-code">inline code</code>.</p>
+    <p class="doc-meta">metadata · <a class="surface-text-link" href="#conforming">specimen</a></p>
+    <p class="doc-label">operative label</p>
+    <section class="doc-section">
+      <h3 class="doc-subsection-title">A subsection</h3>
+      <div class="doc-hierarchy doc-section">
+        <h4 class="doc-deep-title">A deep heading</h4>
+        <p class="doc-body">Governed text beneath it.</p>
+      </div>
+    </section>
+    <blockquote class="doc-quote">
+      <p>A quotation at the body size, on the neutral quotation rail, with a <a class="surface-text-link" href="#conforming">link</a> in it.</p>
+      <footer>source</footer>
+    </blockquote>
+    <pre class="doc-pre">a plain preformatted block
+>>
+its rail is the magenta block rail</pre>
+    <div class="doc-pre doc-pre--structured">
+      <pre class="doc-pre-part">LABEL</pre>
+      <div class="doc-hierarchy"><pre class="doc-pre-part">a line one level in
+another</pre></div>
+    </div>
+    <div class="surface-emphasis-rail doc-group">
+      <p class="doc-body">An emphasized passage whose block draws no second rail:</p>
+      <pre class="doc-pre">inside the outer rail</pre>
+    </div>
+    <ul class="doc-toc-list">
+      <li><a class="doc-toc-link surface-text-link" href="#conforming">First-level entry</a>
+        <ul class="doc-toc-list doc-hierarchy">
+          <li><a class="doc-toc-link surface-text-link" href="#conforming">Nested entry</a></li>
+        </ul>
+      </li>
+    </ul>
+    <table class="doc-dense-table">
+      <thead><tr><th class="doc-label">field</th><th class="doc-label">value</th></tr></thead>
+      <tbody><tr><td class="doc-table-cell">status</td><td class="doc-table-cell"><a class="surface-text-link" href="#conforming">specimen · 1a2b3c4</a></td></tr></tbody>
+    </table>
+    <table>
+      <thead><tr><th>Position</th><th>What it holds</th></tr></thead>
+      <tbody><tr><td class="doc-body">An ordinary prose table</td><td class="doc-body">carries no dense marker, so its cells stay prose and are not forced into mono.</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="doc-section" id="controls">
+    <h2 class="doc-section-title">Negative controls</h2>
+
+    <!-- C1 / C2 role metrics -->
+    <div data-control="body at the Small step" data-expect="C1.lh C1.size C2.body">
+      <p class="doc-body" style="font-size: var(--fs-small)">Body copy set one step too small.</p>
+    </div>
+    <div data-control="deep heading smaller than its body" data-expect="C1.lh C1.size C2.heading">
+      <h4 class="doc-deep-title" style="font-size: var(--fs-small)">A deep heading at the Small step</h4>
+    </div>
+    <div data-control="quotation smaller than body" data-expect="C1.lh C1.size C2.body">
+      <blockquote class="doc-quote"><p style="font-size: var(--fs-small)">A quotation set small.</p></blockquote>
+    </div>
+    <div data-control="body in the tertiary foreground" data-expect="C1.color">
+      <p class="doc-body" style="color: var(--fg-3)">Body copy in the wrong foreground.</p>
+    </div>
+    <div data-control="body at weight 300" data-expect="C1.weight">
+      <p class="doc-body" style="font-weight: var(--fw-light)">Body copy one weight too heavy.</p>
+    </div>
+    <div data-control="body on tight leading" data-expect="C1.lh">
+      <p class="doc-body" style="line-height: var(--lh-tight)">Body copy on the wrong leading.</p>
+    </div>
+    <div data-control="body with label tracking" data-expect="C1.tracking">
+      <p class="doc-body" style="letter-spacing: var(--tracking-wide)">Body copy tracked out.</p>
+    </div>
+    <div data-control="operative label without uppercase" data-expect="C1.case">
+      <p class="doc-label" style="text-transform: none">label</p>
+    </div>
+    <div data-control="retired display quotation" data-expect="C6.display">
+      <blockquote class="doc-quote doc-quote--display"><p>A retired variant.</p></blockquote>
+    </div>
+
+    <!-- C3 passage rails: shared geometry, role-specific color -->
+    <div data-control="preformatted block with no rail" data-expect="C3.missing">
+      <pre class="doc-pre" style="border-left: none; padding-left: 0">a block with its rail removed</pre>
+    </div>
+    <div data-control="preformatted block on the neutral quotation rail" data-expect="C3.color">
+      <pre class="doc-pre" style="border-left-color: var(--line-1)">a block drawn as if it were a quotation</pre>
+    </div>
+    <div data-control="quotation on the magenta emphasis rail" data-expect="C3.color">
+      <blockquote class="doc-quote" style="border-left-color: var(--ask-emphasis-magenta)"><p>A quotation drawn as if it were an emphasis.</p></blockquote>
+    </div>
+    <div data-control="quotation rail one pixel wide" data-expect="C3.width">
+      <blockquote class="doc-quote" style="border-left-width: 1px"><p>A quotation off the shared geometry.</p></blockquote>
+    </div>
+    <div data-control="rail with the wrong inset" data-expect="C3.inset">
+      <pre class="doc-pre" style="padding-left: var(--space-2)">a rail too close to its text</pre>
+    </div>
+    <div data-control="second rail inside a rail" data-expect="C3.double">
+      <blockquote class="doc-quote"><p>outer</p>
+        <pre class="doc-pre" style="border-left: 2px solid var(--ask-emphasis-magenta); padding-left: var(--space-4)">inner</pre></blockquote>
+    </div>
+    <div data-control="emphasis rail inside a quotation" data-expect="C3.double">
+      <blockquote class="doc-quote"><div class="surface-emphasis-rail"><span>an emphasis rail inside a railed passage</span></div></blockquote>
+    </div>
+    <div data-control="emphasis rail on the neutral quotation color" data-expect="C3.color">
+      <div class="surface-emphasis-rail" style="--surface-emphasis-accent: var(--line-1)"><p class="doc-body">An emphasis drawn as if it were a quotation.</p></div>
+    </div>
+    <div data-control="emphasis rail one pixel wide" data-expect="C3.width">
+      <div class="surface-emphasis-rail" style="border-left-width: 1px"><p class="doc-body">An emphasis off the shared geometry.</p></div>
+    </div>
+    <div data-control="hierarchy rail drawn as a magenta passage rail" data-expect="C3.hierarchy">
+      <div class="doc-hierarchy" style="border-left: 2px solid var(--ask-emphasis-magenta)"><p class="doc-body">A level beneath a heading, drawn as emphasis.</p></div>
+    </div>
+
+    <!-- C4 contents -->
+    <div data-control="contents link without the text-link class" data-expect="C4.class">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link" href="#controls">Bare entry</a></li></ul>
+    </div>
+    <div data-control="contents link outside a contents list, without the text-link class" data-expect="C4.class">
+      <nav><a class="doc-toc-link" href="#controls">Bare entry in a nav</a></nav>
+    </div>
+    <div data-control="contents anchor without doc-toc-link" data-expect="C4.entry">
+      <ul class="doc-toc-list"><li><a class="surface-text-link" href="#controls">Entry with no role</a></li></ul>
+    </div>
+    <div data-control="contents entry carrying document body" data-expect="C4.body">
+      <ul class="doc-toc-list"><li class="doc-body"><a class="doc-toc-link surface-text-link" href="#controls">Entry</a></li></ul>
+    </div>
+    <div data-control="a contents list set as body list items with bare anchors" data-expect="C4.body C4.entry C7.class">
+      <ul class="doc-toc-list"><li class="doc-body"><a href="#controls">Posture</a></li></ul>
+    </div>
+    <div data-control="contents anchor wrapped inside its entry, bare" data-expect="C4.entry C7.class">
+      <ul class="doc-toc-list"><li><span><a href="#controls">Wrapped entry</a></span></li></ul>
+    </div>
+    <div data-control="contents link set in body type" data-expect="C4.body">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link surface-text-link" href="#controls"><span class="doc-body">Posture</span></a></li></ul>
+    </div>
+    <div data-control="contents link with its underline removed" data-expect="C4.underline C9.focus C9.hover C9.rest">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link surface-text-link" href="#controls" style="text-decoration: none">Entry</a></li></ul>
+    </div>
+    <div data-control="contents link with a neutral underline" data-expect="C4.underline-color C9.hover C9.rest">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link surface-text-link" href="#controls" style="text-decoration-color: var(--fg-1)">Entry</a></li></ul>
+    </div>
+    <div data-control="contents link in sans" data-expect="C1.family">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link surface-text-link" href="#controls" style="font-family: var(--font-sans)">Entry</a></li></ul>
+    </div>
+
+    <!-- C9 link states, driven by the runner -->
+    <div data-control="contents link that loses its magenta on hover" data-expect="C9.hover">
+      <ul class="doc-toc-list"><li><a class="doc-toc-link surface-text-link" href="#controls">Posture</a></li></ul>
+    </div>
+    <div data-control="body link that loses its magenta on hover" data-expect="C9.hover">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose hover stays partial.</p>
+    </div>
+    <div data-control="resting underline already at full magenta" data-expect="C9.rest">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> with nothing left for hover to add.</p>
+    </div>
+    <div data-control="keyboard focus that looks like rest" data-expect="C9.focus">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose focus is invisible.</p>
+    </div>
+    <div data-control="keyboard focus that looks like hover" data-expect="C9.focus">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose focus borrows the hover.</p>
+    </div>
+    <div data-control="keyboard focus with no indicator" data-expect="C9.focus">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> that drops its underline on focus.</p>
+    </div>
+    <div data-control="hover that never leaves" data-expect="C9.leave">
+      <p class="doc-body">A <a class="surface-text-link fx-sticky" href="#controls">link</a> a script keeps lit after the pointer goes.</p>
+    </div>
+    <div data-control="a governed link Tab never reaches" data-expect="C9.unreached">
+      <p class="doc-body">A <a class="surface-text-link" href="#controls" tabindex="-1">link</a> taken out of the focus order.</p>
+    </div>
+    <div data-control="a governed link under an overlay" data-expect="C9.unhittable">
+      <p class="doc-body fx-cover">A <a class="surface-text-link" href="#controls">link</a> a transparent layer covers.</p>
+    </div>
+    <div data-control="a governed link that renders no box" data-expect="C9.unrendered">
+      <p class="doc-body" hidden>A <a class="surface-text-link" href="#controls">link</a> in a paragraph that never renders.</p>
+    </div>
+    <div data-control="a link that appears only when its disclosure opens, without the text-link class" data-expect="C9.class">
+      <details class="fx-late"><summary>More</summary><p class="doc-body">Filled when opened.</p></details>
+    </div>
+    <div data-control="every member of an exclusive disclosure group is tested" data-expect="C9.hover">
+      <details name="fx-group"><summary>One</summary><p class="doc-body">A <a class="surface-text-link fx-nohover" href="#controls">link</a> whose hover is lost.</p></details>
+      <details name="fx-group"><summary>Two</summary><p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose hover holds.</p></details>
+    </div>
+
+    <!-- C5 dense table: the declared population only -->
+    <div data-control="dense table cell as body" data-expect="C5.body">
+      <table class="doc-dense-table"><tbody><tr><td class="doc-body">a cell set as prose</td></tr></tbody></table>
+    </div>
+    <div data-control="dense table cell without its role" data-expect="C5.cell">
+      <table class="doc-dense-table"><tbody><tr><td>a cell with no role</td></tr></tbody></table>
+    </div>
+    <div data-control="dense table header without the label role" data-expect="C5.head">
+      <table class="doc-dense-table"><thead><tr><th>header</th></tr></thead></table>
+    </div>
+    <div data-control="dense cell role in an unmarked table" data-expect="C5.scope">
+      <table><tbody><tr><td class="doc-table-cell">a cell that declares the dense role alone</td></tr></tbody></table>
+    </div>
+    <div data-control="dense marker on something that is not a table" data-expect="C5.scope">
+      <div class="doc-dense-table"><p class="doc-body">not a table</p></div>
+    </div>
+    <div data-control="dense cell holding body text" data-expect="C5.body">
+      <table class="doc-dense-table"><tbody><tr><td class="doc-table-cell"><p class="doc-body">prose set inside a dense cell</p></td></tr></tbody></table>
+    </div>
+    <div data-control="dense header holding a lede" data-expect="C5.body">
+      <table class="doc-dense-table"><thead><tr><th class="doc-label"><span class="doc-lede">a header set as a lede</span></th></tr></thead></table>
+    </div>
+    <div data-control="an ordinary prose table stays prose" data-expect="">
+      <table><thead><tr><th>Reading</th><th>Consequence</th></tr></thead>
+        <tbody><tr><td class="doc-body">A narrative comparison</td><td class="doc-body">is not tabular payload and keeps its prose role.</td></tr></tbody></table>
+    </div>
+
+    <!-- C7 / C8 -->
+    <div data-control="link in body text without the class" data-expect="C7.class">
+      <p class="doc-body">A <a href="#controls">bare link</a> in prose.</p>
+    </div>
+    <div data-control="link in a section heading without the class" data-expect="C7.class">
+      <h3 class="doc-subsection-title">A <a href="#controls">titled</a> link</h3>
+    </div>
+    <div data-control="link in a dense table header without the class" data-expect="C7.class">
+      <table class="doc-dense-table"><thead><tr><th class="doc-label"><a href="#controls">field</a></th></tr></thead></table>
+    </div>
+    <div data-control="small text inside body" data-expect="C8.size">
+      <p class="doc-body">Body copy with <span style="font-size: var(--fs-small)">a smaller run</span> inside it.</p>
+    </div>
+    <div data-control="mono text inside body, undeclared" data-expect="C8.family">
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+
+    <!-- C10 profile declarations -->
+    <div data-control="the same mono text, declared as a complete profile" data-expect=""
+         data-profiles='[{"name":"count numeral","selector":".n","owner":"fixture","reason":"a display figure set in mono","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that captures a governed role cannot hide its defect" data-expect="C1.lh C1.size C10.role C2.body"
+         data-profiles='[{"name":"body","selector":".doc-body","owner":"fixture","reason":"exempt the body","expected_count":1}]'>
+      <p class="doc-body" style="font-size: var(--fs-small)">Body copy set one step too small.</p>
+    </div>
+    <div data-control="a profile whose count does not match" data-expect="C10.count C8.family"
+         data-profiles='[{"name":"count numeral","selector":".n","owner":"fixture","reason":"a display figure set in mono","expected_count":1}]'>
+      <p class="doc-body"><span class="n" style="font-family: var(--font-mono)">4</span> and <span class="n" style="font-family: var(--font-mono)">2</span></p>
+    </div>
+    <div data-control="a profile that matches nothing" data-expect="C10.zero"
+         data-profiles='[{"name":"count numeral","selector":".absent","owner":"fixture","reason":"a display figure set in mono","expected_count":1}]'>
+      <p class="doc-body">Body copy with nothing to declare.</p>
+    </div>
+    <div data-control="a profile without an owner" data-expect="C10.field C8.family"
+         data-profiles='[{"name":"count numeral","selector":".n","reason":"a display figure set in mono","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile without a reason" data-expect="C10.field C8.family"
+         data-profiles='[{"name":"count numeral","selector":".n","owner":"fixture","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that names an element type" data-expect="C10.broad C8.family"
+         data-profiles='[{"name":"every span","selector":"span","owner":"fixture","reason":"too wide","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that captures a container" data-expect="C10.broad C8.family"
+         data-profiles='[{"name":"wrapper","selector":".fx-wrap","owner":"fixture","reason":"too wide","expected_count":1}]'>
+      <div class="fx-wrap"><p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p></div>
+    </div>
+    <div data-control="a profile whose selector is a list" data-expect="C10.selector C8.family"
+         data-profiles='[{"name":"two things","selector":".n, .doc-body","owner":"fixture","reason":"a list","expected_count":2}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile whose list hides inside :where()" data-expect="C10.selector C8.family"
+         data-profiles='[{"name":"span or anything","selector":":where(span, .zz)","owner":"fixture","reason":"a list in a pseudo-class","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that names an element type behind a negation" data-expect="C10.broad C8.family"
+         data-profiles='[{"name":"every span but one","selector":"span:not(.zz)","owner":"fixture","reason":"a class only inside :not()","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that ends in a bare negation" data-expect="C10.broad C8.family"
+         data-profiles='[{"name":"everything in body","selector":".doc-body :not(.zz)","owner":"fixture","reason":"a descendant negation","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a profile that names an element type by an attribute" data-expect="C10.broad C8.family"
+         data-profiles='[{"name":"styled spans","selector":"span[style]","owner":"fixture","reason":"an attribute test","expected_count":1}]'>
+      <p class="doc-body">Body copy with <span class="n" style="font-family: var(--font-mono)">42</span> inside it.</p>
+    </div>
+    <div data-control="a declared profile member cannot hide text nested inside it" data-expect="C8.family C8.size C8.weight"
+         data-profiles='[{"name":"count numeral","selector":".n","owner":"fixture","reason":"a display figure set in mono","expected_count":1}]'>
+      <p class="doc-body">Six: <span class="n"><span style="font-family: Georgia, serif; font-size: 10px; font-weight: 900">a whole sentence set in another face</span></span>.</p>
+    </div>
+
+    <!-- C0 foundation, isolated to one region -->
+    <div data-control="a region that redefines the Body token" data-expect="C0.token" data-expect-token="--fs-body" style="--fs-body: 20px">
+      <p>An unmapped paragraph: no governed role here, so only the token drift can fire.</p>
+    </div>
+    <div data-control="a region that redefines the Body token around body text" data-expect="C0.token C1.lh C1.size C2.body" data-expect-token="--fs-body">
+      <div style="--fs-body: 20px"><p class="doc-body">Body copy inside a region whose Body token is 20px.</p></div>
+    </div>
+    <div data-control="a region that swaps the sans family token" data-expect="C0.token" data-expect-token="--font-sans">
+      <div style="--font-sans: Georgia, serif"><p class="doc-body">Body copy that resolves its family through a swapped token.</p></div>
+    </div>
+    <div data-control="a region that replaces the magenta accent around a link" data-expect="C0.token" data-expect-token="--ask-emphasis-magenta">
+      <div style="--ask-emphasis-magenta: #808080"><p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose accent is gray.</p></div>
+    </div>
+    <div data-control="a region that recolors the quotation rail token" data-expect="C0.token" data-expect-token="--line-1">
+      <div style="--line-1: #FF00FF"><blockquote class="doc-quote"><p>A quotation whose neutral rail token is magenta.</p></blockquote></div>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <table class="verdict"><tbody id="verdict"></tbody></table>
+  </section>
+
+</main>
+<script src="../tools/role-conformance.js"></script>
+<script>
+  (function () {
+    /* The "hover that never leaves" control: a script lights the link on mouseenter and never clears it. */
+    document.querySelectorAll('.fx-sticky').forEach(function (a) { a.addEventListener('mouseenter', function () { a.classList.add('fx-stuck'); }); });
+    /* The late-link control: opening the disclosure adds a bare link the resting check never saw. */
+    document.querySelectorAll('.fx-late').forEach(function (d) {
+      d.addEventListener('toggle', function () {
+        if (!d.open || d.querySelector('a')) return;
+        var a = document.createElement('a'); a.href = '#controls'; a.textContent = 'a late link';
+        d.querySelector('p').append(' ', a);
+      });
+    });
+
+    var rows = document.getElementById('verdict');
+    var cases = [];
+    var sortJoin = function (list) { return Array.from(new Set(list)).sort().join(' '); };
+    var row = function (state, name, detail) {
+      var tr = document.createElement('tr');
+      [state, name, detail].forEach(function (t) { var td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+      rows.appendChild(tr);
+    };
+    var judge = function (name, result, expect, expectToken) {
+      var expected = sortJoin(expect.split(/\s+/).filter(Boolean));
+      var expectedStatic = sortJoin(expect.split(/\s+/).filter(function (k) { return k && k.indexOf('C9.') !== 0; }));
+      var staticGot = sortJoin(result.findings.map(function (f) { return f.reason; }));
+      var detailPass = true, detail = null;
+      if (expectToken) {
+        var named = sortJoin(result.findings.filter(function (f) { return f.reason === 'C0.token'; }).map(function (f) { return f.token; }));
+        detailPass = named === expectToken;
+        detail = 'C0.token names ' + (named || 'nothing') + '; expected ' + expectToken;
+      }
+      var staticPass = staticGot === expectedStatic && detailPass;
+      cases.push({ case: name, expected: expected, expectedStatic: expectedStatic, staticGot: staticGot, staticPass: staticPass, detailPass: detailPass, detail: detail,
+        interactionJudged: expected !== expectedStatic, findings: result.findings, profiles: result.profiles });
+      row(staticPass ? 'PASS' : 'FAIL', name, 'resting: expected ' + (expectedStatic || 'none') + ' · got ' + (staticGot || 'none') +
+        (expected !== expectedStatic ? ' · link states (runner only): ' + expected.split(' ').filter(function (k) { return k.indexOf('C9.') === 0; }).join(' ') : '') +
+        (detail ? ' · ' + detail : ''));
+    };
+    judge('conforming specimen', ASKRoleConformance.check({ scope: '#conforming', unmapped: false }), '', null);
+    document.querySelectorAll('[data-control]').forEach(function (el) {
+      var profiles = el.dataset.profiles ? JSON.parse(el.dataset.profiles) : [];
+      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false, profiles: profiles }), el.dataset.expect, el.dataset.expectToken || null);
+    });
+    var failed = cases.filter(function (c) { return !c.staticPass; }).length;
+    document.getElementById('overall').textContent = (failed ? 'RESTING FAIL: ' + failed + ' case(s)' : 'RESTING PASS') + ' · link states: run the headless runner';
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+    window.__roleFixture = { staticResult: failed ? 'FAIL' : 'PASS', cases: cases };
+  })();
+</script>
+</body>
+</html>

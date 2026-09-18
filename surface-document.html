@@ -8,12 +8,13 @@
 <!-- Visual key for the document register (surface-document.css, with the optional
      surface-document-overflow.js helper) and the surface treatments
      (surface-treatments.css, which extends surface-panel.css). Reads the foundation,
-     the compact-action and panel modules, the register and the treatments live;
+     the compact-action, panel and text-link modules, the register and the treatments live;
      theme-aware (light default · dark via prefers-color-scheme /
      [data-theme="dark"]). Open directly. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="surface-panel.css">
+<link rel="stylesheet" href="surface-text-link.css">
 <link rel="stylesheet" href="surface-document.css">
 <link rel="stylesheet" href="surface-treatments.css">
 <style>
@@ -59,6 +60,12 @@
      collection and its column count. The space between its items is the shared
      composition's gap, which a grid applies to rows and columns alike. */
   .o-collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
+
+  /* Page-local, and consumer-owned in any real surface: a document table's
+     geometry. The module owns the cells' type only. */
+  .o-table { border-collapse: collapse; }
+  .o-table :where(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0;
+                            border-bottom: 1px solid var(--line-2); }
 </style>
 </head>
 <body>
@@ -84,8 +91,9 @@
         its backing. Material governs fill, blur, and the foreground that stays readable over it.
         They compose, and none silently determines another.</p>
 
-      <!-- DEEP HEADING — the h4 treatment. Shares 18px with body copy and is still
-           unambiguous: heavier, tighter, and preceded by section space. -->
+      <!-- DEEP HEADING — the h4 treatment. Shares the Body step (24px) with body copy
+           and is still unambiguous: heavier (500 against 200) and preceded by section
+           space. -->
       <div class="doc-section" id="population">
         <h3 class="doc-subsection-title">Population</h3>
         <p class="doc-body">Every live surface composed against the page field or a canvas.</p>
@@ -390,12 +398,12 @@
         stops changing: every deeper heading uses the h4 treatment, and a deeper level is that same
         section nested one step further inside the rail — heading and content together, to any depth.
         The same rail carries structured text whose indentation is structure, such as the lines that
-        belong beneath a label in an outline or a definition list, so a preformatted passage needs no
-        separate code-block treatment. It is assigned by that relationship, not to every preformatted
+        belong beneath a label in an outline or a definition list, so the levels inside a preformatted
+        passage need no second treatment; the block itself stands behind the magenta block rail. The hierarchy rail is assigned by that relationship, not to every preformatted
         block; spaces that only align columns are not levels; and inside an emphasis rail it sits one
         inset further in, never on the same edge.</p>
       <h3 class="doc-subsection-title">h3 — subsection</h3>
-      <p class="doc-body">Body copy at the small step, weight 200.</p>
+      <p class="doc-body">Body copy at the Body step, weight 200: the same metric as a plain paragraph.</p>
       <div class="doc-section" id="depth-4">
         <h4 class="doc-deep-title">h4 — deep heading</h4>
         <p class="doc-body">The deep treatment, flush with its parent.</p>
@@ -426,7 +434,7 @@
       <p class="doc-body">Long headings wrap inside their column. They never shrink to fit.</p>
       <h3 class="doc-subsection-title">A subsection title long enough to wrap keeps the subsection step and its weight</h3>
       <div class="doc-section" id="long-depth-4">
-        <h4 class="doc-deep-title">A deep heading long enough to wrap keeps the Small step and its weight at every depth</h4>
+        <h4 class="doc-deep-title">A deep heading long enough to wrap keeps the Body step and its weight at every depth</h4>
         <div class="doc-hierarchy doc-section" id="long-depth-5">
           <h5 class="doc-deep-title">One level in, the same deep heading wraps inside a narrower rail</h5>
           <div class="doc-hierarchy doc-section" id="long-depth-6">
@@ -447,20 +455,92 @@
     <section class="doc-section" id="structured">
       <h2 class="doc-section-title">Structured text</h2>
       <p class="doc-body">Where a preformatted passage's indentation is structure, each level is one more
-        hierarchy rail inside the same scroll box, and a blank source line keeps its slot. At a narrow
-        width the block scrolls and says so; its lines and its text size stay as they are.</p>
+        neutral hierarchy rail inside the same scroll box, and the whole block sits behind one magenta
+        block rail. A blank source line keeps its slot, so a blank line belongs only between groups: a
+        blank between a label and the lines beneath it splits one group in two. At a narrow width the
+        block scrolls and says so; its lines and its text size stay as they are.</p>
       <div class="doc-pre doc-pre--structured" id="structured-sample">
         <pre class="doc-pre-part">FOUNDATION</pre>
-        <div class="doc-hierarchy" data-lead-lines="1"><pre class="doc-pre-part">tokens
+        <div class="doc-hierarchy"><pre class="doc-pre-part">tokens
 &gt;&gt;
 roles that name what each value is for</pre><div class="doc-hierarchy"><pre class="doc-pre-part">role
 &gt;&gt;
 one complete text style per role</pre></div></div>
-        <pre class="doc-pre-part" data-lead-lines="2">CONSUMER</pre>
-        <div class="doc-hierarchy" data-lead-lines="1"><pre class="doc-pre-part">markup
+        <pre class="doc-pre-part" data-lead-lines="1">CONSUMER</pre>
+        <div class="doc-hierarchy"><pre class="doc-pre-part">markup
 &gt;&gt;
 classes that select a role, never a raw size</pre></div>
       </div>
+    </section>
+
+    <!-- SET-APART PASSAGES — one rail geometry, a color per meaning: a quotation on the
+         neutral --line-1 rail, a preformatted block on the magenta block rail, an
+         explicit emphasis on the magenta emphasis rail. A passage inside a railed
+         passage draws no second rail. The quotation is body-sized: the rail, not a
+         size step, sets it apart. -->
+    <section class="doc-section" id="passage">
+      <h2 class="doc-section-title">Set-apart passages</h2>
+      <p class="doc-body">A quotation and a preformatted block are set apart from the reading flow, each as
+        one unit, on one rail geometry: 2px, with the text inset by the same step. The color says what
+        kind of passage it is. A quotation is a change of voice, so its rail is neutral. A block's line
+        structure is its content, so its rail is magenta. An emphasis passage keeps its own magenta rail,
+        so it still stands out from the quotations around it. The quotation keeps the body size at every
+        length; the block keeps its mono Small step. Inside an emphasized passage a block draws no rail
+        of its own, because the outer rail already carries it.</p>
+      <blockquote class="doc-quote" id="passage-quote">
+        <p>A short statement is an ordinary quotation, on the neutral rail.</p>
+      </blockquote>
+      <pre class="doc-pre" id="passage-block">a plain preformatted block
+&gt;&gt;
+one passage behind the magenta block rail</pre>
+      <div class="surface-emphasis-rail doc-group" id="passage-emphasis">
+        <p class="doc-body">An emphasized passage that contains a block:</p>
+        <pre class="doc-pre">the block draws no second rail</pre>
+      </div>
+    </section>
+
+    <!-- TABLE OF CONTENTS — structural navigation. Each entry takes the navigation
+         row's text metrics and composes surface-text-link for its interaction; a
+         nested level is a contents list that is also a hierarchy rail. -->
+    <section class="doc-section" id="contents">
+      <h2 class="doc-section-title">Table of contents</h2>
+      <p class="doc-body">A contents list is structural navigation, not body text: mono at the Small step.
+        Each entry composes surface-text-link: the partial magenta underline at rest, the full magenta
+        underline on hover, and the module's own keyboard-focus underline. The rendered check proves
+        each state under a real pointer and real Tab focus.</p>
+      <details class="surface-disclosure surface-material-panel surface-attach-free surface-elevation-flush" open>
+        <summary><span class="surface-disclosure-label">on this page</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></summary>
+        <nav class="surface-disclosure-body" aria-label="On this page">
+          <ul class="doc-toc-list">
+            <li><a class="doc-toc-link surface-text-link" href="#rule-axes">Attachment, elevation and material are chosen separately</a>
+              <ul class="doc-toc-list doc-hierarchy">
+                <li><a class="doc-toc-link surface-text-link" href="#population">Population</a></li>
+              </ul>
+            </li>
+            <li><a class="doc-toc-link surface-text-link" href="#depth">Hierarchy rail</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#structured">Structured text</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#passage">Set-apart passages</a></li>
+          </ul>
+        </nav>
+      </details>
+    </section>
+
+    <!-- DENSE TABLE — a table the consumer declares dense with table.doc-dense-table.
+         Its cells are tabular payload and its header cells take the operative label.
+         An unmarked table is not this role. The geometry here is page-local. -->
+    <section class="doc-section" id="table">
+      <h2 class="doc-section-title">Dense tables</h2>
+      <p class="doc-body">A dense table is declared, not inferred: the consumer marks it
+        <code class="doc-code">table.doc-dense-table</code>, and then its cells are tabular payload, mono at
+        the Small step with tabular numerals, and its headers take the operative label. Being a table does
+        not make a table dense: a narrative comparison stays prose and waits for the shared table work.</p>
+      <table class="o-table doc-dense-table">
+        <thead><tr><th class="doc-label">surface</th><th class="doc-label">state</th><th class="doc-label">pin</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-table-cell">specimen owner</td><td class="doc-table-cell">landed</td><td class="doc-table-cell">1a2b3c4</td></tr>
+          <tr><td class="doc-table-cell">specimen consumer</td><td class="doc-table-cell">re-sync due</td><td class="doc-table-cell">5d6e7f8</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <!-- A CLEAR READING AREA. A decorative rule may simply stop at its label: the
@@ -503,7 +583,7 @@ classes that select a role, never a raw size</pre></div>
         </div>
         <div class="doc-labeled">
           <p class="doc-label">link</p>
-          <p class="doc-body"><a href="#long">https://example.invalid/apexSolarKiss/design-system-ASK/patterns/surface-shell/surface-shell.template.html</a></p>
+          <p class="doc-body"><a class="surface-text-link" href="#long">https://example.invalid/apexSolarKiss/design-system-ASK/patterns/surface-shell/surface-shell.template.html</a></p>
         </div>
       </div>
     </section>
