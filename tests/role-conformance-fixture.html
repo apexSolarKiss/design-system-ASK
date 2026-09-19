@@ -53,6 +53,7 @@
       and <code class="doc-code">inline code</code>.</p>
     <p class="doc-meta">metadata · <a class="surface-text-link" href="#conforming">specimen</a></p>
     <p class="doc-label">operative label</p>
+    <button type="button"><span class="doc-meta">REC-014</span> <span class="doc-entry-title">An entry title on an operable entry</span></button>
     <section class="doc-section">
       <h3 class="doc-subsection-title">A subsection</h3>
       <div class="doc-hierarchy doc-section">
@@ -117,6 +118,21 @@ another</pre></div>
     </div>
     <div data-control="body with label tracking" data-expect="C1.tracking">
       <p class="doc-body" style="letter-spacing: var(--tracking-wide)">Body copy tracked out.</p>
+    </div>
+    <div data-control="entry title in the mono family" data-expect="C1.family">
+      <p class="doc-entry-title" style="font-family: var(--font-mono)">An entry title set mono.</p>
+    </div>
+    <div data-control="entry title at the body weight" data-expect="C1.weight">
+      <p class="doc-entry-title" style="font-weight: var(--fw-extralight)">An entry title at the body weight.</p>
+    </div>
+    <div data-control="entry title on the panel label's leading" data-expect="C1.lh">
+      <p class="doc-entry-title" style="line-height: var(--lh-heading)">An entry title on heading leading.</p>
+    </div>
+    <div data-control="entry title with the panel label's tracking" data-expect="C1.tracking">
+      <p class="doc-entry-title" style="letter-spacing: var(--tracking-tight)">An entry title tracked tight.</p>
+    </div>
+    <div data-control="entry title in uppercase" data-expect="C1.case">
+      <p class="doc-entry-title" style="text-transform: uppercase">An entry title set as a label.</p>
     </div>
     <div data-control="operative label without uppercase" data-expect="C1.case">
       <p class="doc-label" style="text-transform: none">label</p>

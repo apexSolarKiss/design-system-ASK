@@ -33,9 +33,10 @@
      meaning         a complete text style selected by what the text is in the
                      document, never by its element, its size or its payload
      population      document title, section / subsection / deep headings,
-                     lede, document body, quotation text, operative label,
-                     metadata, inline code, table-of-contents entry, dense
-                     table cell; Caption through the foundation's .caption
+                     lede, document body, entry title, quotation text,
+                     operative label, metadata, inline code, table-of-contents
+                     entry, dense table cell; Caption through the foundation's
+                     .caption
      owner           this module; the Caption role stays the foundation's
      reuses          foundation family, size, weight, leading, tracking and
                      foreground tokens
@@ -196,6 +197,30 @@
      counterexample  every table on a page set mono because it is a table; a
                      dense table whose cells are set as body prose
 
+   ENTRY TITLE
+     meaning         the primary text of an operable entry in a result list or
+                     record index: the name or the statement of the one record
+                     the entry opens. It may be a short name or a full
+                     statement, and it may wrap
+     population      .doc-entry-title on the entry's primary text; the entry's
+                     identifier and supporting fields take .doc-meta
+     owner           this module for the text's type only. The entry element,
+                     its interaction and its row geometry stay with the
+                     consuming surface, as a dense table's geometry does
+     reuses          Inter at the Body step, --fw-light (300), --lh-body,
+                     --tracking-normal, --fg-1
+     variation       none
+     exclusions      an entry title is never a heading: it governs nothing
+                     beneath it and sits outside the ladder. It is never
+                     document body, never the panel's single-line primary
+                     label, never an uppercase operative label, and it never
+                     restates the entry's interaction
+     example         a search result: its identifier in .doc-meta above a
+                     finding's full statement wrapping across three lines
+     counterexample  a result's primary text set as document body; a wrapping
+                     statement set on the panel label's tight leading and
+                     tracking
+
    OVERFLOW CUE
      meaning         the block is wider than its box, and which side holds
                      hidden content
@@ -292,6 +317,20 @@
   color: var(--fg-1);
   margin: 0;
 }
+/* The entry title is the primary text of an operable entry in a result list or
+   record index. It is neither a heading nor body. It takes Body's size, leading
+   and tracking, because it may wrap as a full statement, one weight step above
+   the body prose around the list. The entry element, its interaction and its
+   geometry stay the consumer's. */
+.doc-entry-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-normal);
+  color: var(--fg-1);
+  margin: 0;
+}
 /* The operative register. The label is uppercase mono, for labels and status,
    and is never a content heading. Metadata shares its family, size, weight and
    tracking without the uppercase, on a looser leading. */
@@ -323,18 +362,18 @@
   font-weight: var(--fw-light);
   color: var(--fg-2);
 }
-.doc-code:where(:not(:is(.doc-body, .doc-meta, .doc-label, .doc-deep-title, .doc-subsection-title, .doc-section-title, .doc-lede, .doc-title, .doc-quote, .doc-toc-link, .doc-table-cell) *)) {
+.doc-code:where(:not(:is(.doc-body, .doc-meta, .doc-label, .doc-deep-title, .doc-subsection-title, .doc-section-title, .doc-lede, .doc-title, .doc-quote, .doc-toc-link, .doc-table-cell, .doc-entry-title) *)) {
   font-size: var(--fs-caption);
 }
 
 /* Inline emphasis inside document text. Weight carries it: 500 against body
    copy at 200, rather than the browser's bolder step. Scoped to the register,
    so strong and em elsewhere keep their own styling. */
-:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link) strong {
+:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link, .doc-entry-title) strong {
   font-weight: var(--fw-medium);
   color: var(--fg-1);
 }
-:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link) em {
+:where(.doc-flow, .doc-title, .doc-section-title, .doc-subsection-title, .doc-deep-title, .doc-lede, .doc-body, .doc-label, .doc-meta, .doc-quote, .doc-pre, .doc-table-cell, .doc-toc-link, .doc-entry-title) em {
   font-style: italic;
 }
 

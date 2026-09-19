@@ -66,6 +66,17 @@
   .o-table { border-collapse: collapse; }
   .o-table :where(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0;
                             border-bottom: 1px solid var(--line-2); }
+
+  /* Page-local, and consumer-owned in any real surface: an operable entry's
+     element, row geometry and interaction. The module owns the entry's text only.
+     This one keeps a 1px edge at rest, turns it magenta on hover and draws its own
+     keyboard-focus outline; hover never stands in for focus. */
+  .o-entries { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+  .o-entry { display: block; width: 100%; text-align: left; font: inherit; color: inherit; background: none;
+             border: 1px solid var(--line-2); border-radius: var(--radius-sm); padding: var(--space-3); cursor: pointer; }
+  .o-entry > * { display: block; }
+  .o-entry:hover { border-color: var(--ask-emphasis-magenta); }
+  .o-entry:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -541,6 +552,35 @@ one passage behind the magenta block rail</pre>
           <tr><td class="doc-table-cell">specimen consumer</td><td class="doc-table-cell">re-sync due</td><td class="doc-table-cell">5d6e7f8</td></tr>
         </tbody>
       </table>
+    </section>
+
+    <!-- ENTRY TITLE — the primary text of an operable entry in a result list or
+         record index. It may be a short name or a full statement, and it may wrap.
+         The entry's identifier and supporting fields take the metadata role; the
+         entry's element, interaction and row geometry are the consumer's, and are
+         page-local here. -->
+    <section class="doc-section" id="entries">
+      <h2 class="doc-section-title">Entry titles</h2>
+      <p class="doc-body">An entry in a result list or record index opens one record. Its primary text is
+        the entry title: Body's size, leading and tracking at 300, one weight step above the prose around
+        the list, because it may be a short name or a full statement that wraps. It is not a heading and
+        governs nothing beneath it, and it is not the panel's single-line label. The identifier and the
+        supporting fields take the metadata role; the entry's element, interaction and row geometry stay
+        the consumer's.</p>
+      <ul class="o-entries">
+        <li><button type="button" class="o-entry">
+          <span class="doc-meta">REC-014 · record</span>
+          <span class="doc-entry-title">Specimen record</span>
+          <span class="doc-meta">owner · reviewed · public</span>
+        </button></li>
+        <li><button type="button" class="o-entry">
+          <span class="doc-meta">REC-027 · finding</span>
+          <span class="doc-entry-title">A finding stated in full: when the record an entry opens is a claim
+            rather than a name, its primary text is the whole statement, and it wraps across as many lines
+            as it needs at the body leading, with no truncation and no smaller step.</span>
+          <span class="doc-meta">author · evidence class · access</span>
+        </button></li>
+      </ul>
     </section>
 
     <!-- A CLEAR READING AREA. A decorative rule may simply stop at its label: the
