@@ -132,12 +132,12 @@ swaps a token. This page can.
 It holds one **conforming specimen** — every governed role except the title, which the
 page's own heading carries: a quotation on the neutral rail with its attribution, a plain
 and a structured block on the magenta rail, a block inside an emphasis rail, a two-level
-table of contents, a declared dense table and an unmarked prose table, and links in body,
-metadata, a quotation and a dense cell — which must return no finding at rest or in any
-link state. After it come **controls**: 71 negative controls, one per failure branch,
-each of which must fail with exactly the reason codes it names, no more and no fewer;
-and 2 positive controls — an unmarked prose table and a complete profile declaration —
-which must return no finding:
+table of contents, a declared dense table and an unmarked prose table, an entry title on
+an operable entry, and links in body, metadata, a quotation and a dense cell — which must
+return no finding at rest or in any link state. After it come **controls**: 76 negative
+controls, one per failure branch, each of which must fail with exactly the reason codes
+it names, no more and no fewer; and 2 positive controls — an unmarked prose table and a
+complete profile declaration — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -153,6 +153,10 @@ C1.lh C1.size C2.heading    a deep heading smaller than its body
 C1.color · C1.weight ·      body in the tertiary foreground · body at 300 · body on
 C1.lh · C1.tracking ·       tight leading · body tracked out · a label without
 C1.case · C1.family         uppercase · a contents link in sans
+C1.family · C1.weight ·     an entry title in mono · an entry title at the body
+C1.lh · C1.tracking ·       weight (200) · an entry title on the panel label's heading
+C1.case                     leading · an entry title on the panel label's tight
+                            tracking · an entry title in uppercase
 C3.missing · C3.color ·     a block with no rail · a block on the neutral quotation
 C3.color · C3.width ·       rail · a quotation on the magenta emphasis rail · a 1px
 C3.inset · C3.double ·      quotation rail · an inset too small · a second rail

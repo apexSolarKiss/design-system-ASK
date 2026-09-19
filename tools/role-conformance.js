@@ -143,6 +143,7 @@
     { role: 'doc-deep-title',       sel: '.doc-deep-title',       family: SANS, size: '--fs-body',    weight: '--fw-medium',     lh: '--lh-heading', tracking: '--tracking-normal', color: '--fg-1', heading: true },
     { role: 'doc-body',             sel: '.doc-body',             family: SANS, size: '--fs-body',    weight: '--fw-extralight', lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', body: true },
     { role: 'doc-lede',             sel: '.doc-lede',             family: SANS, size: '--fs-body',    weight: '--fw-extralight', lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', body: true },
+    { role: 'doc-entry-title',      sel: '.doc-entry-title',      family: SANS, size: '--fs-body',    weight: '--fw-light',      lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', transform: 'none' },
     { role: 'quotation',            sel: '.doc-quote > p',        family: SANS, size: '--fs-body',    weight: '--fw-extralight', lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', body: true },
     { role: 'attribution',          sel: '.doc-quote > footer',   family: MONO, size: '--fs-caption', weight: '--fw-light',      lh: 1.4,            tracking: '--tracking-wide',   color: '--fg-3' },
     { role: 'doc-label',            sel: '.doc-label',            family: MONO, size: '--fs-caption', weight: '--fw-light',      lh: '--lh-tight',   tracking: '--tracking-wide',   color: '--fg-3', transform: 'uppercase' },
@@ -187,7 +188,7 @@
     focus: { line: 'underline', thickness: '2px', color: 'var(--fg-1)' },
   };
   const ROLE_CLASSES = ['doc-title', 'doc-section-title', 'doc-subsection-title', 'doc-deep-title', 'doc-body', 'doc-lede',
-    'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell'];
+    'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell', 'doc-entry-title'];
   /* Classes whose owners are not this register: their text is governed elsewhere. */
   const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-panel-title',
     'surface-panel-support', 'surface-emphasis-chip', 'surface-disclosure-label', 'surface-disclosure-indicator', 'caption'];

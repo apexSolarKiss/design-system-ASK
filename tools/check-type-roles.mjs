@@ -164,6 +164,7 @@ const ROLE_MATRIX = [
   { selector: '.doc-deep-title',       family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-medium)',     lh: 'var(--lh-heading)', tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', heading: true },
   { selector: '.doc-body',             family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
   { selector: '.doc-lede',             family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
+  { selector: '.doc-entry-title',      family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
   { selector: '.doc-quote > p',        family: SANS, size: 'var(--fs-body)',    weight: 'var(--fw-extralight)', lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)', body: true },
   { selector: '.doc-quote > footer',   family: MONO, size: 'var(--fs-caption)', weight: 'var(--fw-light)',      lh: '1.4',               tracking: 'var(--tracking-wide)',   color: 'var(--fg-3)' },
   { selector: '.doc-label',            family: MONO, size: 'var(--fs-caption)', weight: 'var(--fw-light)',      lh: 'var(--lh-tight)',   tracking: 'var(--tracking-wide)',   color: 'var(--fg-3)' },
@@ -928,6 +929,15 @@ function selfTest(root) {
       allR7(descendant) && descendant.length === 1 && allR7(neutral) && neutral.length === 1 && allR7(jsDrift) && jsDrift.length === 1,
       'body: matrix + Body invariant (2); deep: matrix + smaller-than-body (2); display: one per metric (2); toc: matrix (1); rail: quotation geometry + block parity (2); later rule (1); descendant (1); second rail rule (1); rendered matrix (1)',
       { body, deep, display, toc, rail, later, descendant, neutral, jsDrift });
+
+    const entryFamily = added(inRule('.doc-entry-title', 'font-family: var(--font-sans)', 'font-family: var(--font-mono)'));
+    const entryWeight = added(inRule('.doc-entry-title', 'font-weight: var(--fw-light)', 'font-weight: var(--fw-extralight)'));
+    const entryLeading = added(inRule('.doc-entry-title', 'line-height: var(--lh-body)', 'line-height: var(--lh-heading)'));
+    const entryTracking = added(inRule('.doc-entry-title', 'letter-spacing: var(--tracking-normal)', 'letter-spacing: var(--tracking-tight)'));
+    record('R7 entry title: a mono family, the body weight (200), the panel label\'s heading leading and its tight tracking each fail once',
+      allR7(entryFamily) && entryFamily.length === 1 && allR7(entryWeight) && entryWeight.length === 1 &&
+      allR7(entryLeading) && entryLeading.length === 1 && allR7(entryTracking) && entryTracking.length === 1,
+      'one R7 each', { entryFamily, entryWeight, entryLeading, entryTracking });
 
     const quoteMagenta = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 2px solid var(--ask-emphasis-magenta)'));
     const quoteThin = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 1px solid var(--line-1)'));
