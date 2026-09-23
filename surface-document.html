@@ -484,30 +484,60 @@ classes that select a role, never a raw size</pre></div>
       </div>
     </section>
 
-    <!-- SET-APART PASSAGES — one rail geometry, a color per meaning: a quotation on the
-         neutral --line-1 rail, a preformatted block on the magenta block rail, an
-         explicit emphasis on the magenta emphasis rail. A passage inside a railed
-         passage draws no second rail. The quotation is body-sized: the rail, not a
-         size step, sets it apart. -->
+    <!-- SET-APART PASSAGES — one rail geometry, a color per role, every outer rail an
+         emphasis accent: a quotation (represented voice) on the violet rail, the
+         document's own callout on the magenta emphasis rail, a preformatted block on
+         the magenta block rail. Neutral is the inner hierarchy rail only. A passage
+         inside a railed passage draws no second rail, so a quoted code excerpt keeps
+         the one violet rail. The quotation and the callout are body-sized: the rail,
+         not a size step, sets them apart. -->
     <section class="doc-section" id="passage">
       <h2 class="doc-section-title">Set-apart passages</h2>
-      <p class="doc-body">A quotation and a preformatted block are set apart from the reading flow, each as
-        one unit, on one rail geometry: 2px, with the text inset by the same step. The color says what
-        kind of passage it is. A quotation is a change of voice, so its rail is neutral. A block's line
-        structure is its content, so its rail is magenta. An emphasis passage keeps its own magenta rail,
-        so it still stands out from the quotations around it. The quotation keeps the body size at every
-        length; the block keeps its mono Small step. Inside an emphasized passage a block draws no rail
-        of its own, because the outer rail already carries it.</p>
+      <p class="doc-body">A quotation, a preformatted block and an authorial callout are set apart from
+        the reading flow, each as one unit, on one rail geometry: 2px, with the text inset by the same
+        step. Every one of those outer rails is an emphasis accent, so each reads as a boundary in both
+        themes, and the color says whose passage it is. A quotation is represented voice — words
+        presented as someone's — so its rail is violet. The document's own thesis, posed question or
+        contrast is an authorial callout, so its rail is magenta. A block's line structure is its
+        content, so its rail is magenta too. Neutral is structure only: the hierarchy rail that
+        structures a section, a list or a block. Who is speaking is the consuming surface's assignment, never the element, the font or a
+        pair of quotation marks.</p>
       <blockquote class="doc-quote" id="passage-quote">
-        <p>A short statement is an ordinary quotation, on the neutral rail.</p>
+        <p>A short statement presented as someone else's words is a quotation, on the violet rail.</p>
+        <footer>represented voice</footer>
       </blockquote>
+      <p class="doc-body">The document's own point, set apart from the prose around it:</p>
+      <p class="doc-body surface-emphasis-rail" id="passage-callout">An authorial callout states the document's thesis in its own voice, on the magenta rail, at the body step — even when it <strong>contains a phrase in "quotation marks"</strong>.</p>
       <pre class="doc-pre" id="passage-block">a plain preformatted block
 &gt;&gt;
 one passage behind the magenta block rail</pre>
+      <p class="doc-body">A code excerpt someone else wrote is quoted: the block sits inside the quotation and draws no second rail.</p>
+      <blockquote class="doc-quote" id="passage-quoted-code">
+        <pre class="doc-pre">if (quoted) keep(oneRail, "violet");</pre>
+        <footer>a quoted excerpt</footer>
+      </blockquote>
       <div class="surface-emphasis-rail doc-group" id="passage-emphasis">
-        <p class="doc-body">An emphasized passage that contains a block:</p>
+        <p class="doc-body">A callout that introduces a block carries both as one unit:</p>
         <pre class="doc-pre">the block draws no second rail</pre>
       </div>
+    </section>
+
+    <!-- SECTION SYNTHESIS — the compression that closes a part. Contained, not
+         railed: the panel material, free corners, flush elevation and document
+         grouping, a chip whose border alone takes the magenta accent, and the
+         synthesis text on the document body role. No rail inside, no bloom, no blur,
+         no raised shadow, no hover. -->
+    <section class="doc-section" id="synthesis">
+      <h2 class="doc-section-title">Section synthesis</h2>
+      <p class="doc-body">A synthesis states what the part before it comes to. It is larger in scope than a
+        callout, so it is contained rather than railed, and every synthesis in a document takes the same
+        composition whatever the status of its text. The chip names it; only the chip's border takes the
+        accent, so the panel keeps its neutral perimeter and gains no bloom. The text stays at the body
+        step, with its authored emphasis.</p>
+      <section class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group" id="synthesis-panel">
+        <p class="surface-emphasis-chip surface-emphasis--magenta">compression</p>
+        <p class="doc-body"><strong>A section synthesis is one flat panel: tinted, neutral at its edge, free at its corners, with body-sized text and no rail.</strong></p>
+      </section>
     </section>
 
     <!-- TABLE OF CONTENTS — structural navigation. Each entry takes the navigation
@@ -531,6 +561,7 @@ one passage behind the magenta block rail</pre>
             <li><a class="doc-toc-link surface-text-link" href="#depth">Hierarchy rail</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#structured">Structured text</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#passage">Set-apart passages</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#synthesis">Section synthesis</a></li>
           </ul>
         </nav>
       </details>
