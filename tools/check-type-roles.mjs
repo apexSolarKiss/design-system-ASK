@@ -52,14 +52,18 @@
        declared smaller than document body; no other rule that targets a
        quotation sets a type metric; each passage rail is declared by exactly
        one rule, which sets the rail only through border-left and
-       padding-left (and, for the block, its accent), and no other rule on a
+       padding-left (and its accent), and no other rule on a
        quotation or block sets a rail — a rule that names one only inside
        :is(), :where(), :not() or :has() may remove a rail, never draw or
        recolor one; .surface-emphasis-rail keeps its registered magenta accent
        (EMPHASIS_RAIL_ACCENT); both passage rails take its GEOMETRY (width,
-       style, inset), the block rail also its magenta accent in the same
-       words, and the quotation rail the registered neutral color
-       (QUOTE_RAIL_COLOR) — each role's color is pinned, and no role is
+       style, inset) and its border in the same words, the block rail also its
+       magenta accent, and the quotation rail the registered violet accent
+       (QUOTE_RAIL_ACCENT), which .surface-emphasis--violet binds in the same
+       words, and which tools/role-conformance.js pins for rendered pages, as
+       it pins an emphasis rail on document text — the authorial callout — to
+       EMPHASIS_RAIL_ACCENT alone and any other emphasis rail to the three
+       sanctioned accents — each role's color is pinned, and no role is
        required to share another's; .doc-hierarchy is declared by exactly one
        rail rule, the registered 1px neutral hierarchy rail (HIERARCHY_RAIL),
        and no other rule on it sets a rail; the matrix
@@ -176,12 +180,16 @@ const ROLE_MATRIX = [
 const ROLE_PROPS = { family: 'font-family', size: 'font-size', weight: 'font-weight', lh: 'line-height', tracking: 'letter-spacing', color: 'color' };
 const PASSAGE_SELECTORS = ['.doc-quote', '.doc-pre'];
 const RAIL_PROPS = /^(border-left(-width|-style|-color)?|border|border-width|border-style|border-color|padding-left|padding|--surface-emphasis-accent)$/;
-/* The quotation rail's color: the neutral boundary role, registered here so a
-   change to it is a reviewed change to this checker. */
-const QUOTE_RAIL_COLOR = 'var(--line-1)';
-/* The explicit emphasis rail stays magenta; an accent modifier may still name
-   violet or cyan on the element that carries it. */
+/* The quotation rail's accent: the emphasis violet, represented voice,
+   registered here so a change to it is a reviewed change to this checker. The
+   neutral quotation rail (--line-1) is retired: too faint to read as a
+   boundary. */
+const QUOTE_RAIL_ACCENT = 'var(--ask-emphasis-violet)';
+/* The emphasis rail's registered accent is magenta. On document text it is the
+   authorial callout and stays magenta; on any other emphasis rail an accent
+   modifier may name violet or cyan (TREATMENT_RAIL_ACCENTS). */
 const EMPHASIS_RAIL_ACCENT = 'var(--ask-emphasis-magenta)';
+const TREATMENT_RAIL_ACCENTS = ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)'];
 /* The hierarchy rail: one level beneath a line, neutral and thinner than a
    passage rail. */
 const HIERARCHY = '.doc-hierarchy';
@@ -554,7 +562,7 @@ function roleMatrix(ctx) {
       line: lineAt(starts, d.offset), selector, property: d.property, value: d.value, message: 'a rule targeting a quotation changes the quotation metric' });
   }
   /* passage rails: one owning rule each; the emphasis rail's geometry; the
-     block also its accent; the quotation the registered neutral color */
+     block also its accent; the quotation its registered violet accent */
   const railRules = new Map(PASSAGE_SELECTORS.map((p) => [p, rules.filter((r) => r.selectors.includes(p) && r.decls.some((d) => d.property === 'border-left'))]));
   const owningRails = new Set([...railRules.values()].flat());
   const hierarchyRules = rules.filter((r) => r.selectors.includes(HIERARCHY) && r.decls.some((d) => d.property === 'border-left'));
@@ -565,8 +573,8 @@ function roleMatrix(ctx) {
   for (const r of rules) {
     if (owningRails.has(r)) {
       const own = r.selectors.find((s) => PASSAGE_SELECTORS.includes(s));
-      for (const d of r.decls) if (RAIL_PROPS.test(d.property) && !['border-left', 'padding-left'].includes(d.property) &&
-        !(own === '.doc-pre' && d.property === '--surface-emphasis-accent')) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset),
+      for (const d of r.decls) if (RAIL_PROPS.test(d.property) && !['border-left', 'padding-left', '--surface-emphasis-accent'].includes(d.property))
+        findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, d.offset),
         selector: own, property: d.property, value: d.value, message: 'a passage rail rule sets its rail through a property other than border-left and padding-left' });
       continue;
     }
@@ -621,11 +629,38 @@ function roleMatrix(ctx) {
     if (got.inset !== want.inset) bad.push(`inset ${got.inset} (emphasis rail: ${want.inset})`);
     if (p === '.doc-pre') {
       if (got.border !== want.border || got.accent !== want.accent) bad.push(`accent ${got.accent} · ${got.border} (emphasis rail: ${want.accent} · ${want.border})`);
-    } else if (railColor(got.border) !== QUOTE_RAIL_COLOR) {
-      bad.push(`color ${railColor(got.border)} (registered: ${QUOTE_RAIL_COLOR})`);
+    } else if (got.border !== want.border || got.accent !== QUOTE_RAIL_ACCENT) {
+      bad.push(`accent ${got.accent} · ${got.border} (registered: ${QUOTE_RAIL_ACCENT} · ${want.border})`);
     }
     if (bad.length) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, r.offset), selector: p, value: bad.join('; '),
-      message: p === '.doc-pre' ? 'the block rail differs from .surface-emphasis-rail' : 'the quotation rail leaves the shared geometry or its registered neutral color' });
+      message: p === '.doc-pre' ? 'the block rail differs from .surface-emphasis-rail' : 'the quotation rail leaves the shared geometry or its registered violet accent' });
+  }
+  /* the rendered checker pins the same quotation color */
+  if (ctx.exists(RENDERED_MATRIX)) {
+    const m = /quotation:\s*\{\s*sel:\s*'\.doc-quote',\s*colors:\s*\[([^\]]*)\]/.exec(ctx.read(RENDERED_MATRIX));
+    const colors = m ? m[1].split(',').map((s) => s.trim().replace(/^'|'$/g, '')).filter(Boolean) : [];
+    if (colors.length !== 1 || colors[0] !== QUOTE_RAIL_ACCENT) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: 'RAIL_COLOR.quotation',
+      value: colors.join(' | ') || '(none)', expected: QUOTE_RAIL_ACCENT, message: 'the rendered checker pins a different quotation rail color' });
+  }
+  /* the rendered checker pins the callout to the emphasis rail's own magenta, alone, and
+     admits exactly the three sanctioned accents on any other emphasis rail */
+  if (ctx.exists(RENDERED_MATRIX)) {
+    const read = (key) => {
+      const m = new RegExp(key + ":\\s*\\{\\s*sel:\\s*'\\.surface-emphasis-rail',\\s*colors:\\s*\\[([^\\]]*)\\]").exec(ctx.read(RENDERED_MATRIX));
+      return m ? m[1].split(',').map((s) => s.trim().replace(/^'|'$/g, '')).filter(Boolean) : [];
+    };
+    const callout = read('callout'), treatment = read('emphasis');
+    if (callout.length !== 1 || callout[0] !== EMPHASIS_RAIL_ACCENT) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: 'RAIL_COLOR.callout',
+      value: callout.join(' | ') || '(none)', expected: EMPHASIS_RAIL_ACCENT, message: 'the rendered checker lets an authorial callout take another color than magenta' });
+    if (treatment.join('|') !== TREATMENT_RAIL_ACCENTS.join('|')) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: 'RAIL_COLOR.emphasis',
+      value: treatment.join(' | ') || '(none)', expected: TREATMENT_RAIL_ACCENTS.join(' | '), message: 'the rendered checker no longer admits exactly the three sanctioned accents on an emphasis rail off document text' });
+  }
+  /* the quotation's violet is the one the accent modifier binds, in the same words */
+  const violetRules = parseCss(stripCss(tsrc), 0).filter((r) => r.selectors.includes('.surface-emphasis--violet'));
+  if (violetRules.length !== 1 || last(violetRules[0], '--surface-emphasis-accent') !== QUOTE_RAIL_ACCENT) {
+    findings.push({ rule: 'R7', file: TREATMENTS, selector: '.surface-emphasis--violet',
+      value: violetRules.map((r) => last(r, '--surface-emphasis-accent')).join(' · ') || '(no rule)', expected: QUOTE_RAIL_ACCENT,
+      message: 'the violet accent modifier no longer binds the quotation rail\'s registered violet' });
   }
   /* the rendered link-state matrix equals surface-text-link.css */
   if (ctx.exists(RENDERED_MATRIX) && ctx.exists(TEXT_LINK)) {
@@ -939,14 +974,21 @@ function selfTest(root) {
       allR7(entryLeading) && entryLeading.length === 1 && allR7(entryTracking) && entryTracking.length === 1,
       'one R7 each', { entryFamily, entryWeight, entryLeading, entryTracking });
 
-    const quoteMagenta = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 2px solid var(--ask-emphasis-magenta)'));
-    const quoteThin = added(inRule('.doc-quote', 'border-left: 2px solid var(--line-1)', 'border-left: 1px solid var(--line-1)'));
+    const quoteMagenta = added(inRule('.doc-quote', '--surface-emphasis-accent: var(--ask-emphasis-violet)', '--surface-emphasis-accent: var(--ask-emphasis-magenta)'));
+    const quoteNeutral = added(inRule('.doc-quote', 'border-left: 2px solid var(--surface-emphasis-accent)', 'border-left: 2px solid var(--line-1)'));
+    const quoteThin = added(inRule('.doc-quote', 'border-left: 2px solid var(--surface-emphasis-accent)', 'border-left: 1px solid var(--surface-emphasis-accent)'));
     const preNeutral = added(inRule('.doc-pre', 'border-left: 2px solid var(--surface-emphasis-accent)', 'border-left: 2px solid var(--line-1)'));
     const preViolet = added(inRule('.doc-pre', '--surface-emphasis-accent: var(--ask-emphasis-magenta)', '--surface-emphasis-accent: var(--ask-emphasis-violet)'));
-    record('R7 rails: a magenta quotation rail, a 1px quotation rail, a neutral block rail and a violet block rail each fail once',
-      allR7(quoteMagenta) && quoteMagenta.length === 1 && allR7(quoteThin) && quoteThin.length === 1 &&
-      allR7(preNeutral) && preNeutral.length === 1 && allR7(preViolet) && preViolet.length === 1,
-      'one R7 each', { quoteMagenta, quoteThin, preNeutral, preViolet });
+    const violetDrift = added({ 'surface-treatments.css': read('surface-treatments.css').replace('.surface-emphasis--violet  { --surface-emphasis-accent: var(--ask-emphasis-violet); }', '.surface-emphasis--violet  { --surface-emphasis-accent: var(--ask-emphasis-cyan); }') });
+    const quoteColorDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace("quotation:    { sel: '.doc-quote',             colors: ['var(--ask-emphasis-violet)'] }", "quotation:    { sel: '.doc-quote',             colors: ['var(--line-1)'] }") });
+    const calloutColorDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace("callout:      { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)'] }", "callout:      { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)'] }") });
+    const treatmentDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace("emphasis:     { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)'] }", "emphasis:     { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)'] }") });
+    record('R7 rails: a magenta quotation rail, the retired neutral quotation rail, a 1px quotation rail, a neutral block rail, a violet block rail, a violet modifier that drifts from the quotation, a rendered checker that still pins the neutral quotation, a rendered checker that lets a callout take violet and one that stops admitting the sanctioned accents off document text each fail once',
+      allR7(quoteMagenta) && quoteMagenta.length === 1 && allR7(quoteNeutral) && quoteNeutral.length === 1 && allR7(quoteThin) && quoteThin.length === 1 &&
+      allR7(preNeutral) && preNeutral.length === 1 && allR7(preViolet) && preViolet.length === 1 && allR7(violetDrift) && violetDrift.length === 1 &&
+      allR7(quoteColorDrift) && quoteColorDrift.length === 1 && allR7(calloutColorDrift) && calloutColorDrift.length === 1 &&
+      allR7(treatmentDrift) && treatmentDrift.length === 1,
+      'one R7 each', { quoteMagenta, quoteNeutral, quoteThin, preNeutral, preViolet, violetDrift, quoteColorDrift, calloutColorDrift, treatmentDrift });
 
     const tsrc = read('surface-treatments.css');
     const emphasisNeutral = added({ 'surface-treatments.css': tsrc.replace(/(\.surface-emphasis-rail \{\s*--surface-emphasis-accent: )var\(--ask-emphasis-magenta\)/, '$1var(--line-1)') });

@@ -59,8 +59,9 @@
                      material (fill, blur, edge), attachment (corners) and
                      elevation (depth cue); none determines another
      population      a separate plane that is not a content panel: an
-                     emphasis panel, a comparison plane, an overlay or an
-                     independently scrolling region
+                     emphasis panel, a comparison plane, a section synthesis
+                     (surface-document.css: panel material, free, flush), an
+                     overlay or an independently scrolling region
      owner           this module; the page material, panel material, free
                      attachment and raised elevation are authored in
                      surface-panel.css and shared by selector grouping
@@ -121,8 +122,12 @@
      population      .surface-emphasis for a whole unit (a perimeter and a
                      soft bloom, present at rest); .surface-emphasis-rail for a
                      bounded passage in the reading flow (a vertical accent
-                     rule and an inset); .surface-emphasis-chip for the marker
-                     that names why
+                     rule and an inset), which in a document is the authorial
+                     callout; .surface-emphasis-chip for the marker that names
+                     why — on a surface with no accent of its own, such as a
+                     section synthesis panel, the chip carries the accent
+                     modifier itself, so only its border takes the accent and
+                     the panel gains no perimeter and no bloom
      owner           this module
      reuses          --ask-emphasis-magenta, --ask-emphasis-violet,
                      --ask-emphasis-cyan; operative-label metrics for the chip;
@@ -240,11 +245,17 @@
 
 /* The rail: a bounded passage inside the reading flow or inside an existing
    surface. No perimeter, no bloom, no second wash. It marks attention, not a
-   change of voice, so it is not quotation. surface-document.css reuses its
-   geometry — width, style and inset — for the passage rail of a quotation and
-   a preformatted block, but not its meaning: a quotation's rail is neutral and
-   only a preformatted block's is magenta like this one. check-type-roles.mjs
-   (R7) keeps the geometry equal and does not require the colors to be. */
+   change of voice, so it is not quotation. In a document it is the authorial
+   callout: a thesis, posed question or contrast the document states in its own
+   voice (surface-document.css). surface-document.css reuses its geometry —
+   width, style and inset — for the passage rail of a quotation and a
+   preformatted block, but not its meaning: a quotation's rail is violet,
+   represented voice, and a preformatted block's is magenta like this one.
+   check-type-roles.mjs (R7) keeps the geometry equal and pins each color. On
+   document text this rail is always magenta; elsewhere the violet and cyan
+   modifiers below stay valid. Where surface-document.css is loaded, a rail
+   inside a railed passage — a quotation, a block or another rail — draws none:
+   that module's nested-rail rule removes it, so one passage keeps one rail. */
 .surface-emphasis-rail {
   --surface-emphasis-accent: var(--ask-emphasis-magenta);
   border-left: 2px solid var(--surface-emphasis-accent);

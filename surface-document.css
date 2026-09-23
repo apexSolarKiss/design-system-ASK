@@ -14,7 +14,9 @@
 
    LOAD ORDER   colors_and_type.css -> surface-document.css
                 A table of contents also needs surface-text-link.css, which its
-                entries compose for their interaction.
+                entries compose for their interaction. An authorial callout or
+                a section synthesis also needs surface-panel.css ->
+                surface-treatments.css, loaded after this file.
 
    It introduces no token and no palette value. Family, size, weight, leading,
    tracking, foreground, space and rule color resolve through the foundation,
@@ -33,7 +35,8 @@
      meaning         a complete text style selected by what the text is in the
                      document, never by its element, its size or its payload
      population      document title, section / subsection / deep headings,
-                     lede, document body, entry title, quotation text,
+                     lede, document body (in flow, in an authorial callout
+                     and in a section synthesis), entry title, quotation text,
                      operative label, metadata, inline code, table-of-contents
                      entry, dense table cell; Caption through the foundation's
                      .caption
@@ -84,20 +87,93 @@
      counterexample  a smaller, lighter or recolored heading signaling depth
 
    QUOTATION
-     meaning         a change of voice, with optional attribution
-     population      quoted statements in document text, long or short
-     owner           this module
-     reuses          the passage rail's geometry in the neutral quotation
-                     color (--line-1), document body metrics, metadata metrics
-                     for the attribution
+     meaning         represented voice: words presented as someone's — quoted,
+                     or introduced as what a speaker says — with optional
+                     attribution. It records whose words these are and nothing
+                     more: not verification, evidence, endorsement, agreement
+                     or approval
+     population      quoted statements in document text, long or short; an
+                     earlier statement by the same author, quoted; speech the
+                     prose introduces ("when another person says:"), including
+                     illustrative speech; a quoted code excerpt, set as a
+                     .doc-pre inside the .doc-quote
+     owner           this module; who is speaking is the consuming surface's
+                     editorial assignment, never inferred from the element, the
+                     font or the presence of quotation marks
+     reuses          the passage rail's geometry in the emphasis violet
+                     (--ask-emphasis-violet), document body metrics, metadata
+                     metrics for the attribution
      variation       none. .doc-quote--display is RETIRED (2026-09-18): it set
                      a short statement larger than the prose around it, while
                      the plain quotation set smaller. A quotation is body-sized
-                     at every length; the rail says it is set apart, and its
-                     neutral color says it is another voice, not an emphasis
-     exclusions      not a container: no wash, no blur, no shadow
+                     at every length. The neutral quotation rail is RETIRED
+                     (2026-09-19): too faint to read as a boundary in either
+                     theme, it made a set-apart passage look ghosted
+     exclusions      not a container: no wash, no blur, no shadow. The
+                     document's own thesis, question or contrast is not a
+                     quotation even when it contains quoted words; it is an
+                     authorial callout
      example         a governing rule quoted with a footer naming its source
-     counterexample  a quotation smaller or larger than the prose it sits in
+     counterexample  a quotation smaller or larger than the prose it sits in;
+                     an authorial thesis set violet because it contains a
+                     phrase in quotation marks
+
+   AUTHORIAL CALLOUT
+     meaning         a passage the document states in its own voice and sets
+                     apart from the reading flow: a thesis, a posed question,
+                     an analytical contrast, a reasoning passage
+     population      p.doc-body.surface-emphasis-rail for one paragraph; a
+                     .doc-group.surface-emphasis-rail wrapping a lead-in and
+                     the block it introduces, as one unit
+     owner           surface-treatments.css owns the rail
+                     (.surface-emphasis-rail, magenta); this module owns the
+                     text role inside it, which stays document body
+     reuses          the passage rail's geometry in the emphasis magenta;
+                     document body metrics, authored inline emphasis included
+     variation       none: an authorial callout is always magenta. The
+                     rail's violet and cyan modifiers stay valid on any other
+                     emphasis rail; in a document the violet rail is the
+                     quotation's, so a callout never takes it. The rendered
+                     check treats an emphasis rail on document text as a
+                     callout
+     exclusions      assigned by the passage's role, never by boldness: a bold
+                     paragraph that labels the block after it, or an inline
+                     strong run, is not a callout. Not a quotation, not a
+                     container, never a heading. A preformatted block of the
+                     document's own is already magenta and takes no second
+                     class
+     example         "Across the subject boundary, proof becomes evidence." —
+                     the document's own compression of an argument, set apart
+     counterexample  the same statement on a neutral rail, or as plain prose
+                     after the reader has been told it is the point
+
+   SECTION SYNTHESIS
+     meaning         the synthesis of the sections before it — "what the part
+                     you just read comes to" — larger in scope than a callout,
+                     so it is contained rather than railed
+     population      a closing summary or compression of a document part
+     owner           this module for the composition; surface-panel.css and
+                     surface-treatments.css own the classes it composes
+     reuses          .surface-separate + .surface-material-panel +
+                     .surface-attach-free + .surface-elevation-flush +
+                     .doc-group: the panel's tint and neutral perimeter, free
+                     corners, no shadow. A .surface-emphasis-chip naming the
+                     synthesis, with .surface-emphasis--magenta on the chip
+                     itself so only its border takes the accent. The
+                     synthesis text stays .doc-body at the Body step, authored
+                     inline emphasis included
+     variation       none: every synthesis in a document takes the same
+                     composition, whatever the epistemic status of its text
+     exclusions      no rail inside it, no .surface-emphasis on the panel (that
+                     adds a bloom), no blur, no raised shadow, no hover, no
+                     disclosure, never .surface-panel-support for its text.
+                     The space before it is the consuming composition's; it
+                     must read as a new unit after the last section, not as
+                     a continuation of that section's closing passage
+     example         a compression closing an argument: a flat tinted panel, a
+                     magenta-bordered chip and the body-sized compression
+     counterexample  one synthesis on a magenta rail and another as plain
+                     prose; a synthesis in supporting-copy size inside a card
 
    PREFORMATTED AND STRUCTURED TEXT
      meaning         a block whose line structure is the content
@@ -119,40 +195,50 @@
 
    PASSAGE RAIL
      meaning         "this passage is set apart from the reading flow and is
-                     one unit" — the outer rail of a quotation and of a
-                     preformatted block. The GEOMETRY is shared; the COLOR
-                     says which kind of passage it is
-     population      .doc-quote and .doc-pre, plain or structured
+                     one unit" — the outer rail of a quotation, a
+                     preformatted block and an authorial callout. The
+                     GEOMETRY is shared; the COLOR says whose passage it is
+     population      .doc-quote and .doc-pre, plain or structured, and
+                     .surface-emphasis-rail composed onto document text
      owner           this module. Its geometry is surface-treatments'
                      .surface-emphasis-rail geometry — one 2px solid rule,
                      --space-4 inset — and an owner check (check-type-roles
-                     R7) keeps the two equal. Color identity is NOT shared:
-       quotation     --line-1, the neutral boundary role: a change of voice is
-                     not an emphasis
+                     R7) keeps the two equal. Color identity is NOT shared,
+                     and every passage color is an emphasis accent:
+       quotation     violet, --ask-emphasis-violet: represented voice,
+                     declared as .surface-emphasis--violet declares it
        preformatted  the magenta emphasis rail, declared exactly as
                      .surface-emphasis-rail declares it: the line structure is
                      the content and is set apart as such
-       emphasis      .surface-emphasis-rail stays surface-treatments' own
-                     magenta rail; "pay special attention" belongs to it
-     reuses          2px solid, --space-4 inset; --line-1 for a quotation;
-                     --surface-emphasis-accent set to --ask-emphasis-magenta for
-                     a preformatted block
-     variation       none: a quotation's rail is always neutral and a block's
-                     always magenta
-     exclusions      a quotation or preformatted block inside a railed passage
-                     (another .doc-quote or .doc-pre, or a .surface-emphasis-
-                     rail) draws no rail of its own: the outer rail already
-                     carries the passage. Two railed passages in a row are held
-                     apart by --space-5, as two emphasis rails are. Not the
-                     hierarchy rail, which stays neutral inside the block. No
-                     wash, no blur, no shadow
+       callout       .surface-emphasis-rail itself, surface-treatments' own
+                     magenta rail: the document's own voice, set apart
+     reuses          2px solid, --space-4 inset; --surface-emphasis-accent set
+                     to --ask-emphasis-violet for a quotation and to
+                     --ask-emphasis-magenta for a preformatted block
+     variation       none: a quotation's rail is always violet, and a block's
+                     and a callout's always magenta
+     exclusions      a passage inside a railed passage (a .doc-quote, a
+                     .doc-pre or a .surface-emphasis-rail inside another of
+                     them) draws no rail of its own: the outer rail already
+                     carries the passage, so one logical passage has one outer
+                     rail and the outermost role names it — a quotation inside
+                     an authorial callout is carried by the callout's magenta
+                     rail. Two railed passages in a row are held apart by
+                     --space-5, as two emphasis rails are. NEUTRAL IS
+                     STRUCTURE ONLY: the 1px hierarchy rail structures a section,
+                     a list or a block, and is never the outer boundary of a
+                     set-apart passage. No wash, no
+                     blur, no shadow. The emphasis violet here is a document
+                     role; it names no review, proof or evidence state, and a
+                     surface's own labeled uses of the accents keep their own
+                     meanings
      example         a structured block with the magenta rail outside and a
                      neutral hierarchy rail for each level inside; a quotation
-                     beside it on the same geometry in --line-1
-     counterexample  a rule too faint to read as a boundary in either theme;
-                     one magenta rail on every set-apart passage, so a
-                     quotation reads as an emphasis and an emphasis stops
-                     standing out
+                     beside it on the same geometry in violet; a posed question
+                     of the document's own on the magenta rail
+     counterexample  a neutral outer rail on a standalone passage, which reads
+                     as a ghost of a boundary; a quotation in magenta, or an
+                     authorial statement in violet; two rails on one passage
 
    TABLE OF CONTENTS
      meaning         structural navigation: where each part of this document
@@ -474,16 +560,20 @@
 
 /* ---- Passage rail ----------------------------------------------------- */
 
-/* A quotation and a preformatted block are set apart from the reading flow,
-   each as one unit, on the geometry surface-treatments.css gives
-   .surface-emphasis-rail: a 2px solid rule and a --space-4 inset. The color is
-   the role's, not shared. A quotation is a change of voice, so its rail is the
-   neutral boundary role --line-1. A preformatted block's line structure is the
+/* A quotation, a preformatted block and an authorial callout are set apart from
+   the reading flow, each as one unit, on the geometry surface-treatments.css
+   gives .surface-emphasis-rail: a 2px solid rule and a --space-4 inset. The
+   color is the role's, not shared, and it is always an emphasis accent, so
+   every set-apart passage reads as a boundary in both themes. A quotation is
+   represented voice, so its rail is the emphasis violet, declared as the violet
+   accent modifier declares it. A preformatted block's line structure is the
    content, so it takes the magenta emphasis rail, declared exactly as the
-   emphasis rail declares it. An explicit .surface-emphasis-rail stays magenta,
-   and so still stands apart from the quotations around it. */
+   emphasis rail declares it. The document's own callout — a thesis, a posed
+   question, a contrast — is .surface-emphasis-rail itself, magenta, composed
+   onto a document text role. Neutral is structure only: the hierarchy rail. */
 .doc-quote {
-  border-left: 2px solid var(--line-1);
+  --surface-emphasis-accent: var(--ask-emphasis-violet);
+  border-left: 2px solid var(--surface-emphasis-accent);
   padding-left: var(--space-4);
 }
 .doc-pre {
@@ -492,10 +582,13 @@
   padding-left: var(--space-4);
 }
 /* A passage inside a railed passage draws no rail of its own: the outer rail
-   already carries it, and a second rail would read as a second passage. The
-   selector is a descendant one, so it holds through any container inside the
-   outer passage. */
-:is(.doc-quote, .doc-pre, .surface-emphasis-rail) :is(.doc-quote, .doc-pre) {
+   already carries it, and a second rail would read as a second passage. So a
+   quoted block — a code excerpt someone else wrote, inside a .doc-quote — keeps
+   the one violet rail and takes no magenta rail, and a callout inside a
+   quotation draws no second rail. The selector is a descendant one, so it holds
+   through any container inside the outer passage; it outranks the emphasis
+   rail's own rule at (0,2,0). */
+:is(.doc-quote, .doc-pre, .surface-emphasis-rail) :is(.doc-quote, .doc-pre, .surface-emphasis-rail) {
   border-left: none;
   padding-left: 0;
 }

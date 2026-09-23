@@ -23,6 +23,11 @@
 <!-- The canonical textual-link contract, loaded so the specimen below RENDERS
      from the module rather than from a local restatement. -->
 <link rel="stylesheet" href="../surface-text-link.css">
+<!-- The canonical panel and treatment rules, in their documented load order, so
+     the two authorial notes below take the shared magenta callout rail
+     (.surface-emphasis-rail) rather than a locally drawn neutral border. -->
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
 <!-- Page chrome: the canonical surface-shell pattern, consumed by same-repo
      reference. The mode selector below is NOT part of that pattern — it is this
      inspection surface's own control, styled here and driven by
@@ -335,7 +340,7 @@
          has only the rule beneath it. -->
     <h3 class="spec-role" id="textual-link">Textual link <span class="spec-role-meta">unboxed · canonical <code>.surface-text-link</code></span></h3>
     <p class="note" style="margin: 0 0 var(--space-3);">A link inside running prose or a structural title, opted in by class. The resting rule is the emphasis accent at partial opacity — its own hue at a reduced dose, never mixed toward the foreground. Hover raises it to full opacity. Focus is governed separately and independently. The module declares <strong>no text color</strong>: an ordinary link inherits its context, and a role-colored anchor keeps its own.</p>
-    <p class="note" style="margin: 0 0 var(--space-5); border-left: 2px solid var(--line-1); padding-left: var(--space-3);"><strong>This is the default-ASK treatment, and no strict AA claim is made for it.</strong> The resting underline measures 1.72:1 and 1.82:1 against the light gradient stops and 2.11:1 and 2.23:1 against the dark — below the strict 3:1 non-text floor <em>in both themes</em>. In light that floor is unreachable at any opacity, full included; in dark a higher opacity would reach it, but that would be a different treatment from the single uniform default. The affordance rests on the <em>presence</em> of a rule where the surrounding prose has none, plus the independently governed focus indicator, which does clear its own requirement. <strong>No AA alternate ships in this unit.</strong></p>
+    <p class="note surface-emphasis-rail" style="margin: 0 0 var(--space-5);"><strong>This is the default-ASK treatment, and no strict AA claim is made for it.</strong> The resting underline measures 1.72:1 and 1.82:1 against the light gradient stops and 2.11:1 and 2.23:1 against the dark — below the strict 3:1 non-text floor <em>in both themes</em>. In light that floor is unreachable at any opacity, full included; in dark a higher opacity would reach it, but that would be a different treatment from the single uniform default. The affordance rests on the <em>presence</em> of a rule where the surrounding prose has none, plus the independently governed focus indicator, which does clear its own requirement. <strong>No AA alternate ships in this unit.</strong></p>
     <div class="grid cols-2">
       <div class="card">
         <p style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">The design system is published at <a class="surface-text-link" href="../index.html">design-system-ASK</a>, and the catalog lists every <a class="surface-text-link" href="../patterns/index.html">surface and artifact pattern</a> it exhibits.</p>
@@ -360,7 +365,7 @@
       <div class="row"><span class="mono">body background-color</span><span class="meta" data-computed="body-bg">&mdash;</span></div>
     </div>
     <p class="note" style="margin: var(--space-4) 0 0;">Use the mode selector above to check all three theme paths. <code>body</code> stays transparent on purpose: the root carries the solid, and the root's background is what propagates to the canvas.</p>
-    <p class="note" style="margin: var(--space-3) 0 0; border-left: 2px solid var(--line-1); padding-left: var(--space-3);"><strong>These readouts are necessary, not sufficient.</strong> They show the values the browser is being handed. The pocket itself sits outside the viewport and cannot be judged in a desktop window — <b>confirm it on a real device</b> by over-scrolling past the top and bottom of the page in both light and dark.</p>
+    <p class="note surface-emphasis-rail" style="margin: var(--space-3) 0 0;"><strong>These readouts are necessary, not sufficient.</strong> They show the values the browser is being handed. The pocket itself sits outside the viewport and cannot be judged in a desktop window — <b>confirm it on a real device</b> by over-scrolling past the top and bottom of the page in both light and dark.</p>
   </section>
 
   <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>

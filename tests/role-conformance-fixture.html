@@ -32,6 +32,8 @@
   .fx-nohover.surface-text-link:hover { text-decoration-color: var(--surface-text-link-underline); }
   .fx-cover { position: relative; }
   .fx-cover::after { content: ""; position: absolute; inset: 0; }
+  /* A consumer override the rendered check must catch: it recolors the quotation rail. */
+  .fx-override-quote { border-left-color: var(--line-1); }
 </style>
 </head>
 <body>
@@ -62,7 +64,7 @@
       </div>
     </section>
     <blockquote class="doc-quote">
-      <p>A quotation at the body size, on the neutral quotation rail, with a <a class="surface-text-link" href="#conforming">link</a> in it.</p>
+      <p>A quotation at the body size, on the violet quotation rail, with a <a class="surface-text-link" href="#conforming">link</a> in it.</p>
       <footer>source</footer>
     </blockquote>
     <pre class="doc-pre">a plain preformatted block
@@ -77,6 +79,16 @@ another</pre></div>
       <p class="doc-body">An emphasized passage whose block draws no second rail:</p>
       <pre class="doc-pre">inside the outer rail</pre>
     </div>
+    <p class="doc-body surface-emphasis-rail">An authorial callout: the document's own thesis, on the magenta rail, at the body step.</p>
+    <blockquote class="doc-quote">
+      <pre class="doc-pre">a quoted code excerpt
+keeps the one violet rail</pre>
+    </blockquote>
+    <blockquote class="doc-quote"><div class="surface-emphasis-rail"><p class="doc-body">A callout inside a quotation draws no second rail.</p></div></blockquote>
+    <section class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
+      <p class="surface-emphasis-chip surface-emphasis--magenta">compression</p>
+      <p class="doc-body">A section synthesis: a flat panel, a magenta-bordered chip, and <strong>body-sized</strong> text with no rail.</p>
+    </section>
     <ul class="doc-toc-list">
       <li><a class="doc-toc-link surface-text-link" href="#conforming">First-level entry</a>
         <ul class="doc-toc-list doc-hierarchy">
@@ -145,8 +157,23 @@ another</pre></div>
     <div data-control="preformatted block with no rail" data-expect="C3.missing">
       <pre class="doc-pre" style="border-left: none; padding-left: 0">a block with its rail removed</pre>
     </div>
-    <div data-control="preformatted block on the neutral quotation rail" data-expect="C3.color">
-      <pre class="doc-pre" style="border-left-color: var(--line-1)">a block drawn as if it were a quotation</pre>
+    <div data-control="preformatted block on the violet quotation rail" data-expect="C3.color">
+      <pre class="doc-pre" style="border-left-color: var(--ask-emphasis-violet)">a block drawn as if it were a quotation</pre>
+    </div>
+    <div data-control="quotation on the retired neutral rail" data-expect="C3.color">
+      <blockquote class="doc-quote" style="border-left-color: var(--line-1)"><p>A quotation on the neutral rail the register retired.</p></blockquote>
+    </div>
+    <div data-control="quotation with its rail removed" data-expect="C3.missing">
+      <blockquote class="doc-quote" style="border-left: none; padding-left: 0"><p>A quotation that has lost its boundary.</p></blockquote>
+    </div>
+    <div data-control="quotation on the cyan accent" data-expect="C3.color">
+      <blockquote class="doc-quote" style="border-left-color: var(--ask-emphasis-cyan)"><p>A quotation on an accent that is not its role's.</p></blockquote>
+    </div>
+    <div data-control="a quotation forced back on inside a callout" data-expect="C3.double">
+      <div class="surface-emphasis-rail"><blockquote class="doc-quote" style="border-left: 2px solid var(--ask-emphasis-violet); padding-left: var(--space-4)"><p>A second rail inside one callout.</p></blockquote></div>
+    </div>
+    <div data-control="a consumer stylesheet rule that recolors the quotation rail" data-expect="C3.color">
+      <blockquote class="doc-quote fx-override-quote"><p>A quotation a consumer rule turns neutral again.</p></blockquote>
     </div>
     <div data-control="quotation on the magenta emphasis rail" data-expect="C3.color">
       <blockquote class="doc-quote" style="border-left-color: var(--ask-emphasis-magenta)"><p>A quotation drawn as if it were an emphasis.</p></blockquote>
@@ -161,11 +188,26 @@ another</pre></div>
       <blockquote class="doc-quote"><p>outer</p>
         <pre class="doc-pre" style="border-left: 2px solid var(--ask-emphasis-magenta); padding-left: var(--space-4)">inner</pre></blockquote>
     </div>
-    <div data-control="emphasis rail inside a quotation" data-expect="C3.double">
-      <blockquote class="doc-quote"><div class="surface-emphasis-rail"><span>an emphasis rail inside a railed passage</span></div></blockquote>
+    <div data-control="emphasis rail forced on inside a quotation" data-expect="C3.double">
+      <blockquote class="doc-quote"><div class="surface-emphasis-rail" style="border-left: 2px solid var(--ask-emphasis-magenta); padding-left: var(--space-4)"><span>an emphasis rail inside a railed passage</span></div></blockquote>
     </div>
-    <div data-control="emphasis rail on the neutral quotation color" data-expect="C3.color">
-      <div class="surface-emphasis-rail" style="--surface-emphasis-accent: var(--line-1)"><p class="doc-body">An emphasis drawn as if it were a quotation.</p></div>
+    <div data-control="emphasis rail on the retired neutral color" data-expect="C3.color">
+      <div class="surface-emphasis-rail" style="--surface-emphasis-accent: var(--line-1)"><p class="doc-body">An emphasis drawn on the neutral rail.</p></div>
+    </div>
+    <div data-control="authorial callout on the violet quotation rail" data-expect="C3.color">
+      <p class="doc-body surface-emphasis-rail surface-emphasis--violet">A callout drawn in the quotation's violet, so it reads as someone else's words.</p>
+    </div>
+    <div data-control="authorial callout on the cyan accent" data-expect="C3.color">
+      <p class="doc-body surface-emphasis-rail surface-emphasis--cyan">A callout drawn in an accent a document does not give it.</p>
+    </div>
+    <div data-control="rail around body text on the violet accent" data-expect="C3.color">
+      <div class="surface-emphasis-rail surface-emphasis--violet"><p class="doc-body">A rail that holds document text is a callout, whatever element draws it.</p></div>
+    </div>
+    <div data-control="callout group on the cyan accent" data-expect="C3.color">
+      <div class="doc-group surface-emphasis-rail surface-emphasis--cyan"><p class="doc-meta">A group rail is a callout by its composition, whatever it holds.</p></div>
+    </div>
+    <div data-control="authorial callout with its rail removed" data-expect="C3.missing">
+      <p class="doc-body surface-emphasis-rail" style="border-left: none; padding-left: 0">A callout that has fallen back to plain prose.</p>
     </div>
     <div data-control="emphasis rail one pixel wide" data-expect="C3.width">
       <div class="surface-emphasis-rail" style="border-left-width: 1px"><p class="doc-body">An emphasis off the shared geometry.</p></div>
@@ -267,6 +309,9 @@ another</pre></div>
     <div data-control="dense header holding a lede" data-expect="C5.body">
       <table class="doc-dense-table"><thead><tr><th class="doc-label"><span class="doc-lede">a header set as a lede</span></th></tr></thead></table>
     </div>
+    <div data-control="an emphasis rail off document text keeps a sanctioned violet accent" data-expect="">
+      <div class="surface-emphasis-rail surface-emphasis--violet"><span>A treatment rail outside document roles, where violet is one of its three accents.</span></div>
+    </div>
     <div data-control="an ordinary prose table stays prose" data-expect="">
       <table><thead><tr><th>Reading</th><th>Consequence</th></tr></thead>
         <tbody><tr><td class="doc-body">A narrative comparison</td><td class="doc-body">is not tabular payload and keeps its prose role.</td></tr></tbody></table>
@@ -360,8 +405,11 @@ another</pre></div>
     <div data-control="a region that replaces the magenta accent around a link" data-expect="C0.token" data-expect-token="--ask-emphasis-magenta">
       <div style="--ask-emphasis-magenta: #808080"><p class="doc-body">A <a class="surface-text-link" href="#controls">link</a> whose accent is gray.</p></div>
     </div>
-    <div data-control="a region that recolors the quotation rail token" data-expect="C0.token" data-expect-token="--line-1">
-      <div style="--line-1: #FF00FF"><blockquote class="doc-quote"><p>A quotation whose neutral rail token is magenta.</p></blockquote></div>
+    <div data-control="a region that recolors the hairline token around a quotation" data-expect="C0.token" data-expect-token="--line-1">
+      <div style="--line-1: #FF00FF"><blockquote class="doc-quote"><p>A quotation inside a region whose hairline token is magenta.</p></blockquote></div>
+    </div>
+    <div data-control="a region that replaces the violet accent around a quotation" data-expect="C0.token" data-expect-token="--ask-emphasis-violet">
+      <div style="--ask-emphasis-violet: #808080"><blockquote class="doc-quote"><p>A quotation whose violet rail is gray.</p></blockquote></div>
     </div>
   </section>
 

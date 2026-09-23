@@ -125,29 +125,33 @@ the check that proves which elements carry which role and what each computes to,
 `tools/check-role-conformance.mjs`, which drives each governed link's states with real
 input. A static read of `surface-document.css` (`check-type-roles.mjs` R7) cannot see a
 consuming page — a local size override, a table of contents built from bare anchors, a
-dense table set as body prose, a block with no rail, a quotation on the emphasis color,
+dense table set as body prose, a block with no rail, a quotation on the wrong accent,
 smaller text tucked inside body copy, a hover rule that drops the magenta, a region that
 swaps a token. This page can.
 
 It holds one **conforming specimen** — every governed role except the title, which the
-page's own heading carries: a quotation on the neutral rail with its attribution, a plain
-and a structured block on the magenta rail, a block inside an emphasis rail, a two-level
+page's own heading carries: a quotation on the violet rail with its attribution, a plain
+and a structured block on the magenta rail, a block inside an emphasis rail, an authorial
+callout on the magenta rail, a quoted code excerpt on the one violet rail, a callout inside
+a quotation drawing no second rail, a section synthesis panel with its chip, a two-level
 table of contents, a declared dense table and an unmarked prose table, an entry title on
 an operable entry, and links in body, metadata, a quotation and a dense cell — which must
-return no finding at rest or in any link state. After it come **controls**: 76 negative
+return no finding at rest or in any link state. After it come **controls**: 87 negative
 controls, one per failure branch, each of which must fail with exactly the reason codes
-it names, no more and no fewer; and 2 positive controls — an unmarked prose table and a
-complete profile declaration — which must return no finding:
+it names, no more and no fewer; and 3 positive controls — an unmarked prose table, a
+complete profile declaration and an emphasis rail off document text keeping a sanctioned
+violet accent — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
                             text (with C1.lh C1.size C2.body) · one that swaps
                             --font-sans around body text · one that makes
                             --ask-emphasis-magenta gray around a link · one that
-                            makes --line-1 magenta around a quotation; each finding
-                            must name its token, and each of the last three is the
-                            only finding, because every other rule resolves the
-                            swapped token in the same context
+                            makes --line-1 magenta around a quotation · one that
+                            makes --ask-emphasis-violet gray around a quotation;
+                            each finding must name its token, and each of the last
+                            four is the only finding, because every other rule
+                            resolves the swapped token in the same context
 C1.lh C1.size C2.body       body copy at the Small step · a quotation set small
 C1.lh C1.size C2.heading    a deep heading smaller than its body
 C1.color · C1.weight ·      body in the tertiary foreground · body at 300 · body on
@@ -157,13 +161,21 @@ C1.family · C1.weight ·     an entry title in mono · an entry title at the bo
 C1.lh · C1.tracking ·       weight (200) · an entry title on the panel label's heading
 C1.case                     leading · an entry title on the panel label's tight
                             tracking · an entry title in uppercase
-C3.missing · C3.color ·     a block with no rail · a block on the neutral quotation
-C3.color · C3.width ·       rail · a quotation on the magenta emphasis rail · a 1px
-C3.inset · C3.double ·      quotation rail · an inset too small · a second rail
-C3.double · C3.color ·      inside a rail · an emphasis rail inside a quotation ·
-C3.width · C3.hierarchy     an emphasis rail on the neutral quotation color · a 1px
-                            emphasis rail · a hierarchy level drawn as a 2px
-                            magenta rail
+C3.missing · C3.color ·     a block with no rail · a block on the violet quotation
+C3.color · C3.color ·       rail · a quotation on the retired neutral rail · a
+C3.missing · C3.color ·     quotation on the magenta emphasis rail · a quotation
+C3.double · C3.color ·      with its rail removed · a quotation on the cyan accent ·
+C3.width · C3.inset ·       a quotation forced back on inside a callout · a consumer
+C3.double · C3.double ·     stylesheet rule that recolors the quotation rail · a 1px
+C3.color · C3.color ·       quotation rail · an inset too small · a second rail
+C3.color · C3.color ·       inside a rail · an emphasis rail forced on inside a
+C3.color · C3.missing ·     quotation · an emphasis rail on the retired neutral
+C3.width · C3.hierarchy     color · an authorial callout on the violet quotation
+                            rail · an authorial callout on the cyan accent · a rail
+                            around body text on the violet accent · a callout group
+                            on the cyan accent · an authorial callout with its rail
+                            removed · a 1px emphasis rail · a hierarchy level drawn
+                            as a 2px magenta rail
 C4.class · C4.entry ·       a contents link without the text-link class, in a list
 C4.body · C4.underline ·    and outside one · a contents anchor without its role ·
 C4.underline-color          a contents entry set as body · an underline removed ·

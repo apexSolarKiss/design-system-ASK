@@ -49,13 +49,20 @@
                         Body step; no heading role computes smaller
      C3  rails          every .doc-quote and .doc-pre is covered by exactly one
                         rail of the shared geometry (2px solid, --space-4
-                        inset) in its role's color: --line-1 for a quotation,
-                        magenta for a preformatted block. Its own rail, or the
-                        nearest railed passage around it, never both; an
-                        emphasis rail inside a railed passage is a second rail.
-                        A .surface-emphasis-rail outside a railed passage draws
-                        the same geometry in an emphasis accent (magenta unless
-                        an accent modifier names violet or cyan). Every
+                        inset): its own, in its role's color — the emphasis
+                        violet for a quotation, magenta for a preformatted
+                        block — or the nearest railed passage around it, whose
+                        role names the passage; never both. An emphasis rail
+                        inside a railed passage is a second rail. A
+                        .surface-emphasis-rail outside a railed passage draws the
+                        same geometry. On document text — a rail that carries
+                        document body or lede or a text composition
+                        (.doc-group, .doc-prose, .doc-section, .doc-titled,
+                        .doc-labeled), or holds any of those, a quotation or a
+                        block — it is an authorial callout and must be magenta:
+                        in a document the violet rail is the quotation's. Any
+                        other emphasis rail may take magenta, violet or cyan, the
+                        accents surface-treatments sanctions. Every
                         .doc-hierarchy draws the 1px solid --line-2 hierarchy
                         rail at the --space-4 inset
      C4  contents       every .doc-toc-link, wherever it sits, carries
@@ -171,15 +178,21 @@
     '--line-1': ['rgba(255, 255, 255, 0.45)', 'rgba(212, 198, 225, 0.22)'],
     '--line-2': ['rgba(255, 255, 255, 0.22)', 'rgba(212, 198, 225, 0.10)'],
   };
-  /* C3: one geometry, a color per role. The emphasis rail may take any of
-     surface-treatments' three accents; the two passages may not vary. */
+  /* C3: one geometry, one color per role. An emphasis rail on document text is an
+     authorial callout and is always magenta; any other emphasis rail keeps the
+     three accents surface-treatments sanctions. check-type-roles.mjs R7 pins the
+     quotation, callout and treatment-rail colors here to the owner's rules. */
   const RAIL = { width: 2, style: 'solid', inset: '--space-4' };
   const HIERARCHY_RAIL = { width: 1, style: 'solid', color: 'var(--line-2)', inset: '--space-4' };
   const RAIL_COLOR = {
-    quotation:    { sel: '.doc-quote',             colors: ['var(--line-1)'] },
+    quotation:    { sel: '.doc-quote',             colors: ['var(--ask-emphasis-violet)'] },
     preformatted: { sel: '.doc-pre',               colors: ['var(--ask-emphasis-magenta)'] },
+    callout:      { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)'] },
     emphasis:     { sel: '.surface-emphasis-rail', colors: ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)'] },
   };
+  /* Document text: a rail carrying one of these, or holding one, is an authorial callout. A rail that is
+     itself a quotation or a block is judged by that role first (railKind). */
+  const DOCUMENT_TEXT = '.doc-body, .doc-lede, .doc-group, .doc-prose, .doc-section, .doc-titled, .doc-labeled, .doc-quote, .doc-pre';
   /* C9: the states surface-text-link.css declares, as the page must compute
      them. check-type-roles.mjs R7 holds this matrix equal to that file. */
   const LINK_STATES = {
@@ -272,7 +285,9 @@
   /* The rail an element draws, judged against its role's geometry and color:
      'rail' | 'none' | 'width' | 'color' | 'inset'. */
   function railKind(el) {
-    return el.matches(RAIL_COLOR.quotation.sel) ? 'quotation' : el.matches(RAIL_COLOR.preformatted.sel) ? 'preformatted' : 'emphasis';
+    if (el.matches(RAIL_COLOR.quotation.sel)) return 'quotation';
+    if (el.matches(RAIL_COLOR.preformatted.sel)) return 'preformatted';
+    return el.matches(DOCUMENT_TEXT) || el.querySelector(DOCUMENT_TEXT) ? 'callout' : 'emphasis';
   }
   function railOf(el) {
     const c = getComputedStyle(el);
