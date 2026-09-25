@@ -37,7 +37,11 @@ const SHELLS = [
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
-  { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html' },
+  // The output artifact is a document-register consumer: it loads the register's four root modules by
+  // bare filename, as a consumer vendors them beside its template, so they are declared in rootRefs
+  // rather than routed through `_dsa-tokens/`, the token and font mirror.
+  { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html',
+    rootRefs: ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css'] },
   // Both message-archive previews render the SAME canonical template off ONE source; the generator
   // sets data-flavor on the <html> tag so the gallery can show the two ratified flavors side by side
   // without a second template, duplicated markup, or a flavor-specific geometry branch. Same pattern
@@ -154,10 +158,27 @@ function replaceOnce(html, re, replacement, what, out) {
   return html.replace(re, replacement);
 }
 
+// Fail-closed root-module graph: a rootRefs declaration is also the shell's contract for which root
+// modules it loads and in what order, so the transform asserts it before rewriting anything. Each
+// declared ref must be unique, occur exactly once as an href or src value in the canonical shell, and
+// occur in declared order. Without this, a shell that dropped, repeated or reordered a module would
+// regenerate cleanly and `--check` would accept the broken result as the new expected output.
+function assertRootRefs(html, s) {
+  const refs = s.rootRefs;
+  if (new Set(refs).size !== refs.length) throw new Error(`gen-pattern-previews: rootRefs for ${s.out} declares ${refs.join(', ')}, which repeats an entry — refusing to emit.`);
+  const found = [...html.matchAll(/\b(?:href|src)="([^"]*)"/g)].map((m) => m[1]).filter((v) => refs.includes(v));
+  for (const r of refs) {
+    const n = found.filter((v) => v === r).length;
+    if (n !== 1) throw new Error(`gen-pattern-previews: expected exactly one href or src "${r}" in ${s.src}, found ${n} — canonical shell changed; refusing to emit.`);
+  }
+  if (found.some((v, i) => v !== refs[i])) throw new Error(`gen-pattern-previews: root modules in ${s.src} occur as ${found.join(', ')}, declared ${refs.join(', ')} — canonical shell changed; refusing to emit.`);
+}
+
 // Deterministic transform: canonical shell -> preview HTML. Pure (no I/O side effects beyond
 // reading the canonical source), so `--check` can compute the expected set in memory.
 function render(s) {
   let html = fs.readFileSync(path.join(PATTERNS, s.src), 'utf8');
+  if (s.rootRefs) assertRootRefs(html, s);
   html = html.replace(/\b(href|src)="([^"]*)"/g, (m, attr, val) => `${attr}="${rewriteRef(val, s)}"`);
   html = html.replace(/<head(\s[^>]*)?>/i, (m) => `${m}\n${MARKER(s.out, s.dir)}\n<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/${s.dir}/">\n${THEME_INIT}`);
   // Preview-only initial-view tuning: inject right after the shared fit contract loads, before

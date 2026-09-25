@@ -84,6 +84,8 @@ const DEPENDENCIES = {
 const TOKEN_MIRROR = ['./_dsa-tokens/', '_dsa-tokens/'];
 const ROOT_REFS = {
   'patterns/surface-shell/surface-shell.template.html': ['surface-action.css'],
+  'patterns/output-artifact/static-output-artifact.html':
+    ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css'],
 };
 
 /* The embedded-font payload carries @font-face data only. */
