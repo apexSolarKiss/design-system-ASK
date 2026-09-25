@@ -15,7 +15,7 @@
                   invalid one exempts nothing.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped }. Each finding carries a rule (C0–C10) and a reason code, such
+   unmapped }. Each finding carries a rule (C0–C11) and a reason code, such
    as C1.size or C4.underline, so a fixture can require the exact reason.
 
    check() reads the page at rest. The interaction states (C9) need real
@@ -110,6 +110,23 @@
                         an element type and fail; it matches exactly
                         expected_count elements in scope; no match carries a
                         governed role or contains a governed role or passage
+     C11 peer groups    a declared peer group, .doc-pre-group, is a direct
+                        child of a .doc-pre--structured block that holds
+                        nothing else at its top level, text included; it opens
+                        on its label, a .doc-pre-part that shows text, keeps its
+                        text in parts and holds no group (C11.shape). Its rhythm
+                        is measured on the rendered text lines, one line pitch
+                        being the block's computed line height: inside a group
+                        each visible line sits one pitch below the line before
+                        it (C11.tight); the label of a group sits two pitches
+                        below the last line of the group before — its own line
+                        and the one line between — so a missing and a doubled
+                        separator both fail (C11.gap). Space made by margin,
+                        padding, leading, a line break or a line holding no
+                        visible character counts alike. Only declared groups
+                        are judged: counts reports structured blocks that
+                        declare none, and nothing here infers a group from
+                        blank lines, capitals or spacing
 
    STATUS
      pass      no finding, and at least one governed element was checked
@@ -137,6 +154,11 @@
    - C9 reads each state once its transitions have been finished, under an
      emulated reduced-motion preference: it proves the settled state, not how
      long the state takes to arrive.
+   - C11 measures rendered text lines, to within 0.5px, by the center of each
+     line that shows a visible character. A group none of whose lines renders
+     is not measured; counts reports measured and unmeasured groups, and
+     structured blocks that declare no groups, apart, so neither is read as a
+     passing group. A pass covers the declared groups only.
 */
 (function (global) {
   'use strict';
@@ -602,6 +624,77 @@
         seen.set(key, row);
       }
       unmapped.push(...seen.values());
+    }
+
+    /* C11 peer groups: declared structure, then the rhythm of the rendered lines */
+    const GROUP_TOL = 0.5;
+    const VISIBLE = /[^\s\p{Cf}\p{Z}]/u;
+    const shows = (node) => VISIBLE.test(node.textContent);
+    const looseText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && shows(n));
+    /* The group's rendered text lines, in order: the vertical center of each line that shows a visible character. */
+    const linesOf = (g) => {
+      const lines = [];
+      const walk = document.createTreeWalker(g, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+        let from = 0;
+        for (const seg of n.data.split('\n')) {
+          if (VISIBLE.test(seg)) {
+            const r = document.createRange();
+            r.setStart(n, from);
+            r.setEnd(n, from + seg.length);
+            for (const box of r.getClientRects()) {
+              if (!box.height) continue;
+              const c = (box.top + box.bottom) / 2;
+              if (!lines.length || Math.abs(c - lines[lines.length - 1].c) > GROUP_TOL) lines.push({ c, el: n.parentElement });
+            }
+          }
+          from += seg.length + 1;
+        }
+      }
+      return lines;
+    };
+    const groupBlocks = new Set();
+    for (const g of all('.doc-pre-group')) {
+      const block = g.parentElement;
+      if (!block || !block.matches('.doc-pre--structured')) {
+        add('C11', 'shape', g, { message: 'a peer group outside a structured block: a .doc-pre-group is a direct child of .doc-pre--structured' });
+        continue;
+      }
+      groupBlocks.add(block);
+      const label = g.firstElementChild;
+      if (!label || !label.matches('.doc-pre-part') || !shows(label)) {
+        add('C11', 'shape', g, { message: 'a peer group that does not open on its label, a .doc-pre-part that shows text' });
+      }
+      if (looseText(g)) add('C11', 'shape', g, { message: 'text in a peer group outside its parts' });
+      if (g.querySelector('.doc-pre-group')) add('C11', 'shape', g, { message: 'a peer group holding another peer group' });
+    }
+    for (const block of all('.doc-pre--structured')) {
+      if (!groupBlocks.has(block)) counts['doc-pre--structured undeclared'] = (counts['doc-pre--structured undeclared'] || 0) + 1;
+    }
+    for (const block of groupBlocks) {
+      if ([...block.children].some((k) => !k.matches('.doc-pre-group')) || looseText(block)) {
+        add('C11', 'shape', block, { message: 'a structured block that declares peer groups also holds a line outside them' });
+      }
+      const pitch = parseFloat(getComputedStyle(block).lineHeight);
+      let before = null;
+      for (const g of [...block.children].filter((k) => k.matches('.doc-pre-group'))) {
+        const lines = linesOf(g);
+        if (!lines.length) { counts['doc-pre-group unmeasured'] = (counts['doc-pre-group unmeasured'] || 0) + 1; before = null; continue; }
+        counts['doc-pre-group'] = (counts['doc-pre-group'] || 0) + 1;
+        for (let i = 1; i < lines.length; i++) {
+          const step = lines[i].c - lines[i - 1].c;
+          if (!(Math.abs(step - pitch) <= GROUP_TOL)) {
+            add('C11', 'tight', lines[i].el, { message: 'space inside a peer group: each line sits one line below the line before it', step: +step.toFixed(2), line: +pitch.toFixed(2) });
+          }
+        }
+        if (before) {
+          const step = lines[0].c - before.c;
+          if (!(Math.abs(step - 2 * pitch) <= GROUP_TOL)) {
+            add('C11', 'gap', lines[0].el, { message: 'successive peer groups sit exactly one line apart', step: +step.toFixed(2), expected: +(2 * pitch).toFixed(2) });
+          }
+        }
+        before = lines[lines.length - 1];
+      }
     }
 
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : 'pass';

@@ -132,15 +132,18 @@ swaps a token. This page can.
 It holds one **conforming specimen** — every governed role except the title, which the
 page's own heading carries: a quotation on the violet rail with its attribution, a plain
 and a structured block on the magenta rail, a block inside an emphasis rail, an authorial
-callout on the magenta rail, a quoted code excerpt on the one violet rail, a callout inside
-a quotation drawing no second rail, a section synthesis panel with its chip, a two-level
-table of contents, a declared dense table and an unmarked prose table, an entry title on
-an operable entry, and links in body, metadata, a quotation and a dense cell — which must
-return no finding at rest or in any link state. After it come **controls**: 87 negative
-controls, one per failure branch, each of which must fail with exactly the reason codes
-it names, no more and no fewer; and 3 positive controls — an unmarked prose table, a
-complete profile declaration and an emphasis rail off document text keeping a sanctioned
-violet accent — which must return no finding:
+callout on the magenta rail, a quoted code excerpt on the one violet rail, a callout
+inside a quotation drawing no second rail, a section framing panel and a section
+synthesis panel with their chips, a two-level table of contents, a declared dense table
+and an unmarked prose table, an entry title on an operable entry, and links in body,
+metadata, a quotation and a dense cell — which must return no finding at rest or in any
+link state. After it come **controls**: 101 negative controls, one per failure branch,
+each of which must fail with exactly the reason codes it names, no more and no fewer; and
+9 positive controls — an unmarked prose table, a complete profile declaration, an
+emphasis rail off document text keeping a sanctioned violet accent, and six declared
+peer-group blocks (two, five and ten groups, a question set out as three groups, a single
+lead label, and a group boundary that also records a blank line, which must not double) —
+which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -225,6 +228,21 @@ C10.broad · C10.broad       .doc-body :not(.zz) · span[style]; each also leave
 C8.family C8.size C8.weight a valid profile whose member holds a nested run in
                             another face: a profile exempts its member's own text,
                             never the text inside it
+C11.gap · C11.gap ·         peer groups with no line between them (a consumer rule
+C11.gap · C11.gap           drops the separator) · peer groups two lines apart (a
+                            whitespace-only part closes the first group) · a
+                            zero-width line closing the first group · groups set to
+                            display: contents, which drops their separator
+C11.tight · C11.tight ·     a blank line between a label and its lines
+C11.tight · C11.tight       (data-lead-lines inside the group) · a blank line inside
+                            one part of a group · a blank line made with line
+                            breaks · a label set on a taller line
+C11.gap C11.tight           a consumer's generic pre padding, which spaces every
+                            line apart
+C11.shape · C11.shape ·     a peer group outside a structured block · a structured
+C11.shape · C11.shape ·     block mixing groups with a loose line · a peer group
+C11.shape                   that does not open on its label · a peer group whose
+                            label shows no text · loose text beside the groups
 ```
 
 The page judges each case's **resting** codes itself and writes them to
