@@ -32,6 +32,11 @@
   .fx-nohover.surface-text-link:hover { text-decoration-color: var(--surface-text-link-underline); }
   .fx-cover { position: relative; }
   .fx-cover::after { content: ""; position: absolute; inset: 0; }
+  /* A consumer override the rendered check must catch: it drops the line between peer groups. */
+  [data-control="peer groups with no line between them"] .doc-pre-group + .doc-pre-group { margin-top: 0; }
+  [data-control="a consumer's pre padding breaks the rhythm"] pre { padding: 8px 0; }
+  [data-control="a label set on a taller line"] .doc-pre-group:first-child > .doc-pre-part:first-child { line-height: 3; }
+  [data-control="peer groups displayed as contents lose their line"] .doc-pre-group { display: contents; }
   /* A consumer override the rendered check must catch: it recolors the quotation rail. */
   .fx-override-quote { border-left-color: var(--line-1); }
 </style>
@@ -85,6 +90,10 @@ another</pre></div>
 keeps the one violet rail</pre>
     </blockquote>
     <blockquote class="doc-quote"><div class="surface-emphasis-rail"><p class="doc-body">A callout inside a quotation draws no second rail.</p></div></blockquote>
+    <section class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
+      <p class="surface-emphasis-chip surface-emphasis--magenta">thesis</p>
+      <p class="doc-body">A section framing: the same flat panel, chipped for the thesis that opens a part, with body-sized text and no rail.</p>
+    </section>
     <section class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
       <p class="surface-emphasis-chip surface-emphasis--magenta">compression</p>
       <p class="doc-body">A section synthesis: a flat panel, a magenta-bordered chip, and <strong>body-sized</strong> text with no rail.</p>
@@ -410,6 +419,143 @@ keeps the one violet rail</pre>
     </div>
     <div data-control="a region that replaces the violet accent around a quotation" data-expect="C0.token" data-expect-token="--ask-emphasis-violet">
       <div style="--ask-emphasis-violet: #808080"><blockquote class="doc-quote"><p>A quotation whose violet rail is gray.</p></blockquote></div>
+    </div>
+
+    <!-- Peer groups in structured text (C11): the declared rhythm, measured. Positives first. -->
+    <div data-control="two peer groups sit one line apart" data-expect="">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="five peer groups sit one line apart" data-expect="">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP ONE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP TWO</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP THREE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP FOUR</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP FIVE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+      </div>
+    </div>
+    <div data-control="ten peer groups sit one line apart" data-expect="">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 1</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 2</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 3</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 4</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 5</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 6</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 7</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 8</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 9</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP 10</pre><div class="doc-hierarchy"><pre class="doc-pre-part">its line</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a question set out as three peer groups, one line apart" data-expect="">
+      <p class="doc-body">The unresolved question is which kind of phenomenon consciousness is:</p>
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">substrate-bound</pre><div class="doc-hierarchy"><pre class="doc-pre-part">like combustion?</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">organizational or computational</pre><div class="doc-hierarchy"><pre class="doc-pre-part">like calculation?</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">dependent on some other condition</pre><div class="doc-hierarchy"><pre class="doc-pre-part">not yet understood?</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a single lead label sits tight to its lines" data-expect="">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">FORK</pre><div class="doc-hierarchy"><pre class="doc-pre-part">one predecessor
+&gt;&gt;
+10,000 active continuations</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a group boundary that also records a blank line is not doubled" data-expect="">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part" data-lead-lines="1">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="peer groups with no line between them" data-expect="C11.gap">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="peer groups two lines apart" data-expect="C11.gap">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div><pre class="doc-pre-part"> </pre></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a blank line between a label and its lines" data-expect="C11.tight">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy" data-lead-lines="1"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a blank line inside a peer group's part" data-expect="C11.tight">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line
+
+another</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a peer group outside a structured block" data-expect="C11.shape">
+      <div class="doc-pre"><div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div></div>
+    </div>
+    <div data-control="a structured block mixing peer groups with a loose line" data-expect="C11.shape">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <pre class="doc-pre-part">a loose line</pre>
+      </div>
+    </div>
+    <div data-control="a peer group that does not open on its label" data-expect="C11.shape">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><div class="doc-hierarchy"><pre class="doc-pre-part">a line with no label</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a consumer's pre padding breaks the rhythm" data-expect="C11.gap C11.tight">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a label set on a taller line" data-expect="C11.tight">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a zero-width line doubles the separator" data-expect="C11.gap">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div><pre class="doc-pre-part">&#8203;</pre></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a blank line made with line breaks" data-expect="C11.tight">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line<br><br>another</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="a peer group whose label shows no text" data-expect="C11.shape">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part"> </pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
+    </div>
+    <div data-control="loose text beside the peer groups" data-expect="C11.shape">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        a loose line
+      </div>
+    </div>
+    <div data-control="peer groups displayed as contents lose their line" data-expect="C11.gap">
+      <div class="doc-pre doc-pre--structured">
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
+      </div>
     </div>
   </section>
 

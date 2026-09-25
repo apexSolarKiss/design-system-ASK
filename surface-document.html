@@ -462,25 +462,65 @@
     </section>
 
     <!-- STRUCTURED TEXT — one scroll box whose indentation is structure. Each level
-         is one hierarchy rail; data-lead-lines keeps a blank source line's slot. -->
+         is one hierarchy rail. A grouped diagram declares each peer group as a
+         .doc-pre-group: one line between successive groups at any count, and nothing
+         set apart inside a group. Outside declared groups, data-lead-lines keeps a
+         blank source line's slot. -->
     <section class="doc-section" id="structured">
       <h2 class="doc-section-title">Structured text</h2>
       <p class="doc-body">Where a preformatted passage's indentation is structure, each level is one more
         neutral hierarchy rail inside the same scroll box, and the whole block sits behind one magenta
-        block rail. A blank source line keeps its slot, so a blank line belongs only between groups: a
-        blank between a label and the lines beneath it splits one group in two. At a narrow width the
-        block scrolls and says so; its lines and its text size stay as they are.</p>
+        block rail. At a narrow width the block scrolls and says so; its lines and its text size stay as
+        they are.</p>
+      <p class="doc-body">A grouped diagram declares its peer groups: each is a label with the lines beneath
+        it, and successive groups sit exactly one line apart, whether there are two, five or ten. Inside a
+        group nothing is set apart, so a label sits on its lines. The surface that knows the groups declares
+        them from its own source; the register never reads a group from blank lines, capitals or spacing.</p>
+      <p class="doc-meta">two peer groups</p>
       <div class="doc-pre doc-pre--structured" id="structured-sample">
-        <pre class="doc-pre-part">FOUNDATION</pre>
-        <div class="doc-hierarchy"><pre class="doc-pre-part">tokens
+        <div class="doc-pre-group"><pre class="doc-pre-part">FOUNDATION</pre><div class="doc-hierarchy"><pre class="doc-pre-part">tokens
 &gt;&gt;
 roles that name what each value is for</pre><div class="doc-hierarchy"><pre class="doc-pre-part">role
 &gt;&gt;
-one complete text style per role</pre></div></div>
-        <pre class="doc-pre-part" data-lead-lines="1">CONSUMER</pre>
-        <div class="doc-hierarchy"><pre class="doc-pre-part">markup
+one complete text style per role</pre></div></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">CONSUMER</pre><div class="doc-hierarchy"><pre class="doc-pre-part">markup
 &gt;&gt;
-classes that select a role, never a raw size</pre></div>
+classes that select a role, never a raw size</pre></div></div>
+      </div>
+      <p class="doc-meta">five peer groups</p>
+      <div class="doc-pre doc-pre--structured" id="structured-groups-5">
+        <div class="doc-pre-group"><pre class="doc-pre-part">FLOW</pre><div class="doc-hierarchy"><pre class="doc-pre-part">--space-8 between sections</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">SECTION</pre><div class="doc-hierarchy"><pre class="doc-pre-part">--space-3 between a heading and its body</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">GROUP</pre><div class="doc-hierarchy"><pre class="doc-pre-part">--space-3 between the roles it relates</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">PROSE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">--space-4 between paragraphs</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABELED</pre><div class="doc-hierarchy"><pre class="doc-pre-part">--space-2 between a label and its value</pre></div></div>
+      </div>
+      <p class="doc-meta">ten peer groups</p>
+      <div class="doc-pre doc-pre--structured" id="structured-groups-10">
+        <div class="doc-pre-group"><pre class="doc-pre-part">TITLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">H1, weight 400</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">SECTION TITLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">H2, weight 400</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">SUBSECTION TITLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">H3, weight 300</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">DEEP TITLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Body, weight 500</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">BODY</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Body, weight 200</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LEDE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Body, weight 200</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">ENTRY TITLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Body, weight 300</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">PREFORMATTED</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Small, mono, weight 300</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">LABEL</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Caption, mono, uppercase</pre></div></div>
+        <div class="doc-pre-group"><pre class="doc-pre-part">METADATA</pre><div class="doc-hierarchy"><pre class="doc-pre-part">Caption, mono</pre></div></div>
+      </div>
+      <p class="doc-meta">one label, tight to its lines</p>
+      <div class="doc-pre doc-pre--structured" id="structured-lead-label">
+        <div class="doc-pre-group"><pre class="doc-pre-part">ROLE</pre><div class="doc-hierarchy"><pre class="doc-pre-part">one class
+&gt;&gt;
+one complete text style</pre></div></div>
+      </div>
+      <p class="doc-body">Outside declared groups, a blank source line keeps its slot. Here the blank between
+        a request's headers and its body is content, so it stays.</p>
+      <p class="doc-meta">a recorded blank line, no groups</p>
+      <div class="doc-pre doc-pre--structured" id="structured-lead-lines">
+        <pre class="doc-pre-part">REQUEST</pre>
+        <div class="doc-hierarchy"><pre class="doc-pre-part">method and path
+headers</pre><pre class="doc-pre-part" data-lead-lines="1">body</pre></div>
       </div>
     </section>
 
@@ -498,7 +538,8 @@ classes that select a role, never a raw size</pre></div>
         step. Every one of those outer rails is an emphasis accent, so each reads as a boundary in both
         themes, and the color says whose passage it is. A quotation is represented voice — words
         presented as someone's — so its rail is violet. The document's own thesis, posed question or
-        contrast is an authorial callout, so its rail is magenta. A block's line structure is its
+        contrast within its argument is an authorial callout, so its rail is magenta; one that frames a
+        whole part is the section framing, below. A block's line structure is its
         content, so its rail is magenta too. Neutral is structure only: the hierarchy rail that
         structures a section, a list or a block. Who is speaking is the consuming surface's assignment, never the element, the font or a
         pair of quotation marks.</p>
@@ -522,6 +563,23 @@ one passage behind the magenta block rail</pre>
       </div>
     </section>
 
+    <!-- SECTION FRAMING — the statement that frames a whole part before its sections.
+         The section synthesis's composition, unchanged; the chip's word and the panel's
+         place say which one it is. It looks forward where a synthesis looks back. -->
+    <section class="doc-section" id="framing">
+      <h2 class="doc-section-title">Section framing</h2>
+      <p class="doc-body">A framing states what a whole part will argue or ask before its sections do: the
+        part's thesis, or the question space it opens. It takes the synthesis's composition unchanged — the
+        flat panel, the chip and body-sized text — and differs in place and word: it opens the part, after
+        its introduction, and its chip names the framing. It concludes nothing, and a thesis or question set
+        apart inside the argument stays an authorial callout.</p>
+      <p class="doc-lede">A part's introduction and its framing read as one opening.</p>
+      <section class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group" id="framing-panel">
+        <p class="surface-emphasis-chip surface-emphasis--magenta">thesis</p>
+        <p class="doc-body">A section framing is the synthesis's flat panel at the opening of a part, chipped for what the part will argue.</p>
+      </section>
+    </section>
+
     <!-- SECTION SYNTHESIS — the compression that closes a part. Contained, not
          railed: the panel material, free corners, flush elevation and document
          grouping, a chip whose border alone takes the magenta accent, and the
@@ -529,7 +587,8 @@ one passage behind the magenta block rail</pre>
          no raised shadow, no hover. -->
     <section class="doc-section" id="synthesis">
       <h2 class="doc-section-title">Section synthesis</h2>
-      <p class="doc-body">A synthesis states what the part before it comes to. It is larger in scope than a
+      <p class="doc-body">A synthesis states what the part before it comes to; a framing, above, states what
+        the part after it will argue. A synthesis is larger in scope than a
         callout, so it is contained rather than railed, and every synthesis in a document takes the same
         composition whatever the status of its text. The chip names it; only the chip's border takes the
         accent, so the panel keeps its neutral perimeter and gains no bloom. The text stays at the body
@@ -561,6 +620,7 @@ one passage behind the magenta block rail</pre>
             <li><a class="doc-toc-link surface-text-link" href="#depth">Hierarchy rail</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#structured">Structured text</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#passage">Set-apart passages</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#framing">Section framing</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#synthesis">Section synthesis</a></li>
           </ul>
         </nav>
