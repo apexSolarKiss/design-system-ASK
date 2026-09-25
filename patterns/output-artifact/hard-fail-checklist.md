@@ -29,13 +29,15 @@ A static output artifact fails [design-system-ASK](../../README.md) inheritance 
 - An external `<link>` / `@import` / live raw-URL stylesheet reference survives into the delivered artifact (the editable template links the local mirror; the *delivered* artifact must be sealed)
 - A relative font URL that resolves outside the artifact survives into the delivered artifact (fonts must be embedded at seal time)
 - An unreplaced template marker (`[placeholder]`, `0000000`, etc.) appears in the delivered artifact
+- A single-file artifact does not inline the document-register modules verbatim after the foundation, in the template's order — `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css` — or a multi-file package does not link them once from its bundle, in that order
 
 ## Type discipline fails
 
 - Inter is used for code or tabular data
 - JetBrains Mono is used for prose body
-- More than ~4 type levels appear (size-based hierarchy proliferation)
-- Weights outside the scaffold's approved set appear: Inter 200 / 300 / 400; JetBrains Mono 300 / 500
+- Text the document register governs is set outside its roles: a title, heading, paragraph, list item, label, metadata value, code span, quotation, preformatted block or dense table value styled by an element rule or a local type declaration instead of its role, or a heading set smaller than the prose it governs
+- The register's rendered check (`node tools/check-role-conformance.mjs --url <artifact>`, run from a design-system-ASK checkout at the commit the artifact's `MANIFEST.md` records) reports a finding on the delivered artifact, reports it vacuous, or lists any text as `unmapped`
+- Weights outside the register's assignment appear. Inter: 200 for body, lede and quotation text; 300 for subsection and entry titles; 400 for document and section titles and the Caption role; 500 only for the deep heading (`h4` and deeper) and for strong emphasis. JetBrains Mono: 300, and 500 only for strong emphasis inside a mono role
 - 600 SemiBold or heavier weights appear
 
 ## Source-truth fails

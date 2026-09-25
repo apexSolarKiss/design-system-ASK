@@ -9,15 +9,17 @@
 
    It serves BOTH lifecycles. A live surface references or vendors it and
    re-syncs when it changes. An artifact scaffold may inline it at generation
-   time, after which the sealed copy does not re-sync. It carries no url() and
-   no @import, so it inlines verbatim.
+   time, after which the sealed copy does not re-sync. It loads no resource and
+   imports no stylesheet, so it inlines verbatim.
 
    LOAD ORDER   colors_and_type.css -> surface-document.css
                 A table of contents also needs surface-text-link.css, which its
                 entries compose for their interaction. An authorial callout, a
                 section framing or a section synthesis also needs
-                surface-panel.css -> surface-treatments.css, loaded after this
-                file.
+                surface-panel.css and surface-treatments.css. A page that loads
+                them all loads them as surface-document.html does:
+                colors_and_type.css -> surface-panel.css -> surface-text-link.css
+                -> surface-document.css -> surface-treatments.css.
 
    It introduces no token and no palette value. Family, size, weight, leading,
    tracking, foreground, space and rule color resolve through the foundation,

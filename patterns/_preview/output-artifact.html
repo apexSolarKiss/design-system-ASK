@@ -17,26 +17,43 @@
 
   <!-- design-system-ASK foundations — local mirror.
        DOWNSTREAM: adjust path if your mirror lives elsewhere.
-       The foundation styles base elements (h1–h3, p, a, code, body) bound to
-       --fg-* with light/dark resolved. FOREGROUND IS INHERITED — this template
-       adds NO local --fg rebind. Do not reintroduce one. -->
+       The foundation resolves the --fg-* ramp in light and dark, and the
+       register's roles bind text to it. FOREGROUND IS INHERITED — this
+       template adds NO local --fg rebind. Do not reintroduce one. -->
   <link rel="stylesheet" href="../../colors_and_type.css">
+
+  <!-- The document register, vendored beside this template (NOT into
+       _dsa-tokens/, which is the token and font mirror), in this order.
+       Its roles set the artifact's text; the treatments supply the
+       disclosure. At seal time each is inlined verbatim, in this order,
+       after the foundation. -->
+  <link rel="stylesheet" href="../../surface-panel.css">
+  <link rel="stylesheet" href="../../surface-text-link.css">
+  <link rel="stylesheet" href="../../surface-document.css">
+  <link rel="stylesheet" href="../../surface-treatments.css">
 
   <style>
     /* ====================================================================
        Class B output-artifact overlay.
 
-       Foreground: inherited from the foundation --fg-* ramp (correct in
-       light and dark since the foundation light-mode ramp landed). This
-       overlay does NOT rebind --fg-* / --line-*.
+       TEXT IS THE DOCUMENT REGISTER'S. Every title, heading, paragraph,
+       list item, link, label, metadata value, code span, quotation,
+       preformatted block and table value carries its register role
+       (surface-document.css, surface-text-link.css) and takes that role's
+       style. This overlay sets NO type metric and NO foreground on text; it
+       owns only the artifact's own geometry — the column, the metadata strip,
+       lists, table geometry, rules and the provenance footer — which the
+       register leaves to its consumer. Every geometry rule on an element the
+       register may also style is written in :where(), at zero specificity, so
+       it can never outrank a register rule.
 
        The ONE sanctioned Class B override is LINE INTENSITY: report rules,
        borders, table lines, and dividers read too faint at the foundation
        hairline (white .45 / .22) on the light field, so a Class B-scoped
        token carries stronger white lines in light mode and inherits the
-       foundation lavender lines in dark. This is scoped to the artifact's
-       OWN structural elements (applied by class), never to base elements —
-       so it cannot affect inherited prose color. (Class A diagrams keep
+       foundation lavender lines in dark. It draws ONLY the artifact's own
+       geometry below — including the rules on a table's cells — and never a
+       text foreground, a passage rail or the disclosure's panel. (Class A diagrams keep
        their own scoped --diagram-* tokens — text roles aliasing the
        foundation --fg-*, strokes local — for the same reason: color is
        applied to class-targeted elements, not base elements.)
@@ -57,117 +74,65 @@
       }
     }
 
-    /* ---------- Layout shell ---------- */
+    /* ---------- Column ----------
+       The register's .doc-flow sets the space between the parts. */
     .artifact {
       max-width: 880px;
       margin: 0 auto;
       padding: var(--space-7) var(--space-5);
     }
 
-    /* ---------- Meta strip — orientation values, mono-cased ---------- */
+    /* ---------- Metadata strip — layout only ----------
+       Its names take .doc-label and its values .doc-meta. */
     .meta {
-      font-family: var(--font-mono);
-      font-size: var(--fs-caption);
-      font-weight: var(--fw-light);
-      letter-spacing: var(--tracking-wide);
-      text-transform: uppercase;
-      color: var(--fg-2);
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-2) var(--space-5);
-      margin: var(--space-5) 0 var(--space-6);
+      margin: 0;
       padding-bottom: var(--space-5);
       border-bottom: 1px solid var(--artifact-line);
     }
-    .meta dt { display: inline; opacity: 0.6; margin-right: 0.4em; }
-    .meta dd { display: inline; margin: 0; }
-    .meta > div { display: inline-block; }
+    .meta > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
 
-    /* ---------- Generic prose completion ----------
-       The foundation styles h1–h3, p, a, code. These are the report elements
-       it does NOT style, bound to tokens + the Class B line overlay. Generic
-       on purpose — replace the CONTENT, not these element rules. */
-    .artifact ul, .artifact ol { margin: 0 0 var(--space-4); padding-left: var(--space-5); color: var(--fg-1); }
-    .artifact li { margin: 0 0 var(--space-2); line-height: var(--lh-body); }
-    .artifact blockquote {
-      margin: 0 0 var(--space-4); padding: var(--space-2) 0 var(--space-2) var(--space-4);
-      border-left: 2px solid var(--artifact-line); color: var(--fg-2);
+    /* ---------- Lists, rules and table geometry ----------
+       List items take .doc-body. A dense technical table is declared
+       table.doc-dense-table, with .doc-label headers and .doc-table-cell
+       values. A narrative table stays unmarked: its headers take .doc-label
+       and its cells .doc-body. The geometry below is the artifact's; a long
+       token in a cell wraps rather than widening the page. */
+    :where(.artifact) :where(ul, ol) {
+      display: flex; flex-direction: column; gap: var(--space-2);
+      margin: 0; padding-left: var(--space-5);
     }
-    .artifact hr { border: 0; border-top: 1px solid var(--artifact-line-soft); margin: var(--space-6) 0; }
-    .artifact pre {
-      font-family: var(--font-mono); font-size: var(--fs-small); font-weight: var(--fw-light);
-      line-height: var(--lh-body); color: var(--fg-1);
-      border: 1px solid var(--artifact-line-soft); border-radius: var(--radius-sm);
-      padding: var(--space-4); overflow-x: auto; margin: 0 0 var(--space-4);
+    :where(.artifact) :where(hr) { border: 0; border-top: 1px solid var(--artifact-line-soft); margin: 0; }
+    :where(.artifact) :where(table) { width: 100%; border-collapse: collapse; }
+    :where(.artifact) :where(th, td) {
+      text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--artifact-line-soft); overflow-wrap: anywhere;
     }
-    .artifact table {
-      width: 100%; border-collapse: collapse; margin: 0 0 var(--space-5);
-      font-size: var(--fs-small); font-weight: var(--fw-light);
-    }
-    .artifact th, .artifact td {
-      text-align: left; padding: var(--space-3) var(--space-4);
-      border-bottom: 1px solid var(--artifact-line-soft); color: var(--fg-1);
-    }
-    .artifact thead th {
-      font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-medium);
-      letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-2);
-      border-bottom: 1px solid var(--artifact-line);
-    }
+    :where(.artifact) :where(thead th) { border-bottom-color: var(--artifact-line); }
 
-    /* ---------- Sections — native progressive disclosure (no JS) ---------- */
-    details.disclosure {
-      border-top: 1px solid var(--artifact-line);
-      padding: var(--space-4) 0;
-    }
-    details.disclosure[open] { padding-bottom: var(--space-5); }
-    details.disclosure summary {
-      cursor: pointer;
-      list-style: none;
-      font-family: var(--font-sans);
-      font-size: var(--fs-h3);
-      font-weight: var(--fw-light);
-      line-height: var(--lh-tight);
-      letter-spacing: var(--tracking-tight);
-      color: var(--fg-1);
-      display: flex;
-      align-items: baseline;
-      gap: var(--space-3);
-    }
-    details.disclosure summary::-webkit-details-marker { display: none; }
-    details.disclosure summary::before {
-      content: '+';
-      font-family: var(--font-mono);
-      font-weight: var(--fw-light);
-      opacity: 0.5;
-      width: 1ch;
-    }
-    details.disclosure[open] summary::before { content: '−'; }
-
-    /* ---------- Provenance footer — visible source-truth metadata ---------- */
+    /* ---------- Provenance footer — layout only ----------
+       Its names take .doc-label and its values .doc-meta. */
     footer.provenance {
-      margin-top: var(--space-7);
       padding-top: var(--space-5);
       border-top: 1px solid var(--artifact-line);
-      font-family: var(--font-mono);
-      font-size: var(--fs-caption);
-      font-weight: var(--fw-light);
-      color: var(--fg-3);
     }
     footer.provenance dl {
       display: grid;
       grid-template-columns: auto 1fr;
+      align-items: baseline;
       gap: var(--space-2) var(--space-4);
       margin: 0;
     }
-    footer.provenance dt { opacity: 0.6; }
-    footer.provenance dd { margin: 0; }
 
     /* ====================================================================
        TIER 3 OVERLAY SLOT — consuming project identity / chrome goes HERE.
        DOWNSTREAM: add project-specific banners, status rails, review-status
        strips, or branding as Tier 3 here. Keep minimal. Bind to foundation
-       tokens (--fg-*, --artifact-line, type tokens); do NOT redefine Tier 1/2
-       tokens, do NOT introduce hues outside the closed palette, and do NOT
+       tokens (--fg-*, --artifact-line, type tokens) and to register roles for
+       any text; do NOT redefine Tier 1/2 tokens, do NOT restyle a register
+       role, do NOT introduce hues outside the closed palette, and do NOT
        propagate the design-system's own identity (logo-ASK / "ASK Design
        System") unless your artifact is itself an ASK-instance surface, or,
        for the logo-ASK wordmark alone, ASK has explicitly assigned that
@@ -179,58 +144,68 @@
   </style>
 </head>
 <body>
-  <main class="artifact">
+  <main class="artifact doc-flow">
 
     <!-- ==================================================================
-         Header — DOWNSTREAM: replace title + subtitle.
+         Header — DOWNSTREAM: replace title + lede.
          ================================================================== -->
-    <header>
-      <h1>[Artifact title]</h1>
-      <p class="small">[Artifact subtitle or one-line context.]</p>
+    <header class="doc-titled">
+      <h1 class="doc-title">[Artifact title]</h1>
+      <p class="doc-lede">[Artifact subtitle or one-line context.]</p>
     </header>
 
     <!-- ==================================================================
-         Meta strip — DOWNSTREAM: fill real values.
+         Metadata strip — DOWNSTREAM: fill real values.
          ================================================================== -->
     <dl class="meta">
-      <div><dt>Project:</dt><dd>[consuming-project-name]</dd></div>
-      <div><dt>Artifact:</dt><dd>[artifact-id]</dd></div>
-      <div><dt>Render:</dt><dd>[YYYY-MM-DDTHH:MM:SSZ]</dd></div>
-      <div><dt>Template:</dt><dd>output-artifact v2</dd></div>
+      <div><dt class="doc-label">Project:</dt><dd class="doc-meta">[consuming-project-name]</dd></div>
+      <div><dt class="doc-label">Artifact:</dt><dd class="doc-meta">[artifact-id]</dd></div>
+      <div><dt class="doc-label">Render:</dt><dd class="doc-meta">[YYYY-MM-DDTHH:MM:SSZ]</dd></div>
+      <div><dt class="doc-label">Template:</dt><dd class="doc-meta">output-artifact v3</dd></div>
     </dl>
 
     <!-- ==================================================================
-         Sections — native progressive disclosure (no JS).
-         DOWNSTREAM: replace section names + bodies with content. The sample
-         list / table / code block below show the generic report elements the
-         pattern styles — replace them, don't restyle them.
+         Sections — DOWNSTREAM: replace section titles + bodies with content.
+         The samples show the register roles an artifact uses — body, list,
+         quotation, code, preformatted block, dense table and disclosure.
+         Replace the CONTENT; keep each role's class.
          ================================================================== -->
-    <section>
-      <details class="disclosure" open>
-        <summary>Section one</summary>
-        <p>Body text placeholder. The weight gap between heading and body does the work; size differences are minimal. One idea per sentence.</p>
+    <section class="doc-section">
+      <h2 class="doc-section-title">Section one</h2>
+      <div class="doc-prose">
+        <p class="doc-body">Body text placeholder. Each role sets its text's style; a link takes the <a class="surface-text-link" href="https://example.org/">text-link role</a>. One idea per sentence.</p>
         <ul>
-          <li>List item placeholder.</li>
-          <li>Another item — lists, rules, and tables read in the Class B line intensity.</li>
+          <li class="doc-body">List item placeholder.</li>
+          <li class="doc-body">Another item — lists, rules, and tables read in the Class B line intensity.</li>
         </ul>
-      </details>
+        <blockquote class="doc-quote">
+          <p>[Quotation placeholder — words presented as someone's, on the violet rail.]</p>
+          <footer>[attribution]</footer>
+        </blockquote>
+      </div>
+    </section>
 
-      <details class="disclosure">
-        <summary>Section two</summary>
-        <p>Body text placeholder. Native <code>&lt;details&gt;</code> handles disclosure. No JavaScript required.</p>
-        <table>
-          <thead><tr><th>Field</th><th>Value</th></tr></thead>
-          <tbody>
-            <tr><td>Placeholder row</td><td>tabular data uses mono</td></tr>
-            <tr><td>Another row</td><td>borders use the line overlay</td></tr>
-          </tbody>
-        </table>
-      </details>
+    <section class="doc-section">
+      <h2 class="doc-section-title">Section two</h2>
+      <p class="doc-body">Body text placeholder. A declared dense table carries technical values in mono.</p>
+      <table class="doc-dense-table">
+        <thead><tr><th class="doc-label">Field</th><th class="doc-label">Value</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-table-cell">Placeholder row</td><td class="doc-table-cell">tabular data uses mono</td></tr>
+          <tr><td class="doc-table-cell">Another row</td><td class="doc-table-cell">borders use the line overlay</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-      <details class="disclosure">
-        <summary>Section three</summary>
-        <p>Body text placeholder. Mono is for code, technical, and tabular data — e.g. a reference like <code>file_path:42</code>.</p>
-        <pre>[code or technical block placeholder]</pre>
+    <section class="doc-section">
+      <h2 class="doc-section-title">Section three</h2>
+      <p class="doc-body">Body text placeholder. Mono is for code, technical, and tabular data — e.g. a reference like <code class="doc-code">file_path:42</code>.</p>
+      <pre class="doc-pre">[code or technical block placeholder]</pre>
+      <details class="surface-disclosure surface-material-panel surface-attach-free surface-elevation-flush">
+        <summary><span class="surface-disclosure-label">Supporting detail</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></summary>
+        <div class="surface-disclosure-body doc-prose">
+          <p class="doc-body">Disclosed detail placeholder. Native <code class="doc-code">&lt;details&gt;</code> handles disclosure. No JavaScript required.</p>
+        </div>
       </details>
     </section>
 
@@ -239,12 +214,12 @@
          ================================================================== -->
     <footer class="provenance">
       <dl>
-        <dt>design-system-ASK</dt>
-        <dd>commit <code>[upstream-short-sha]</code> · [upstream-commit-date]</dd>
-        <dt>Manifest</dt>
-        <dd>see <code>MANIFEST.md</code> for full provenance</dd>
-        <dt>Static freeze</dt>
-        <dd>frozen at render time; auditable against the recorded SHA</dd>
+        <dt class="doc-label">design-system-ASK</dt>
+        <dd class="doc-meta">commit <code class="doc-code">[upstream-short-sha]</code> · [upstream-commit-date]</dd>
+        <dt class="doc-label">Manifest</dt>
+        <dd class="doc-meta">see <code class="doc-code">MANIFEST.md</code> for full provenance</dd>
+        <dt class="doc-label">Static freeze</dt>
+        <dd class="doc-meta">frozen at render time; auditable against the recorded SHA</dd>
       </dl>
     </footer>
 

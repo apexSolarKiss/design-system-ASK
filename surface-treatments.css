@@ -8,9 +8,9 @@
 
    It serves BOTH lifecycles. A live surface references or vendors it and
    re-syncs when it changes. An artifact scaffold may inline it at generation
-   time, after which the sealed copy does not re-sync. It carries no url() and
-   no @import, so it inlines verbatim — together with surface-panel.css, which
-   it extends.
+   time, after which the sealed copy does not re-sync. It loads no resource and
+   imports no stylesheet, so it inlines verbatim — together with
+   surface-panel.css, which it extends.
 
    LOAD ORDER   colors_and_type.css -> surface-panel.css -> surface-treatments.css
                 (surface-document.css, where a page also uses it, loads before

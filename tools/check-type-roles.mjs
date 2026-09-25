@@ -12,11 +12,11 @@
    GOVERNED SET — one explicit list, no auto-discovery (GOVERNED below): the
    foundation, the live-surface and document modules, the surface-shell
    stylesheet, the three primitive keys, the document-register key, the style
-   guide and the two public indexes. A governed file that is missing fails.
-   Outside the set by declared disposition, because they own pattern-local
-   metrics or are fixtures: the diagram scaffolds, the interactive spine, the
-   message archive, the output artifact, and tests/. Any other file is not
-   read, so a pass says nothing about it.
+   guide, the two public indexes and the output-artifact template. A governed
+   file that is missing fails. Outside the set by declared disposition,
+   because they own pattern-local metrics or are fixtures: the diagram
+   scaffolds, the interactive spine, the message archive, and tests/. Any
+   other file is not read, so a pass says nothing about it.
 
    WHAT IS READ
    - Declarations in a stylesheet, in a page's <style> blocks, and in style=""
@@ -117,6 +117,7 @@ const GOVERNED = [
   'preview/styleguide.html',
   'index.html',
   'patterns/index.html',
+  'patterns/output-artifact/static-output-artifact.html',
 ];
 
 /* R1 and R2: literals that stand for a role rather than departing from one.
