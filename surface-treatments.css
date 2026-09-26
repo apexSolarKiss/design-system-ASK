@@ -33,7 +33,8 @@
      5  The disclosure's foreground rules share one specificity — (0,3,1) for
         the indicator, (0,2,1) for the summary — and are ordered
         [open] < :hover < :focus-visible, so a trigger that is hovered and
-        focused shows the focus indicator.
+        focused shows the focus signal: the magenta indicator and the
+        outline.
 
    USE. Use .surface-panel for a live content panel, and always for a panel
    that is itself a link: a.surface-panel is the only linked-panel form. Use
@@ -105,7 +106,8 @@
      owner           this module
      reuses          the panel material, free attachment and flush elevation
                      for its enclosure; operative-label metrics for the
-                     trigger; --space-6 inset, --space-4 gap
+                     trigger; --space-6 inset, --space-4 gap; --fg-1 at 2px,
+                     --space-1 out, for the trigger's keyboard-focus outline
      variation       none per artifact
      exclusions      the region takes no second surface; the trigger joins
                      neither the attention edge nor the foreground-bound link
@@ -159,6 +161,7 @@
      -90deg                the closed disclosure indicator's rotation
      1                     the disclosure indicator's leading
      2px                   the emphasis chip's block padding
+     2px                   the disclosure trigger's focus-outline width
 
    LIMITS
      - Hover and focus colors on the disclosure trigger depend on the
@@ -166,6 +169,9 @@
        restates all three in the same order.
      - Under prefers-reduced-motion: reduce the indicator changes state
        without animating.
+     - The trigger's focus outline is drawn --space-1 outside the summary,
+       inside the disclosure's --space-6 inset; a consumer that clips that
+       band hides it.
    ========================================================================= */
 
 /* ---- Surface axes ----------------------------------------------------- */
@@ -230,10 +236,12 @@
    --fg-1. No border, no opacity drop, no press. */
 .surface-disclosure > summary:hover { color: var(--fg-1); }
 .surface-disclosure > summary:hover .surface-disclosure-indicator { color: var(--fg-1); }
-/* Focus: the summary is at --fg-1 and the indicator takes the emphasis magenta.
-   The browser outline is suppressed because the indicator is the focus signal.
+/* Focus: the summary is at --fg-1, the indicator takes the emphasis magenta and
+   a 2px --fg-1 outline surrounds the trigger, --space-1 out. The outline is the
+   signal that always shows: an open disclosure's summary already rests at --fg-1,
+   and a trigger may lead with a mark that keeps its own color.
    These follow the hover rules on purpose (load order, item 5). */
-.surface-disclosure > summary:focus-visible { color: var(--fg-1); outline: none; }
+.surface-disclosure > summary:focus-visible { color: var(--fg-1); outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
 .surface-disclosure > summary:focus-visible .surface-disclosure-indicator { color: var(--ask-emphasis-magenta); }
 .surface-disclosure > .surface-disclosure-body { margin: 0; }
 
