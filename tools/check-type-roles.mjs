@@ -138,6 +138,7 @@ const MONO_UPPERCASE = [
   { file: 'patterns/surface-shell/surface-shell.css', selector: '.surface-badge', reason: 'status badge' },
   { file: 'surface-document.css', selector: '.doc-label', reason: 'operative label' },
   { file: 'surface-document.css', selector: '.doc-pre[data-overflow]::after', reason: 'overflow cue' },
+  { file: 'surface-document.css', selector: '.doc-table-scroll[data-overflow]::after', reason: 'overflow cue on a document table\'s box' },
   { file: 'surface-treatments.css', selector: '.surface-disclosure > summary', reason: 'disclosure trigger' },
   { file: 'surface-treatments.css', selector: '.surface-emphasis-chip', reason: 'emphasis chip' },
   { file: 'preview/styleguide.html', selector: '.role .lbl', reason: 'token label in the style guide (page-local)' },

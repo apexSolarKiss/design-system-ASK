@@ -118,6 +118,73 @@ every direct case and every `caption` case still passes. Remove `.doc-code`'s ow
 `font-size: 0.9em` and the two `span.doc-code` cases fail at the host's full size; the
 `code` cases do not, because the foundation's code rule also sets 0.9em.
 
+## document-table-fixture.html
+
+Guards **the document table composition** in `surface-document.css` and its cue in
+`surface-document-overflow.js`: what the role check cannot see, because none of it is a
+text role. A composition is adopted by class, so the fixture sets a dense table, an
+unmarked table, a table marked without its box and a table nested in a composition cell
+beside the composition, and requires that the composition reach none of them. The boxes
+are 320px wide, or the column's width where that is narrower, so every overflow case
+overflows at any viewport.
+
+The page measures each case once the fonts are ready and reports one overall verdict, with
+a row per case:
+
+```text
+reach             the dense marker alone draws no padding, no row rule and no numeric alignment,
+                  and a dense value still wraps; code there still breaks anywhere; an unmarked
+                  table and a table marked without its box take no measure, no row rule and no
+                  composition padding; a table nested in a composition cell takes no row rule
+                  and no composition padding
+composition       the 32rem narrative measure and none on a dense table; --space-3 block
+                  padding, --space-5 between columns and none after the last; the --line-2 row
+                  rule and the --line-1 header rule; the header row shown in place, visible and
+                  unclipped; code breaking at its own opportunities; a numeric header and cell
+                  at the end, a numeric header and a narrative numeric cell on tabular figures;
+                  a dense value on one line; --space-6 of scroll padding on the box; a consumer
+                  rule of one class, loaded before the register, winning over the cell rules; a
+                  row a script appends to the table itself taking the cell rules
+scroll-into-view  a header link scrolled into view by its nearest edge lands inside its box and
+                  clear of the fade, while hidden content remains to its right
+label             the label in capitals; code in it, with the class and without, in its own
+                  case; plain text in it, such as mW, in capitals
+overflow          a wide table box and a narrative table below its measure report the right
+                  side and draw the cue; a box that fits reports nothing; scrolled to the end
+                  and to the middle, the attributes and the cue follow; a wide and a fitting
+                  block report as before
+added             a table box and a block added after load are reported; a box moved in the
+                  document, and one added after load, each carry one scroll listener
+```
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/document-table-fixture.html
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The
+cases are also on `window.__tableFixture` and the verdict on `body[data-result]`.
+
+**Verifying the fixture still bites.** Each change below fails only the cases named.
+
+```text
+remove .doc-label :is(code, .doc-code)             the two label code cases
+set the helper's selector back to .doc-pre         every table-box case that expects overflow,
+                                                   the scroll-into-view case that needs the
+                                                   fade, and both scroll-listener counts; a box
+                                                   that fits and the block cases still pass
+let the dense marker reach the cell rule           the dense marker's padding and row-rule cases
+drop the box's scroll-padding                      the scroll-padding case and the
+                                                   scroll-into-view case that requires the link
+                                                   clear of the fade
+give the cell rule specificity                     the consumer-override case, and the cases whose
+                                                   zero-specificity rules it now outranks
+key the measure on the table marker alone          the marker-without-its-box measure case
+hide the composition's header row                  the header-row case
+```
+
 ## role-conformance-fixture.html
 
 Guards **the document-register lock** on a rendered page: `tools/role-conformance.js`,

@@ -2,12 +2,13 @@
    surface-document-overflow.js — OPTIONAL overflow-cue helper
    =========================================================================
    A companion to surface-document.css, loaded only by a surface that wants the
-   overflow cue on its preformatted blocks. Without it a .doc-pre still scrolls
-   inside its own box and shows no cue.
+   overflow cue on its preformatted blocks and its document tables' boxes.
+   Without it a .doc-pre or a .doc-table-scroll still scrolls inside its own box
+   and shows no cue.
 
-   IT ONLY REPORTS STATE. On every .doc-pre it sets three attributes, and the
-   stylesheet turns them into a right-edge fade and a small label naming the
-   direction the block scrolls:
+   IT ONLY REPORTS STATE. On every .doc-pre and .doc-table-scroll — a "block"
+   below — it sets three attributes, and the stylesheet turns them into a
+   right-edge fade and a small label naming the direction the block scrolls:
 
      data-overflow         the block is wider than its box
      data-overflow-start   hidden content lies to the left
@@ -33,7 +34,7 @@
 (function () {
   'use strict';
 
-  var SELECTOR = '.doc-pre';
+  var SELECTOR = '.doc-pre, .doc-table-scroll';
   var THRESHOLD = 1;
   var attached = new WeakSet();
   var resizeObserver = typeof ResizeObserver === 'function'

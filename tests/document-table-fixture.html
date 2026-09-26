@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // document table regression fixture</title>
+<meta name="description" content="Regression fixture for the document table composition in surface-document.css: it reaches only a table that adopts it, code in an operative label keeps its case, and surface-document-overflow.js reports a table's box as it reports a preformatted block.">
+<!-- Foundation, the text-link module, then the document register, in the module's
+     load order (serve from the repo root:  python3 -m http.server 8080  →
+     /tests/document-table-fixture.html). The overflow helper loads at the end. -->
+<style>
+  /* A consumer's own rule, loaded before the register at one class of
+     specificity: it wins only while the composition's cell rules stay at zero. */
+  .fx-override { padding-top: 3px; }
+</style>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../surface-document.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  /* Page-local: a fixed box width makes overflow the same at every viewport. */
+  .fx-box { width: 320px; max-width: 100%; }
+  .verdict-box { overflow-x: auto; }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+</style>
+<script>
+  /* Counts the scroll listeners added to each element, so that a box attached a
+     second time can be checked for a second listener. It runs before the helper. */
+  (function () {
+    var add = EventTarget.prototype.addEventListener;
+    var counts = window.__scrollListeners = new Map();
+    EventTarget.prototype.addEventListener = function (type, fn, opts) {
+      if (type === 'scroll' && this instanceof Element) counts.set(this, (counts.get(this) || 0) + 1);
+      return add.call(this, type, fn, opts);
+    };
+  })();
+</script>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Document table</h1>
+    <p class="doc-body">Each case is measured against its expectation once the fonts are ready. The
+      composition must reach only a table that adopts it; code inside an operative label keeps its case
+      while the label's own text keeps the capitals; and the overflow helper reports a table's box as it
+      reports a preformatted block, including a box added after the page loads.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Reach</h2>
+    <p class="doc-body">The dense marker and the text roles alone draw no geometry.</p>
+    <table class="doc-dense-table" id="bare-dense">
+      <thead><tr><th class="doc-label">key</th><th class="doc-label doc-table-num">count</th></tr></thead>
+      <tbody><tr><td class="doc-table-cell">a-long-key <code class="doc-code">a/b</code></td><td class="doc-table-cell doc-table-num">12</td></tr></tbody>
+    </table>
+    <table id="bare-narrative">
+      <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+      <tbody><tr><td class="doc-body">one</td><td class="doc-body">a sentence of detail</td></tr></tbody>
+    </table>
+    <p class="doc-body">The table marker without its box draws nothing either.</p>
+    <table class="doc-table" id="marker-no-box">
+      <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+      <tbody><tr><td class="doc-body">one</td><td class="doc-body">a sentence of detail</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Composition</h2>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="narrative, wide" id="box-narrative">
+      <table class="doc-table" id="comp-narrative">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+        <tbody><tr><td class="doc-body"><code class="doc-code">surface-document.css</code></td><td class="doc-body">a sentence of detail that needs the measure</td></tr>
+          <tr><td class="doc-body fx-override" id="cell-override">overridden</td><td class="doc-body"><table id="nested"><tbody><tr><td>nested</td></tr></tbody></table></td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="narrative, numeric column" id="box-num">
+      <table class="doc-table" id="comp-num">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label doc-table-num">count</th></tr></thead>
+        <tbody><tr><td class="doc-body">one</td><td class="doc-body doc-table-num" id="narrative-num">12</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="dense, fits" id="box-fits">
+      <table class="doc-table doc-dense-table" id="comp-dense">
+        <thead><tr><th class="doc-label">key</th><th class="doc-label doc-table-num">n</th></tr></thead>
+        <tbody><tr><td class="doc-table-cell">a</td><td class="doc-table-cell doc-table-num">7</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="dense, wide" id="box-wide">
+      <table class="doc-table doc-dense-table" id="comp-wide">
+        <thead><tr><th class="doc-label">digest</th><th class="doc-label doc-table-num">bytes</th></tr></thead>
+        <tbody><tr><td class="doc-table-cell">a64665da40b1ca21bf8113e01b6233717ee1acd5895031d7fc50c32220971226</td><td class="doc-table-cell doc-table-num">41470</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">A header link in a wide table</h2>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="dense, header link" id="box-link">
+      <table class="doc-table doc-dense-table" id="comp-link">
+        <thead><tr><th class="doc-label">first</th><th class="doc-label"><a class="surface-text-link" href="#box-link" id="head-link"><code class="doc-code">AA-compliant</code></a></th><th class="doc-label">last</th></tr></thead>
+        <tbody><tr><td class="doc-table-cell">a value long enough to push the link past the box</td><td class="doc-table-cell">b</td><td class="doc-table-cell">another value long enough to follow it</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Label case</h2>
+    <p class="doc-label" id="label-host">plain <code class="doc-code" id="label-code-class">default-ASK</code> <code id="label-code-bare">AA-compliant</code> <span id="label-plain">mW</span></p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Preformatted blocks</h2>
+    <pre class="doc-pre fx-box" id="pre-wide">a line wide enough to scroll inside a box of three hundred and twenty pixels</pre>
+    <pre class="doc-pre fx-box" id="pre-fits">short</pre>
+  </section>
+
+  <section class="doc-section" id="added">
+    <h2 class="doc-section-title">Added after load</h2>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <div class="verdict-box"><table class="verdict"><tbody id="verdict"></tbody></table></div>
+  </section>
+
+</main>
+<script src="../surface-document-overflow.js"></script>
+<script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cs = function (el, pseudo) { return getComputedStyle(el, pseudo || null); };
+    var tick = function (ms) { return new Promise(function (r) { setTimeout(r, ms || 60); }); };
+    var color = function (value) {
+      var probe = document.createElement('span');
+      probe.style.color = value;
+      document.body.appendChild(probe);
+      var c = cs(probe).color;
+      probe.remove();
+      return c;
+    };
+    var attrs = function (el) {
+      return ['data-overflow', 'data-overflow-start', 'data-overflow-end'].filter(function (a) { return el.hasAttribute(a); }).join(' ') || '(none)';
+    };
+    var cue = function (el) { return cs(el, '::after').content; };
+    var rows = [];
+    var expect = function (name, actual, expected) { rows.push([actual === expected, name, String(actual), String(expected)]); };
+
+    await document.fonts.ready;
+    await tick(120);
+
+    var rootPx = parseFloat(cs(document.documentElement).fontSize);
+    var line1 = color('var(--line-1)');
+    var line2 = color('var(--line-2)');
+    var space3 = (function () { var p = document.createElement('div'); p.style.paddingTop = 'var(--space-3)'; document.body.appendChild(p); var v = cs(p).paddingTop; p.remove(); return v; })();
+    var space5 = (function () { var p = document.createElement('div'); p.style.paddingTop = 'var(--space-5)'; document.body.appendChild(p); var v = cs(p).paddingTop; p.remove(); return v; })();
+    var space6 = (function () { var p = document.createElement('div'); p.style.paddingTop = 'var(--space-6)'; document.body.appendChild(p); var v = cs(p).paddingTop; p.remove(); return v; })();
+
+    /* Reach: no composition without the class. */
+    var bareTd = $('bare-dense').querySelector('td');
+    var bareNum = $('bare-dense').querySelector('td.doc-table-num');
+    expect('reach / dense marker alone: cell padding is not the composition\'s', cs(bareTd).paddingTop === space3, false);
+    expect('reach / dense marker alone: no row rule', cs(bareTd).borderBottomStyle, 'none');
+    expect('reach / dense marker alone: a dense value still wraps', cs(bareTd).whiteSpace, 'normal');
+    expect('reach / dense marker alone: a numeric cell keeps its own alignment', cs(bareNum).textAlign === 'end', false);
+    expect('reach / dense marker alone: code may break anywhere', cs(bareTd.querySelector('code')).overflowWrap, 'anywhere');
+    expect('reach / unmarked table alone: no measure', cs($('bare-narrative')).minWidth === (32 * rootPx) + 'px', false);
+    expect('reach / unmarked table alone: no row rule', cs($('bare-narrative').querySelector('td')).borderBottomStyle, 'none');
+    expect('reach / table marker without its box: no measure', cs($('marker-no-box')).minWidth === (32 * rootPx) + 'px', false);
+    expect('reach / table marker without its box: no row rule', cs($('marker-no-box').querySelector('td')).borderBottomStyle, 'none');
+    expect('reach / table marker without its box: padding is not the composition\'s', cs($('marker-no-box').querySelector('td')).paddingTop === space3, false);
+    expect('reach / unmarked table alone: padding is not the composition\'s', cs($('bare-narrative').querySelector('td')).paddingTop === space3, false);
+    expect('reach / a table nested in a composition cell: no row rule', cs($('nested').querySelector('td')).borderBottomStyle, 'none');
+    expect('reach / a table nested in a composition cell: padding is not the composition\'s', cs($('nested').querySelector('td')).paddingTop === space3, false);
+
+    /* Composition values. */
+    var nTable = $('comp-narrative');
+    var nTh = nTable.querySelector('th');
+    var nTd = nTable.querySelector('td');
+    var nLast = nTable.querySelector('td:last-child');
+    expect('composition / narrative: 32rem measure', cs(nTable).minWidth, (32 * rootPx) + 'px');
+    expect('composition / dense: no measure', cs($('comp-dense')).minWidth === (32 * rootPx) + 'px', false);
+    expect('composition / cell block padding is --space-3', cs(nTd).paddingTop, space3);
+    expect('composition / space between columns is --space-5', cs(nTd).paddingRight, space5);
+    expect('composition / last column has no end padding', cs(nLast).paddingRight, '0px');
+    expect('composition / row rule is --line-2', cs(nTd).borderBottomColor + ' ' + cs(nTd).borderBottomStyle, line2 + ' solid');
+    expect('composition / header rule is --line-1', cs(nTh).borderBottomColor, line1);
+    expect('composition / code breaks at its own opportunities', cs(nTd.querySelector('code')).overflowWrap, 'normal');
+    var num = $('comp-dense').querySelector('td.doc-table-num');
+    var numHead = $('comp-dense').querySelector('th.doc-table-num');
+    expect('composition / numeric cell aligns to the end', cs(num).textAlign, 'end');
+    expect('composition / numeric header aligns to the end', cs(numHead).textAlign, 'end');
+    expect('composition / a narrative numeric cell on tabular figures', cs($('narrative-num')).fontVariantNumeric, 'tabular-nums');
+    var scriptRow = document.createElement('tr');
+    scriptRow.innerHTML = '<td class="doc-body">a row a script appends to the table itself</td><td class="doc-body doc-table-num">3</td>';
+    $('comp-num').appendChild(scriptRow);
+    expect('composition / a row appended to the table itself takes the cell rules', scriptRow.parentElement === $('comp-num') && cs(scriptRow.firstChild).paddingTop === space3, true);
+    expect('composition / numeric header on tabular figures', cs(numHead).fontVariantNumeric, 'tabular-nums');
+    var thead = nTable.querySelector('thead');
+    var th0 = thead.querySelector('th');
+    expect('composition / the header row is shown in place, unclipped', [cs(thead).clipPath, cs(thead).visibility, cs(thead).position, thead.getBoundingClientRect().height >= th0.getBoundingClientRect().height && th0.getBoundingClientRect().height > 10].join(' '), 'none visible static true');
+    expect('composition / the box keeps --space-6 of scroll padding', cs($('box-narrative')).scrollPaddingRight, space6);
+    expect('composition / a consumer rule of one class outranks the cell rules', cs($('cell-override')).paddingTop, '3px');
+    expect('composition / a dense value keeps its line', cs($('comp-dense').querySelector('td')).whiteSpace, 'nowrap');
+
+    /* A header link scrolled into view by its nearest edge, as a keyboard or
+       find-in-page scroll does, lands inside the box and clear of the fade: the
+       box's scroll padding keeps --space-6, the fade's width, at its edge. */
+    var link = $('head-link');
+    var lbox = $('box-link');
+    var fadeWidth = parseFloat(space6);
+    link.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    await tick();
+    var lr = link.getBoundingClientRect(), br = lbox.getBoundingClientRect();
+    expect('scroll-into-view / the box scrolled to bring the header link in', lbox.scrollLeft > 0, true);
+    expect('scroll-into-view / hidden content remains to the right, so the fade is drawn', lbox.hasAttribute('data-overflow-end'), true);
+    expect('scroll-into-view / the header link lies inside the box, clear of the fade', lr.left >= br.left - 0.5 && lr.right <= br.right - fadeWidth + 0.5, true);
+    lbox.scrollLeft = 0;
+
+    /* Label case. */
+    expect('label / the label itself is in capitals', cs($('label-host')).textTransform, 'uppercase');
+    expect('label / code.doc-code keeps its case', $('label-code-class').innerText, 'default-ASK');
+    expect('label / a bare code element keeps its case', $('label-code-bare').innerText, 'AA-compliant');
+    expect('label / plain text keeps the capitals', $('label-plain').innerText, 'MW');
+
+    /* Overflow: a table's box, as a block. */
+    expect('overflow / wide table box', attrs($('box-wide')), 'data-overflow data-overflow-end');
+    expect('overflow / wide table box: cue', cue($('box-wide')), '"scroll >>"');
+    expect('overflow / table box that fits', attrs($('box-fits')), '(none)');
+    expect('overflow / table box that fits: no cue', cue($('box-fits')), 'none');
+    expect('overflow / narrative table below its measure', attrs($('box-narrative')), 'data-overflow data-overflow-end');
+    expect('overflow / wide block, unchanged', attrs($('pre-wide')), 'data-overflow data-overflow-end');
+    expect('overflow / wide block: cue, unchanged', cue($('pre-wide')), '"scroll >>"');
+    expect('overflow / block that fits, unchanged', attrs($('pre-fits')), '(none)');
+
+    var box = $('box-wide');
+    box.scrollLeft = box.scrollWidth;
+    await tick();
+    expect('overflow / scrolled to the end', attrs(box), 'data-overflow data-overflow-start');
+    expect('overflow / scrolled to the end: cue', cue(box), '"<< scroll"');
+    box.scrollLeft = Math.round((box.scrollWidth - box.clientWidth) / 2);
+    await tick();
+    expect('overflow / scrolled to the middle', attrs(box), 'data-overflow data-overflow-start data-overflow-end');
+    expect('overflow / scrolled to the middle: cue', cue(box), '"<< scroll >>"');
+    box.scrollLeft = 0;
+    await tick();
+
+    /* Added after load: a new table box and a new block, then a box moved in the
+       document, which must keep one scroll listener. */
+    var added = $('added');
+    var newBox = box.cloneNode(true);
+    newBox.id = 'box-added';
+    newBox.querySelectorAll('[id]').forEach(function (e) { e.removeAttribute('id'); });
+    ['data-overflow', 'data-overflow-start', 'data-overflow-end'].forEach(function (a) { newBox.removeAttribute(a); });
+    added.appendChild(newBox);
+    var newPre = $('pre-wide').cloneNode(true);
+    newPre.id = 'pre-added';
+    ['data-overflow', 'data-overflow-start', 'data-overflow-end'].forEach(function (a) { newPre.removeAttribute(a); });
+    added.appendChild(newPre);
+    await tick(120);
+    expect('added / table box added after load', attrs(newBox), 'data-overflow data-overflow-end');
+    expect('added / block added after load', attrs(newPre), 'data-overflow data-overflow-end');
+    added.appendChild(box);
+    await tick(120);
+    expect('added / a box moved in the document keeps one scroll listener', window.__scrollListeners.get(box), 1);
+    expect('added / a box added after load has one scroll listener', window.__scrollListeners.get(newBox), 1);
+
+    var failed = 0;
+    var tbody = $('verdict');
+    rows.forEach(function (r) {
+      if (!r[0]) failed++;
+      var tr = document.createElement('tr');
+      [r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
+        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    window.__tableFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+  })();
+</script>
+</body>
+</html>
