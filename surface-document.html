@@ -61,8 +61,9 @@
      composition's gap, which a grid applies to rows and columns alike. */
   .o-collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
 
-  /* Page-local, and consumer-owned in any real surface: a document table's
-     geometry. The module owns the cells' type only. */
+  /* Page-local, and consumer-owned in any real surface: the geometry of a table
+     that does not adopt the document table composition. The dense role still
+     sets its cells' type. */
   .o-table { border-collapse: collapse; }
   .o-table :where(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0;
                             border-bottom: 1px solid var(--line-2); }
@@ -647,22 +648,101 @@ one passage behind the magenta block rail</pre>
       </details>
     </section>
 
-    <!-- DENSE TABLE — a table the consumer declares dense with table.doc-dense-table.
-         Its cells are tabular payload and its header cells take the operative label.
-         An unmarked table is not this role. The geometry here is page-local. -->
+    <!-- TABLES — the text roles a table's cells take, and the document table
+         composition a consumer adopts by class. The roles set type only; the
+         composition sets geometry, and only on a table that carries it. The
+         last table keeps page-local geometry, to show that the dense role alone
+         draws none. -->
     <section class="doc-section" id="table">
-      <h2 class="doc-section-title">Dense tables</h2>
-      <p class="doc-body">A dense table is declared, not inferred: the consumer marks it
-        <code class="doc-code">table.doc-dense-table</code>, and then its cells are tabular payload, mono at
-        the Small step with tabular numerals, and its headers take the operative label. Being a table does
-        not make a table dense: a narrative comparison stays prose and waits for the shared table work.</p>
-      <table class="o-table doc-dense-table">
-        <thead><tr><th class="doc-label">surface</th><th class="doc-label">state</th><th class="doc-label">pin</th></tr></thead>
-        <tbody>
-          <tr><td class="doc-table-cell">specimen owner</td><td class="doc-table-cell">landed</td><td class="doc-table-cell">1a2b3c4</td></tr>
-          <tr><td class="doc-table-cell">specimen consumer</td><td class="doc-table-cell">re-sync due</td><td class="doc-table-cell">5d6e7f8</td></tr>
-        </tbody>
-      </table>
+      <h2 class="doc-section-title">Tables</h2>
+      <p class="doc-body">A table's cells take text roles, and the roles set type only. A dense table is
+        declared, not inferred: the consumer marks it <code class="doc-code">table.doc-dense-table</code>,
+        and its cells are tabular payload, mono at the Small step with tabular numerals. Any other table is
+        narrative, with document body in its cells. Both take the operative label for their headers, and code
+        inside a header keeps its own case.</p>
+      <p class="doc-body">The geometry is a separate composition, adopted by class:
+        <code class="doc-code">table.doc-table</code> directly inside a <code class="doc-code">.doc-table-scroll</code>
+        box. It draws the row rules and the spacing, aligns a numeric column on tabular figures, and scrolls a
+        table wider than its column inside its own box, with its header row in place. Nothing implies it —
+        not the dense marker, not a role on a cell — so a table without the class keeps its consumer's
+        geometry. Technical type is not a compact layout: a surface that needs a compact review density, or
+        rows that stack at a narrow width, keeps its own geometry and does not adopt this one.</p>
+
+      <div class="doc-labeled" id="table-narrative">
+        <p class="doc-label">a narrative table, in the composition</p>
+        <div class="doc-table-scroll" role="region" aria-label="A narrative table: catalog dispositions">
+          <table class="doc-table">
+            <thead>
+              <tr><th class="doc-label" scope="col">item</th><th class="doc-label" scope="col">disposition</th><th class="doc-label" scope="col">detail</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="doc-body"><code class="doc-code">colors_and_type.css</code></td><td class="doc-body">extended</td>
+                  <td class="doc-body"><code class="doc-code">--tracking-caption</code> (0.14em) carries the Caption role's tracking, and <code class="doc-code">.caption</code> uses it</td></tr>
+              <tr><td class="doc-body"><code class="doc-code">surface-action.css</code> · <code class="doc-code">surface-text-link.css</code></td><td class="doc-body">conforming</td>
+                  <td class="doc-body">the compact-action and textual-link roles, as described above</td></tr>
+              <tr><td class="doc-body"><code class="doc-code">patterns/surface-shell/</code></td><td class="doc-body">specialized</td>
+                  <td class="doc-body">its navigation panel keeps its own material for navigation composed over another surface: the <code class="doc-code">--surface-glass-2</code> fill with a 14px blur</td></tr>
+              <tr><td class="doc-body"><code class="doc-code">patterns/_preview/</code></td><td class="doc-body">generated</td>
+                  <td class="doc-body"><code class="doc-code">tools/gen-pattern-previews.mjs</code> writes it from the canonical templates, and <code class="doc-code">--check</code> verifies it</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="doc-labeled" id="table-dense">
+        <p class="doc-label">a dense table, in the composition</p>
+        <div class="doc-table-scroll" role="region" aria-label="A dense table: type roles">
+          <table class="doc-table doc-dense-table">
+            <thead>
+              <tr><th class="doc-label" scope="col">role</th><th class="doc-label" scope="col">family</th>
+                  <th class="doc-label doc-table-num" scope="col">weight</th><th class="doc-label doc-table-num" scope="col">size / line-height</th>
+                  <th class="doc-label" scope="col">tracking</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="doc-table-cell">Display</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">200</td><td class="doc-table-cell doc-table-num">96 / 1.02</td><td class="doc-table-cell">-0.035em</td></tr>
+              <tr><td class="doc-table-cell">H1</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">400</td><td class="doc-table-cell doc-table-num">48 / 1.12</td><td class="doc-table-cell">-0.02em</td></tr>
+              <tr><td class="doc-table-cell">H3</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">28 / 1.20</td><td class="doc-table-cell">-0.02em</td></tr>
+              <tr><td class="doc-table-cell">Body</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">200</td><td class="doc-table-cell doc-table-num">24 / 1.45</td><td class="doc-table-cell">0</td></tr>
+              <tr><td class="doc-table-cell">Small</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.40</td><td class="doc-table-cell">0</td></tr>
+              <tr><td class="doc-table-cell">Preformatted text</td><td class="doc-table-cell">JetBrains Mono</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.45</td><td class="doc-table-cell">0</td></tr>
+              <tr><td class="doc-table-cell">Table-of-contents entry</td><td class="doc-table-cell">JetBrains Mono</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.20</td><td class="doc-table-cell">-0.02em</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="doc-labeled" id="table-headers">
+        <p class="doc-label">headers that carry code and a link</p>
+        <div class="doc-table-scroll" role="region" aria-label="Headers that carry code and a link: flavor table">
+          <table class="doc-table doc-dense-table">
+            <thead>
+              <tr><th class="doc-label" scope="col">role</th><th class="doc-label" scope="col"><code class="doc-code">default-ASK</code></th>
+                  <th class="doc-label" scope="col"><a class="surface-text-link" href="#table-sources"><code class="doc-code">AA-compliant</code></a></th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="doc-table-cell">author — light</td><td class="doc-table-cell"><code class="doc-code">var(--ask-ui-accent-1)</code> <code class="doc-code">#8b79a2</code></td><td class="doc-table-cell"><code class="doc-code">#7f6b99</code></td></tr>
+              <tr><td class="doc-table-cell">participant c</td><td class="doc-table-cell"><code class="doc-code">#c44fc4</code></td><td class="doc-table-cell"><code class="doc-code">#c95fc9</code></td></tr>
+              <tr><td class="doc-table-cell">participant d</td><td class="doc-table-cell"><code class="doc-code">#a56bd4</code></td><td class="doc-table-cell"><code class="doc-code">#a870d6</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="doc-labeled" id="table-consumer">
+        <p class="doc-label">a dense table in its consumer's own geometry</p>
+        <table class="o-table doc-dense-table">
+          <thead><tr><th class="doc-label">surface</th><th class="doc-label">state</th><th class="doc-label">pin</th></tr></thead>
+          <tbody>
+            <tr><td class="doc-table-cell">specimen owner</td><td class="doc-table-cell">landed</td><td class="doc-table-cell">1a2b3c4</td></tr>
+            <tr><td class="doc-table-cell">specimen consumer</td><td class="doc-table-cell">re-sync due</td><td class="doc-table-cell">5d6e7f8</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="doc-meta" id="table-sources">Sources: README.md, four rows of the catalog dispositions, the
+        surface-shell detail ending after its first sentence, and seven rows of the type-role matrix;
+        patterns/message-archive/README.md, three rows of the flavor table. The link on
+        <code class="doc-code">AA-compliant</code> points here.</p>
     </section>
 
     <!-- ENTRY TITLE — the primary text of an operable entry in a result list or
