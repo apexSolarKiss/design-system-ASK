@@ -40,19 +40,23 @@
        list item, link, label, metadata value, code span, quotation,
        preformatted block and table value carries its register role
        (surface-document.css, surface-text-link.css) and takes that role's
-       style. This overlay sets NO type metric and NO foreground on text; it
-       owns only the artifact's own geometry — the column, the metadata strip,
-       lists, table geometry, rules and the provenance footer — which the
-       register leaves to its consumer. Every geometry rule on an element the
-       register may also style is written in :where(), at zero specificity, so
-       it can never outrank a register rule.
+       style. This overlay sets NO type metric and NO foreground on text,
+       and NO screen geometry on a table that adopts the register's document
+       table composition; it owns only the artifact's own geometry — the
+       column, the metadata strip, lists, the geometry of a table that does
+       not adopt the composition, rules and the provenance footer — which the
+       register leaves to its consumer, and one named print adaptation for an
+       adopted table (Tables, below). Every other geometry rule on an element
+       the register may also style is written in :where(), at zero
+       specificity, so it can never outrank a register rule.
 
        The ONE sanctioned Class B override is LINE INTENSITY: report rules,
        borders, table lines, and dividers read too faint at the foundation
        hairline (white .45 / .22) on the light field, so a Class B-scoped
        token carries stronger white lines in light mode and inherits the
        foundation lavender lines in dark. It draws ONLY the artifact's own
-       geometry below — including the rules on a table's cells — and never a
+       geometry below — including the rules on the cells of a table that does
+       not adopt the composition — and never a table the composition draws, a
        text foreground, a passage rail or the disclosure's panel. (Class A diagrams keep
        their own scoped --diagram-* tokens — text roles aliasing the
        foundation --fg-*, strokes local — for the same reason: color is
@@ -94,23 +98,63 @@
     }
     .meta > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
 
-    /* ---------- Lists, rules and table geometry ----------
-       List items take .doc-body. A dense technical table is declared
-       table.doc-dense-table, with .doc-label headers and .doc-table-cell
-       values. A narrative table stays unmarked: its headers take .doc-label
-       and its cells .doc-body. The geometry below is the artifact's; a long
-       token in a cell wraps rather than widening the page. */
+    /* ---------- Lists and rules ----------
+       List items take .doc-body. */
     :where(.artifact) :where(ul, ol) {
       display: flex; flex-direction: column; gap: var(--space-2);
       margin: 0; padding-left: var(--space-5);
     }
     :where(.artifact) :where(hr) { border: 0; border-top: 1px solid var(--artifact-line-soft); margin: 0; }
-    :where(.artifact) :where(table) { width: 100%; border-collapse: collapse; }
-    :where(.artifact) :where(th, td) {
+
+    /* ---------- Tables ----------
+       A table adopts the register's document table composition by class:
+       table.doc-table directly inside a .doc-table-scroll box, which is named
+       as a region. A dense technical table also carries table.doc-dense-table,
+       with .doc-label headers and .doc-table-cell values; a narrative table
+       carries no dense marker, and its headers take .doc-label and its cells
+       .doc-body. .doc-table-num marks a numeric column's header and cells.
+       On screen the composition draws an adopted table's rules, spacing,
+       numeral alignment and line breaking, and the rules below exclude it, so
+       nothing here competes with the composition. A table wider than its box
+       scrolls inside it, never the page. This template loads no script, so
+       without the optional overflow helper that box shows no scroll cue. A
+       box does not scroll on paper, so the print adaptation at the end of
+       this section adapts an adopted table to the printed column.
+       A table that must not scroll sideways, that stacks its rows or that
+       needs a print treatment the adaptation does not give it does not adopt
+       the composition. Without both markers it keeps the artifact's own
+       table geometry below: full width, rules in the line overlay, and cells
+       that wrap a long token rather than widen the page. Stacked rows, or any
+       other table geometry, are the consuming project's to supply. */
+    :where(.artifact) :where(table):not(:where(.doc-table-scroll > table.doc-table)) { width: 100%; border-collapse: collapse; }
+    :where(.artifact) :where(th, td):not(:where(.doc-table-scroll > table.doc-table > * > tr > *, .doc-table-scroll > table.doc-table > tr > *)) {
       text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4);
       border-bottom: 1px solid var(--artifact-line-soft); overflow-wrap: anywhere;
     }
-    :where(.artifact) :where(thead th) { border-bottom-color: var(--artifact-line); }
+    :where(.artifact) :where(thead th):not(:where(.doc-table-scroll > table.doc-table > thead > tr > th)) { border-bottom-color: var(--artifact-line); }
+
+    /* Print adaptation — this scaffold's own, for print only.
+       Paper does not scroll, so in print the composition's choices that rely
+       on its box scrolling yield, and an adopted table can fit the printed
+       column: a narrative table drops its 32rem measure, and a dense value
+       outside a numeric column, like code in any adopted cell, wraps. Where
+       the printed column is narrower than the table's natural width, such a
+       value or code may break between any two characters, short tokens
+       included, rather than be cut. The table's markup, text roles and type,
+       cell spacing, rules and a numeric column's alignment and unbroken
+       figures are unchanged, and nothing here reaches the screen. Each rule
+       is as weak as the cascade allows: the table and cell rules carry one
+       element type, which beats the composition's zero-specificity rules, and
+       the code rule carries one class more than the composition's own. A
+       table whose columns cannot sit side by side in the printed column still
+       overflows it and is cut at its box's edge; a table that needs more
+       stays unadopted, and its geometry, print included, is the consuming
+       project's. */
+    @media print {
+      :where(.artifact .doc-table-scroll) > table:where(.doc-table) { min-width: 0; }
+      :where(.artifact .doc-table-scroll > table.doc-table > * > tr, .artifact .doc-table-scroll > table.doc-table > tr) > td:where(.doc-table-cell:not(.doc-table-num)) { white-space: normal; overflow-wrap: anywhere; }
+      .artifact .doc-table-scroll > table.doc-table :is(code, .doc-code) { overflow-wrap: anywhere; }
+    }
 
     /* ---------- Provenance footer — layout only ----------
        Its names take .doc-label and its values .doc-meta. */
@@ -167,8 +211,10 @@
     <!-- ==================================================================
          Sections — DOWNSTREAM: replace section titles + bodies with content.
          The samples show the register roles an artifact uses — body, list,
-         quotation, code, preformatted block, dense table and disclosure.
-         Replace the CONTENT; keep each role's class.
+         quotation, code, preformatted block, a dense and a narrative table in
+         the document table composition, and disclosure.
+         Replace the CONTENT; keep each role's class and each table's markers,
+         and name each table's box.
          ================================================================== -->
     <section class="doc-section">
       <h2 class="doc-section-title">Section one</h2>
@@ -176,7 +222,7 @@
         <p class="doc-body">Body text placeholder. Each role sets its text's style; a link takes the <a class="surface-text-link" href="https://example.org/">text-link role</a>. One idea per sentence.</p>
         <ul>
           <li class="doc-body">List item placeholder.</li>
-          <li class="doc-body">Another item — lists, rules, and tables read in the Class B line intensity.</li>
+          <li class="doc-body">Another item — the artifact's own rules read in the Class B line intensity.</li>
         </ul>
         <blockquote class="doc-quote">
           <p>[Quotation placeholder — words presented as someone's, on the violet rail.]</p>
@@ -187,14 +233,34 @@
 
     <section class="doc-section">
       <h2 class="doc-section-title">Section two</h2>
-      <p class="doc-body">Body text placeholder. A declared dense table carries technical values in mono.</p>
-      <table class="doc-dense-table">
-        <thead><tr><th class="doc-label">Field</th><th class="doc-label">Value</th></tr></thead>
-        <tbody>
-          <tr><td class="doc-table-cell">Placeholder row</td><td class="doc-table-cell">tabular data uses mono</td></tr>
-          <tr><td class="doc-table-cell">Another row</td><td class="doc-table-cell">borders use the line overlay</td></tr>
-        </tbody>
-      </table>
+      <p class="doc-body">Body text placeholder. A declared dense table carries technical values in mono, and a numeric column aligns to the end.</p>
+      <div class="doc-table-scroll" role="region" aria-label="[Dense table name]">
+        <table class="doc-table doc-dense-table">
+          <thead>
+            <tr><th class="doc-label" scope="col">Field</th><th class="doc-label" scope="col">Value</th>
+                <th class="doc-label" scope="col"><a class="surface-text-link" href="#provenance"><code class="doc-code">sha256</code></a></th>
+                <th class="doc-label doc-table-num" scope="col">Bytes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="doc-table-cell">Placeholder row</td><td class="doc-table-cell">tabular data uses mono</td><td class="doc-table-cell">0000000</td><td class="doc-table-cell doc-table-num">12,345</td></tr>
+            <tr><td class="doc-table-cell">Another row</td><td class="doc-table-cell">a long value keeps its line</td><td class="doc-table-cell">0000000</td><td class="doc-table-cell doc-table-num">678</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="doc-body">Body text placeholder. A narrative table sets its cells as body text and keeps a readable measure.</p>
+      <div class="doc-table-scroll" role="region" aria-label="[Narrative table name]">
+        <table class="doc-table">
+          <thead>
+            <tr><th class="doc-label" scope="col">Item</th><th class="doc-label" scope="col">Disposition</th><th class="doc-label" scope="col">Detail</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="doc-body">Placeholder item</td><td class="doc-body">kept</td>
+                <td class="doc-body">A sentence of detail wraps inside the table's measure, and code such as <code class="doc-code">file_path:42</code> breaks only at its own opportunities.</td></tr>
+            <tr><td class="doc-body">Another item</td><td class="doc-body">replaced</td>
+                <td class="doc-body">Replace each row with the artifact's own content, keeping the header and cell roles.</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="doc-section">
@@ -212,7 +278,7 @@
     <!-- ==================================================================
          Provenance footer — DOWNSTREAM: keep this. Values from MANIFEST.md.
          ================================================================== -->
-    <footer class="provenance">
+    <footer class="provenance" id="provenance">
       <dl>
         <dt class="doc-label">design-system-ASK</dt>
         <dd class="doc-meta">commit <code class="doc-code">[upstream-short-sha]</code> · [upstream-commit-date]</dd>
