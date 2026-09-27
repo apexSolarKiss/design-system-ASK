@@ -10,7 +10,8 @@
      (surface-treatments.css, which extends surface-panel.css). Reads the foundation,
      the compact-action, panel and text-link modules, the register and the treatments live;
      theme-aware (light default · dark via prefers-color-scheme /
-     [data-theme="dark"]). Open directly. -->
+     [data-theme="dark"]). Open directly. The records-and-inspector section runs a
+     small page-local script at the end of the page. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="surface-panel.css">
@@ -89,6 +90,30 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]):not([data-theme="dark"]) .o-mark { color: var(--ask-lavender-ask); }
   }
+
+  /* Page-local, and consumer-owned in any real surface: the records-and-inspector
+     section's two regions, stacked below 900px with the records first and side by
+     side from there; the inspector's sticky place and independent scroll; the lists
+     of relations; and focus on the two places the script sends it — the selected
+     record's heading and the item the inspector returns to. The records' grid is
+     the repeated collection's .o-collection. The hidden attribute wins over the
+     display a delivered class sets (.surface-action and .doc-titled set one), inside
+     this section only. Without the script the inspector holds every view, and each
+     view after the first stands a clear space below the one before. */
+  .o-md [hidden] { display: none; }
+  .o-view:not([hidden]) ~ .o-view:not([hidden]) { margin-top: var(--space-6); }
+  .o-split { display: flex; flex-direction: column; gap: var(--space-7); }
+  @media (min-width: 900px) {
+    .o-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: var(--space-6);
+               align-items: start; }
+    .o-inspector { position: sticky; top: var(--space-5); max-height: calc(100vh - 2 * var(--space-5));
+                   overflow-y: auto; overscroll-behavior: contain; }
+  }
+  .o-inspector { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+  .o-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+  .o-list--records { gap: var(--space-4); }
+  .o-view .doc-subsection-title:focus-visible,
+  .o-item:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 4px; }
 </style>
 </head>
 <body>
@@ -270,9 +295,11 @@
     </section>
 
     <!-- A REPEATED COLLECTION. The item anatomy, the space between items, the inset each
-         item's content aligns to and the place its actions take come from the shared
-         rules. The grid, its column count, the order of the items and their words are
-         this page's, as they would be a consumer's. -->
+         item's content aligns to and the place its actions take, at the item's end, come
+         from the shared rules. The copy is deliberately unequal, so each row of the grid
+         shows its action rows sharing one bottom edge. The grid, its column count, the
+         order of the items and their words are this page's, as they would be a
+         consumer's. -->
     <section class="doc-section" id="collections">
       <div class="doc-labeled">
         <p class="doc-label">composition · repeated collection</p>
@@ -280,15 +307,18 @@
       </div>
       <p class="doc-body">Every item has one anatomy: an operative label, the surface panel's title and
         supporting copy, and a row of compact actions. The shared rules set that anatomy, the space between items, the
-        inset every item's content starts from and the place its actions take, after its copy. The
-        grid, how many columns it has, the order of the items and what they say belong to the
-        consuming surface.</p>
+        inset every item's content starts from and the place its actions take: at the item's end, so the
+        items in one row of the grid show their actions along one bottom edge however long their copy is.
+        Each row keeps its own height, and nothing is fixed or filled. The grid, how many columns it has,
+        the order of the items and what they say belong to the consuming surface.</p>
       <div class="doc-group o-collection" id="collection">
         <article class="surface-panel" id="collection-item-1">
           <p class="doc-label">rule</p>
           <h3 class="surface-panel-title">Text roles</h3>
-          <p class="surface-panel-support">One complete style per role, whatever the element.</p>
-          <div class="doc-actions">
+          <p class="surface-panel-support">One complete style per role, whatever the element: family, size,
+            weight, leading, tracking and foreground. The compositions set the space between one role and the
+            next.</p>
+          <div class="doc-actions doc-actions--end">
             <a class="surface-action" href="#tracking">tracking</a>
             <a class="surface-action surface-action--secondary" href="#depth">depth</a>
           </div>
@@ -297,7 +327,7 @@
           <p class="doc-label">rule</p>
           <h3 class="surface-panel-title">Surface axes</h3>
           <p class="surface-panel-support">Material, attachment and elevation, chosen separately.</p>
-          <div class="doc-actions">
+          <div class="doc-actions doc-actions--end">
             <a class="surface-action" href="#rule-axes">axes</a>
             <a class="surface-action surface-action--secondary" href="#attachment">attachment</a>
           </div>
@@ -306,22 +336,24 @@
           <p class="doc-label">treatment</p>
           <h3 class="surface-panel-title">Content emphasis</h3>
           <p class="surface-panel-support">Persistent and assigned by role; never an interaction state.</p>
-          <div class="doc-actions">
+          <div class="doc-actions doc-actions--end">
             <a class="surface-action" href="#emphasis">emphasis</a>
           </div>
         </article>
         <article class="surface-panel" id="collection-item-4">
           <p class="doc-label">treatment</p>
           <h3 class="surface-panel-title">Structured text</h3>
-          <p class="surface-panel-support">Indentation that is structure, one rail per level.</p>
-          <div class="doc-actions">
+          <p class="surface-panel-support">Indentation that is structure, one rail per level. A grouped
+            diagram declares its peer groups, which sit one line apart whatever their number, and each
+            label sits on its lines.</p>
+          <div class="doc-actions doc-actions--end">
             <a class="surface-action" href="#structured">structured</a>
             <a class="surface-action surface-action--secondary" href="#long-tokens">long tokens</a>
           </div>
         </article>
       </div>
       <p class="doc-meta">consumer-owned here: the grid, its column count, the order of the items and
-        their words</p>
+        their words. Shared: each action row's place at its item's end, adopted by class on the row</p>
     </section>
 
     <!-- The two small-label roles, the same phrase in each, named in plain words. -->
@@ -774,6 +806,320 @@ one passage behind the magenta block rail</pre>
       </ul>
     </section>
 
+    <!-- RECORDS AND AN INSPECTOR — the main + inspector composition, built from
+         delivered parts. The same text roles in both regions, the relationships inside
+         each view, the inspector as a separate flat surface, and each source address
+         that stands as a field value in inline code, the document locator. The records
+         are four public records of the atlas at apex-solar-kiss/consciousness-free-will,
+         unedited. The two regions and their breakpoint, the inspector's sticky place and
+         scroll, the records' grid, selection, the selected marker and the route back are
+         this page's, in its o- classes and the script at the end of the page, as they
+         would be a consumer's. -->
+    <section class="doc-section" id="records-inspector">
+      <div class="doc-labeled">
+        <p class="doc-label">composition · main + inspector</p>
+        <h2 class="doc-section-title">Records and an inspector</h2>
+      </div>
+      <p class="doc-body">Records in the main region, and an inspector for the one selected. Both regions
+        keep one set of text roles: a role keeps its treatment wherever it occurs, and the inspector's prose
+        stays at the Body step however narrow its region. A record's name is an entry title among the
+        records and a subsection heading in the inspector, because there it governs the fields beneath it.
+        The inspector is a separate surface chosen on the three axes: panel material, free corners and
+        flush, with no shadow, as the section synthesis is.</p>
+      <p class="doc-body">A source address that stands as a field value is inline code on its own: mono at
+        the Caption step, in its source case, wrapping inside its field. It declares no leading or tracking,
+        so it stands only where its container sets none, never inside a label, whose tracking it would
+        take. An
+        identifier that names a record stays metadata. Which region sits where, the breakpoint, the
+        inspector's scrolling, selection, the marker that says which record is selected and the way back
+        belong to the consuming surface.</p>
+      <div class="o-md o-split">
+        <section class="o-records doc-titled" aria-label="records">
+          <p class="doc-label">records</p>
+          <div class="doc-group o-collection">
+            <article class="surface-panel o-item" id="item-CFW-C-008" data-record="CFW-C-008" aria-labelledby="item-title-CFW-C-008" tabindex="-1">
+              <p class="doc-meta">CFW-C-008  ·  CFW-C</p>
+              <p class="doc-entry-title" id="item-title-CFW-C-008">an access-consciousness account may connect consciousness constitutively to general reasoning, belief formation and rational control — making it potentially relevant to the capacities through which a source role could be EXERCISED</p>
+              <div class="doc-actions doc-actions--end">
+                <a class="surface-action" href="#view-CFW-C-008" data-inspect="CFW-C-008" aria-controls="inspector">inspect</a>
+                <span class="doc-meta o-current" aria-current="true" hidden>selected</span>
+                <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-C-008" target="_blank" rel="noopener noreferrer">open in the map</a>
+              </div>
+            </article>
+            <article class="surface-panel o-item" id="item-CFW-N-217" data-record="CFW-N-217" aria-labelledby="item-title-CFW-N-217" tabindex="-1">
+              <p class="doc-meta">CFW-N-217  ·  CFW-N</p>
+              <p class="doc-entry-title" id="item-title-CFW-N-217">Hard determinism</p>
+              <div class="doc-actions doc-actions--end">
+                <a class="surface-action" href="#view-CFW-N-217" data-inspect="CFW-N-217" aria-controls="inspector">inspect</a>
+                <span class="doc-meta o-current" aria-current="true" hidden>selected</span>
+                <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-N-217" target="_blank" rel="noopener noreferrer">open in the map</a>
+              </div>
+            </article>
+            <article class="surface-panel o-item" id="item-CFW-S-435" data-record="CFW-S-435" aria-labelledby="item-title-CFW-S-435" tabindex="-1">
+              <p class="doc-meta">CFW-S-435  ·  CFW-S</p>
+              <p class="doc-entry-title" id="item-title-CFW-S-435">Chesterman, &quot;Artificial Intelligence and the Limits of Legal Personality&quot;</p>
+              <p class="doc-meta">Simon Chesterman  ·  FREE-TO-READ  ·  RE-VERIFY-BEFORE-QUOTE</p>
+              <div class="doc-labeled">
+                <p class="doc-label">source link</p>
+                <code class="doc-code"><a class="surface-text-link" href="https://www.cambridge.org/core/services/aop-cambridge-core/content/view/1859C6E12F75046309C60C150AB31A29/S0020589320000366a.pdf/artificial_intelligence_and_the_limits_of_legal_personality.pdf" target="_blank" rel="noopener noreferrer">https://www.cambridge.org/core/services/aop-cambridge-core/content/view/1859C6E12F75046309C60C150AB31A29/S0020589320000366a.pdf/artificial_intelligence_and_the_limits_of_legal_personality.pdf</a></code>
+              </div>
+              <div class="doc-actions doc-actions--end">
+                <a class="surface-action" href="#view-CFW-S-435" data-inspect="CFW-S-435" aria-controls="inspector">inspect</a>
+                <span class="doc-meta o-current" aria-current="true" hidden>selected</span>
+                <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-435" target="_blank" rel="noopener noreferrer">open in the map</a>
+              </div>
+            </article>
+            <article class="surface-panel o-item" id="item-CFW-S-014" data-record="CFW-S-014" aria-labelledby="item-title-CFW-S-014" tabindex="-1">
+              <p class="doc-meta">CFW-S-014  ·  CFW-S</p>
+              <p class="doc-entry-title" id="item-title-CFW-S-014">Adversarial testing of global neuronal workspace and integrated information theories of consciousness</p>
+              <p class="doc-meta">Cogitate Consortium (40+ authors; theory proponents Dehaene and Koch among them)  ·  Preregistered multi-modal adversarial-collaboration experiment (fMRI, MEG, iEEG); n=256 total participants; 31… · LICENCE CC BY 4.0  ·  RE-VERIFY-BEFORE-QUOTE · 2 READ EVENTS · CLAIMS PARTITIONED BY SPAN</p>
+              <div class="doc-labeled">
+                <p class="doc-label">source link</p>
+                <code class="doc-code">Nature 642(8066):133-142; DOI 10.1038/s41586-025-08888-1; open-access copy at <a class="surface-text-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12137136/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12137136/</a> ; abstract independently corroborated at `https://research.birmingham.ac.uk/en/publications/adversarial-testing-…`</code>
+              </div>
+              <div class="doc-actions doc-actions--end">
+                <a class="surface-action" href="#view-CFW-S-014" data-inspect="CFW-S-014" aria-controls="inspector">inspect</a>
+                <span class="doc-meta o-current" aria-current="true" hidden>selected</span>
+                <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-014" target="_blank" rel="noopener noreferrer">open in the map</a>
+              </div>
+            </article>
+          </div>
+        </section>
+        <aside class="o-inspector surface-separate surface-material-panel surface-attach-free surface-elevation-flush" id="inspector" aria-label="inspector">
+          <p class="doc-label">inspector</p>
+          <article class="doc-titled o-view" id="view-CFW-C-008" data-record="CFW-C-008" aria-labelledby="view-title-CFW-C-008">
+            <div class="doc-labeled">
+              <p class="doc-meta">CFW-C — claim card</p>
+              <h3 class="doc-subsection-title" id="view-title-CFW-C-008" tabindex="-1">an access-consciousness account may connect consciousness constitutively to general reasoning, belief formation and rational control — making it potentially relevant to the capacities through which a source role could be EXERCISED</h3>
+            </div>
+            <div class="doc-actions">
+              <a class="surface-action surface-action--secondary" href="#item-CFW-C-008" data-back="CFW-C-008">back to the records</a>
+              <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-C-008" target="_blank" rel="noopener noreferrer">open in the map</a>
+            </div>
+            <div class="doc-group">
+              <div class="doc-labeled">
+                <p class="doc-label">state</p>
+                <p class="doc-meta">unclassified — admitted, untyped</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">identifier</p>
+                <p class="doc-meta">CFW-C-008</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">region</p>
+                <p class="doc-meta">Consciousness  §I.9.8 pressure pair</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">status</p>
+                <p class="doc-meta">recorded · contested · UNCLASSIFIED — this canonical rules neither</p>
+              </div>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">typed relations — 1</h4>
+                <ul class="o-list">
+                  <li class="doc-meta">registered · conflicts-with → <a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-C-009" target="_blank" rel="noopener noreferrer">CFW-C-009</a></li>
+                </ul>
+              </section>
+            </div>
+          </article>
+          <article class="doc-titled o-view" id="view-CFW-N-217" data-record="CFW-N-217" aria-labelledby="view-title-CFW-N-217">
+            <div class="doc-labeled">
+              <p class="doc-meta">CFW-N — node — a survey position, argument, tradition or distinction</p>
+              <h3 class="doc-subsection-title" id="view-title-CFW-N-217" tabindex="-1">Hard determinism</h3>
+            </div>
+            <div class="doc-actions">
+              <a class="surface-action surface-action--secondary" href="#item-CFW-N-217" data-back="CFW-N-217">back to the records</a>
+              <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-N-217" target="_blank" rel="noopener noreferrer">open in the map</a>
+            </div>
+            <div class="doc-group">
+              <div class="doc-labeled">
+                <p class="doc-label">state</p>
+                <p class="doc-meta">recorded — no governed state</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">identifier</p>
+                <p class="doc-meta">CFW-N-217</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">region</p>
+                <p class="doc-meta">Free will + agency  II.1 — hard determinism (the superseded classical slot)</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">node type</p>
+                <p class="doc-meta">position</p>
+              </div>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">evidence owners — 4</h4>
+                <ul class="o-list o-list--records">
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-237" target="_blank" rel="noopener noreferrer">CFW-S-237</a></p>
+                    <p class="doc-body">&quot;Free Will&quot;, Internet Encyclopedia of Philosophy</p>
+                    <p class="doc-meta">fidelity QUOTABLE · 3 READ EVENTS · read in 3 lanes</p>
+                  </li>
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-270" target="_blank" rel="noopener noreferrer">CFW-S-270</a></p>
+                    <p class="doc-body">Skepticism About Moral Responsibility (Stanford Encyclopedia of Philosophy entry)</p>
+                    <p class="doc-meta">fidelity QUOTABLE · 11 READ EVENTS · read in 3 lanes</p>
+                  </li>
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-274" target="_blank" rel="noopener noreferrer">CFW-S-274</a></p>
+                    <p class="doc-body">Free Will Skepticism and Criminal Behavior: A Public Health-Quarantine Model (Presidential Address, journal article)</p>
+                    <p class="doc-meta">fidelity QUOTABLE</p>
+                  </li>
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-275" target="_blank" rel="noopener noreferrer">CFW-S-275</a></p>
+                    <p class="doc-body">Review of Bruce N. Waller, Against Moral Responsibility (book review)</p>
+                    <p class="doc-meta">fidelity QUOTABLE</p>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </article>
+          <article class="doc-titled o-view" id="view-CFW-S-435" data-record="CFW-S-435" aria-labelledby="view-title-CFW-S-435">
+            <div class="doc-labeled">
+              <p class="doc-meta">CFW-S — evidence owner · inspector plane</p>
+              <h3 class="doc-subsection-title" id="view-title-CFW-S-435" tabindex="-1">Chesterman, &quot;Artificial Intelligence and the Limits of Legal Personality&quot;</h3>
+            </div>
+            <div class="doc-actions">
+              <a class="surface-action surface-action--secondary" href="#item-CFW-S-435" data-back="CFW-S-435">back to the records</a>
+              <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-435" target="_blank" rel="noopener noreferrer">open in the map</a>
+            </div>
+            <div class="doc-group">
+              <div class="doc-labeled">
+                <p class="doc-label">identifier</p>
+                <p class="doc-meta">CFW-S-435</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">source type</p>
+                <p class="doc-meta">PRIM-PHIL</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">author</p>
+                <p class="doc-body">Simon Chesterman</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">exact work</p>
+                <p class="doc-body">Chesterman, &quot;Artificial Intelligence and the Limits of Legal Personality&quot;</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">edition / version</p>
+                <p class="doc-body">International and Comparative Law Quarterly 69, October 2020, pp. 819-844; DOI</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">access</p>
+                <p class="doc-meta">FREE-TO-READ</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">licence</p>
+                <p class="doc-body">CC BY 4.0, stated on the article face at p. 819 and independently corroborated. The</p>
+              </div>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">verification</h4>
+                <div class="doc-labeled">
+                  <p class="doc-label">verification depth</p>
+                  <p class="doc-meta">CONTENT-VERIFIED</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">quotation fidelity</p>
+                  <p class="doc-meta">RE-VERIFY-BEFORE-QUOTE</p>
+                </div>
+              </section>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">carrier</h4>
+                <div class="doc-labeled">
+                  <p class="doc-label">region</p>
+                  <p class="doc-meta">Evidence ledger  §VI.12</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">generation</p>
+                  <p class="doc-meta">v11</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">source link</p>
+                  <code class="doc-code"><a class="surface-text-link" href="https://www.cambridge.org/core/services/aop-cambridge-core/content/view/1859C6E12F75046309C60C150AB31A29/S0020589320000366a.pdf/artificial_intelligence_and_the_limits_of_legal_personality.pdf" target="_blank" rel="noopener noreferrer">https://www.cambridge.org/core/services/aop-cambridge-core/content/view/1859C6E12F75046309C60C150AB31A29/S0020589320000366a.pdf/artificial_intelligence_and_the_limits_of_legal_personality.pdf</a></code>
+                </div>
+              </section>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">evidence for — 2</h4>
+                <ul class="o-list o-list--records">
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-M-019" target="_blank" rel="noopener noreferrer">CFW-M-019</a></p>
+                    <p class="doc-body">The question of legal personality is a BINARY -- recognised or not -- though the content of that status is a SPECTRUM.</p>
+                  </li>
+                  <li class="doc-labeled">
+                    <p class="doc-meta"><a class="surface-text-link" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-N-428" target="_blank" rel="noopener noreferrer">CFW-N-428</a></p>
+                    <p class="doc-body">Personhood a binary, the content of that status a spectrum, recognition in the gift of the State</p>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </article>
+          <article class="doc-titled o-view" id="view-CFW-S-014" data-record="CFW-S-014" aria-labelledby="view-title-CFW-S-014">
+            <div class="doc-labeled">
+              <p class="doc-meta">CFW-S — evidence owner · inspector plane</p>
+              <h3 class="doc-subsection-title" id="view-title-CFW-S-014" tabindex="-1">Adversarial testing of global neuronal workspace and integrated information theories of consciousness</h3>
+            </div>
+            <div class="doc-actions">
+              <a class="surface-action surface-action--secondary" href="#item-CFW-S-014" data-back="CFW-S-014">back to the records</a>
+              <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/#CFW-S-014" target="_blank" rel="noopener noreferrer">open in the map</a>
+            </div>
+            <div class="doc-group">
+              <div class="doc-labeled">
+                <p class="doc-label">identifier</p>
+                <p class="doc-meta">CFW-S-014</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">author</p>
+                <p class="doc-body">Cogitate Consortium (40+ authors; theory proponents Dehaene and Koch among them)</p>
+              </div>
+              <div class="doc-labeled">
+                <p class="doc-label">exact work</p>
+                <p class="doc-body">Adversarial testing of global neuronal workspace and integrated information theories of consciousness</p>
+              </div>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">verification</h4>
+                <div class="doc-labeled">
+                  <p class="doc-label">verification depth</p>
+                  <p class="doc-meta">CONTENT-VERIFIED</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">quotation fidelity</p>
+                  <p class="doc-meta">RE-VERIFY-BEFORE-QUOTE · 2 READ EVENTS · CLAIMS PARTITIONED BY SPAN</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">evidence class</p>
+                  <p class="doc-meta">Preregistered multi-modal adversarial-collaboration experiment (fMRI, MEG, iEEG); n=256 total participants; 31… · LICENCE CC BY 4.0</p>
+                </div>
+              </section>
+              <section class="doc-group">
+                <h4 class="doc-deep-title">carrier</h4>
+                <div class="doc-labeled">
+                  <p class="doc-label">region</p>
+                  <p class="doc-meta">Evidence ledger  §VI.12</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">generation</p>
+                  <p class="doc-meta">v11</p>
+                </div>
+                <div class="doc-labeled">
+                  <p class="doc-label">source link</p>
+                  <code class="doc-code">Nature 642(8066):133-142; DOI 10.1038/s41586-025-08888-1; open-access copy at <a class="surface-text-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12137136/" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12137136/</a> ; abstract independently corroborated at `https://research.birmingham.ac.uk/en/publications/adversarial-testing-…`</code>
+                </div>
+              </section>
+            </div>
+          </article>
+        </aside>
+      </div>
+      <p class="doc-meta">records: apexSolarKiss/ASK at 4a6aee72, apex-solar-kiss/consciousness-free-will/atlas-data.public.js —
+        CFW-C-008, CFW-N-217, CFW-S-435, CFW-S-014; the inspector's fields, their order, the derived state labels and
+        the relation lists as that route's cfw-projection.js yields them and its cfw-atlas.js inspector orders them.
+        Wording, identifiers and source links are unedited; elisions in the data are the data's.</p>
+      <p class="doc-meta">this page's controls: inspect and back to the records, which are not features of the
+        atlas application; open in the map is the application's own record link. Consumer-owned here: the
+        selected marker, the two regions, stacked below 900px, the inspector's sticky place and independent
+        scroll, the records' grid, the first record selected at load and, without the script, an inspector
+        holding every view.</p>
+    </section>
+
     <!-- A CLEAR READING AREA. A decorative rule may simply stop at its label: the
          routed rule in this section does that. The labeled connector asserts a
          directed relation, so it runs unbroken from one node to the other, and its
@@ -802,7 +1148,9 @@ one passage behind the magenta block rail</pre>
     <section class="doc-section" id="long-tokens">
       <h2 class="doc-section-title">Long unbroken tokens</h2>
       <p class="doc-body">A 64-character digest, a deep repository path and a full URL, set in the
-        roles that actually carry them. None may force a horizontal scroll at 420px.</p>
+        roles that actually carry them. The path, and the URL as a source address, stand as field
+        values in inline code on its own; the same URL inside running prose is a body link. None may
+        force a horizontal scroll at 420px.</p>
       <div class="doc-hierarchy doc-group">
         <div class="doc-labeled">
           <p class="doc-label">digest</p>
@@ -811,6 +1159,10 @@ one passage behind the magenta block rail</pre>
         <div class="doc-labeled">
           <p class="doc-label">path</p>
           <code class="doc-code">apexSolarKiss/design-system-ASK/patterns/diagram-interactive-spine/diagrams-interactive-spine-engine.js</code>
+        </div>
+        <div class="doc-labeled">
+          <p class="doc-label">source address</p>
+          <code class="doc-code"><a class="surface-text-link" href="#long-tokens">https://example.invalid/apexSolarKiss/design-system-ASK/patterns/surface-shell/surface-shell.template.html</a></code>
         </div>
         <div class="doc-labeled">
           <p class="doc-label">link</p>
@@ -827,5 +1179,67 @@ one passage behind the magenta block rail</pre>
   </div>
 </div>
 <script src="surface-document-overflow.js"></script>
+<script>
+/* Page-local, and consumer-owned in any real surface: the records-and-inspector
+   section's adapter. It selects a record, shows that record's view in the inspector
+   and marks the item as selected, and it returns focus to the item from the
+   inspector. At load it selects the record the address names, or else the first,
+   without taking focus, changing the address or scrolling the page. Without the
+   script every view stays visible, and each inspect and return link jumps to its
+   fragment. */
+(function () {
+  "use strict";
+  var inspector = document.getElementById("inspector");
+  if (!inspector) return;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var split = window.matchMedia("(min-width: 900px)");
+  var views = Array.prototype.slice.call(inspector.querySelectorAll(".o-view"));
+  var items = Array.prototype.slice.call(document.querySelectorAll(".o-item"));
+  function find(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].getAttribute("data-record") === id) return list[i];
+    return null;
+  }
+  function reveal(el) {
+    var r = el.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight - 96)
+      el.scrollIntoView({ block: "start", behavior: reduce.matches ? "auto" : "smooth" });
+  }
+  function select(id, focus) {
+    var v = find(views, id);
+    if (!v) return false;
+    views.forEach(function (x) { x.hidden = x !== v; });
+    items.forEach(function (it) {
+      var on = it.getAttribute("data-record") === id;
+      it.querySelector("[data-inspect]").hidden = on;
+      it.querySelector(".o-current").hidden = !on;
+    });
+    inspector.scrollTop = 0;
+    if (focus) {
+      v.querySelector(".doc-subsection-title").focus({ preventScroll: true });
+      reveal(split.matches ? v : inspector);
+      history.replaceState(null, "", "#view-" + id);
+    }
+    return true;
+  }
+  items.forEach(function (it) {
+    it.querySelector("[data-inspect]").addEventListener("click", function (ev) {
+      ev.preventDefault();
+      select(it.getAttribute("data-record"), true);
+    });
+  });
+  views.forEach(function (v) {
+    v.querySelector("[data-back]").addEventListener("click", function (ev) {
+      ev.preventDefault();
+      var it = find(items, v.getAttribute("data-record"));
+      it.focus({ preventScroll: true });
+      reveal(it);
+      history.replaceState(null, "", "#item-" + it.getAttribute("data-record"));
+    });
+  });
+  var m = /^#(?:view|item)-(.+)$/.exec(location.hash);
+  if (!(m && select(decodeURIComponent(m[1]), false)))
+    select(views[0].getAttribute("data-record"), false);
+})();
+</script>
 </body>
 </html>
