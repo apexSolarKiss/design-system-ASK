@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // action row at an item's end regression fixture</title>
+<meta name="description" content="Regression fixture for surface-document.css .doc-actions--end: shared bottom edges for the action rows of stretched items in one grid row, the item's gap kept after its copy, no effect without the modifier or where the row has no free space, and the stated limit when one row wraps.">
+<!-- Foundation, then the compact-action, panel and document modules, in the key's load order
+     (serve from the repo root:  python3 -m http.server 8080  →  /tests/doc-actions-end-fixture.html). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-document.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  /* Fixture geometry, consumer-owned in any real surface. Each grid is 600px wide
+     inside a box that scrolls, so every case measures the same layout at any
+     viewport. The grid keeps the default align-items, so its items stretch. */
+  .fx-box { overflow-x: auto; }
+  .fx-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); width: 600px; }
+  .fx-block { width: 600px; }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Action row at an item's end</h1>
+    <p class="doc-body">Each case measures an action row against the copy above it and against its
+      neighbor's row. In items that stretch to their grid row, the modifier puts each row at its
+      item's end, so neighboring rows share a bottom edge, and the tallest item keeps its gap after
+      its copy. Without the modifier, or where the row has no free space, a row stays after its copy. When
+      one row wraps to more lines than its neighbor's, the bottoms still meet and the tops do not.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Stretched items, with the modifier</h2>
+    <div class="fx-box"><div class="fx-grid" data-grid="stretch">
+      <article class="surface-panel" data-item="short">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">One short sentence.</p>
+        <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">open</a>
+          <a class="surface-action surface-action--secondary" href="#overall">more</a></div>
+      </article>
+      <article class="surface-panel" data-item="long">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">A longer run of copy that wraps across several lines at this
+          width, so this item sets the height of its grid row and its neighbor stretches to meet it.
+          Its action row still follows its copy by the item's own gap.</p>
+        <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">open</a>
+          <a class="surface-action surface-action--secondary" href="#overall">more</a></div>
+      </article>
+    </div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Stretched items, without the modifier</h2>
+    <div class="fx-box"><div class="fx-grid" data-grid="plain">
+      <article class="surface-panel" data-item="short">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">One short sentence.</p>
+        <div class="doc-actions"><a class="surface-action" href="#overall">open</a>
+          <a class="surface-action surface-action--secondary" href="#overall">more</a></div>
+      </article>
+      <article class="surface-panel" data-item="long">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">A longer run of copy that wraps across several lines at this
+          width, so this item sets the height of its grid row and its neighbor stretches to meet it.
+          Its action row still follows its copy by the item's own gap.</p>
+        <div class="doc-actions"><a class="surface-action" href="#overall">open</a>
+          <a class="surface-action surface-action--secondary" href="#overall">more</a></div>
+      </article>
+    </div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">One row wraps, with the modifier</h2>
+    <div class="fx-box"><div class="fx-grid" data-grid="wrap">
+      <article class="surface-panel" data-item="wraps">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">One short sentence.</p>
+        <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">first</a>
+          <a class="surface-action" href="#overall">second</a>
+          <a class="surface-action" href="#overall">third</a>
+          <a class="surface-action" href="#overall">fourth</a>
+          <a class="surface-action" href="#overall">fifth</a></div>
+      </article>
+      <article class="surface-panel" data-item="one-line">
+        <p class="doc-label">item</p>
+        <p class="surface-panel-support">One short sentence.</p>
+        <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">open</a></div>
+      </article>
+    </div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">No free space</h2>
+    <div class="fx-box"><div class="fx-block" data-context="block">
+      <p class="doc-body">A block container: the row follows this paragraph.</p>
+      <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">open</a></div>
+    </div></div>
+    <div class="fx-box"><div class="fx-block doc-group" data-context="column">
+      <p class="doc-body">A column no taller than its content: the row follows this paragraph by the gap.</p>
+      <div class="doc-actions doc-actions--end"><a class="surface-action" href="#overall">open</a></div>
+    </div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <table class="verdict"><tbody id="verdict"></tbody></table>
+  </section>
+
+</main>
+<script>
+  (function () {
+    var EPS = 0.5;
+    var rows = document.getElementById('verdict');
+    var results = [];
+    function rect(el) { return el.getBoundingClientRect(); }
+    function num(v) { return parseFloat(v) || 0; }
+    function part(item) {
+      var row = item.querySelector('.doc-actions');
+      var copy = row.previousElementSibling;
+      var cs = getComputedStyle(item);
+      return { row: rect(row), copyBottom: rect(copy).bottom, gap: num(cs.rowGap),
+               contentBottom: rect(item).bottom - num(cs.paddingBottom) - num(cs.borderBottomWidth),
+               margin: getComputedStyle(row).marginTop };
+    }
+    function grid(name) {
+      var g = document.querySelector('[data-grid="' + name + '"]');
+      var items = g.querySelectorAll('.surface-panel');
+      return [part(items[0]), part(items[1])];
+    }
+    function record(name, pass, detail) {
+      results.push({ case: name, pass: pass, detail: detail });
+      var tr = document.createElement('tr');
+      [pass ? 'PASS' : 'FAIL', name, detail].forEach(function (text) {
+        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td); });
+      rows.appendChild(tr);
+    }
+    function f(n) { return n.toFixed(2); }
+    function run() {
+      var s = grid('stretch'), p = grid('plain'), w = grid('wrap');
+
+      var bottoms = Math.abs(s[0].row.bottom - s[1].row.bottom), tops = Math.abs(s[0].row.top - s[1].row.top);
+      record('stretch / shared bottom edge', bottoms < EPS, 'bottoms differ by ' + f(bottoms) + 'px');
+      record('stretch / one-line rows share their top', tops < EPS, 'tops differ by ' + f(tops) + 'px');
+      var end0 = Math.abs(s[0].row.bottom - s[0].contentBottom), end1 = Math.abs(s[1].row.bottom - s[1].contentBottom);
+      record('stretch / each row at its item\'s end', end0 < EPS && end1 < EPS,
+             'short ' + f(end0) + 'px, long ' + f(end1) + 'px from the content end');
+      var kept = s[1].row.top - s[1].copyBottom;
+      record('stretch / the tallest item keeps its gap', Math.abs(kept - s[1].gap) < EPS,
+             f(kept) + 'px after the copy, gap ' + f(s[1].gap) + 'px');
+      var moved = s[0].row.top - s[0].copyBottom;
+      record('stretch / the shorter item\'s row moved down', moved > s[0].gap + EPS,
+             f(moved) + 'px after the copy, gap ' + f(s[0].gap) + 'px');
+
+      var after0 = p[0].row.top - p[0].copyBottom, after1 = p[1].row.top - p[1].copyBottom;
+      record('plain / each row stays after its copy', Math.abs(after0 - p[0].gap) < EPS && Math.abs(after1 - p[1].gap) < EPS,
+             f(after0) + 'px and ' + f(after1) + 'px after the copy, gap ' + f(p[0].gap) + 'px');
+      record('plain / no start margin', p[0].margin === '0px' && p[1].margin === '0px',
+             'margin-top ' + p[0].margin + ' and ' + p[1].margin);
+      var apart = Math.abs(p[0].row.bottom - p[1].row.bottom);
+      record('plain / the rows do not align by themselves', apart > EPS, 'bottoms differ by ' + f(apart) + 'px');
+
+      var wb = Math.abs(w[0].row.bottom - w[1].row.bottom), rise = w[1].row.top - w[0].row.top;
+      var lines = w[0].row.height - w[1].row.height;
+      record('wrap / the bottoms still meet', wb < EPS, 'bottoms differ by ' + f(wb) + 'px');
+      record('wrap / the wrapped row\'s top sits higher by its extra lines', lines > EPS && Math.abs(rise - lines) < EPS,
+             'top ' + f(rise) + 'px higher, rows ' + f(lines) + 'px apart in height');
+
+      ['block', 'column'].forEach(function (ctx) {
+        var c = document.querySelector('[data-context="' + ctx + '"]');
+        var row = c.querySelector('.doc-actions'), copy = row.previousElementSibling;
+        var gap = ctx === 'column' ? num(getComputedStyle(c).rowGap) : 0;
+        var after = rect(row).top - rect(copy).bottom;
+        record(ctx + ' / the modifier moves nothing', Math.abs(after - gap) < EPS,
+               f(after) + 'px after the copy, expected ' + f(gap) + 'px');
+      });
+
+      var failed = results.filter(function (r) { return !r.pass; }).length;
+      window.__actionsFixture = results;
+      document.getElementById('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+      document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+    }
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(run);
+  })();
+</script>
+</body>
+</html>

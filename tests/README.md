@@ -185,6 +185,51 @@ key the measure on the table marker alone          the marker-without-its-box me
 hide the composition's header row                  the header-row case
 ```
 
+## doc-actions-end-fixture.html
+
+Guards **the action row at an item's end** in `surface-document.css`: `.doc-actions--end`,
+adopted by class on an item's `.doc-actions`. It is a composition, not a text role, so the
+role check cannot see it. Each grid is 600px wide inside a box that scrolls, so every case
+measures the same layout at any viewport, and each grid keeps the default `align-items`, so
+its `.surface-panel` items stretch to their row.
+
+The page measures each case once the fonts are ready and reports one overall verdict, with
+a row per case:
+
+```text
+stretch   with the modifier, in one grid row of unequal copy: the two action rows share a
+          bottom edge, and one-line rows share their top; each row sits at its item's content
+          end; the tallest item keeps its gap after its copy; the shorter item's row has moved
+plain     the same grid without the modifier: each row stays one gap after its copy, has no
+          start margin, and the rows do not align by themselves
+wrap      one row wraps to more lines than its neighbor's: the bottoms still meet, and the
+          wrapped row's top sits higher by exactly its extra height — the stated limit
+block     in a block container and in a column no taller than its content, the modifier
+column    moves nothing: the row follows its copy as it would without it
+```
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/doc-actions-end-fixture.html
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The
+cases are also on `window.__actionsFixture` and the verdict on `body[data-result]`.
+
+**Verifying the fixture still bites.** Each change below fails only the cases named.
+
+```text
+remove the .doc-actions--end rule                 the stretch cases for the shared bottom edge,
+                                                  the shared top, the row at the item's end and
+                                                  the shorter item's row, and both wrap cases;
+                                                  the kept gap, plain, block and column cases
+                                                  still pass
+move the auto margin onto .doc-actions itself     the three plain cases; the stretch, wrap,
+                                                  block and column cases still pass
+```
+
 ## role-conformance-fixture.html
 
 Guards **the document-register lock** on a rendered page: `tools/role-conformance.js`,
