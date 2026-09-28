@@ -370,3 +370,79 @@ python3 -m http.server 8080
 # open http://localhost:8080/tests/role-conformance-fixture.html
 node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
 ```
+
+## attention-edge-fixture.html
+
+Guards **the attention edge adopted by class** in `surface-action.css`:
+`.surface-attention-edge`, which gives a shaped interactive object that is neither a
+compact action nor a full-panel link the same hover and keyboard-focus edge, and nothing
+else. The compact action and the full-panel link sit beside the adopting objects as the
+reference, so the page shows one edge across all of them.
+
+```text
+reference   a compact action and a full-panel link: the edge they already take
+bordered    an image card that lifts and raises its own shadow on hover, a launch
+            card, and a media facade: the object's own border turns magenta, with
+            the 0.5px ring outside it in light; the image card restates its hover
+            shadow with the ring, as an adopting object with a shadow must
+borderless  three overlay controls with no border of their own
+            (.surface-attention-edge--borderless): an inset 1px ring where a border
+            would sit, with the 0.5px ring outside it in light
+SVG         a linked card whose box carries .surface-attention-edge-shape, at four
+            scales: full size, declaring nothing; half size, fitted by its viewBox and
+            declaring --surface-attention-edge-scale: 0.5; quarter size, drawn full
+            size inside an HTML box a CSS transform scales, declaring 0.25; and double
+            size, fitted by its viewBox and declaring 2. The box's stroke turns magenta.
+            Below its own size it measures 1.5 in light and 1 in dark on screen: 1.5
+            and 1 units at full size, 3 and 2 at half, 6 and 4 at a quarter. At double
+            size it is 1.5 and 1 units and scales with the figure, to 3 and 2 on
+            screen. The card's silhouette keeps its stroke
+unaffected an inert panel, an unlinked card whose box carries the shape class, and a
+            state box: none takes the edge, and each keeps its rest paint while
+            every other case is focused
+```
+
+Each figure keeps its own size at any viewport — the full-size figure scrolls rather than
+shrinking — so the scale it declares is its actual scale, and the SVG check reads both: the
+stroke width against the declared scale, and the width on screen, through the shape's screen
+matrix, against the edge below scale 1 and the edge times the scale at 1 and above. A figure
+that declares a scale other than its own fails the on-screen limb.
+
+The page checks **rest** on load and **keyboard focus** on the first key press: script
+focus matches `:focus-visible` only once the page has seen keyboard input, so the focus
+limb waits for one, and a case that still does not take keyboard focus is reported
+`NOT RUN`, never `PASS`. While it checks, transitions are held off so it reads settled
+paint. For each focused case it also confirms that no other case changed. The verdict is
+under the title, on `body[data-result]` (`REST-ONLY`, `PASS`, `NOT-RUN` or `FAIL`) and on
+`window.__attentionFixture`.
+
+**Hover needs a real pointer**, so the page cannot check it. Check it by hand, or with a
+driver that moves one: hover, keyboard focus, both at once, and focus kept after the
+pointer leaves each show one edge and no browser focus ring.
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/attention-edge-fixture.html, then press any key
+# add ?theme=dark or ?theme=light to hold a mode
+```
+
+**Verifying the fixture still bites.** Each change below fails only the cases named.
+
+```text
+remove the .surface-attention-edge selectors from the  every bordered, borderless and SVG
+shared hover and focus rule and its outline rule       case, on focus, with the browser's
+                                                       own ring; the reference cases pass
+remove the borderless rules                            the three overlay controls
+remove the SVG rules                                   the four linked SVG cards
+replace the scale-compensated SVG widths with plain    the half- and quarter-scale
+1.5 and 1                                              cards; the full- and
+                                                       double-size cards still pass
+remove the min() clamp from the SVG widths             the double-size card only
+declare 0.25 on the half-size figure                   that card only, on its
+                                                       on-screen width
+```
+
+A shape outside an adopting link takes nothing, so the unlinked card passes in every
+case above.
