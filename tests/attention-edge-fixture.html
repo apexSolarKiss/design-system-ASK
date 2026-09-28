@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // attention edge adopted by class regression fixture</title>
+<meta name="description" content="Regression fixture for surface-action.css .surface-attention-edge: the attention edge on an adopting object's own border, on a borderless control, and on a marked shape inside an SVG link, beside the compact action and the full-panel link; unmarked, unlinked and persistent-state shapes unaffected.">
+<!-- Foundation, the compact-action and panel modules, then the diagram layer for the SVG
+     vocabulary (serve from the repo root:  python3 -m http.server 8080  →
+     /tests/attention-edge-fixture.html; add ?theme=dark or ?theme=light to hold a mode). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
+<script>
+  var t = new URLSearchParams(location.search).get('theme');
+  if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+</script>
+<style>
+  /* diagrams.css is a figure-page layer and holds its page still; this page scrolls. */
+  html, body { height: auto; }
+  body { margin: 0; min-height: 100vh; overflow: auto; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); font-size: var(--fs-small); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); display: flex; flex-direction: column; gap: var(--space-8); }
+  h1, h2 { margin: 0; font-weight: var(--fw-regular); letter-spacing: var(--tracking-tight); }
+  h1 { font-size: var(--fs-h1); } h2 { font-size: var(--fs-h3); font-weight: var(--fw-light); }
+  p { margin: 0; }
+  section { display: flex; flex-direction: column; gap: var(--space-4); }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: flex-start; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: var(--space-5); }
+
+  /* Consumer-owned geometry and behavior, shaped like the objects that adopt the edge.
+     None of it is shared; each keeps its own hover, and the class adds the edge alone. */
+  .fx-card { display: flex; flex-direction: column; width: 100%; padding: 0; margin: 0; text-align: left; cursor: pointer;
+             color: inherit; font: inherit; background: var(--surface-glass); border: 1px solid var(--line-1);
+             border-radius: var(--radius-lg); overflow: hidden;
+             transition: transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out); }
+  .fx-cover { aspect-ratio: 4 / 3; background: linear-gradient(135deg, var(--ask-ui-accent-1), var(--ask-surface)); }
+  .fx-meta { padding: var(--space-4) var(--space-5) var(--space-5); }
+  /* An image card's own hover lifts it and raises a shadow; it restates the shadow
+     with the ring, as surface-action.css asks of an adopting object with a shadow. */
+  .fx-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg), 0 0 0 0.5px var(--ask-emphasis-magenta); }
+  .fx-card:hover:where(:root[data-theme="dark"] *, .theme-dark, .theme-dark *) { box-shadow: var(--shadow-lg); }
+  @media (prefers-color-scheme: dark) {
+    .fx-card:hover:where(:root:not([data-theme="light"]):not([data-theme="dark"]) *) { box-shadow: var(--shadow-lg); }
+  }
+  .fx-launch { display: block; position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line-1); border-radius: var(--radius-lg);
+               overflow: hidden; text-decoration: none; background: linear-gradient(45deg, var(--ask-surface), var(--ask-ui-accent-2));
+               transition: border-color var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  .fx-launch:hover { transform: translateY(-4px); }
+  .fx-chip { position: absolute; right: var(--space-3); bottom: var(--space-3); font-family: var(--font-mono); font-size: var(--fs-caption);
+             color: var(--ask-white); background: var(--ask-ink-dark); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-3); }
+  .fx-facade { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; margin: 0; cursor: pointer; overflow: hidden;
+               color: inherit; border: 1px solid var(--line-1); border-radius: var(--radius-lg); background: var(--surface-glass); }
+  .fx-thumb { position: absolute; inset: 0; background: linear-gradient(160deg, var(--ask-ui-accent-2), var(--ask-ui-accent-1));
+              transition: transform var(--dur-2) var(--ease-out); }
+  .fx-facade:hover .fx-thumb { transform: scale(1.05); }
+  .fx-play { position: absolute; inset: 0; display: grid; place-items: center; font-size: 34px; color: var(--ask-white); }
+  .fx-overlay { position: relative; height: 180px; background: var(--ask-ink-dark); border-radius: var(--radius-lg); }
+  .fx-ctl { position: absolute; background: none; border: 0; color: var(--ask-white); cursor: pointer; line-height: 1; opacity: .7; padding: 16px; font-family: inherit; }
+  .fx-ctl:hover { opacity: 1; }
+  .fx-close { top: 6px; right: 8px; font-size: 30px; }
+  .fx-prev, .fx-next { top: 50%; transform: translateY(-50%); font-size: 44px; }
+  .fx-prev { left: 6px; } .fx-next { right: 6px; }
+  /* Each figure keeps its own size at any viewport, so the scale it declares is its actual
+     scale: the full-size figure scrolls rather than shrinking, and the quarter-size figure is
+     drawn full size inside an HTML box that a CSS transform scales. */
+  .fx-figure { display: block; }
+  .fx-scroll { overflow-x: auto; }
+  .fx-zoom-box { width: 140px; height: 50px; }
+  .fx-zoom { width: 560px; transform: scale(0.25); transform-origin: 0 0; }
+  .fx-sil { fill: none; stroke: var(--diagram-line); stroke-width: 1.2; }
+  .fx-figure .fx-link { cursor: pointer; }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <section>
+    <h1>Attention edge, adopted by class</h1>
+    <p>Hover each object with a pointer and Tab through them with the keyboard. Every interactive object
+      below shows the magenta attention edge on hover and on keyboard focus, and no browser focus ring.
+      The compact action and the linked panel are the reference; each other object adopts the edge by
+      class on its own anatomy and keeps its own hover. The figure's unlinked card, its state box and
+      the linked card's silhouette never take the edge.</p>
+    <p class="verdict" id="overall">not run</p>
+    <table class="verdict" id="cases"></table>
+  </section>
+
+  <section>
+    <h2>Reference: compact action and full-panel link</h2>
+    <div class="row">
+      <a class="surface-action" href="#overall" data-case="action" data-anatomy="action">compact action</a>
+      <a class="surface-panel" href="#overall" data-case="panel" data-anatomy="panel" style="max-width: 360px">
+        <p class="surface-panel-title">Linked panel</p>
+        <p class="surface-panel-support">The ring composes with its resting shadow.</p>
+      </a>
+      <article class="surface-panel" data-case="inert" data-anatomy="inert" style="max-width: 280px">
+        <p class="surface-panel-title">Inert panel</p>
+        <p class="surface-panel-support">Not interactive; never takes the edge.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bordered: the object's own border</h2>
+    <div class="grid">
+      <button class="fx-card surface-attention-edge" type="button" data-case="card" data-anatomy="bordered">
+        <span class="fx-cover" aria-hidden="true"></span>
+        <span class="fx-meta">Image card // lifts and raises a shadow on hover</span>
+      </button>
+      <a class="fx-launch surface-attention-edge" href="#overall" data-case="launch" data-anatomy="bordered" aria-label="Launch card">
+        <span class="fx-chip">open</span>
+      </a>
+      <button class="fx-facade surface-attention-edge" type="button" data-case="facade" data-anatomy="bordered" aria-label="Media facade">
+        <span class="fx-thumb" aria-hidden="true"></span><span class="fx-play" aria-hidden="true">&#9654;</span>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Borderless: a ring where a border would sit</h2>
+    <div class="fx-overlay">
+      <button class="fx-ctl fx-close surface-attention-edge surface-attention-edge--borderless" type="button" aria-label="Close" data-case="close" data-anatomy="borderless">&#215;</button>
+      <button class="fx-ctl fx-prev surface-attention-edge surface-attention-edge--borderless" type="button" aria-label="Previous" data-case="prev" data-anatomy="borderless">&#8249;</button>
+      <button class="fx-ctl fx-next surface-attention-edge surface-attention-edge--borderless" type="button" aria-label="Next" data-case="next" data-anatomy="borderless">&#8250;</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>SVG: the marked shape's stroke, at four scales</h2>
+    <p>The full-size figure declares nothing. The half-size figure is fitted by its viewBox and
+      declares 0.5; the quarter-size figure is scaled by a CSS transform on an HTML ancestor and
+      declares 0.25. Each holds an apparent 1.5px edge in light and 1px in dark. The double-size
+      figure declares 2, and its edge scales with it, to 3px and 2px.</p>
+    <div class="fx-scroll"><svg class="fx-figure" data-scale="1" width="560" height="200" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+      <a class="fx-link surface-attention-edge" href="#overall" aria-label="Linked card" data-case="svg-link" data-anatomy="svg">
+        <rect class="node-box surface-attention-edge-shape" x="16" y="24" width="250" height="110" rx="6" ry="6"/>
+        <text class="node-label" x="36" y="52">Linked card</text>
+        <rect class="fx-sil" data-part="silhouette" x="206" y="84" width="40" height="30" rx="2" ry="2"/>
+      </a>
+      <g data-case="svg-unlinked" data-anatomy="svg-inert">
+        <rect class="node-box held surface-attention-edge-shape" x="294" y="24" width="250" height="110" rx="6" ry="6"/>
+        <text class="node-label held" x="314" y="52">Unlinked card</text>
+      </g>
+      <rect class="node-box anchor" data-case="svg-state" data-anatomy="svg-inert" x="16" y="150" width="528" height="36" rx="6" ry="6"/>
+    </svg></div>
+    <svg class="fx-figure" data-scale="0.5" width="280" height="100" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="--surface-attention-edge-scale: 0.5">
+      <a class="fx-link surface-attention-edge" href="#overall" aria-label="Linked card, half scale" data-case="svg-link-half" data-anatomy="svg">
+        <rect class="node-box surface-attention-edge-shape" x="16" y="24" width="250" height="110" rx="6" ry="6"/>
+        <text class="node-label" x="36" y="52">Linked card</text>
+      </a>
+    </svg>
+    <div class="fx-zoom-box"><div class="fx-zoom" style="--surface-attention-edge-scale: 0.25">
+      <svg class="fx-figure" data-scale="0.25" width="560" height="200" viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+        <a class="fx-link surface-attention-edge" href="#overall" aria-label="Linked card, quarter scale" data-case="svg-link-quarter" data-anatomy="svg">
+          <rect class="node-box surface-attention-edge-shape" x="16" y="24" width="250" height="110" rx="6" ry="6"/>
+          <text class="node-label" x="36" y="52">Linked card</text>
+        </a>
+      </svg>
+    </div></div>
+    <div class="fx-scroll"><svg class="fx-figure" data-scale="2" width="560" height="200" viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg" style="--surface-attention-edge-scale: 2">
+      <a class="fx-link surface-attention-edge" href="#overall" aria-label="Linked card, double scale" data-case="svg-link-double" data-anatomy="svg">
+        <rect class="node-box surface-attention-edge-shape" x="10" y="10" width="160" height="60" rx="6" ry="6"/>
+        <text class="node-label" x="22" y="30">Linked card</text>
+      </a>
+    </svg></div>
+  </section>
+
+</main>
+<script>
+/* Rest is checked on load and keyboard focus on the first key press: script focus matches
+   :focus-visible only once the page has seen keyboard input, so the focus limb waits for
+   one. A case that still does not match is reported NOT RUN, never PASS. Hover needs a
+   real pointer, so it is checked by hand or by a driver that moves one; this page cannot
+   fake :hover. */
+function runAttentionFixture(withFocus) {
+  var M = 'rgb(255, 0, 255)';
+  var root = document.documentElement, dt = root.getAttribute('data-theme');
+  var dark = dt === 'dark' || (dt !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  function cs(el) { return getComputedStyle(el); }
+  function shape(el) { return el.querySelector('.surface-attention-edge-shape'); }
+  function read(el) {
+    var a = el.getAttribute('data-anatomy'), s = cs(el);
+    if (a === 'svg') {
+      var se = shape(el), sh = cs(se), m = se.getScreenCTM();
+      return { stroke: sh.stroke, width: sh.strokeWidth, outline: s.outlineStyle,
+               declared: parseFloat(sh.getPropertyValue('--surface-attention-edge-scale')) || 1, screen: m ? m.a : 1 };
+    }
+    if (a === 'svg-inert') { var t = el.matches('rect') ? el : el.querySelector('rect'); var st = cs(t); return { stroke: st.stroke, width: st.strokeWidth }; }
+    return { border: s.borderTopColor, shadow: s.boxShadow, outline: s.outlineStyle, opacity: s.opacity };
+  }
+  function has(str, sub) { return String(str).indexOf(sub) !== -1; }
+  function focusOk(a, r) {
+    // SVG: the width is the edge divided by the declared scale below 1, and the edge's own
+    // units at 1 and above. On screen it is the edge below 1 and the edge times the scale at
+    // 1 and above, which also proves the declaration matches the figure's actual scale.
+    if (a === 'svg') { var e = dark ? 1 : 1.5, w = parseFloat(r.width);
+      return r.stroke === M && Math.abs(w - e / Math.min(r.declared, 1)) < 0.01
+        && Math.abs(w * r.screen - e * Math.max(r.screen, 1)) < 0.05 && r.outline === 'none'; }
+    if (r.outline !== 'none') return false;
+    if (a === 'borderless') return has(r.shadow, M + ' 0px 0px 0px 1px inset') && has(r.shadow, '0.5px') === !dark;
+    // action, panel and bordered adopters: magenta border, the 0.5px ring in light only
+    return r.border === M && has(r.shadow, M + ' 0px 0px 0px 0.5px') === !dark;
+  }
+  function restOk(a, r) {
+    if (a === 'svg' || a === 'svg-inert') return r.stroke !== M;
+    return r.border !== M && !has(r.shadow, M);
+  }
+  // Read settled paint: transitions are held off while the check runs, then restored.
+  var hold = document.createElement('style'); hold.textContent = '*, *::before, *::after { transition: none !important; }';
+  document.head.appendChild(hold);
+  var cases = [].slice.call(document.querySelectorAll('[data-case]')), out = [], fails = 0, notRun = 0;
+  var rest = {};
+  cases.forEach(function (el) { rest[el.dataset.case] = read(el); });
+  // the silhouette inside the linked card keeps its own stroke in every state
+  var sil = document.querySelector('[data-part="silhouette"]'), silRest = cs(sil).stroke;
+  cases.forEach(function (el) {
+    var a = el.dataset.anatomy, c = el.dataset.case, r0 = rest[c], row = { case: c, anatomy: a, rest: restOk(a, r0) ? 'PASS' : 'FAIL' };
+    if (a === 'inert' || a === 'svg-inert') {
+      row.focus = 'n/a';
+    } else if (!withFocus) {
+      row.focus = 'waiting';
+    } else {
+      el.focus({ preventScroll: true });
+      if (!el.matches(':focus-visible')) { row.focus = 'NOT RUN'; notRun++; }
+      else {
+        var r1 = read(el); row.focus = focusOk(a, r1) ? 'PASS' : 'FAIL'; row.read = r1;
+        if (c === 'svg-link' && cs(sil).stroke !== silRest) row.focus = 'FAIL';
+        // no other case changes while this one is focused
+        cases.forEach(function (o) {
+          if (o === el || o.contains(el) || el.contains(o)) return;
+          var ro = read(o), ra = rest[o.dataset.case];
+          if (JSON.stringify(ro) !== JSON.stringify(ra)) row.focus = 'FAIL';
+        });
+      }
+      el.blur();
+    }
+    if (row.rest === 'FAIL' || row.focus === 'FAIL') fails++;
+    out.push(row);
+  });
+  hold.remove();
+  var verdict = fails ? 'FAIL (' + fails + ')' : !withFocus ? 'REST PASS // press a key to run the keyboard-focus check'
+    : (notRun ? 'NOT RUN (' + notRun + ' focus cases did not take keyboard focus)' : 'PASS');
+  document.getElementById('overall').textContent = verdict + ' // ' + (dark ? 'dark' : 'light') + ' // hover: check with a pointer';
+  document.body.dataset.result = fails ? 'FAIL' : !withFocus ? 'REST-ONLY' : (notRun ? 'NOT-RUN' : 'PASS');
+  document.getElementById('cases').innerHTML = out.map(function (r) {
+    return '<tr><td>' + r.case + '</td><td>' + r.anatomy + '</td><td>rest ' + r.rest + '</td><td>focus ' + r.focus + '</td></tr>';
+  }).join('');
+  window.__attentionFixture = { dark: dark, cases: out, verdict: document.body.dataset.result };
+}
+runAttentionFixture(false);
+document.addEventListener('keydown', function () { runAttentionFixture(true); }, { once: true });
+</script>
+</body>
+</html>
