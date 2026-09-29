@@ -78,10 +78,11 @@ const DEPENDENCIES = {
 
 /* Link mapping for templates written from a consumer's layout. A link that
    resolves where it points always wins; only a link that does not is mapped.
-   `_dsa-tokens/` is a consumer's token and font mirror, which is this
-   repository's root. A bare sibling that a template loads as a root module is
-   declared here, as tools/gen-pattern-previews.mjs declares it in rootRefs. */
-const TOKEN_MIRROR = ['./_dsa-tokens/', '_dsa-tokens/'];
+   `_dsa-tokens/` is a consumer's token and font mirror, and `_dsa-surface/` its
+   mirror of the surface modules; both are this repository's root. A bare sibling
+   that a template loads as a root module is declared here, as
+   tools/gen-pattern-previews.mjs declares it in rootRefs. */
+const TOKEN_MIRROR = ['./_dsa-tokens/', '_dsa-tokens/', './_dsa-surface/', '_dsa-surface/'];
 const ROOT_REFS = {
   'patterns/surface-shell/surface-shell.template.html': ['surface-action.css'],
   'patterns/output-artifact/static-output-artifact.html':

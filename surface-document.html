@@ -114,6 +114,15 @@
   .o-list--records { gap: var(--space-4); }
   .o-view .doc-subsection-title:focus-visible,
   .o-item:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 4px; }
+
+  /* Page-local, and consumer-owned in any real surface: the host of a controlled
+     disclosure trigger. The trigger takes the module's grammar and none of its
+     enclosure, so this host supplies the enclosure: the panel material through the
+     axis classes, and the inset, gap and full-width trigger row of the details
+     specimens beside it. The hidden attribute wins over the region's display. */
+  .o-controlled { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); }
+  .o-controlled > .surface-disclosure-trigger { justify-content: space-between; }
+  .o-controlled > [hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -201,6 +210,21 @@
             trigger's, so focus never depends on the mark's color.</p>
         </div>
       </details>
+
+      <!-- CONTROLLED TRIGGER — the same grammar on a native button, for a host that keeps the
+           region it controls and opens it from its own state: a diagram's compact chrome, an
+           inspector a selection opens. The page-local script below sets aria-expanded and the
+           region's hidden attribute together; the host supplies the surface around both.
+           Without the script the region stays open, and the trigger says so. -->
+      <div class="o-controlled surface-material-panel surface-attach-free surface-elevation-flush" id="controlled-trigger">
+        <button class="surface-disclosure-trigger" type="button" aria-controls="controlled-trigger-region" aria-expanded="true"><span class="surface-disclosure-label">controlled trigger</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></button>
+        <div class="doc-prose" id="controlled-trigger-region">
+          <p class="doc-body">A button that states the region it controls takes the summary's label,
+            indicator, hover and focus. Its host keeps the region and its surface, so a diagram's
+            legend or a mounted inspector can open from its own state without becoming a details
+            element.</p>
+        </div>
+      </div>
     </section>
 
     <!-- ATTACHMENT — corner treatment only. Every plane in the first group takes the
@@ -1180,6 +1204,21 @@ one passage behind the magenta block rail</pre>
 </div>
 <script src="surface-document-overflow.js"></script>
 <script>
+/* Page-local, and consumer-owned in any real surface: the controlled-trigger
+   specimen's state. One click sets the trigger's aria-expanded and the region's
+   hidden attribute together, so the indicator and the region never disagree. */
+(function () {
+  "use strict";
+  var trigger = document.querySelector("#controlled-trigger > .surface-disclosure-trigger");
+  if (!trigger) return;
+  var region = document.getElementById(trigger.getAttribute("aria-controls"));
+  trigger.addEventListener("click", function () {
+    var open = trigger.getAttribute("aria-expanded") !== "true";
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    region.hidden = !open;
+  });
+})();
+
 /* Page-local, and consumer-owned in any real surface: the records-and-inspector
    section's adapter. It selects a record, shows that record's view in the inspector
    and marks the item as selected, and it returns focus to the item from the

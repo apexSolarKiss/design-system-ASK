@@ -10,6 +10,10 @@
      DOWNSTREAM: adjust path if your mirror lives elsewhere. -->
 <link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
 <link rel="stylesheet" href="diagrams.css">
+<!-- design-system-ASK disclosure grammar for the compact caption and legend triggers, from the
+     consumer's surface-module mirror. surface-panel.css loads first, as surface-treatments.css requires. -->
+<link rel="stylesheet" href="./_dsa-surface/surface-panel.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-treatments.css">
 </head>
 <body>
 
@@ -22,6 +26,9 @@
       <div class="s">[the sequence · step-1 → step-2 → step-3]</div>
     </div>
     <div class="spacer"></div>
+    <!-- Shown only while the chrome is compact, when the caption that carries the
+         qualification sits behind About. DOWNSTREAM: keep it. -->
+    <div class="diagram-cue">illustrative</div>
     <div class="stamp">
       <div><span class="k">source-v1</span> // <span class="k">render-v1</span></div>
       <div>[YYYY-MM-DD]</div>
@@ -38,21 +45,37 @@
     <div class="corner-tick bl"></div>
     <div class="corner-tick br"></div>
 
-    <!-- DOWNSTREAM: edit legend rows; a sequence diagram often needs only one
+    <!-- The caption and legend are laid out together (diagrams.css). On a narrow or crowded
+         canvas they close behind the two triggers, which join the HUD at the bottom
+         (diagrams-chrome.js); About then also carries the header's subtitle and stamp.
+         Keep exactly one caption and one legend; edit their content, not this structure.
+         DOWNSTREAM: keep the "illustrative" disclaimer; tighten wording if you wish.
+         DOWNSTREAM: edit legend rows; a sequence diagram often needs only one
          reading row (what the chain depicts) rather than the 3-state legend -->
-    <div class="legend glass">
-      <div class="h"><span>Legend</span><span class="fig">3 states</span></div>
-      <div class="row">
-        <div class="sw"><div class="box-solid"></div></div>
-        <div><span class="lbl">earned</span><span class="sub">live today</span></div>
+    <div class="diagram-info" data-diagram-chrome>
+      <div class="diagram-info-triggers">
+        <button class="diagram-info-trigger surface-disclosure-trigger glass" type="button" aria-controls="diagramCaption" aria-expanded="true"><span class="surface-disclosure-label">About</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></button>
+        <button class="diagram-info-trigger surface-disclosure-trigger glass" type="button" aria-controls="diagramLegend" aria-expanded="true"><span class="surface-disclosure-label">Legend</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></button>
       </div>
-      <div class="row">
-        <div class="sw"><div class="box-dashed"></div></div>
-        <div><span class="lbl">held</span><span class="sub">not yet authorized</span></div>
+      <div class="caption glass" id="diagramCaption">
+        <b>illustrative</b><br>
+        repo prose is source truth. diagram may lag the repo;<br>
+        refresh or trust the prose.
       </div>
-      <div class="row">
-        <div class="sw"><span class="legacy-txt">legacy</span></div>
-        <div><span class="lbl">legacy</span><span class="sub">residue / superseded</span></div>
+      <div class="legend glass" id="diagramLegend">
+        <div class="h"><span>Legend</span><span class="fig">3 states</span></div>
+        <div class="row">
+          <div class="sw"><div class="box-solid"></div></div>
+          <div><span class="lbl">earned</span><span class="sub">live today</span></div>
+        </div>
+        <div class="row">
+          <div class="sw"><div class="box-dashed"></div></div>
+          <div><span class="lbl">held</span><span class="sub">not yet authorized</span></div>
+        </div>
+        <div class="row">
+          <div class="sw"><span class="legacy-txt">legacy</span></div>
+          <div><span class="lbl">legacy</span><span class="sub">residue / superseded</span></div>
+        </div>
       </div>
     </div>
 
@@ -62,17 +85,12 @@
       <button id="zoomIn" title="Zoom in">+</button>
       <button id="zoomFit" title="Fit">⤢</button>
     </div>
-
-    <!-- DOWNSTREAM: keep the "illustrative" disclaimer; tighten wording if you wish -->
-    <div class="caption glass">
-      <b>illustrative</b><br>
-      repo prose is source truth. diagram may lag the repo;<br>
-      refresh or trust the prose.
-    </div>
   </div>
 </div>
 
 <script src="diagram-static-SEQ.source.js"></script>
+<!-- DS-owned responsive chrome — after the chrome markup, before the fit contract. Re-vendor byte-identical. -->
+<script src="diagrams-chrome.js"></script>
 <!-- DS-owned shared fit contract — must load BEFORE the engine. Re-vendor byte-identical; do not hand-edit. -->
 <script src="diagrams-fit.js"></script>
 <script src="diagrams-text-layout.js"></script>
