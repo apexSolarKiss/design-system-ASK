@@ -30,11 +30,12 @@
         also raised keeps both. It names --shadow-md again, because a
         box-shadow list cannot compose across rules.
      4  The accent modifiers follow the base rules that set a default accent.
-     5  The disclosure's foreground rules share one specificity — (0,3,1) for
-        the indicator, (0,2,1) for the summary — and are ordered
-        [open] < :hover < :focus-visible, so a trigger that is hovered and
-        focused shows the focus signal: the magenta indicator and the
-        outline.
+     5  The disclosure's foreground rules share one specificity per host —
+        (0,3,1) for the indicator and (0,2,1) for the summary of a details
+        host; (0,3,0) and (0,2,0) for a controlled trigger — and are ordered
+        [open] / [aria-expanded="true"] < :hover < :focus-visible, so a
+        trigger that is hovered and focused shows the focus signal: the
+        magenta indicator and the outline.
 
    USE. Use .surface-panel for a live content panel, and always for a panel
    that is itself a link: a.surface-panel is the only linked-panel form. Use
@@ -102,7 +103,14 @@
 
    DISCLOSURE
      meaning         a trigger and the region it expands
-     population      a details element whose summary names what it reveals
+     population      a details element whose summary names what it reveals;
+                     or, where the host must keep a region it controls, a
+                     button carrying .surface-disclosure-trigger whose
+                     aria-expanded and aria-controls state that region. The
+                     controlled trigger takes the summary's grammar — label,
+                     indicator, rotation, hover and focus — and none of the
+                     enclosure's geometry: its host keeps padding, placement
+                     and the region's own surface
      owner           this module
      reuses          the panel material, free attachment and flush elevation
                      for its enclosure; operative-label metrics for the
@@ -112,9 +120,12 @@
      exclusions      the region takes no second surface; the trigger joins
                      neither the attention edge nor the foreground-bound link
                      treatment: its hover and focus are its own
-     example         a census kept behind a "measured census" trigger
+     example         a census kept behind a "measured census" trigger; a
+                     diagram's legend behind a "legend" trigger on a small
+                     canvas
      counterexample  a summary styled as a compact action, or a heading
-                     standing in for the trigger
+                     standing in for the trigger; a plus or minus sign
+                     standing in for the indicator
 
    CONTENT EMPHASIS
      meaning         "this deserves attention": persistent, assigned by the
@@ -202,14 +213,11 @@
   gap: var(--space-4);
   padding: var(--space-6);
 }
-.surface-disclosure > summary {
+/* The trigger's grammar, shared by the summary of a details host and a
+   controlled trigger. */
+.surface-disclosure > summary,
+.surface-disclosure-trigger {
   cursor: pointer;
-  list-style: none;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--fs-caption);
   font-weight: var(--fw-light);
@@ -217,13 +225,36 @@
   text-transform: uppercase;
   color: var(--fg-2);
 }
+.surface-disclosure > summary {
+  list-style: none;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+/* A controlled trigger is a native button: its own chrome is reset, and its
+   host supplies any surface around it. */
+.surface-disclosure-trigger {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: start;
+}
+.surface-disclosure-trigger > .surface-disclosure-label { flex: 0 1 auto; min-width: 0; }
 .surface-disclosure > summary::-webkit-details-marker { display: none; }
 /* The label is a real flex item so a long label can shrink and wrap. It
    shrinks and does not grow: justify-content already places the indicator at
    the trailing edge. */
 .surface-disclosure > summary > .surface-disclosure-label { flex: 0 1 auto; min-width: 0; }
 .surface-disclosure[open] > summary { color: var(--fg-1); }
-.surface-disclosure > summary .surface-disclosure-indicator {
+.surface-disclosure > summary .surface-disclosure-indicator,
+.surface-disclosure-trigger .surface-disclosure-indicator {
   flex: 0 0 auto;
   font-size: var(--fs-caption);
   line-height: 1;
@@ -232,10 +263,17 @@
 }
 .surface-disclosure[open] > summary .surface-disclosure-indicator { color: var(--fg-1); }
 .surface-disclosure:not([open]) > summary .surface-disclosure-indicator { transform: rotate(-90deg); }
+/* The controlled trigger reads its state from aria-expanded, the one truthful
+   source its controller keeps. */
+.surface-disclosure-trigger[aria-expanded="true"] { color: var(--fg-1); }
+.surface-disclosure-trigger[aria-expanded="true"] .surface-disclosure-indicator { color: var(--fg-1); }
+.surface-disclosure-trigger[aria-expanded="false"] .surface-disclosure-indicator { transform: rotate(-90deg); }
 /* Hover: a closed disclosure's foreground rises; an open one already rests at
    --fg-1. No border, no opacity drop, no press. */
 .surface-disclosure > summary:hover { color: var(--fg-1); }
 .surface-disclosure > summary:hover .surface-disclosure-indicator { color: var(--fg-1); }
+.surface-disclosure-trigger:hover { color: var(--fg-1); }
+.surface-disclosure-trigger:hover .surface-disclosure-indicator { color: var(--fg-1); }
 /* Focus: the summary is at --fg-1, the indicator takes the emphasis magenta and
    a 2px --fg-1 outline surrounds the trigger, --space-1 out. The outline is the
    signal that always shows: an open disclosure's summary already rests at --fg-1,
@@ -243,10 +281,13 @@
    These follow the hover rules on purpose (load order, item 5). */
 .surface-disclosure > summary:focus-visible { color: var(--fg-1); outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
 .surface-disclosure > summary:focus-visible .surface-disclosure-indicator { color: var(--ask-emphasis-magenta); }
+.surface-disclosure-trigger:focus-visible { color: var(--fg-1); outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
+.surface-disclosure-trigger:focus-visible .surface-disclosure-indicator { color: var(--ask-emphasis-magenta); }
 .surface-disclosure > .surface-disclosure-body { margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .surface-disclosure > summary .surface-disclosure-indicator { transition: none; }
+  .surface-disclosure > summary .surface-disclosure-indicator,
+  .surface-disclosure-trigger .surface-disclosure-indicator { transition: none; }
 }
 
 /* ---- Content emphasis ------------------------------------------------- */

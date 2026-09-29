@@ -140,6 +140,7 @@ const MONO_UPPERCASE = [
   { file: 'surface-document.css', selector: '.doc-pre[data-overflow]::after', reason: 'overflow cue' },
   { file: 'surface-document.css', selector: '.doc-table-scroll[data-overflow]::after', reason: 'overflow cue on a document table\'s box' },
   { file: 'surface-treatments.css', selector: '.surface-disclosure > summary', reason: 'disclosure trigger' },
+  { file: 'surface-treatments.css', selector: '.surface-disclosure-trigger', reason: 'controlled disclosure trigger' },
   { file: 'surface-treatments.css', selector: '.surface-emphasis-chip', reason: 'emphasis chip' },
   { file: 'preview/styleguide.html', selector: '.role .lbl', reason: 'token label in the style guide (page-local)' },
   ...['three-functions.html', 'spectral-state.html', 'evidence-state.html'].flatMap((file) => [

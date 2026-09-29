@@ -74,6 +74,8 @@ function rewriteRef(val, spec) {
   if (/^(https?:|data:|#|mailto:)/.test(val)) return val;         // external / anchor — leave
   if (val.startsWith('./_dsa-tokens/')) return '../../' + val.slice('./_dsa-tokens/'.length); // DS-root tokens/fonts
   if (val.startsWith('_dsa-tokens/'))   return '../../' + val.slice('_dsa-tokens/'.length);
+  if (val.startsWith('./_dsa-surface/')) return '../../' + val.slice('./_dsa-surface/'.length); // DS-root surface modules
+  if (val.startsWith('_dsa-surface/'))   return '../../' + val.slice('_dsa-surface/'.length);
   if (val.startsWith('../') || val.startsWith('/')) return val;   // already relative-up / absolute — leave
   if (spec.rootRefs && spec.rootRefs.includes(val)) return `../../${val}`;  // declared DS-root module
   // bare pattern-local file (no slash) → reference the canonical pattern dir
