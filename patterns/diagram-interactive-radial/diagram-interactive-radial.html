@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vellmark parks — radial map specimen</title>
+<meta name="description" content="Specimen of the design-system-ASK interactive radial pattern: a synthetic city park system drawn as a radial containment map, with pan, pinch, zoom, Fit, selection and a keyboard path.">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference; consumes Spectral State by reference">
+<!-- design-system-ASK foundations — local mirror (no CDN).
+     Load order: core tokens, then Spectral State (state colors), then the surface modules the
+     chrome's triggers take their disclosure grammar from (surface-panel.css, then
+     surface-treatments.css), then the pattern stylesheet.
+     DOWNSTREAM: adjust the mirror paths if yours live elsewhere. -->
+<link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+<link rel="stylesheet" href="./_dsa-tokens/spectral-state.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-panel.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-treatments.css">
+<link rel="stylesheet" href="diagrams-radial.css">
+</head>
+<body class="radial-page">
+
+<a class="radial-skip" href="#radial-stage">skip to the map</a>
+<div class="radial-shell" data-radial>
+  <header class="radial-bar">
+    <!-- DOWNSTREAM: your mark, in its light and its dark variant; the theme in force shows one -->
+    <div class="mark" data-radial-slot="mark-light">[org]<span class="sep">/</span>[surface]</div>
+    <div class="mark" data-radial-slot="mark-dark">[org]<span class="sep">/</span>[surface]</div>
+    <div class="title-block" data-radial-slot="title">
+      <div class="t">Vellmark parks</div>
+      <div class="s">specimen · synthetic data · color encodes status only</div>
+    </div>
+    <div class="spacer"></div>
+    <div data-radial-slot="actions"></div>
+  </header>
+
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" id="radial-stage" data-radial-slot="stage"></div>
+
+    <div class="radial-tick tl"></div>
+    <div class="radial-tick tr"></div>
+    <div class="radial-tick bl"></div>
+    <div class="radial-tick br"></div>
+
+    <!-- chrome the Fit reserves declares its edge; the engine reads data-diagram-fit-edge -->
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--selection" data-radial-readout="selection"></span>
+    </div>
+
+    <!-- the panels: each is its slot element. The chrome module (adapter.chrome.panels) shows them in
+         their corners while they fit, and otherwise closes them behind triggers beside the HUD -->
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right">
+      <div class="radial-panel-h">legend</div>
+    </div>
+
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
+      <b>synthetic</b> · radius is containment depth · wedge width is size · nothing else is encoded
+    </div>
+
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+
+<!-- DOWNSTREAM: replace the specimen source with your own data and adapter -->
+<script src="diagram-interactive-radial.source.js"></script>
+<!-- design-system-ASK owner files: re-vendor byte-identical, never hand-edit; this order -->
+<script src="diagrams-radial-contract.js"></script>
+<script src="diagrams-radial-layout.js"></script>
+<script src="diagrams-radial-labels.js"></script>
+<script src="diagrams-pointer.js"></script>
+<script src="diagrams-fit.js"></script>
+<script src="diagrams-radial-engine.js"></script>
+<script src="diagrams-radial-legend.js"></script>
+<script src="diagrams-radial-chrome.js"></script>
+<script>
+(function () {
+  var host = document.querySelector('[data-radial]');
+  window.RADIAL_MAP = window.DIAGRAM_RADIAL.mount({ host: host, data: window.RADIAL_SPECIMEN.data,
+                                                    adapter: window.RADIAL_SPECIMEN.adapter, modules: ['legend', 'chrome'] });
+})();
+</script>
+
+</body>
+</html>
