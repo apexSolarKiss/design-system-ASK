@@ -51,10 +51,10 @@ Everything is validated before anything is drawn. Any failure throws a named err
 
 ## Responsive chrome
 
-The `chrome` module keeps the panels around the map (the caption and the legend) from landing on one another, on the HUD, or over most of the drawing, at every size a window passes through. A panel is the slot element itself, carrying `.radial-panel`; `adapter.chrome.panels` names which panels it coordinates and the word each one's trigger shows.
+The `chrome` module coordinates the caption and legend with the HUD. Default panels collapse before they collide with one another or the controls. In compact mode, a panel the reader opens may overlay the drawing; it remains bounded above the controls. A panel is the slot element itself, carrying `.radial-panel`; `adapter.chrome.panels` names which panels it coordinates and the word each one's trigger shows.
 
 **Two arrangements, chosen by measurement.** WIDE shows every panel in its corner: the legend at the right, the caption laid into the slot between the HUD and the legend. It holds only while that layout fits:
-- the caption's slot is at least 240px wide, beginning past the HUD at its widest (its selection readout at the most its stylesheet allows, and its tier readout at the widest word it has shown), so neither a reader's selection nor a refit's tier word can fold the panels away;
+- the caption's slot is at least 240px wide, beginning past the HUD at its widest (its selection readout at the most its stylesheet allows, and its tier readout at the widest word it has shown). The selection allowance prevents a newly shown selection from folding the panels. A newly encountered wider tier word can change a placement decision; the recorded width does not shrink on returning to shorter words;
 - the caption laid into that slot takes at most a third of the canvas height;
 - the legend's box leaves at least 72px of it to read, or all of it if shorter.
 
@@ -62,7 +62,7 @@ Otherwise the arrangement is COMPACT: the panels close behind triggers in the sh
 
 **One panel at a time, and who changed it.** In compact, at most one panel is open. It opens upward from the control area, inside the room between the canvas top and that area, scrolls there, and never covers the HUD or the triggers.
 - Entering compact closes every panel: a panel open only because the wide arrangement shows it is not a reader's choice. Entering wide shows them all again.
-- While the arrangement stays compact, a resize keeps the reader's open panel and its scroll position.
+- While a compact panel remains open, a resize keeps its scroll position within the available scroll range. A panel set aside for insufficient room reopens at the top.
 - When the room above the control area falls below 72px, no panel can be read there:
   - the triggers are not offered: they leave the display and the tab order, and focus moves to the HUD's Fit control;
   - an open panel is set aside.
@@ -72,7 +72,7 @@ Otherwise the arrangement is COMPACT: the panels close behind triggers in the sh
 
 **Fit and Escape.**
 - **Fit edges.** In wide, the panels keep the edges the page declares, so the Fit reserves them. In compact, the trigger row declares the bottom edge and every panel `none`.
-- **Open panels.** An open panel is an overlay. The Fit report lists it in `covered`, and an explicit Fit closes it through the module before it fits again.
+- **Open panels.** An open compact panel is a registered overlay. The Fit report lists it in `covered` when it covers the drawing or its names. An explicit Fit dismisses an obstructing panel through the module before it fits again; a non-obstructing panel may remain open.
 - **Refits.** A change to the reserved chrome, or to which panel is open, refits only at the Fit, and the refit carries its cause (resize, font, reader). At the Fit, a resize can therefore fit twice in one frame: once as the engine sees the new size, then again once the chrome is arranged for it. Both fits carry the cause `resize`. A reader's own pan and zoom, and the selection, are left alone.
 - **Escape.** Escape closes the open panel, after the chooser and before the selection. Focus inside the panel returns to its trigger.
 - **Focus** moves only when its target would disappear:

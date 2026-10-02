@@ -1,6 +1,6 @@
 /* diagrams-radial-chrome.js — the chrome module of the interactive radial pattern: it coordinates
-   the panels around the map (the caption, the legend) with the HUD, so they never land on one
-   another or take the canvas from the drawing.
+   the panels around the map (the caption, the legend) with the HUD. Default panels collapse
+   before they collide; a panel the reader opens in compact may overlay the drawing.
 
    design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
    byte-identical, never hand-edit in a consumer. Optional for an instance: list it as
@@ -24,8 +24,8 @@
    ONE STATE PER PANEL, and who changed it
    - Entering compact closes every panel: a panel open only because wide shows it is not a
      reader's choice. Entering wide shows every panel again and forgets what was set aside.
-   - While the arrangement stays compact, a resize keeps the reader's open panel and its
-     scroll position.
+   - While a compact panel remains open, a resize keeps its scroll position within the
+     available scroll range. A panel set aside for insufficient room reopens at the top.
    - When the room above the control area falls below READ_MIN, no panel can be read there: the
      triggers are NOT OFFERED (they leave the display and the tab order, with focus handed to the
      HUD's Fit control), and an open panel is SET ASIDE. When the room returns, the triggers
@@ -38,8 +38,9 @@
    FIT AND ESCAPE
    In wide, the panels keep the edge the page declares (data-diagram-fit-edge), so the Fit
    reserves them. In compact the trigger row declares the bottom edge and every panel "none":
-   an open panel overlays the drawing, is registered as an overlay, appears in the Fit report's
-   `covered`, and an explicit Fit closes it through this module. A change to the reserved
+   an open panel is registered as an overlay. It appears in the Fit report's `covered` when it
+   covers the drawing or its names. An explicit Fit dismisses an obstructing panel through this
+   module; a non-obstructing panel may remain open. A change to the reserved
    chrome, or to which panel is open, refits only while the view is at Fit, and the refit
    carries what caused it (resize, font, reader); a reader's own pan and zoom are left alone.
    At the Fit, a resize can therefore fit twice in one frame: as the engine sees the new size,
@@ -169,10 +170,10 @@
     function scrolls(el) { return el.scrollHeight > el.clientHeight + 1; }
 
     /* The HUD's right edge at its widest, relative to the canvas. Its tier readout counts at the
-       widest word it has shown, so the word a refit brings can never move a decision made here
-       (a narrower band, a larger scale, a longer word, a wider HUD: that loop is closed). With
-       `selection`, its selection readout counts at the widest its stylesheet allows, so a reader's
-       selection never folds the panels away. */
+       widest word it has shown. A newly encountered wider word can change a placement decision,
+       but returning to a shorter word cannot shrink that allowance and restart the refit loop.
+       With `selection`, the selection readout counts at the widest its stylesheet allows, so a
+       newly shown selection never folds the panels away. */
     var tierMax = 0;
     function hudExtent(hr, cr, selection) {
       var w = hr.width, gap = parseFloat(getComputedStyle(hud).columnGap) || 0;
