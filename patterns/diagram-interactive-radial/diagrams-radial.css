@@ -148,6 +148,44 @@ body.radial-page {
                   letter-spacing: var(--tracking-wide); color: var(--fg-2); text-align: center; line-height: 1.45; max-width: 420px; z-index: 1; }
 .radial-caption b { color: var(--fg-1); font-weight: 500; }
 
+/* ---- panels, and the responsive chrome that coordinates them (diagrams-radial-chrome.js) ----
+   A panel is the slot element itself, on the glass: [data-radial-slot="legend"] or
+   [data-radial-slot="caption"] carrying .radial-panel. Each sits in its corner by default. The
+   chrome module marks the canvas [data-radial-chrome="wide" | "compact"]: in wide it lays the
+   caption into the slot between the HUD and the legend; in compact it closes the panels behind
+   triggers in the shared disclosure grammar (surface-treatments.css), which join the HUD in one
+   control area, and opens one panel at a time upward from it, inside the room it measures. */
+.radial-panel { z-index: 2; }
+.radial-panel[hidden] { display: none; }
+.radial-panel[data-radial-slot="legend"] { bottom: 18px; right: 18px; width: 296px; max-height: calc(56% - 34px); overflow-y: auto;
+                                           padding: 11px 16px 9px; font-size: 11px; }
+.radial-panel[data-radial-slot="caption"] { bottom: 18px; left: 50%; transform: translateX(-50%); max-width: 420px; padding: 9px 14px;
+                                            font-size: 10px; letter-spacing: var(--tracking-wide); color: var(--fg-2); text-align: center;
+                                            line-height: 1.45; z-index: 1; }
+.radial-panel[data-radial-slot="caption"] b { color: var(--fg-1); font-weight: 500; }
+.radial-panel:focus-visible { outline: 2px solid var(--fg-1); outline-offset: -2px; }
+.radial-panel-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-2); }
+
+[data-radial-chrome="wide"] .radial-panel[data-radial-slot="caption"] { left: var(--radial-caption-left); width: var(--radial-caption-w);
+                                                                        max-width: none; transform: none; }
+
+.radial-chrome-triggers { position: absolute; z-index: 3; display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px;
+                          max-width: calc(100% - 36px); }
+.radial-chrome-triggers[hidden], .radial-chrome-triggers > .radial-chrome-trigger[hidden] { display: none; }
+[data-radial-chrome="compact"] .radial-chrome-triggers { left: var(--radial-row-left); bottom: var(--radial-row-bottom); }
+[data-radial-chrome-row="beside"] .radial-chrome-triggers { height: var(--radial-row-h); }
+/* the trigger's grammar is the shared disclosure's; its surface is this pattern's glass, restated
+   because the trigger resets a button's own chrome */
+.radial-chrome-triggers > .radial-chrome-trigger { flex: none; padding: 8px 14px 8px 12px; border-radius: var(--radius-md);
+                                                   background: var(--surface-glass); -webkit-backdrop-filter: blur(20px);
+                                                   backdrop-filter: blur(20px); border: 1px solid var(--surface-glass-2); }
+[data-radial-chrome-row="beside"] .radial-chrome-triggers > .radial-chrome-trigger { padding-top: 0; padding-bottom: 0; }
+[data-radial-chrome="compact"] .radial-panel { left: 18px; right: auto; bottom: var(--radial-panel-bottom); transform: none;
+                                               width: min(calc(100% - 36px), 560px); max-height: var(--radial-panel-max);
+                                               overflow-y: auto; overscroll-behavior: contain; text-align: left; z-index: 3; }
+[data-radial-chrome="compact"] .radial-panel[data-radial-slot="legend"] { width: min(calc(100% - 36px), 296px); }
+[data-radial-chrome="compact"] .radial-panel-h { display: none; }
+
 .radial-tick { position: absolute; width: 14px; height: 14px; border: 1px solid var(--surface-glass-2); pointer-events: none; z-index: 3; }
 .radial-tick.tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
 .radial-tick.tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }

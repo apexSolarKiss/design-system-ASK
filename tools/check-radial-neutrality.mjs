@@ -39,7 +39,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const P = 'patterns/diagram-interactive-radial/';
 const TARGETS = [
   P + 'diagrams-radial-contract.js', P + 'diagrams-radial-layout.js', P + 'diagrams-radial-labels.js',
-  P + 'diagrams-radial-engine.js', P + 'diagrams-radial-legend.js', P + 'diagrams-radial.css',
+  P + 'diagrams-radial-engine.js', P + 'diagrams-radial-legend.js', P + 'diagrams-radial-chrome.js', P + 'diagrams-radial.css',
   'patterns/_diagram-shared/diagrams-pointer.js',
 ];
 /* excluded by declared path, each for its stated reason */
@@ -77,6 +77,7 @@ setting settings setview shape short show side slot span spectral spine square s
 state states strict string strings structural sub svg sw tab tabindex takes template tested text the theme
 this tier tiers title to top total touch transform translate tri true twice txt type undefined undrawn
 unknown url use var viewbox visible w weighted wheel when whole width world www x y yield z zoom zoomat
+alone arrangement beside caption compact disclosure expanded indicator panel style surface trigger triggers wide
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;

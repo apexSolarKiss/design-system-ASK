@@ -41,7 +41,20 @@
      E  error paths: each named failure renders nothing and leaves the host untouched
      A  deep-link arrival: an encoded identifier selects; an unknown one is ignored and reported
      V  a second label target leaves the reader's labels and state untouched
-     X  controls: the isolation, teardown, reach and relation checks each fail for their intended reason
+     C  the responsive chrome (the third host, and once the specimen shell): one window narrowed step by
+        step from 1600 to 390 CSS px and widened again, with no chrome box meeting another or leaving
+        the canvas, wide while the panels fit and compact once they do not; a fresh compact load
+        equals a resize arrival; a wide but short canvas is compact; a reader's open panel is kept and
+        re-bounded, set aside when its room is too small and restored when it returns, and forgotten
+        after a reader action; Escape and explicit Fit close it; a reader's own view and selection
+        survive the arrangement changing; focus moves only when its target disappears; an extreme size
+        offers no panel; a phone turned keeps its panel; both themes; destroy and remount; chrome
+        configuration errors; and the classes an internal challenge found, each checked: a Fit
+        straddling a tier settles with no flip or refit loop, a selection never changes the
+        arrangement, Escape forgets a set-aside panel, a short wide canvas keeps no unreadable
+        legend strip, focus never passes through another control, and refits carry their cause
+     X  controls: the isolation, teardown, reach, relation and chrome-collision checks each fail for their
+        intended reason
 
    MEASUREMENTS (reported, not judged): per shape at 1280x800, the Fit, the names it defers, the
    pairs of marks whose shapes overlap, how the click resolution resolves at each mark's center,
@@ -97,7 +110,7 @@ function serve() {
   return new Promise((r) => srv.listen(0, '127.0.0.1', () => r({ srv, base: `http://127.0.0.1:${srv.address().port}` })));
 }
 const KEYS = { Tab: 9, Enter: 13, Escape: 27, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, ' ': 32 };
-async function open(b, url, { width = 1280, height = 800, touch = false, scheme = 'light', motion = 'reduce' } = {}) {
+async function open(b, url, { width = 1280, height = 800, touch = false, scheme = 'light', motion = 'reduce', ready = true } = {}) {
   const tgt = await (await fetch(`http://127.0.0.1:${b.port}/json/new?about:blank`, { method: 'PUT' })).json();
   const ws = new WebSocket(tgt.webSocketDebuggerUrl);
   await new Promise((r) => ws.addEventListener('open', r));
@@ -122,7 +135,7 @@ async function open(b, url, { width = 1280, height = 800, touch = false, scheme 
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
     return r.result.value;
   };
-  for (let i = 0; i < 100 && !(await ev('document.documentElement.dataset.ready === "1"')); i++) await new Promise((r) => setTimeout(r, 50));
+  for (let i = 0; ready && i < 100 && !(await ev('document.documentElement.dataset.ready === "1"')); i++) await new Promise((r) => setTimeout(r, 50));
   await ev('document.fonts ? document.fonts.ready : null');
   const frames = () => ev('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))');
   const mouse = (type, x, y, extra = {}) => call('Input.dispatchMouseEvent', Object.assign({ type, x, y, button: 'none' }, extra));
@@ -786,6 +799,303 @@ async function run() {
         return { tier: i.state().lod.tier, shown: shown.length, offCanvas, deferred: i.state().lod.deferred, k: v.k }; })()`);
       check('V2 a framed view shows no callout whose mark is off the canvas', z.offCanvas === 0 && z.deferred.offscreen > 0, J(z));
       await p.close();
+    }
+
+    /* ---------------------------------------------------------------- C -- */
+    {
+      /* the chrome module on host C: one window resized through its sizes, as a reader drags it */
+      const CH = `window.HC = {
+        inst() { return FX.inst.C; },
+        el(s) { return FX.host('C').querySelector(s); },
+        box(el) { if (!el || !el.getClientRects().length) return null; const cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden') return null;
+                  const r = el.getBoundingClientRect(); return r.width && r.height ? { l: r.left, t: r.top, r: r.right, b: r.bottom } : null; },
+        boxes() { const o = {}; [['hud', '[data-radial-slot="hud"]'], ['legend', '[data-radial-slot="legend"]'], ['caption', '[data-radial-slot="caption"]'],
+                                 ['triggers', '.radial-chrome-triggers']].forEach(([k, s]) => { const b = this.box(this.el(s)); if (b) o[k] = b; }); return o; },
+        collisions() { const b = this.boxes(), k = Object.keys(b), out = [], cv = this.el('[data-radial-slot="canvas"]').getBoundingClientRect();
+          k.forEach((n) => { const a = b[n]; if (a.l < cv.left - 0.5 || a.t < cv.top - 0.5 || a.r > cv.right + 0.5 || a.b > cv.bottom + 0.5) out.push(n + ' outside the canvas'); });
+          for (let i = 0; i < k.length; i++) for (let j = i + 1; j < k.length; j++) { const a = b[k[i]], c = b[k[j]];
+            if (Math.min(a.r, c.r) - Math.max(a.l, c.l) > 0.5 && Math.min(a.b, c.b) - Math.max(a.t, c.t) > 0.5) out.push(k[i] + 'x' + k[j]); }
+          return out; },
+        triggers() { return Array.from(FX.host('C').querySelectorAll('.radial-chrome-trigger')).map((t) => ({ label: t.textContent.replace(/[^a-z]/g, ''),
+          expanded: t.getAttribute('aria-expanded'), shown: !!this.box(t), truthful: (t.getAttribute('aria-expanded') === 'true') === !document.getElementById(t.getAttribute('aria-controls')).hidden })); },
+        trigger(slot) { return FX.host('C').querySelector('.radial-chrome-trigger[aria-controls="' + this.el('[data-radial-slot="' + slot + '"]').id + '"]'); },
+        snap() { const c = this.inst().state(); const cv = this.el('[data-radial-slot="canvas"]').getBoundingClientRect();
+          return { w: innerWidth, h: innerHeight, canvas: [Math.round(cv.width), Math.round(cv.height)], chrome: c.chrome, view: c.view, overlays: c.overlays,
+                   sel: c.selection.locked, collisions: this.collisions(), triggers: this.triggers(), clear: this.inst().report().fit.clear,
+                   covered: this.inst().report().fit.covered, focus: document.activeElement ? (document.activeElement.getAttribute('data-radial-control') ||
+                   document.activeElement.getAttribute('data-radial-slot') || (document.activeElement.classList.contains('radial-chrome-trigger') ? 'trigger:' + document.activeElement.textContent.replace(/[^a-z]/g, '') : document.activeElement.tagName)) : null }; },
+        room() { const p = this.el('[data-radial-slot="legend"]'), h = this.box(this.el('[data-radial-slot="hud"]')), t = this.box(this.el('.radial-chrome-triggers')), b = this.box(p), cv = this.el('[data-radial-slot="canvas"]').getBoundingClientRect();
+          const floor = Math.min(h ? h.t : 1e9, t ? t.t : 1e9); return { panel: b, floor, top: cv.top, scroll: p.scrollTop, scrolls: p.scrollHeight > p.clientHeight + 1 }; }
+      };`;
+      const settleC = async (p) => { await p.frames(); await p.ev('new Promise((r) => setTimeout(r, 120))'); await p.frames(); };
+      const sizeC = async (p, w, h) => { await p.size(w, h); await settleC(p); return p.ev('HC.snap()'); };
+      const openC = async (w, h, o = {}) => {
+        const p = await page(b, base, Object.assign({ width: w, height: h }, o));
+        await p.ev(CH);
+        await p.ev(`FX.mode('chrome'); FX.mount('C', 'specimen', { noArrival: true, modules: ['legend', 'chrome'] }); true`);
+        await p.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 150)))`);
+        await settleC(p);
+        return p;
+      };
+
+      /* C1-C3: the reported path. One window, wide, narrowed step by step to a phone width and widened again */
+      const p = await openC(1600, 1000);
+      const SEQ = [1600, 1440, 1280, 1180, 1080, 980, 900, 820, 768, 767, 700, 600, 520, 430, 390, 430, 600, 767, 768, 900, 1080, 1280, 1600];
+      const seq = [];
+      for (const w of SEQ) seq.push(await sizeC(p, w, 1000));
+      measures.chrome = { sequence: seq.map((s) => ({ viewport: [s.w, s.h], canvas: s.canvas, arrangement: s.chrome.arrangement, open: s.chrome.open,
+                                                      collisions: s.collisions, k: +s.view.k.toFixed(4), atFit: s.view.atFit })) };
+      const flips = seq.map((s) => s.chrome.arrangement[0]).join('');
+      check('C1 narrowing one window: no chrome box ever meets another (HUD, legend, caption, triggers) at any step, either way',
+        seq.every((s) => s.collisions.length === 0), J(seq.filter((s) => s.collisions.length).map((s) => [s.w, s.collisions])));
+      check('C1 wide while the panels fit beside each other, compact once they do not, and wide again on the way back', /^w+c+w+$/.test(flips) &&
+        seq.every((s) => s.chrome.arrangement === 'wide' ? s.triggers.every((t) => !t.shown) && s.chrome.open === null
+                                                      : s.triggers.every((t) => t.shown && t.expanded === 'false' && t.truthful)), flips);
+      check('C2 entering compact closes the wide default: no panel is left open over the narrowed map', seq.filter((s) => s.chrome.arrangement === 'compact').every((s) => s.chrome.open === null && s.overlays.length === 0));
+      check('C3 at Fit, each size refits the drawing with nothing reserved for a closed panel, and its report is clear',
+        seq.every((s) => s.view.atFit && s.clear), J(seq.filter((s) => !s.clear).map((s) => s.w)));
+      const arrived = seq[SEQ.indexOf(700)];
+      await p.close();
+      const f = await openC(700, 1000);
+      const fresh = await f.ev('HC.snap()');
+      check('C3 a fresh compact load and a resize arrival at the same size agree: arrangement, panels and view',
+        fresh.chrome.arrangement === arrived.chrome.arrangement && fresh.chrome.open === arrived.chrome.open && near(fresh.view.k, arrived.view.k, 1e-9) &&
+        near(fresh.view.x, arrived.view.x, 1e-6) && near(fresh.view.y, arrived.view.y, 1e-6), J([fresh.chrome, fresh.view.k, arrived.view.k]));
+      await f.close();
+
+      /* C4: the wide rule is measured, not a width: a wide but short window is compact */
+      const s4 = await openC(1600, 1000);
+      const tall = await s4.ev('HC.snap()');
+      const capH = await s4.ev(`HC.el('[data-radial-slot="caption"]').getBoundingClientRect().height`);
+      const short = await sizeC(s4, 1600, Math.floor(capH * 3) - 2);
+      check('C4 a wide but short window is compact: the caption would take more than a third of the height', tall.chrome.arrangement === 'wide' &&
+        short.chrome.arrangement === 'compact' && short.w === 1600, J({ capH, h: short.h, chrome: short.chrome }));
+      await s4.close();
+
+      /* C5-C11: a reader's panel, in compact, on a canvas short enough that the legend scrolls */
+      const q = await openC(700, 520);
+      await q.ev(`FX.inst.C.select(FX.inst.C.layout.nodes[1].id); true`); await settleC(q);
+      let t = await q.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await q.click(t.x, t.y); await settleC(q);
+      let s = await q.ev('HC.snap()'), rm = await q.ev('HC.room()');
+      check('C5 a reader opens the legend: one panel open, its trigger says so, and the selection is kept',
+        s.chrome.open === 'legend' && s.triggers.find((x) => x.label === 'legend').expanded === 'true' && s.triggers.every((x) => x.truthful) && s.sel === (await q.ev('FX.inst.C.layout.nodes[1].id')), J(s.chrome));
+      check('C5 the open panel stands above the control area and inside the canvas, scrolls, and meets no other box',
+        !!rm.panel && s.collisions.length === 0 && rm.panel.b <= rm.floor - 8 + 1 && rm.panel.t >= rm.top + 18 - 1 && rm.scrolls, J({ rm, col: s.collisions }));
+      check('C11 an automatic refit with a panel open reports it as covering, not clear', await q.ev(`(() => { FX.inst.C.fit('module'); const f = FX.inst.C.report().fit; return f.covered.includes('legend') && !f.clear; })()`));
+      t = await q.ev(`(() => { const r = HC.trigger('caption').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await q.click(t.x, t.y); await settleC(q);
+      s = await q.ev('HC.snap()');
+      check('C6 opening the caption closes the legend: at most one panel is open', s.chrome.open === 'caption' && s.triggers.every((x) => x.truthful) && s.overlays.join() === 'caption', J(s.chrome));
+      await q.click(t.x, t.y); await settleC(q);
+      t = await q.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await q.click(t.x, t.y); await settleC(q);
+      const sc = await q.ev(`(() => { const p = HC.el('[data-radial-slot="legend"]'); p.scrollTop = Math.floor((p.scrollHeight - p.clientHeight) / 2); return p.scrollTop; })()`);
+      const kept = [];
+      for (const w of [600, 520]) { const x = await sizeC(q, w, 520); kept.push({ w, open: x.chrome.open, scroll: (await q.ev('HC.room()')).scroll, col: x.collisions }); }
+      check('C7 a resize that stays compact keeps the reader\'s open panel and its scroll position, re-bounded', sc > 0 && kept.every((k) => k.open === 'legend' && k.scroll === sc && k.col.length === 0), J({ sc, kept }));
+      /* C8: too little room sets the panel aside and stops offering the triggers; the room returning restores it */
+      await q.ev(`HC.el('[data-radial-slot="legend"]').focus(); true`);
+      const a1 = await sizeC(q, 520, 190);
+      check('C8 too little room for a panel sets it aside and withdraws the triggers from display and the tab order; focus goes to the HUD\'s Fit control',
+        a1.chrome.open === null && a1.chrome.setAside === 'legend' && !a1.chrome.offered && a1.triggers.every((x) => !x.shown) && a1.focus === 'fit', J(a1));
+      const a2 = await sizeC(q, 520, 520);
+      check('C8 when the room returns, the set-aside panel reopens by itself', a2.chrome.open === 'legend' && a2.chrome.offered && a2.chrome.setAside === null, J(a2.chrome));
+      /* C9: a reader action forgets the set-aside panel */
+      await sizeC(q, 520, 190);
+      await q.ev(`FX.host('C').querySelector('[data-radial-slot="stage"]').focus(); true`);
+      await q.key('ArrowDown'); await q.key('Enter'); await settleC(q);
+      const a3 = await sizeC(q, 520, 520);
+      check('C9 a reader\'s selection forgets the set-aside panel: the room returning does not reopen it', a3.chrome.open === null && a3.chrome.setAside === null, J(a3.chrome));
+      /* C10: Escape peels the open panel before the selection, and focus returns to its trigger */
+      t = await q.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await q.click(t.x, t.y); await settleC(q);
+      await q.ev(`HC.el('[data-radial-slot="legend"]').focus(); true`);
+      const selBefore = (await q.ev('HC.snap()')).sel;
+      await q.key('Escape'); await settleC(q);
+      const e1 = await q.ev('HC.snap()');
+      check('C10 Escape in the open panel closes it, keeps the selection, and returns focus to its trigger', e1.chrome.open === null && e1.sel === selBefore && selBefore !== null && e1.focus === 'trigger:legend', J(e1));
+      await q.key('Escape'); await settleC(q);
+      check('C10 the next Escape clears the selection', (await q.ev('HC.snap()')).sel === null);
+      /* C11: an explicit Fit closes the panel that covers the drawing, through the module */
+      await q.click(t.x, t.y); await settleC(q);
+      const fitB = await q.ev(`(() => { const r = HC.el('[data-radial-control="fit"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await q.click(fitB.x, fitB.y); await settleC(q);
+      const e2 = await q.ev('HC.snap()');
+      check('C11 an explicit Fit closes the covering panel through the chrome module and reports clear, cause explicit',
+        e2.chrome.open === null && e2.triggers.every((x) => x.truthful) && e2.view.fitCause === 'explicit' && e2.clear && e2.covered.length === 0, J(e2));
+      await q.close();
+
+      /* C12: a reader's own view and selection survive the arrangement changing under them */
+      const m = await openC(1600, 1000);
+      await m.ev(`FX.inst.C.select(FX.inst.C.layout.nodes[3].id); true`);
+      const sr = await m.ev(`FX.stageRect('C')`);
+      await m.wheel(sr.x + sr.w / 2, sr.y + sr.h / 2, 0, -200);
+      await m.drag(sr.x + 400, sr.y + 300, sr.x + 460, sr.y + 340);
+      const v0 = (await m.ev('HC.snap()')).view;
+      const m1 = await sizeC(m, 700, 1000);
+      const m2 = await sizeC(m, 1600, 1000);
+      check('C12 away from the Fit, crossing wide to compact and back keeps the reader\'s zoom and the selection; the view is not reset',
+        !v0.atFit && m1.chrome.arrangement === 'compact' && m2.chrome.arrangement === 'wide' && !m1.view.atFit && !m2.view.atFit &&
+        near(m1.view.k, v0.k, 1e-9) && near(m2.view.k, v0.k, 1e-9) && m1.sel !== null && m2.sel === m1.sel, J({ v0, m1: m1.view, m2: m2.view }));
+      /* C14: from compact back to wide, a focused trigger hands focus to its panel, now shown */
+      await sizeC(m, 700, 1000);
+      await m.ev(`HC.trigger('legend').focus(); true`);
+      const w14 = await sizeC(m, 1600, 1000);
+      check('C14 compact to wide shows every panel again; focus on a trigger the wide arrangement hides moves into its panel',
+        w14.chrome.arrangement === 'wide' && w14.chrome.open === null && w14.focus === 'legend', J({ chrome: w14.chrome, focus: w14.focus }));
+      await m.close();
+
+      /* C15: a canvas too small for any panel offers none, rather than a strip */
+      const x = await openC(320, 170);
+      const xs = await x.ev('HC.snap()');
+      check('C15 at an extreme size the panels yield on purpose: not offered, no trigger shown, no strip, nothing open',
+        xs.chrome.arrangement === 'compact' && !xs.chrome.offered && xs.triggers.every((tt) => !tt.shown) && xs.chrome.open === null && xs.collisions.length === 0, J(xs));
+      await x.close();
+
+      /* C16: a phone turned between portrait and landscape (touch) */
+      const ph = await openC(390, 844, { touch: true });
+      t = await ph.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await ph.tap(t.x, t.y); await settleC(ph);
+      const r0 = await ph.ev('HC.snap()');
+      const r1 = await sizeC(ph, 844, 390);
+      const r2 = await sizeC(ph, 390, 844);
+      check('C16 a phone turned to landscape and back keeps the tapped legend open and bounded, with no box meeting another',
+        r0.chrome.open === 'legend' && r1.chrome.open === 'legend' && r2.chrome.open === 'legend' && [r0, r1, r2].every((z) => z.collisions.length === 0 && z.chrome.arrangement === 'compact'),
+        J([r0, r1, r2].map((z) => [z.w, z.h, z.chrome, z.collisions])));
+      measures.chrome.rotation = [r0, r1, r2].map((z) => ({ viewport: [z.w, z.h], canvas: z.canvas, chrome: z.chrome }));
+      await ph.close();
+
+      /* C17: both themes resolve the triggers and panels from the tokens */
+      const themes = {};
+      for (const scheme of ['light', 'dark']) {
+        const d = await openC(700, 1000, { scheme });
+        themes[scheme] = await d.ev(`(() => { const t = HC.trigger('legend'), p = HC.el('[data-radial-slot="legend"]'); const ct = getComputedStyle(t), cp = getComputedStyle(p);
+          return { bg: ct.backgroundColor, fg: ct.color, panel: cp.backgroundColor }; })()`);
+        await d.close();
+      }
+      check('C17 the triggers and panels take their colors from the theme in force', themes.light.bg !== themes.dark.bg && themes.light.fg !== themes.dark.fg && themes.light.panel !== themes.dark.panel, J(themes));
+
+      /* C18: teardown and remount */
+      const dd = await page(b, base, { width: 700, height: 1000 });
+      await dd.ev(CH);
+      await dd.ev(`FX.mode('chrome'); true`);
+      const pre = await dd.ev(`FX.host('C').outerHTML`);
+      await dd.ev(`FX.mount('C', 'specimen', { noArrival: true, modules: ['legend', 'chrome'] }); true`); await settleC(dd);
+      const st0 = (await dd.ev('HC.snap()')).chrome, k0 = (await dd.ev('HC.snap()')).view.k;
+      t = await dd.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      await dd.click(t.x, t.y); await settleC(dd);
+      await dd.ev(`FX.inst.C.destroy(); true`);
+      const post = await dd.ev(`FX.host('C').outerHTML`);
+      const at = (() => { let i = 0; while (i < pre.length && pre[i] === post[i]) i++; return i; })();
+      check('C18 destroy leaves the chrome host exactly as it was: triggers removed, every attribute and style restored', post === pre,
+        post === pre ? '' : `${pre.length} -> ${post.length} bytes at ${J(post.slice(Math.max(0, at - 60), at + 40))}`);
+      await dd.ev(`FX.mount('C', 'specimen', { noArrival: true, modules: ['legend', 'chrome'] }); true`); await settleC(dd);
+      const st1 = (await dd.ev('HC.snap()')).chrome, k1 = (await dd.ev('HC.snap()')).view.k;
+      check('C18 a remount reproduces the arrangement, the closed panels and the view', J(st1) === J(st0) && near(k1, k0, 1e-12), J([st0, st1]));
+      /* C19: chrome configuration errors render nothing and leave the host untouched */
+      await dd.ev(`FX.inst.C.destroy(); true`);
+      const errs = await dd.ev(`(() => { const base = JSON.parse(JSON.stringify(FX.G.ADAPTER)); const out = {};
+        const tryMount = (h, ad, mods) => { const before = FX.host(h).outerHTML; const c = H.code(() => DIAGRAM_RADIAL.mount({ host: FX.host(h), data: FX.DATA.base(), adapter: ad, modules: mods }));
+          return { code: c, untouched: FX.host(h).outerHTML === before }; };
+        const noPanels = Object.assign({}, base, { chrome: {} }); out.noPanels = tryMount('C', noPanels, ['legend', 'chrome']);
+        const badSlot = Object.assign({}, base, { chrome: { panels: [{ slot: 'inspector', trigger: 'x' }] } }); out.badSlot = tryMount('C', badSlot, ['legend', 'chrome']);
+        const twice = Object.assign({}, base, { chrome: { panels: [{ slot: 'legend', trigger: 'a' }, { slot: 'legend', trigger: 'b' }] } }); out.twice = tryMount('C', twice, ['legend', 'chrome']);
+        const empty = Object.assign({}, base, { chrome: { panels: [{ slot: 'legend', trigger: ' ' }] } }); out.empty = tryMount('C', empty, ['legend', 'chrome']);
+        const noSlot = { chrome: { panels: [{ slot: 'caption', trigger: 'x' }] } }; out.noSlot = tryMount('B', noSlot, ['chrome']);
+        return out; })()`);
+      const want = { noPanels: 'HOOK_MISSING', badSlot: 'HOOK_MISSING', twice: 'HOOK_MISSING', empty: 'HOOK_MISSING', noSlot: 'SLOT' };
+      check('C19 a malformed chrome section, or a declared panel the host lacks, fails closed with its code and leaves the host untouched',
+        Object.keys(want).every((k) => errs[k].code === want[k] && errs[k].untouched), J(errs));
+      /* X7: the collision measure fails for its intended reason: the same panels without the chrome module collide */
+      await dd.ev(`FX.mount('C', 'specimen', { noArrival: true, modules: ['legend'] }); true`); await settleC(dd);
+      const x7 = await sizeC(dd, 820, 1000);
+      check('X7 the collision measure detects panels the chrome does not coordinate meeting at 820 wide', x7.collisions.length > 0, J(x7.collisions));
+      await dd.close();
+
+      /* C21-C26: the failure classes an internal challenge found, each held by a check */
+      {
+        const AD = `{ chrome: { panels: [{ slot: 'caption', trigger: 'about' }, { slot: 'legend', trigger: 'legend' }] }, legend: { headings: { state: 's', line: 'l', shape: 'h' } } }`;
+        const loopRun = async (shape, w, h) => {
+          const lp = await page(b, base, { width: w, height: h });
+          await lp.ev(CH);
+          await lp.ev(`(() => { FX.mode('chrome'); window.ROERR = 0; window.addEventListener('error', (e) => { if (/ResizeObserver/.test(e.message)) ROERR++; });
+            FX.mount('C', ${J(shape)}, { noArrival: true, modules: ['legend', 'chrome'], adapter: ${AD} }); return true; })()`);
+          await lp.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 500)))`);
+          const r = await lp.ev(`new Promise((res) => { let flips = 0, fits = 0; ROERR = 0;
+            new MutationObserver((m) => { flips += m.length; }).observe(HC.el('[data-radial-slot="canvas"]'), { attributes: true, attributeFilter: ['data-radial-chrome-row', 'data-radial-chrome'] });
+            FX.inst.C.on('fit', () => fits++);
+            setTimeout(() => res({ flips, fits, roErrors: ROERR, row: HC.el('[data-radial-slot="canvas"]').getAttribute('data-radial-chrome-row'), k: FX.inst.C.view().k }), 1500); })`);
+          await lp.close();
+          return r;
+        };
+        const l1 = await loopRun('chain', 488, 1024), l2 = await loopRun('flat', 640, 600);
+        check('C21 a Fit whose scale straddles a tier settles: no arrangement or row flips, no refit, no ResizeObserver loop, for 1.5 s',
+          [l1, l2].every((x) => x.flips === 0 && x.fits === 0 && x.roErrors === 0), J({ chain488: l1, flat640: l2 }));
+
+        const sel22 = [];
+        for (const w of [1000, 1100]) {
+          const sp = await openC(w, 800);
+          const s0 = await sp.ev('HC.snap()');
+          const longest = await sp.ev(`(() => { const ns = FX.inst.C.layout.nodes.filter((n) => n.depth === 1); ns.sort((a, b) => b.label.length - a.label.length); return ns[0].id; })()`);
+          const at = await sp.ev(`FX.at('C', ${J(longest)})`);
+          await sp.click(at.x, at.y); await settleC(sp);
+          const s1 = await sp.ev('HC.snap()');
+          sel22.push({ w, before: s0.chrome.arrangement, after: s1.chrome.arrangement, sel: s1.sel === longest, col: s1.collisions });
+          await sp.close();
+        }
+        check('C22 a reader\'s selection, with the longest label, never changes the arrangement: the HUD at its widest is already reserved',
+          sel22.every((x) => x.sel && x.before === x.after && x.col.length === 0) && sel22.some((x) => x.before === 'wide'), J(sel22));
+
+        const ep = await openC(700, 520);
+        t = await ep.ev(`(() => { const r = HC.trigger('legend').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+        await ep.click(t.x, t.y); await settleC(ep);
+        const e0 = await sizeC(ep, 700, 150);
+        await ep.key('Escape'); await settleC(ep);
+        const e1 = await sizeC(ep, 700, 520);
+        check('C23 Escape while a panel is set aside forgets it: the room returning does not reopen it',
+          e0.chrome.setAside === 'legend' && e0.focus === 'fit' && e1.chrome.open === null && e1.chrome.setAside === null, J({ aside: e0.chrome, after: e1.chrome }));
+        await ep.close();
+
+        const hp = await openC(1600, 1000);
+        const strips = [];
+        for (const hh of [140, 150, 160, 170, 180, 190, 200, 220, 240]) {
+          const z = await sizeC(hp, 1600, hh);
+          const lg = await hp.ev(`(() => { const p = HC.el('[data-radial-slot="legend"]'); return { box: p.clientHeight, content: p.scrollHeight }; })()`);
+          strips.push({ h: hh, arrangement: z.chrome.arrangement, box: lg.box, content: lg.content });
+        }
+        check('C24 on a short, wide canvas the legend stays in its corner only while 72px of it can be read; otherwise the arrangement is compact',
+          strips.every((x) => x.arrangement === 'compact' || x.box >= Math.min(72, x.content)) && strips.some((x) => x.arrangement === 'compact'), J(strips));
+        await hp.close();
+
+        const fp = await openC(1600, 1000);
+        await fp.ev(`(() => { window.FOCUSES = []; FX.host('C').addEventListener('focusin', (e) => FOCUSES.push(e.target.getAttribute('data-radial-control') || e.target.getAttribute('data-radial-slot') ||
+          (e.target.classList.contains('radial-chrome-trigger') ? 'trigger:' + e.target.textContent.replace(/[^a-z]/g, '') : e.target.tagName))); HC.el('[data-radial-slot="legend"]').focus(); return true; })()`);
+        const f1 = await sizeC(fp, 700, 1000);
+        const seqF = await fp.ev('FOCUSES');
+        check('C25 a panel holding focus as the arrangement turns compact hands focus straight to its trigger, through nothing else',
+          f1.focus === 'trigger:legend' && J(seqF) === J(['legend', 'trigger:legend']), J(seqF));
+        await fp.close();
+
+        const cp = await openC(1500, 1000);
+        await cp.ev(`(() => { window.FITC = []; FX.inst.C.on('fit', (e) => FITC.push(e.cause)); return true; })()`);
+        const c1 = await sizeC(cp, 700, 1000);
+        const causes = await cp.ev('FITC');
+        check('C26 a resize at the Fit refits with the cause resize, however many times the chrome needs',
+          causes.length > 0 && causes.every((x) => x === 'resize') && c1.view.fitCause === 'resize' && c1.chrome.arrangement === 'compact', J({ causes, last: c1.view.fitCause }));
+        await cp.close();
+      }
+
+      /* C20: the specimen shell itself, as the gallery serves it */
+      const sh = await open(b, `${base}/patterns/_preview/diagram-interactive-radial.html`, { width: 1600, height: 1000, ready: false });
+      await sh.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+      const shellAt = async (w, h) => { await sh.size(w, h); await sh.frames(); await sh.ev('new Promise((r) => setTimeout(r, 120))');
+        return sh.ev(`(() => { const s = RADIAL_MAP.state(); return { arrangement: s.chrome.arrangement, open: s.chrome.open, clear: RADIAL_MAP.report().fit.clear }; })()`); };
+      const sh1 = await shellAt(1600, 1000), sh2 = await shellAt(820, 1000), sh3 = await shellAt(390, 844), sh4 = await shellAt(1600, 1000);
+      check('C20 the specimen shell lists the chrome: wide, compact with its panels closed as the window narrows, wide again; no error',
+        sh1.arrangement === 'wide' && sh2.arrangement === 'compact' && sh2.open === null && sh3.arrangement === 'compact' && sh4.arrangement === 'wide' &&
+        [sh1, sh2, sh3, sh4].every((z) => z.clear) && sh.errors.length === 0, J([sh1, sh2, sh3, sh4, sh.errors]));
+      await sh.close();
     }
 
     /* ---------------------------------------------------------------- X -- */

@@ -17,10 +17,14 @@
 <meta name="description" content="Specimen of the design-system-ASK interactive radial pattern: a synthetic city park system drawn as a radial containment map, with pan, pinch, zoom, Fit, selection and a keyboard path.">
 <meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference; consumes Spectral State by reference">
 <!-- design-system-ASK foundations — local mirror (no CDN).
-     Load order: core tokens, then Spectral State (state colors), then the pattern stylesheet.
-     DOWNSTREAM: adjust the mirror path if yours lives elsewhere. -->
+     Load order: core tokens, then Spectral State (state colors), then the surface modules the
+     chrome's triggers take their disclosure grammar from (surface-panel.css, then
+     surface-treatments.css), then the pattern stylesheet.
+     DOWNSTREAM: adjust the mirror paths if yours live elsewhere. -->
 <link rel="stylesheet" href="../../colors_and_type.css">
 <link rel="stylesheet" href="../../spectral-state.css">
+<link rel="stylesheet" href="../../surface-panel.css">
+<link rel="stylesheet" href="../../surface-treatments.css">
 <link rel="stylesheet" href="../diagram-interactive-radial/diagrams-radial.css">
 </head>
 <body class="radial-page">
@@ -57,12 +61,13 @@
       <span class="readout readout--selection" data-radial-readout="selection"></span>
     </div>
 
-    <details class="radial-legend-panel radial-glass" data-diagram-fit-edge="right" open>
-      <summary>legend</summary>
-      <div data-radial-slot="legend"></div>
-    </details>
+    <!-- the panels: each is its slot element. The chrome module (adapter.chrome.panels) shows them in
+         their corners while they fit, and otherwise closes them behind triggers beside the HUD -->
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right">
+      <div class="radial-panel-h">legend</div>
+    </div>
 
-    <div class="radial-caption radial-glass" data-diagram-fit-edge="bottom">
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
       <b>synthetic</b> · radius is containment depth · wedge width is size · nothing else is encoded
     </div>
 
@@ -80,16 +85,12 @@
 <script src="../diagram-interactive-radial/diagrams-fit.js"></script>
 <script src="../diagram-interactive-radial/diagrams-radial-engine.js"></script>
 <script src="../diagram-interactive-radial/diagrams-radial-legend.js"></script>
+<script src="../diagram-interactive-radial/diagrams-radial-chrome.js"></script>
 <script>
 (function () {
   var host = document.querySelector('[data-radial]');
-  var legend = host.querySelector('.radial-legend-panel');
-  /* a compact canvas opens with the legend closed, so the first Fit uses the canvas */
-  if (window.matchMedia && window.matchMedia('(max-width: 767px), (max-height: 520px) and (pointer: coarse)').matches) legend.open = false;
-  var map = window.DIAGRAM_RADIAL.mount({ host: host, data: window.RADIAL_SPECIMEN.data,
-                                          adapter: window.RADIAL_SPECIMEN.adapter, modules: ['legend'] });
-  legend.addEventListener('toggle', function () { if (map.view().atFit) map.fit('reader'); });
-  window.RADIAL_MAP = map;
+  window.RADIAL_MAP = window.DIAGRAM_RADIAL.mount({ host: host, data: window.RADIAL_SPECIMEN.data,
+                                                    adapter: window.RADIAL_SPECIMEN.adapter, modules: ['legend', 'chrome'] });
 })();
 </script>
 

@@ -899,7 +899,13 @@
 
     /* ------------------------------------------------------------- modules -- */
     var api = { model: model, layout: L, host: host, canvas: canvas, signal: signal, on: onEvent, emit: emit,
-                registerOverlay: registerOverlay, controls: controls, slot: function (name) { return host.querySelector('[data-radial-slot="' + name + '"]'); } };
+                registerOverlay: registerOverlay, controls: controls, slot: function (name) { return host.querySelector('[data-radial-slot="' + name + '"]'); },
+                /* for a module that changes the reserved chrome: read the view, refit (it decides
+                   whether, by atFit), join the Escape stack, and place a node on the stage */
+                view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause }; },
+                fit: function (cause) { if (!destroyed) fit(cause || 'module'); },
+                escape: function (x) { pushEscape(x); return function () { escapes = escapes.filter(function (e) { return e !== x; }); }; },
+                project: function (nid) { var n = byId.get(nid); return n ? project(n) : null; } };
     var mounted = [];
     try {
       listed.forEach(function (m) { mounted.push({ name: m, inst: R.modules[m].mount(api, adapter[m]) }); });
@@ -945,10 +951,13 @@
       tap: function (sx, sy, tolPx) { return tapAt(sx, sy, tolPx); },
       view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause }; },
       state: function () {
-        return { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause },
-                 selection: { locked: locked, preview: previewId, focus: focusId },
-                 lod: { tier: tier().name, deferred: R.labels.deferred(solution) },
-                 overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }) };
+        var s = { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause },
+                  selection: { locked: locked, preview: previewId, focus: focusId },
+                  lod: { tier: tier().name, deferred: R.labels.deferred(solution) },
+                  overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }) };
+        /* a module that keeps state reports it under its own name: chrome { arrangement, open, offered, setAside } */
+        mounted.forEach(function (m) { if (m.inst && typeof m.inst.state === 'function') s[m.name] = m.inst.state(); });
+        return s;
       },
       report: function () {
         return { fit: lastFit, unresolved: model.unresolved, unsupported: model.unsupported, hiddenRefs: model.hiddenRefs,

@@ -9,6 +9,8 @@
      Owner files and the specimen generator only: no consumer code and no stub. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
 <link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
 <style>
   /* two hosts: one fills the page, or both share it side by side */
@@ -16,6 +18,9 @@
   body[data-mode="two"] .fx-host { width: 50%; }
   body[data-mode="two"] #B { left: 50%; }
   body[data-mode="one"] #B { display: none; }
+  /* the chrome host, alone on the page in its own mode */
+  body:not([data-mode="chrome"]) #C { display: none; }
+  body[data-mode="chrome"] #A, body[data-mode="chrome"] #B { display: none; }
   .fx-host .radial-canvas { position: absolute; inset: 0; }
 </style>
 </head>
@@ -53,6 +58,27 @@
   </div>
 </div>
 
+<div class="fx-host" id="C">
+  <div class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--selection" data-radial-readout="selection"></span>
+    </div>
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right">
+      <div class="radial-panel-h">legend</div>
+    </div>
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
+      <b>caption</b> · the words of the caption · long enough to wrap at a narrow measure
+    </div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </div>
+</div>
+
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
@@ -60,6 +86,7 @@
 <script src="../patterns/diagram-interactive-radial/diagrams-fit.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-engine.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-legend.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-chrome.js"></script>
 <script type="module">
 import * as G from '../tools/gen-radial-specimen.mjs';
 import { compare } from './radial-geometry.mjs';

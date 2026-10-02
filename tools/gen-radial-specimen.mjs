@@ -283,6 +283,7 @@ export const ADAPTER = {
     headings: { state: 'color = status', line: 'line = link kind', shape: 'shape = surface' },
     bound: 'Distance from the center is depth and wedge width is size; position and adjacency encode nothing. Links are drawn only by their kind.'
   },
+  chrome: { panels: [{ slot: 'caption', trigger: 'about' }, { slot: 'legend', trigger: 'legend' }] },
   arrival: { hash: true }
 };
 

@@ -503,7 +503,7 @@ coordinate that is not a finite number, and the other allocation.
 ## radial-fixture.html + radial-behavior.mjs
 
 The **browser behavior harness** of `diagram-interactive-radial`. `radial-behavior.mjs` serves
-this repository read-only on 127.0.0.1, opens `radial-fixture.html` (two hosts, the owner files
+this repository read-only on 127.0.0.1, opens `radial-fixture.html` (three hosts, the owner files
 and the specimen generator; no consumer code and no stub) in headless Chrome, and drives it
 with real mouse, wheel, touch and key input over the DevTools Protocol. Two per-shape sweeps
 visit every mark and run in the page instead: the click sweep calls the click's own resolution
@@ -526,11 +526,21 @@ O  overlapping marks and the chooser                                T  touch: ta
 F  Fit, the zoom floor, resize     K  the keyboard path             I  two instances, the event bus
 D  destroy and remount             E  error paths                   A  deep-link arrival
 V  a second label target           X  controls on the harness's own checks
+C  the responsive chrome, on the third host and once on the specimen shell: one window narrowed
+   step by step from 1600 to 390 CSS px and widened again, with no chrome box meeting another or
+   leaving the canvas; fresh compact load against resize arrival; a wide but short canvas; a
+   reader's panel kept, re-bounded, set aside and restored, forgotten after a reader action;
+   Escape, explicit Fit, a reader's own view across arrangements, focus handoff, an extreme size,
+   a phone turned, both themes, destroy and remount, chrome configuration errors; no flip or
+   refit loop where the Fit straddles a tier, a selection never changing the arrangement, Escape
+   forgetting a set-aside panel, no unreadable legend strip on a short wide canvas, focus never
+   passing through another control, refits carrying their cause
 ```
 
 The first line of its output names the runtimes: Node and V8, and the browser and its V8.
 
-Per shape it also **measures, without judging**: the Fit's scale and clearance, the names it
+With `--json` it also records the chrome's narrowing sequence and the phone's turn (arrangement,
+open panel and Fit scale per CSS viewport). Per shape it also **measures, without judging**: the Fit's scale and clearance, the names it
 defers, the pairs of marks whose shapes overlap, how the click resolution resolves at each mark's
 center (directly, or through the chooser), the sampled centers that page chrome covers, and the
 keyboard reach. Accepting the contract's input limits
