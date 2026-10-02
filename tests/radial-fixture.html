@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>radial behavior fixture</title>
+<!-- The behavior fixture of the interactive radial pattern. Served from the repository root by
+     tests/radial-behavior.mjs, which drives it with real pointer, touch, wheel and key input.
+     Owner files and the specimen generator only: no consumer code and no stub. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
+<style>
+  /* two hosts: one fills the page, or both share it side by side */
+  .fx-host { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; }
+  body[data-mode="two"] .fx-host { width: 50%; }
+  body[data-mode="two"] #B { left: 50%; }
+  body[data-mode="one"] #B { display: none; }
+  .fx-host .radial-canvas { position: absolute; inset: 0; }
+</style>
+</head>
+<body class="radial-page" data-mode="one">
+
+<div class="fx-host" id="A">
+  <div class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--selection" data-radial-readout="selection"></span>
+    </div>
+    <details class="radial-legend-panel radial-glass" data-diagram-fit-edge="right" open>
+      <summary>legend</summary>
+      <div data-radial-slot="legend"></div>
+    </details>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="fx-host" id="B">
+  <div class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+    </div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </div>
+</div>
+
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-pointer.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-fit.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-engine.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-legend.js"></script>
+<script type="module">
+import * as G from '../tools/gen-radial-specimen.mjs';
+import { compare } from './radial-geometry.mjs';
+const D = G.parks();
+/* every identifier renamed to object-property names and delimiter-bearing strings; labels kept */
+function rename(src) {
+  const names = new Map(), special = ['__proto__', 'constructor', 'toString', 'hasOwnProperty', 'valueOf', 'isPrototypeOf', 'a|b', 'a', 'b|c', 'x>y', 'p/q'];
+  const nm = (id) => { if (!names.has(id)) names.set(id, names.size < special.length ? special[names.size] : '|' + names.size + '>' + id + '/'); return names.get(id); };
+  const c = JSON.parse(JSON.stringify(src));
+  c.root.id = nm(src.root.id);
+  c.nodes.forEach((n) => { n.id = nm(n.id); if (n.parent !== undefined) n.parent = nm(n.parent); });
+  (c.records || []).forEach((r) => { r.id = nm(r.id); });
+  c.edges.forEach((e) => { e.from = nm(e.from); e.to = nm(e.to); if (e.id !== undefined) e.id = 'e:' + e.id; });
+  return c;
+}
+const DATA = {
+  specimen: () => G.specimen(D), base: () => G.base(D), shallow: () => G.shallow(D), ragged: () => G.ragged(D, 'show'),
+  raggedHidden: () => G.ragged(D, 'hide'), deeper: () => G.deeper(D), flat: () => G.flat(D), capacity: () => G.capacity(),
+  chain: () => G.chain(6),
+  specimenRenamed: () => rename(G.specimen(D))
+};
+const LEGEND = { headings: { state: 'state', line: 'line', shape: 'shape' } };
+window.FX = {
+  G, DATA, inst: {}, compare,
+  host(h) { return document.getElementById(h); },
+  mode(m) { document.body.dataset.mode = m; },
+  /* mount one host; the specimen takes its own adapter, every other shape the owner defaults */
+  mount(h, name, o = {}) {
+    const adapter = o.adapter !== undefined ? o.adapter
+      : name === 'specimen' ? JSON.parse(JSON.stringify(G.ADAPTER)) : {};
+    if (o.noArrival && adapter.arrival) delete adapter.arrival;
+    if ((o.modules || []).includes('legend') && !adapter.legend) adapter.legend = LEGEND;
+    if (o.layout) adapter.layout = Object.assign({}, adapter.layout || {}, o.layout);
+    const inst = window.DIAGRAM_RADIAL.mount({ host: this.host(h), data: DATA[name](), adapter, modules: o.modules || [] });
+    this.inst[h] = inst;
+    return inst;
+  },
+  /* a mark's center in page coordinates */
+  at(h, id) {
+    const inst = this.inst[h], p = inst.project(id), r = this.host(h).querySelector('[data-radial-slot="stage"]').getBoundingClientRect();
+    return { x: r.left + p.x, y: r.top + p.y };
+  },
+  stageRect(h) { const r = this.host(h).querySelector('[data-radial-slot="stage"]').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; }
+};
+document.documentElement.dataset.ready = '1';
+</script>
+</body>
+</html>

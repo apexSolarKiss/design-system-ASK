@@ -37,6 +37,9 @@ const SHELLS = [
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
+  // The radial surface pattern's shell IS its specimen: it mounts the generated synthetic source and
+  // takes the engine's own Fit, so the preview adds no fit tuning.
+  { src: 'diagram-interactive-radial/diagram-interactive-radial.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.html' },
   // The output artifact is a document-register consumer: it loads the register's four root modules by
   // bare filename, as a consumer vendors them beside its template, so they are declared in rootRefs
   // rather than routed through `_dsa-tokens/`, the token and font mirror.

@@ -446,3 +446,92 @@ declare 0.25 on the half-size figure                   that card only, on its
 
 A shape outside an adopting link takes nothing, so the unlinked card passes in every
 case above.
+
+## radial-contract.test.mjs
+
+Guards the **data contract, layout grammar and label solver** of the
+`diagram-interactive-radial` surface pattern, on the owner files themselves. It loads the
+three DOM-free modules into one global exactly as a page does, so the code tested is the code
+shipped. Scripted, not by eye:
+
+```
+node tests/radial-contract.test.mjs
+```
+
+```text
+P  identity, relations, records, unresolved and unsupported references, closed keys
+T  scalar types: every malformed owner value is a named error; absence is explicit
+L  the tested limits, each failing with its code one step past the bound
+S  shallow, ragged, deeper, flat, capacity and the specimen, under both allocations,
+   each holding the grammar invariants and deterministic
+G  the base hierarchy's equal-share geometry against a stored reference; the fan rule at
+   its boundary
+N  renaming every identifier, label, kind and plane leaves the geometry unchanged
+V  the label tiers, held names, a second target independent of the first, crowding, the
+   Fit's population over a sweep of small canvases, and template slots read as own properties
+I  opaque identifiers through the label layer: object-property names and delimiter-bearing
+   identifiers change no collision relationship (I1-I3, I6) and no decision of the short-canvas
+   population rule, which compares pair identities, not their number (I4, I5)
+X  negative controls: the invariant checks and the geometry comparison each fail for their
+   reason; X6 runs the I checks on mutated copies of the labels module, each of which must fail
+   the check written for it: three restore defect classes of the earlier bookkeeping (plain-object
+   grouping, pairs joined with '|', directed pairs joined with '>'), two are plausible
+   regressions (a directed pair stored undirected, the short-canvas rule comparing counts)
+```
+
+**Geometry is compared, not hashed.** `radial-geometry.mjs` holds the one rule both runtimes use:
+structure exactly (count, order, identifier, parent, depth, kind, mark radius, container count,
+whether it carries a fan radius),
+computed numbers within 1e-6 world units. The layout multiplies radii by `Math.cos` and
+`Math.sin`, which ECMAScript leaves implementation-approximated, so the last bit of a coordinate
+differs between engines (one unit in the last place between Node v22.12.0 and Chrome 154 on this
+layout)
+and a hash of raw output fails across runtimes with nothing moved. The tolerance's reasons, at
+both ends, are in the module's header, which keeps what was measured apart from what is derived.
+The root's count is checked against the reference's leaf total, since a reference may record the
+root's count by another rule; every computed number must be finite on both sides.
+
+**The reference is independent of the code it checks.** `radial-base-equal.reference.json` was
+computed by an implementation independent of the owner layout. Its provenance and the SHA-256 of
+each of its inputs (the layout source, the projection, the data) are recorded in the file, and it
+is stored, never regenerated from the layout under test. X2 shows the comparison passes a 4.6e-13
+perturbation of every coordinate and a displacement inside the tolerance, and fails a leaf moved
+just past it, a leaf moved to another container, two siblings declared in the other order, a
+wrong root count or root parent, a missing node, a dropped fan radius, a changed bound, a
+coordinate that is not a finite number, and the other allocation.
+
+## radial-fixture.html + radial-behavior.mjs
+
+The **browser behavior harness** of `diagram-interactive-radial`. `radial-behavior.mjs` serves
+this repository read-only on 127.0.0.1, opens `radial-fixture.html` (two hosts, the owner files
+and the specimen generator; no consumer code and no stub) in headless Chrome, and drives it
+with real mouse, wheel, touch and key input over the DevTools Protocol. Two per-shape sweeps
+visit every mark and run in the page instead: the click sweep calls the click's own resolution
+function at each mark's center, and a sample of real clicks per shape must agree with it; the
+keyboard sweep dispatches key events on the stage, and the K checks walk with real keys.
+Destroy is checked by the browser's own listener count. No npm dependency; Node 22+, Chrome at
+`$CHROME` or the default locations.
+
+```
+node tests/radial-behavior.mjs           # add --json for the measurements
+```
+
+```text
+M  the minimum composition         S  every hierarchy shape         P  pointer and wheel
+R  the relation layer's first state in both compositions: mount, remount, arrival claimed with
+   no link, resolved and unresolved deep links, after a selection clears; and, in the minimum
+   composition with motion not reduced, the first frame
+G  the reference geometry, computed in the browser                  L  renamed identifiers
+O  overlapping marks and the chooser                                T  touch: tap, pan, pinch
+F  Fit, the zoom floor, resize     K  the keyboard path             I  two instances, the event bus
+D  destroy and remount             E  error paths                   A  deep-link arrival
+V  a second label target           X  controls on the harness's own checks
+```
+
+The first line of its output names the runtimes: Node and V8, and the browser and its V8.
+
+Per shape it also **measures, without judging**: the Fit's scale and clearance, the names it
+defers, the pairs of marks whose shapes overlap, how the click resolution resolves at each mark's
+center (directly, or through the chooser), the sampled centers that page chrome covers, and the
+keyboard reach. Accepting the contract's input limits
+says nothing about legibility; these numbers are what the overview actually shows.
