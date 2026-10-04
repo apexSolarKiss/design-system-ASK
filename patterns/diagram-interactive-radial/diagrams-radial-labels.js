@@ -42,7 +42,7 @@
     { k: 2.30, name: 'identifiers', containers: 'all', leaves: true,  ids: true }
   ];
   var TIER_KEYS = ['k', 'name', 'containers', 'leaves', 'ids', 'minLeaves', 'defer'];
-  var LABEL_KEYS = ['tiers', 'count', 'crowding'];
+  var LABEL_KEYS = ['tiers', 'count', 'countFiltered', 'crowding'];
 
   function LabelError(code, detail) {
     var e = new Error('radial labels ' + code + ': ' + detail);
@@ -52,7 +52,7 @@
   }
 
   function plain(v) { return root.DIAGRAM_RADIAL.contract.plain(v); }
-  /* the adapter's label configuration, validated: { tiers?, count?, crowding? } */
+  /* the adapter's label configuration, validated: { tiers?, count?, countFiltered?, crowding? } */
   function configure(cfg) {
     if (cfg === undefined) cfg = {};
     if (!plain(cfg)) throw LabelError('LABELS', 'labels must be a plain object');
@@ -84,14 +84,20 @@
       return { k: t.k, name: t.name, containers: t.containers, leaves: t.leaves, ids: t.ids, minLeaves: ml,
                defer: t.defer === undefined ? true : t.defer };
     });
-    var count = cfg.count === undefined ? { '*': '{count}' } : cfg.count;
-    if (!plain(count)) throw LabelError('COUNT', 'count must be a plain object');
-    Object.keys(count).forEach(function (d) {
-      if (!(d === '*' || /^[1-9][0-9]*$/.test(d)) || typeof count[d] !== 'string') throw LabelError('COUNT', 'count maps a depth or "*" to a template string');
-    });
+    function counts(c, key) {
+      if (!plain(c)) throw LabelError('COUNT', key + ' must be a plain object');
+      Object.keys(c).forEach(function (d) {
+        if (!(d === '*' || /^[1-9][0-9]*$/.test(d)) || typeof c[d] !== 'string') throw LabelError('COUNT', key + ' maps a depth or "*" to a template string');
+      });
+      return c;
+    }
+    var count = counts(cfg.count === undefined ? { '*': '{count}' } : cfg.count, 'count');
+    /* while a membership is in force, a count line reads its members of its total; a depth the
+       adapter leaves out takes the owner's '*' */
+    var countFiltered = Object.assign({ '*': '{count} / {total}' }, cfg.countFiltered === undefined ? {} : counts(cfg.countFiltered, 'countFiltered'));
     var crowding = cfg.crowding === undefined ? 'yield' : cfg.crowding;
     if (crowding !== 'yield' && crowding !== 'keep') throw LabelError('CROWDING', 'crowding must be "yield" or "keep"');
-    return { tiers: tiers, count: count, crowding: crowding };
+    return { tiers: tiers, count: count, countFiltered: countFiltered, crowding: crowding };
   }
   function tierFor(tiers, k) {
     var t = tiers[0];
@@ -104,9 +110,12 @@
       return Object.prototype.hasOwnProperty.call(slots, k) && slots[k] !== undefined ? String(slots[k]) : m;
     });
   }
-  function countText(cfg, n) {
-    var tpl = cfg.count[String(n.depth)] !== undefined ? cfg.count[String(n.depth)] : cfg.count['*'];
-    return tpl === undefined ? null : fill(tpl, { count: n.count });
+  /* a container's count line; with `shown` (its members while a membership is in force), the
+     filtered template, {count} of {total} */
+  function countText(cfg, n, shown) {
+    var set = shown === undefined ? cfg.count : (cfg.countFiltered || cfg.count);
+    var tpl = set[String(n.depth)] !== undefined ? set[String(n.depth)] : set['*'];
+    return tpl === undefined ? null : fill(tpl, shown === undefined ? { count: n.count } : { count: shown, total: n.count });
   }
   function role(n) { return n.kind === 'root' ? 'root' : n.kind === 'leaf' ? 'leaf' : n.depth === 1 ? 'top' : 'container'; }
   /* drop the last n code points, never half of a surrogate pair */

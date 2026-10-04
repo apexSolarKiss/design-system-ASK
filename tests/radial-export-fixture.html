@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>radial export fixture</title>
+<!-- The export fixture of the interactive radial pattern. Served from the repository root by
+     tests/radial-export.mjs, which drives it in headless Chrome. The specimen data and adapter,
+     the owner files in their load order, the font carrier, and the export module after the chrome
+     module; the page reaches the export through the instance's service('export'). -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
+<link rel="stylesheet" href="../surface-action.css">
+<style>
+  .radial-bar .mark img { display: block; height: 18px; }
+  [data-radial-slot="export"], [data-radial-slot="actions"] { display: flex; align-items: center; }
+</style>
+</head>
+<body class="radial-page">
+
+<div class="radial-shell" data-radial id="X">
+  <header class="radial-bar">
+    <div class="mark" data-radial-slot="mark-light">[org]<span class="sep">/</span>[surface]</div>
+    <div class="mark" data-radial-slot="mark-dark"><img src="radial-export-fixture-mark.svg" alt="[org]"></div>
+    <div class="title-block" data-radial-slot="title">
+      <div class="t">Vellmark parks</div>
+      <div class="s">specimen · synthetic data · export fixture</div>
+    </div>
+    <div class="spacer"></div>
+    <div data-radial-slot="export"></div>
+    <div data-radial-slot="actions"></div>
+  </header>
+
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" id="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--selection" data-radial-readout="selection"></span>
+    </div>
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right">
+      <div class="radial-panel-h">legend</div>
+    </div>
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
+      <b>synthetic</b> · radius is containment depth · wedge width is size · nothing else is encoded<br>a second caption line, after a break, long enough to show the plate's own wrapping of the host's words
+    </div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+
+<script src="../patterns/diagram-interactive-radial/diagram-interactive-radial.source.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-pointer.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-fit.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-engine.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-legend.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-chrome.js"></script>
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-export.js"></script>
+<script>
+(function () {
+  var R = window.DIAGRAM_RADIAL, host = document.getElementById('X');
+  var FX = window.FX = { host: host, pristine: host.outerHTML, map: null, exp: null, counts: null, events: [], notes: null };
+
+
+  FX.section = function () {
+    return {
+      filenameBase: 'radial-specimen',
+      profiles: { page: true, diagram: true },
+      mark: 'required',
+      fonts: 'carrier',
+      header: { title: 'Vellmark parks', subtitle: 'specimen · synthetic data · export fixture',
+                stamp: 'export fixture', canonical: 'tests/export-fixture.html' },
+      plateLines: function (c) {
+        FX.counts = JSON.parse(JSON.stringify(c));
+        return [c.items + ' items · ' + c.records + ' records',
+                'containers ' + Object.keys(c.containers).map(function (d) { return 'depth ' + d + ': ' + c.containers[d]; }).join(' · '),
+                'relations ' + Object.keys(c.relations).map(function (p) { return p + ': ' + c.relations[p]; }).join(' · '),
+                'tier ' + c.tier];
+      }
+    };
+  };
+  /* mount the specimen with ['legend', 'chrome', 'export']; `over` replaces export keys (undefined
+     deletes one) */
+  FX.mount = function (over) {
+    if (FX.map) { FX.map.destroy(); FX.map = null; }
+    var adapter = JSON.parse(JSON.stringify(window.RADIAL_SPECIMEN.adapter)), ex = FX.section();
+    Object.keys(over || {}).forEach(function (k) { if (over[k] === undefined) delete ex[k]; else ex[k] = over[k]; });
+    adapter.export = ex;
+    /* legend notes and a one-line shapes text, when a check asks for them */
+    if (FX.notes) { adapter.legend.notes = { planes: FX.notes.plane, kinds: FX.notes.kind }; adapter.legend.shapes = FX.notes.shapes; }
+    FX.exp = null;
+    FX.map = R.mount({ host: host, data: window.RADIAL_SPECIMEN.data, adapter: adapter, modules: ['legend', 'chrome', 'export'] });
+    FX.exp = FX.map.service('export');
+    FX.events = [];
+    ['export', 'fit', 'select', 'focus', 'preview', 'arrangement'].forEach(function (t) {
+      FX.map.on(t, function (ev) { FX.events.push({ type: ev.type, cause: ev.cause, ok: ev.ok, reason: ev.reason, filename: ev.filename }); });
+    });
+    return FX.map;
+  };
+  FX.faces = function () {
+    var out = [];
+    document.fonts.forEach(function (f) { out.push(f.family + '|' + f.style + '|' + f.weight); });
+    return out.sort();
+  };
+  FX.b64 = function (blob) {
+    return new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(String(fr.result).split(',')[1]); }; fr.readAsDataURL(blob); });
+  };
+  FX.mount();
+  document.documentElement.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

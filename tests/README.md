@@ -545,3 +545,62 @@ defers, the pairs of marks whose shapes overlap, how the click resolution resolv
 center (directly, or through the chooser), the sampled centers that page chrome covers, and the
 keyboard reach. Accepting the contract's input limits
 says nothing about legibility; these numbers are what the overview actually shows.
+
+## radial-stack-fixture.html + radial-stack.mjs
+
+The **full-stack harness** of `diagram-interactive-radial`: every optional module (inspector,
+facets, legend, chrome, export, theme) on the synthetic composition, in two hosts, and once on the
+reference specimen, which the fixture loads only when a check asks for it. Keys that peel layers
+arrive as trusted DevTools input; the other checks drive the modules' own controls in the page.
+Each check is an in-page function, and group X runs some of them again against a planted fault in
+a copy of a module, each of which must fail the check written for it.
+
+```
+node tests/radial-stack.mjs              # add --json for the measurements
+```
+
+```text
+U  the inspector: views, preview, references and the way back, Escape, show-all, relation
+   direction and flags, locators, text never markup, malformed sections, a record arrival,
+   refits at the Fit only, the compact sheet and its exclusivity, a selection opening the sheet
+   with no refit (also over an open chrome panel), focus kept in the panel with trusted keys, the
+   live legend's notes and its shapes line; focus handed to the disclosure when a resize collapses
+   the panel (a narrow window; a short one under a coarse pointer) and left alone when it is
+   elsewhere; a reference to a filtered-out node with no facets module, to a node hidden by policy,
+   and the way back to a node filtered out since (the record closes; nothing else changes)
+Q  facets and search: the index, ranking and ties, what a result opens, OR within and AND across,
+   counts, census and readout, relations, refit (the whole layout when no item remains), a filter
+   clearing a hidden selection, the drawer's bound, edge and focus, exclusivity on a compact canvas,
+   the Escape order and the result keyboard with trusted keys, focus after a result closes the
+   drawer, no match, is-out; and, on the reference shell, an open drawer meeting a corner panel
+W  export with the whole stack in use, and the reference plates
+H  theme: the cycle, one owner per document, teardown
+N  the synthetic composition in every hierarchy shape, two instances, destroy and remount,
+   missing modules and slots, the minimum composition's membership, no reference content loaded
+R  the reference specimen on the complete stack
+X  planted faults: OR as AND, the record layer below the selection, rows without direction, an
+   unbounded drawer, a panel without its claim, a locator linking anything, the root framed alone,
+   a hidden selection kept, a selection refitting the opened sheet, the sheet claiming before it
+   leaves the Fit, a yielding obstacle ignored in wide, focus dropped when a view is replaced,
+   focus kept in a drawer another panel closes, a resize collapse without the focus handoff, a
+   reveal only through the facets module
+```
+
+## radial-export-fixture.html + radial-export.mjs
+
+The **export harness**: the page and diagram plates on the synthetic specimen, through the
+instance's `service('export')` and through real clicks on the controls. Sizes and filenames in both
+themes; byte-identical SVG for one page state; the reader's state untouched and the plate
+independent of the screen; the counts the plate lines receive; the failure surfaced on the control
+and its restoration; both font routes and their failures; raster controls showing the embedded
+faces and the read rules each change the pixels; negative controls for each plate check; legend
+notes and the shape key; malformed sections; the controls' slots; a real download; one run at a
+time; teardown during and after a run; and one click-time snapshot: a theme changed in either
+direction while the first export font's load is held at the native boundary leaves the plate (a
+diagram plate both ways, and a page plate with its mark, legend and caption) equal to that theme's
+plate without a change, with its theme and filename, and the page with the reader's new theme (a
+held load with no change is the control).
+
+```
+node tests/radial-export.mjs             # --out DIR keeps the review PNGs and the results
+```

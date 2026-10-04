@@ -41,7 +41,7 @@
      E  error paths: each named failure renders nothing and leaves the host untouched
      A  deep-link arrival: an encoded identifier selects; an unknown one is ignored and reported
      V  a second label target leaves the reader's labels and state untouched
-     C  the responsive chrome (the third host, and once the specimen shell): one window narrowed step by
+     C  the responsive chrome (the third host, and once each shell): one window narrowed step by
         step from 1600 to 390 CSS px and widened again, with no chrome box meeting another or leaving
         the canvas, wide while the panels fit and compact once they do not; a fresh compact load
         equals a resize arrival; a wide but short canvas is compact; a reader's open panel is kept and
@@ -1086,16 +1086,19 @@ async function run() {
         await cp.close();
       }
 
-      /* C20: the specimen shell itself, as the gallery serves it */
-      const sh = await open(b, `${base}/patterns/_preview/diagram-interactive-radial.html`, { width: 1600, height: 1000, ready: false });
-      await sh.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
-      const shellAt = async (w, h) => { await sh.size(w, h); await sh.frames(); await sh.ev('new Promise((r) => setTimeout(r, 120))');
-        return sh.ev(`(() => { const s = RADIAL_MAP.state(); return { arrangement: s.chrome.arrangement, open: s.chrome.open, clear: RADIAL_MAP.report().fit.clear }; })()`); };
-      const sh1 = await shellAt(1600, 1000), sh2 = await shellAt(820, 1000), sh3 = await shellAt(390, 844), sh4 = await shellAt(1600, 1000);
-      check('C20 the specimen shell lists the chrome: wide, compact with its panels closed as the window narrows, wide again; no error',
-        sh1.arrangement === 'wide' && sh2.arrangement === 'compact' && sh2.open === null && sh3.arrangement === 'compact' && sh4.arrangement === 'wide' &&
-        [sh1, sh2, sh3, sh4].every((z) => z.clear) && sh.errors.length === 0, J([sh1, sh2, sh3, sh4, sh.errors]));
-      await sh.close();
+      /* C20: the two shells themselves, as the gallery serves them: the reference specimen and the
+         synthetic composition, each with the complete module stack */
+      for (const [label, file] of [['the reference shell', 'diagram-interactive-radial.html'], ['the synthetic shell', 'diagram-interactive-radial.neutral.html']]) {
+        const sh = await open(b, `${base}/patterns/_preview/${file}`, { width: 1600, height: 1000, ready: false });
+        await sh.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        const shellAt = async (w, h) => { await sh.size(w, h); await sh.frames(); await sh.ev('new Promise((r) => setTimeout(r, 120))');
+          return sh.ev(`(() => { const s = RADIAL_MAP.state(); return { arrangement: s.chrome.arrangement, open: s.chrome.open, clear: RADIAL_MAP.report().fit.clear }; })()`); };
+        const sh1 = await shellAt(1600, 1000), sh2 = await shellAt(820, 1000), sh3 = await shellAt(390, 844), sh4 = await shellAt(1600, 1000);
+        check(`C20 ${label} lists the chrome: wide, compact with its panels closed as the window narrows, wide again; no error`,
+          sh1.arrangement === 'wide' && sh2.arrangement === 'compact' && sh2.open === null && sh3.arrangement === 'compact' && sh4.arrangement === 'wide' &&
+          [sh1, sh2, sh3, sh4].every((z) => z.clear) && sh.errors.length === 0, J([sh1, sh2, sh3, sh4, sh.errors]));
+        await sh.close();
+      }
     }
 
     /* ---------------------------------------------------------------- X -- */

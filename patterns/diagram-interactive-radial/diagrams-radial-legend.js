@@ -9,14 +9,16 @@
    The owner draws the legend's grammar (a state swatch, a plane's line style, a kind's shape)
    and escapes every string; the adapter supplies every word: the three headings, and an
    optional bound line stating what the geometry does not encode. State labels and meanings,
-   plane labels and kind labels come from the data's own declarations. */
+   plane labels and kind labels come from the data's own declarations. Optionally the adapter
+   adds a note under a plane or a kind (notes.planes, notes.kinds, by id), and may replace the
+   per-kind rows with one line of text (shapes) where its kinds are better read as a sentence. */
 (function (root) {
   'use strict';
 
   var R = root.DIAGRAM_RADIAL = root.DIAGRAM_RADIAL || {};
   R.modules = R.modules || {};
   var NS = 'http://www.w3.org/2000/svg';
-  var KEYS = ['headings', 'bound'];
+  var KEYS = ['headings', 'bound', 'notes', 'shapes'];
   var HEADINGS = ['state', 'line', 'shape'];
 
   function LegendError(detail) {
@@ -34,16 +36,32 @@
     Object.keys(h).forEach(function (k) { if (HEADINGS.indexOf(k) < 0) throw LegendError('legend.headings: unknown key ' + k); });
     HEADINGS.forEach(function (k) { if (typeof h[k] !== 'string') throw LegendError('legend.headings.' + k); });
     if (cfg.bound !== undefined && typeof cfg.bound !== 'string') throw LegendError('legend.bound must be a string');
+    if (cfg.shapes !== undefined && typeof cfg.shapes !== 'string') throw LegendError('legend.shapes must be a string');
+    if (cfg.notes !== undefined) {
+      if (!plain(cfg.notes)) throw LegendError('legend.notes must be a plain object');
+      Object.keys(cfg.notes).forEach(function (k) {
+        if (k !== 'planes' && k !== 'kinds') throw LegendError('legend.notes: unknown key ' + k);
+        if (!plain(cfg.notes[k])) throw LegendError('legend.notes.' + k + ' must be a plain object');
+        Object.keys(cfg.notes[k]).forEach(function (id) {
+          if (typeof cfg.notes[k][id] !== 'string') throw LegendError('legend.notes.' + k + '.' + id + ' must be a string');
+        });
+      });
+    }
+  }
+  function note(cfg, k, id) {
+    var n = cfg.notes && cfg.notes[k];
+    return n && Object.prototype.hasOwnProperty.call(n, id) ? n[id] : null;
   }
 
   /* the legend model: data only, shared by the live legend and any other renderer */
   function model(M, cfg) {
     var states = [], planes = [], kinds = [];
     M.states.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
-    M.planes.forEach(function (p) { planes.push({ id: p.id, label: p.label, drawn: p.drawn, directed: p.directed }); });
-    M.kinds.forEach(function (k) { kinds.push({ id: k.id, label: k.label, shape: k.shape }); });
+    M.planes.forEach(function (p) { planes.push({ id: p.id, label: p.label, drawn: p.drawn, directed: p.directed, note: note(cfg, 'planes', p.id) }); });
+    M.kinds.forEach(function (k) { kinds.push({ id: k.id, label: k.label, shape: k.shape, note: note(cfg, 'kinds', k.id) }); });
     return { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
-             states: states, planes: planes, kinds: kinds, bound: cfg.bound === undefined ? null : cfg.bound };
+             states: states, planes: planes, kinds: kinds, shapes: cfg.shapes === undefined ? null : cfg.shapes,
+             bound: cfg.bound === undefined ? null : cfg.bound };
   }
 
   function div(cls, txt) { var e = document.createElement('div'); e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
@@ -92,15 +110,22 @@
     if (m.planes.length) {
       frag.appendChild(div('radial-legend-h', m.headings.line));
       m.planes.forEach(function (p) {
-        frag.appendChild(row(span('radial-legend-line radial-legend-line--' + p.drawn + (p.directed ? ' is-directed' : '')), p.label));
+        frag.appendChild(row(span('radial-legend-line radial-legend-line--' + p.drawn + (p.directed ? ' is-directed' : '')), p.label, p.note));
       });
     }
-    if (m.kinds.length) {
+    if (m.kinds.length && m.shapes !== null) {
+      frag.appendChild(div('radial-legend-h', m.headings.shape));
+      var r = div('radial-legend-row');
+      var t = span('radial-legend-txt');
+      t.appendChild(span('radial-legend-sub', m.shapes));
+      r.appendChild(t);
+      frag.appendChild(r);
+    } else if (m.kinds.length) {
       frag.appendChild(div('radial-legend-h', m.headings.shape));
       m.kinds.forEach(function (k) {
         var g = span('radial-legend-shape');
         g.appendChild(glyph(k.shape));
-        frag.appendChild(row(g, k.label));
+        frag.appendChild(row(g, k.label, k.note));
       });
     }
     if (m.bound !== null) frag.appendChild(div('radial-legend-bound', m.bound));
@@ -118,6 +143,8 @@
       var m = model(api.model, cfg);
       var before = Array.prototype.slice.call(slot.childNodes);
       render(slot, m);
+      /* the same model for any other renderer of this instance (the export's page plate) */
+      if (api.provide) api.provide('legend', { model: m });
       return {
         model: m,
         destroy: function () {

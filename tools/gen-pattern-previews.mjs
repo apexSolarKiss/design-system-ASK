@@ -37,9 +37,13 @@ const SHELLS = [
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
-  // The radial surface pattern's shell IS its specimen: it mounts the generated synthetic source and
-  // takes the engine's own Fit, so the preview adds no fit tuning.
-  { src: 'diagram-interactive-radial/diagram-interactive-radial.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.html' },
+  // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured
+  // research content under reference/ (a pattern-local subdirectory, declared in localDirs), drawn
+  // through the complete module stack. The neutral shell runs the same stack on the generated synthetic
+  // source, for development inspection. Both take the engine's own Fit, so the previews add no fit tuning.
+  { src: 'diagram-interactive-radial/diagram-interactive-radial.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.html',
+    localDirs: ['reference/'] },
+  { src: 'diagram-interactive-radial/diagram-interactive-radial.neutral.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.neutral.html' },
   // The output artifact is a document-register consumer: it loads the register's four root modules by
   // bare filename, as a consumer vendors them beside its template, so they are declared in rootRefs
   // rather than routed through `_dsa-tokens/`, the token and font mirror.
@@ -79,10 +83,14 @@ function rewriteRef(val, spec) {
   if (val.startsWith('_dsa-tokens/'))   return '../../' + val.slice('_dsa-tokens/'.length);
   if (val.startsWith('./_dsa-surface/')) return '../../' + val.slice('./_dsa-surface/'.length); // DS-root surface modules
   if (val.startsWith('_dsa-surface/'))   return '../../' + val.slice('_dsa-surface/'.length);
+  if (val.startsWith('./_dsa-assets/'))  return '../../assets/' + val.slice('./_dsa-assets/'.length); // DS-root brand assets
+  if (val.startsWith('_dsa-assets/'))    return '../../assets/' + val.slice('_dsa-assets/'.length);
   if (val.startsWith('../') || val.startsWith('/')) return val;   // already relative-up / absolute — leave
   if (spec.rootRefs && spec.rootRefs.includes(val)) return `../../${val}`;  // declared DS-root module
   // bare pattern-local file (no slash) → reference the canonical pattern dir
   if (!val.includes('/')) return `../${spec.dir}/${val}`;
+  // a file in a pattern-local subdirectory the spec declares → the same path in the canonical pattern dir
+  if (spec.localDirs && spec.localDirs.some((d) => val.startsWith(d))) return `../${spec.dir}/${val}`;
   return val;
 }
 

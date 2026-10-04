@@ -45,7 +45,7 @@
                    start: '{label}. Arrow keys move between nodes; Enter selects; Escape clears.' };
   var COMPACT_Q = '(max-width: 767px), (max-height: 520px) and (pointer: coarse)';
   var CHOOSER_MAX = 8;
-  var seq = 0, arrivalOwner = null;
+  var seq = 0, arrivalOwner = null, themeOwner = null;
 
   function MountError(code, detail) {
     var e = new Error('radial mount ' + code + ': ' + detail);
@@ -117,6 +117,9 @@
       throw MountError('ADAPTER', 'arrival must be { hash: boolean }');
     var claimsArrival = !!(arrival && arrival.hash);
     if (claimsArrival && arrivalOwner) throw MountError('ARRIVAL_OWNER_CONFLICT', 'instance ' + arrivalOwner + ' already owns URL arrival');
+    /* the document theme has one writer: the one instance that declares adapter.theme 'own' */
+    var ownsTheme = adapter.theme === 'own';
+    if (ownsTheme && themeOwner) throw MountError('THEME_OWNER_CONFLICT', 'instance ' + themeOwner + ' already owns the document theme');
     var text = adapter.text === undefined ? {} : adapter.text;
     if (!plainObj(text)) throw MountError('ADAPTER', 'text must be an object');
     Object.keys(text).forEach(function (k) {
@@ -144,6 +147,7 @@
     /* -------------------------------------------------------------- instance -- */
     var id = 'radial-' + (++seq);
     if (claimsArrival) arrivalOwner = id;
+    if (ownsTheme) themeOwner = id;
     host.__radial = id;
     var ac = new AbortController(), signal = ac.signal, destroyed = false;
     function on(target, type, fn, extra) {
@@ -227,9 +231,11 @@
     }
     function nodeClass(n) { return n.kind === 'root' ? 'root' : n.kind === 'leaf' ? 'leaf' : n.depth === 1 ? 'top' : 'container'; }
 
+    var spineEls = new Map();                                  /* by the node each limb reaches */
     L.spines.forEach(function (s) {
       var p = el('path', { 'class': 'radial-spine' + (s.depth === 1 ? ' radial-spine--top' : ''), d: s.d });
       gSpine.appendChild(p);
+      spineEls.set(s.id, p);
     });
 
     /* relations, drawn by their plane's policy; a 'never' plane is never drawn */
@@ -356,9 +362,13 @@
     /* --------------------------------------------------------------- view -- */
     var view = { k: 1, x: 0, y: 0 }, fitK = 1, wholeK = 0, atFit = false, fitCause = null;
     var held = null, fitSeq = 0, lastFit = null, frame = 0;
-    var membership = null;                                     /* null: every node (no facet module) */
+    /* MEMBERSHIP. null: every node and relation (no facet module, or no filter). Otherwise the
+       member nodes (the root always; a container while any member leaf lies under it) and,
+       separately, the member relations; memberCount is each container's member leaves. */
+    var membership = null, relMembership = null, memberCount = null;
     function visible(nid) { return !model.hidden.has(nid) && (!membership || membership.has(nid)); }
-    function shownCount(n) { return n.count || 0; }
+    function relVisible(e) { return (!relMembership || relMembership.has(e.key)) && visible(e.from) && visible(e.to); }
+    function shownCount(n) { return membership ? (memberCount.get(n.id) || 0) : (n.count || 0); }
     function project(n) { return { x: n.x * view.k + view.x, y: n.y * view.k + view.y }; }
     function W() { return stage.clientWidth; }
     function H() { return stage.clientHeight; }
@@ -367,7 +377,7 @@
     function solveInput(h) {
       return { nodes: L.nodes, view: view, W: W(), H: H(), tier: tier(), visible: visible, shownCount: shownCount,
                held: h === undefined ? held : h, measure: M.measure, font: M.font, crowding: LC.crowding, bands: bands(),
-               countText: function (n) { return R.labels.countText(LC, n); } };
+               countText: function (n) { return R.labels.countText(LC, n, membership ? shownCount(n) : undefined); } };
     }
     var solution = [];
     function placeLabels() {
@@ -427,9 +437,11 @@
         topSelector: sel.top, bottomSelector: sel.bottom, leftSelector: sel.left, rightSelector: sel.right
       });
     }
+    /* the Fit frames the members; with no member item (the root alone) it frames the whole layout */
     function visibleBounds() {
       if (!membership) return L.bounds;
-      return R.layout.boundsOf(L.nodes.filter(function (n) { return visible(n.id); })) || L.bounds;
+      var vis = L.nodes.filter(function (n) { return visible(n.id); });
+      return vis.length > 1 ? R.layout.boundsOf(vis) || L.bounds : L.bounds;
     }
     /* the chrome the Fit reserves, as boxes in stage coordinates */
     function chromeRects(only) {
@@ -514,6 +526,25 @@
       view.x += (vr.x0 + vr.x1) / 2 - p.x; view.y += (vr.y0 + vr.y1) / 2 - p.y;
       atFit = false; apply();
     }
+    /* bring a node into the room a panel over the drawing leaves (cover: the panel's box in stage
+       coordinates): the largest free band beside it within the visible area. The view pans only if
+       the node is outside that room, and either way it is no longer the Fit of the chrome on screen.
+       With no node, the view only leaves the Fit. */
+    function revealBeside(nid, cover) {
+      var n = nid === null ? null : byId.get(nid);
+      if (!n) { if (nid === null) { atFit = false; apply(); } return false; }
+      var vr = visibleArea(), m = 12;
+      if (cover) {
+        var c = [{ x0: vr.x0, y0: vr.y0, x1: vr.x1, y1: Math.min(vr.y1, cover.t) }, { x0: vr.x0, y0: Math.max(vr.y0, cover.b), x1: vr.x1, y1: vr.y1 },
+                 { x0: vr.x0, y0: vr.y0, x1: Math.min(vr.x1, cover.l), y1: vr.y1 }, { x0: Math.max(vr.x0, cover.r), y0: vr.y0, x1: vr.x1, y1: vr.y1 }];
+        c.sort(function (a, b) { return Math.max(0, b.x1 - b.x0) * Math.max(0, b.y1 - b.y0) - Math.max(0, a.x1 - a.x0) * Math.max(0, a.y1 - a.y0); });
+        if (c[0].x1 - c[0].x0 > 2 * m && c[0].y1 - c[0].y0 > 2 * m) vr = c[0];
+      }
+      var p = project(n), moved = !(p.x >= vr.x0 + m && p.x <= vr.x1 - m && p.y >= vr.y0 + m && p.y <= vr.y1 - m);
+      if (moved) { view.x += (vr.x0 + vr.x1) / 2 - p.x; view.y += (vr.y0 + vr.y1) / 2 - p.y; }
+      atFit = false; apply();
+      return moved;
+    }
     function centerOn(nid, k) {
       var n = byId.get(nid); if (!n) return false;
       var nk = clampK(k || Math.max(view.k, 1.35));
@@ -589,6 +620,54 @@
       previewId = nid;
       paint(nid);
       emit('preview', { id: nid, cause: 'reader' });
+    }
+
+    /* ---------------------------------------------------------- membership -- */
+    /* A module (the facets) sets which leaves and which relations are members. Membership never
+       moves a mark: non-members, their limbs and the relations that lose an end are hidden, their
+       names leave the labels, a container counts only its member leaves, and a selection, preview
+       or focus that leaves the membership is cleared. The caller decides whether to refit. */
+    var leafTotal = L.nodes.filter(function (n) { return n.kind === 'leaf'; }).length;
+    var relTotal = edgeEls.length;
+    function applyMembership() {
+      nodeEls.forEach(function (x, k) { x.g.classList.toggle('is-out', !visible(k)); });
+      spineEls.forEach(function (p, k) { p.classList.toggle('is-out', !visible(k)); });
+      edgeEls.forEach(function (x) { x.p.classList.toggle('is-out', !relVisible(x.e)); });
+    }
+    function membershipState() {
+      var items = 0, rels = 0;
+      L.nodes.forEach(function (n) { if (n.kind === 'leaf' && visible(n.id)) items++; });
+      edgeEls.forEach(function (x) { if (relVisible(x.e)) rels++; });
+      return { active: !!(membership || relMembership), visibleItems: items, totalItems: leafTotal,
+               visibleRelations: rels, totalRelations: relTotal };
+    }
+    function setMembership(leaves, relations, cause) {
+      if (leaves !== null && !(leaves instanceof Set)) throw MountError('MOUNT', 'membership leaves must be a Set or null');
+      if (relations !== null && !(relations instanceof Set)) throw MountError('MOUNT', 'membership relations must be a Set or null');
+      if (leaves === null) { membership = null; memberCount = null; }
+      else {
+        membership = new Set([model.root.id]); memberCount = new Map();
+        L.nodes.forEach(function (n) {
+          if (n.kind !== 'leaf' || !leaves.has(n.id) || model.hidden.has(n.id)) return;
+          membership.add(n.id);
+          for (var p = n.parent; p !== undefined && p !== null; p = byId.get(p).parent) {
+            membership.add(p);
+            memberCount.set(p, (memberCount.get(p) || 0) + 1);
+            if (byId.get(p).kind === 'root') break;
+          }
+        });
+      }
+      relMembership = relations;
+      closeChooser();
+      if (previewId && !visible(previewId)) previewId = null;
+      if (focusId && !visible(focusId)) focusId = null;
+      if (locked && !visible(locked)) select(null, 'api', cause || 'module');
+      applyMembership();
+      paint(locked);
+      apply();
+      var st = membershipState();
+      emit('membership', Object.assign({ cause: cause || 'module' }, st));
+      return st;
     }
 
     /* ------------------------------------------------------------ hit test -- */
@@ -898,6 +977,7 @@
     if (claimsArrival) on(root, 'hashchange', function () { arrive('reader'); });
 
     /* ------------------------------------------------------------- modules -- */
+    var services = new Map();
     var api = { model: model, layout: L, host: host, canvas: canvas, signal: signal, on: onEvent, emit: emit,
                 registerOverlay: registerOverlay, controls: controls, slot: function (name) { return host.querySelector('[data-radial-slot="' + name + '"]'); },
                 /* for a module that changes the reserved chrome: read the view, refit (it decides
@@ -905,7 +985,32 @@
                 view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause }; },
                 fit: function (cause) { if (!destroyed) fit(cause || 'module'); },
                 escape: function (x) { pushEscape(x); return function () { escapes = escapes.filter(function (e) { return e !== x; }); }; },
-                project: function (nid) { var n = byId.get(nid); return n ? project(n) : null; } };
+                project: function (nid) { var n = byId.get(nid); return n ? project(n) : null; },
+                /* for the inspector, the facets and export: selection and framing on the reader's
+                   behalf, the live region, the adapter's text, the membership, the measurer and the
+                   label configuration a second target solves with, and the drawn world to copy */
+                id: id, text: text, announce: function (msg) { if (!destroyed) announce(msg); },
+                node: function (nid) { return byId.get(nid) || null; },
+                visible: function (nid) { return visible(nid); },
+                selection: function () { return { locked: locked, preview: previewId, focus: focusId }; },
+                select: function (nid, via, cause) { if (destroyed) return false; closeChooser(); return select(nid, via || 'api', cause); },
+                centerOn: function (nid, k) { return !destroyed && centerOn(nid, k); },
+                reveal: function (nid, cover) { return !destroyed && revealBeside(nid, cover || null); },
+                frame: function (nid, cause) { return !destroyed && frameNode(nid, cause || 'module'); },
+                membership: { set: function (leaves, relations, cause) { return setMembership(leaves, relations, cause); },
+                              reset: function (cause) { return setMembership(null, null, cause); },
+                              state: function () { return membershipState(); },
+                              relationVisible: function (e) { return relVisible(e); } },
+                measurer: function () { return M; },
+                labelsConfig: function () { return LC; },
+                world: function () { return { svg: svg, world: gRoot, markerId: arrowId }; },
+                /* one module may offer another a service by a generic name ('inspector', 'facets') */
+                provide: function (name, obj) { services.set(name, obj); },
+                service: function (name) { return services.get(name) || null; },
+                /* an exclusive overlay closes the others when it opens */
+                claim: function (name) {
+                  overlays.slice().forEach(function (o) { if (o.exclusive && o.name !== name && o.isOpen()) o.dismiss('claim'); });
+                } };
     var mounted = [];
     try {
       listed.forEach(function (m) { mounted.push({ name: m, inst: R.modules[m].mount(api, adapter[m]) }); });
@@ -934,6 +1039,7 @@
       stage.classList.remove('panning', 'is-over-mark');
       restore.slice().reverse().forEach(function (f) { f(); });
       if (arrivalOwner === id) arrivalOwner = null;
+      if (themeOwner === id) themeOwner = null;
       delete host.__radial;
       bus = new Map();
     }
@@ -954,7 +1060,8 @@
         var s = { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause },
                   selection: { locked: locked, preview: previewId, focus: focusId },
                   lod: { tier: tier().name, deferred: R.labels.deferred(solution) },
-                  overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }) };
+                  overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }),
+                  membership: membershipState() };
         /* a module that keeps state reports it under its own name: chrome { arrangement, open, offered, setAside } */
         mounted.forEach(function (m) { if (m.inst && typeof m.inst.state === 'function') s[m.name] = m.inst.state(); });
         return s;
@@ -965,6 +1072,10 @@
                  arrival: arrivalState, modules: listed.slice() };
       },
       labels: function () { return solution.map(function (e) { return { id: e.id, show: e.show, held: e.held, name: e.name, count: e.count }; }); },
+      /* membership without a facet module: leaves and relations as Sets (or null for all) */
+      setMembership: function (leaves, relations) { return destroyed ? null : setMembership(leaves || null, relations || null, 'module'); },
+      /* what a module offers the page by a generic name: the inspector, the facets, the export */
+      service: function (name) { return destroyed ? null : services.get(name) || null; },
       destroy: function () { destroy(false); }
     };
   }

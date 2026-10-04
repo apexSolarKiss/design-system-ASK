@@ -381,6 +381,14 @@ const BASE_EQUAL = { allocation: 'equal', itemMax: 74 };
   check('V5 non-finite depths and leaf minimums are rejected; label settings must be plain objects',
     code(() => R.labels.configure(t0x({ containers: Infinity }))) === 'TIER' && code(() => R.labels.configure(t0x({ minLeaves: { 2: Infinity } }))) === 'TIER' &&
     code(() => R.labels.configure(new Map())) === 'LABELS' && code(() => R.labels.configure({ count: [] })) === 'COUNT');
+  /* count lines under a filter: a separate template set, with the member count and the whole count */
+  const cf = R.labels.configure({ count: { 1: '{count} things', '*': '{count}' }, countFiltered: { 1: '{count} / {total} things' } });
+  const c1 = { depth: 1, count: 12 }, c2 = { depth: 2, count: 5 };
+  const lines = [R.labels.countText(cf, c1), R.labels.countText(cf, c2), R.labels.countText(cf, c1, 4), R.labels.countText(cf, c2, 2)];
+  const def = R.labels.configure({});
+  check('V5 count lines under a filter take countFiltered ({count} the members, {total} the whole) by depth, else the owner\'s "{count} / {total}"',
+    JSON.stringify(lines) === JSON.stringify(['12 things', '5', '4 / 12 things', '2 / 5']) && R.labels.countText(def, c2, 3) === '3 / 5' &&
+    code(() => R.labels.configure({ countFiltered: [] })) === 'COUNT', JSON.stringify(lines));
 }
 
 /* ------------------------------------------------------------------ I -- */

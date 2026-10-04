@@ -50,7 +50,15 @@
 
    FOCUS moves only when its target would disappear: into the shown panel from a trigger the
    wide arrangement hides, to the trigger from a panel compact closes, to the HUD's Fit control
-   when neither is shown. */
+   when neither is shown.
+
+   OTHER MODULES' PANELS. An element another module places in the canvas and marks
+   [data-radial-obstacle] (the inspector, the facets drawer) is an obstacle: in wide, a panel
+   that would meet any one sends the arrangement to compact; in compact, the room above the
+   control area ends below one that reaches into the panels' lane, unless it is marked "yields":
+   an open exclusive overlay that a panel opening here closes, so it takes no room. A compact panel
+   opened here is exclusive too: opening it closes the other modules' exclusive overlays. A
+   module announces a change of its obstacles with the 'obstacle' event. */
 (function (root) {
   'use strict';
 
@@ -65,6 +73,7 @@
   var CAPTION_MAX = 420;    // wide: the caption's widest measure
   var OPEN_SHARE = 1 / 3;   // wide: the caption may take at most this share of the canvas height
   var READ_MIN = 72;        // compact: the room a panel needs to be read
+  var LANE_MAX = 560;       // compact: the widest an open panel runs (diagrams-radial.css)
   var SLOTS = ['caption', 'legend'];
   var KEYS = ['panels'];
   var seq = 0;
@@ -185,6 +194,15 @@
       return hr.left - cr.left + w;
     }
 
+    /* the other modules' obstacles, rendered. In wide every one counts: no panel opens there to close
+       it. In compact one that yields takes no room, since the panel that opens closes it. */
+    function obstacles(yielding) {
+      return Array.prototype.filter.call(canvas.querySelectorAll('[data-radial-obstacle]'), function (e) {
+        return (yielding || e.getAttribute('data-radial-obstacle') !== 'yields') && !e.hidden && rendered(e);
+      }).map(function (e) { return e.getBoundingClientRect(); });
+    }
+    function meets(a, b) { return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom; }
+
     /* WIDE, laid out and measured: does every panel fit beside the others and the HUD? */
     function layWide() {
       set(canvas, 'data-radial-chrome', 'wide');
@@ -199,9 +217,11 @@
       /* a legend kept in its corner must leave enough of itself to read */
       if (legend && legend.el.clientHeight < Math.min(READ_MIN, legend.el.scrollHeight)) return false;
       var slotR = W - EDGE - (legend ? lw + GUTTER : 0);
+      var obs = obstacles(true);
+      function clear() { return panels.every(function (p) { var r = p.el.getBoundingClientRect(); return !obs.some(function (o) { return meets(r, o); }); }); }
       if (!caption) {
         noCaption();
-        return !legend || W - EDGE - lw >= hudRight + GUTTER;
+        return (!legend || W - EDGE - lw >= hudRight + GUTTER) && clear();
       }
       var slotW = slotR - slotL;
       if (slotW < CAPTION_MIN) return false;
@@ -209,7 +229,7 @@
       keepStyle();
       cs.setProperty('--radial-caption-left', Math.round(slotL + (slotW - w) / 2) + 'px');
       cs.setProperty('--radial-caption-w', Math.round(w) + 'px');
-      return caption.el.getBoundingClientRect().height <= H * OPEN_SHARE;
+      return caption.el.getBoundingClientRect().height <= H * OPEN_SHARE && clear();
     }
 
     /* COMPACT geometry: the control area beside or above the HUD, and the room above it */
@@ -232,7 +252,12 @@
       set(canvas, 'data-radial-chrome-row', !hr ? 'alone' : beside ? 'beside' : 'above');
       var rr = row.getBoundingClientRect();
       var floor = Math.min(rr.top, hr ? hr.top : cr.bottom - EDGE);
-      var room = Math.floor(floor - GAP - (cr.top + EDGE));
+      /* the room begins below an obstacle that reaches into the panels' lane from above */
+      var ceil = cr.top + EDGE, lane = { left: cr.left + EDGE, right: cr.left + EDGE + Math.min(cr.width - 2 * EDGE, LANE_MAX) };
+      obstacles().forEach(function (o) {
+        if (o.left < lane.right && lane.left < o.right && o.top < floor && o.bottom + GAP > ceil) ceil = o.bottom + GAP;
+      });
+      var room = Math.floor(floor - GAP - ceil);
       cs.setProperty('--radial-panel-bottom', Math.round(cr.bottom - floor + GAP) + 'px');
       cs.setProperty('--radial-panel-max', Math.max(0, room) + 'px');
       return room;
@@ -316,6 +341,7 @@
       if (arrangement !== 'compact' || !offered) return;
       var on = open !== p;
       if (open && open !== p) setOpen(open, false);
+      if (on) api.claim(p.slot);                          /* one exclusive panel at a time */
       setOpen(p, on);
       open = on ? p : null;
       aside = null;                                       /* a reader action wins over automatic state */
@@ -337,9 +363,10 @@
     on(api.host, 'keydown', function (ev) { if (ev.key === 'Escape' && aside && !open) aside = null; });
 
     var unregister = panels.map(function (p) {
-      return api.registerOverlay({ name: p.slot, side: 'bottom', element: p.el,
+      return api.registerOverlay({ name: p.slot, side: 'bottom', element: p.el, exclusive: true,
         isOpen: function () { return arrangement === 'compact' && open === p; },
-        dismiss: function (cause) { close(p, cause || 'module'); } });
+        /* closed for another module's panel: the reader's own action */
+        dismiss: function (cause) { close(p, cause === 'claim' ? 'reader' : cause || 'module'); } });
     });
     var unescape = api.escape({ name: 'chrome', priority: 20,
       isActive: function () { return arrangement === 'compact' && !!open; },
@@ -359,6 +386,9 @@
       var x = sr.left + pt.x, y = sr.top + pt.y;
       if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) close(open, 'reader');
     });
+
+    /* another module's obstacle changed (the inspector expanded, the drawer opened) */
+    api.on('obstacle', function (ev) { update(ev.cause || 'module'); });
 
     /* re-measure on any change of the canvas or the HUD, and when the webfonts land */
     var ro = null;
