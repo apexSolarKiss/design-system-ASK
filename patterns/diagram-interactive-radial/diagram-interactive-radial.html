@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consciousness + free will — radial map reference</title>
+<meta name="description" content="Reference specimen of the design-system-ASK interactive radial pattern: the public content of the Consciousness + Free Will research map, captured on 2026-10-02, drawn through the pattern's generic modules with search, filters, an inspector and PNG export.">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference; consumes Spectral State by reference">
+<!-- design-system-ASK foundations — local mirror (no CDN).
+     Load order: core tokens, then Spectral State (state colors), then the surface modules: the
+     panel and disclosure grammar the chrome and inspector triggers take (surface-panel.css, then
+     surface-treatments.css), the bar's compact actions (surface-action.css) and the inspector's
+     source links (surface-text-link.css); then the pattern stylesheet.
+     DOWNSTREAM: adjust the mirror paths if yours live elsewhere. -->
+<link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+<link rel="stylesheet" href="./_dsa-tokens/spectral-state.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-panel.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-treatments.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-action.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-text-link.css">
+<link rel="stylesheet" href="diagrams-radial.css">
+<style>
+  /* the reference page's own composition: the mark's size and the provenance stamp */
+  .radial-bar [data-radial-slot="mark-light"] img, .radial-bar [data-radial-slot="mark-dark"] img { height: 22px; width: auto; display: block; }
+  .radial-bar .stamp { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+                       color: var(--fg-2); text-align: right; line-height: 1.4; }
+  .radial-bar .stamp .k { color: var(--fg-1); font-weight: 500; }
+  @media (max-width: 767px) { .radial-bar .stamp { display: none; } }
+</style>
+</head>
+<body class="radial-page">
+
+<a class="radial-skip" href="#radial-stage">skip to the map</a>
+<div class="radial-shell" data-radial>
+  <header class="radial-bar">
+    <div class="mark" data-radial-slot="mark-light"><img src="./_dsa-assets/logo-ASK-white.png" alt="ASK" width="2160" height="974"></div>
+    <div class="mark" data-radial-slot="mark-dark"><img src="./_dsa-assets/logo-ASK-lavender-ASK.png" alt="ASK" width="2160" height="974"></div>
+    <div class="title-block" data-radial-slot="title">
+      <div class="t">consciousness + free will</div>
+      <div class="s">mind map // typed relation atlas</div>
+    </div>
+    <div class="spacer"></div>
+    <div data-radial-slot="actions">
+      <!-- the live research is a separate destination; this page loads nothing from it -->
+      <a class="surface-action" href="https://a-s-k.studio/apex-solar-kiss/consciousness-free-will/map/" rel="noopener">live research</a>
+    </div>
+    <div class="stamp"><span class="k">reference content captured on 2026-10-02</span><br>apexSolarKiss/ASK @ 04ad6105</div>
+  </header>
+
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <p class="radial-sr-only">The mind map is a visual projection of the captured reference content. Every object it draws
+    is reachable in text: atlas searches all 1,027 objects by name or exact identifier, and the inspector reports
+    the selected object in full.</p>
+    <div class="radial-stage" id="radial-stage" data-radial-slot="stage"></div>
+
+    <div class="radial-tick tl"></div>
+    <div class="radial-tick tr"></div>
+    <div class="radial-tick bl"></div>
+    <div class="radial-tick br"></div>
+
+    <!-- chrome the Fit reserves declares its edge; the engine reads data-diagram-fit-edge -->
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--filter" data-radial-readout="filter" role="status"></span>
+    </div>
+
+    <div class="radial-inspector radial-glass" data-radial-slot="inspector"></div>
+
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right" role="note"
+         aria-label="map legend — color, line and shape encoding"></div>
+
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
+      The mind map is the reading surface; the typed relation atlas is the machinery underneath it.<br>
+      <b>What the geometry does not claim.</b> Radial distance encodes projection level only; sector width encodes
+      corpus weight only, never importance and never authority; angular placement is compositional, and two sectors
+      that touch carry <b>no</b> relation to each other. Governed edges are the only relation encoding on this
+      surface.<br>
+      <b>Level of detail is not filtering.</b> Zoom reveals concept names, then identifiers; all 548 primary objects
+      stay on the map. A filter is explicit, bounds the map to a section, and reports its census. The 479 evidence
+      owners open from <b>atlas</b> by exact identifier and never enter the graph.
+    </div>
+
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+
+<!-- the reference content: the captured research input, unchanged, then its adapter -->
+<script src="reference/cfw/atlas-data.public.js"></script>
+<script src="reference/cfw/cfw-reference.adapter.js"></script>
+<!-- the font carrier the PNG export embeds -->
+<script src="./_dsa-tokens/fonts-embedded.js"></script>
+<!-- design-system-ASK owner files: re-vendor byte-identical, never hand-edit; this order -->
+<script src="diagrams-radial-contract.js"></script>
+<script src="diagrams-radial-layout.js"></script>
+<script src="diagrams-radial-labels.js"></script>
+<script src="diagrams-pointer.js"></script>
+<script src="diagrams-fit.js"></script>
+<script src="diagrams-radial-engine.js"></script>
+<script src="diagrams-radial-legend.js"></script>
+<script src="diagrams-radial-chrome.js"></script>
+<script src="diagrams-radial-inspector.js"></script>
+<script src="diagrams-radial-facets.js"></script>
+<script src="diagrams-radial-export.js"></script>
+<script src="diagrams-radial-theme.js"></script>
+<script>
+(function () {
+  var host = document.querySelector('[data-radial]'), ref = window.RADIAL_REFERENCE;
+  window.RADIAL_MAP = window.DIAGRAM_RADIAL.mount({ host: host, data: ref.data, adapter: ref.adapter, modules: ref.modules });
+})();
+</script>
+
+</body>
+</html>

@@ -33,6 +33,12 @@ const MEMBERS = [
       'patterns/diagram-static-SEQ/diagrams-text-layout.js',
     ],
   },
+  {
+    canonical: 'patterns/_diagram-shared/diagrams-pointer.js',
+    targets: [
+      'patterns/diagram-interactive-radial/diagrams-pointer.js',
+    ],
+  },
 ];
 
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');

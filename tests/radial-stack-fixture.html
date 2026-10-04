@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>radial full-stack fixture</title>
+<!-- The full-stack fixture of the interactive radial pattern: every owner module (inspector,
+     facets, legend, chrome, export, theme) on the synthetic composition, in two hosts. Served from
+     the repository root by tests/radial-stack.mjs. It loads no reference content unless a check
+     asks for it (FX.reference()), so a neutral run can be shown to load none. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
+<style>
+  .fx-host { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; display: grid; grid-template-rows: auto 1fr; }
+  body[data-mode="two"] .fx-host { width: 50%; }
+  body[data-mode="two"] #E { left: 50%; }
+  body[data-mode="one"] #E { display: none; }
+  .fx-host .radial-canvas { position: relative; }
+</style>
+</head>
+<body class="radial-page" data-mode="one">
+
+<div class="fx-host" id="D">
+  <header class="radial-bar">
+    <div class="mark" data-radial-slot="mark-light">[org]<span class="sep">/</span>[surface]</div>
+    <div class="mark" data-radial-slot="mark-dark">[org]<span class="sep">/</span>[surface]</div>
+    <div class="title-block"><div class="t">fixture</div></div>
+    <div class="spacer"></div>
+    <div data-radial-slot="actions"></div>
+  </header>
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--tier" data-radial-readout="tier"></span>
+      <span class="readout readout--selection" data-radial-readout="selection"></span>
+      <span class="readout readout--filter" data-radial-readout="filter"></span>
+    </div>
+    <div class="radial-inspector radial-glass" data-radial-slot="inspector"></div>
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right">
+      <div class="radial-panel-h">legend</div>
+    </div>
+    <div class="radial-panel radial-glass" data-radial-slot="caption" data-diagram-fit-edge="bottom">
+      <b>caption</b> · the words of the caption · long enough to wrap at a narrow measure
+    </div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="fx-host" id="E">
+  <header class="radial-bar">
+    <div class="title-block"><div class="t">second</div></div>
+    <div class="spacer"></div>
+    <div data-radial-slot="actions"></div>
+  </header>
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-hud radial-glass" data-radial-slot="hud" data-diagram-fit-edge="bottom">
+      <button type="button" data-radial-control="zoom-out">−</button>
+      <span class="readout" data-radial-readout="zoom">100%</span>
+      <button type="button" data-radial-control="zoom-in">+</button>
+      <button type="button" data-radial-control="fit">⤢</button>
+      <span class="readout readout--filter" data-radial-readout="filter"></span>
+    </div>
+    <div class="radial-inspector radial-glass" data-radial-slot="inspector"></div>
+    <div class="radial-panel radial-glass" data-radial-slot="legend" data-diagram-fit-edge="right"></div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-pointer.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-fit.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-engine.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-legend.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-chrome.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-inspector.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-facets.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-export.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-theme.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagram-interactive-radial.neutral.adapter.js"></script>
+<script type="module">
+import * as G from '../tools/gen-radial-specimen.mjs';
+const D = G.parks();
+const DATA = {
+  specimen: () => G.specimen(D), base: () => G.base(D), shallow: () => G.shallow(D), ragged: () => G.ragged(D, 'show'),
+  deeper: () => G.deeper(D), flat: () => G.flat(D)
+};
+const ALL = ['inspector', 'facets', 'legend', 'chrome', 'export', 'theme'];
+/* the full-stack adapter for any shape: the specimen's words, then the neutral sections */
+function adapterFor(data, o) {
+  const base = JSON.parse(JSON.stringify(G.ADAPTER));
+  delete base.arrival;
+  const a = window.RADIAL_NEUTRAL.adapterFor(data, base);
+  if (o.theme !== undefined) a.theme = o.theme;
+  if (o.arrival) a.arrival = { hash: true };
+  return Object.assign(a, o.patch || {});
+}
+window.FX = {
+  G, DATA, ALL, inst: {},
+  host(h) { return document.getElementById(h); },
+  mode(m) { document.body.dataset.mode = m; },
+  mount(h, name, o = {}) {
+    const data = typeof name === 'string' ? DATA[name]() : name;
+    const modules = o.modules || ALL;
+    const adapter = o.adapter || adapterFor(data, o);
+    if (!modules.includes('chrome')) delete adapter.chrome;
+    const inst = window.DIAGRAM_RADIAL.mount({ host: this.host(h), data, adapter, modules });
+    this.inst[h] = inst;
+    return inst;
+  },
+  adapterFor(name, o = {}) { return adapterFor(typeof name === 'string' ? DATA[name]() : name, o); },
+  at(h, id) {
+    const inst = this.inst[h], p = inst.project(id), r = this.host(h).querySelector('[data-radial-slot="stage"]').getBoundingClientRect();
+    return { x: r.left + p.x, y: r.top + p.y };
+  },
+  /* the reference specimen, loaded only on request */
+  reference() {
+    const load = (src) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+    return load('../patterns/diagram-interactive-radial/reference/cfw/atlas-data.public.js')
+      .then(() => load('../patterns/diagram-interactive-radial/reference/cfw/cfw-reference.adapter.js'))
+      .then(() => window.RADIAL_REFERENCE);
+  }
+};
+document.documentElement.dataset.ready = '1';
+</script>
+</body>
+</html>

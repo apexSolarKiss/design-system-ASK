@@ -1,0 +1,371 @@
+/* diagrams-radial.css — the stylesheet of the interactive radial pattern.
+
+   design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
+   byte-identical, never hand-edit in a consumer. Load after colors_and_type.css and
+   spectral-state.css. It owns the pattern's own metrics (label sizes, marks, chrome), so it
+   stands outside the type-role checker's governed set by declared disposition, as the other
+   diagram patterns do.
+
+   ENCODING
+     color   state only: one --st custom property per mark, set to a --state-* role
+     shape   a declared kind
+     line    a relation's plane: drawn always (solid), drawn on selection (dashed)
+     radius  containment depth; never importance
+   Names are screen-space callouts that carry no action: a tap passes through them to the
+   stage, whose own hit test decides what was meant. */
+
+/* The component styles itself only. The page rules below apply to a page that declares itself a
+   full-viewport radial page (<body class="radial-page">); a page that mounts the map inside its own
+   layout keeps its own body, scrolling and ground. */
+.radial-shell, .radial-shell *, .radial-canvas, .radial-canvas * { box-sizing: border-box; }
+.radial-shell, .radial-canvas { font-family: var(--font-sans); color: var(--fg-1); }
+body.radial-page {
+  margin: 0;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+.radial-shell { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr; }
+
+/* ---- bar ---- */
+.radial-bar {
+  display: flex; align-items: center; gap: 18px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--surface-glass-2);
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  z-index: 4;
+}
+.radial-bar .mark { font-weight: 500; font-size: 15px; letter-spacing: -0.01em; color: var(--fg-1); }
+.radial-bar .mark .sep { color: var(--fg-3); font-weight: 200; padding: 0 6px; }
+.radial-bar .title-block { line-height: 1.3; min-width: 0; }
+.radial-bar .title-block .t { font-weight: 500; font-size: 15px; color: var(--fg-1); }
+.radial-bar .title-block .s { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+.radial-bar .spacer { flex: 1; }
+/* the bar's control group: the modules' controls (the facets trigger, the export controls, the theme
+   control) beside any of the page's own */
+.radial-bar [data-radial-slot="actions"] { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* the mark slot carries a light and a dark variant; the theme in force shows one */
+[data-radial-slot="mark-dark"] { display: none; }
+:root[data-theme="dark"] [data-radial-slot="mark-light"] { display: none; }
+:root[data-theme="dark"] [data-radial-slot="mark-dark"] { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) [data-radial-slot="mark-light"] { display: none; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) [data-radial-slot="mark-dark"] { display: block; }
+}
+
+/* ---- canvas and stage ---- */
+.radial-canvas { position: relative; overflow: hidden; }
+.radial-stage { position: absolute; inset: 0; cursor: grab; touch-action: none; }
+.radial-stage.panning { cursor: grabbing; }
+.radial-stage.is-over-mark { cursor: pointer; }
+.radial-stage:focus { outline: none; }
+.radial-stage:focus-visible { outline: 2px solid var(--fg-1); outline-offset: -2px; }
+.radial-svg { width: 100%; height: 100%; display: block; }
+
+/* ---- structure: the containment limbs. NOT a relation encoding ---- */
+.radial-spine { stroke: var(--fg-3); stroke-width: 1; fill: none; opacity: 0.42; }
+.radial-spine--top { opacity: 0.6; stroke-width: 1.3; }
+.radial-leader { stroke: var(--fg-3); stroke-width: 1; fill: none; opacity: 0.5; pointer-events: none; }
+
+/* ---- relations: the line encodes the plane, never a hue ---- */
+.radial-edge { fill: none; opacity: 0; transition: opacity var(--dur-2) var(--ease-out); }
+.radial-edge--always { stroke: var(--fg-1); stroke-width: 1.9; }
+.radial-edge--always.is-on { opacity: 0.8; }
+.radial-edge--selection { stroke: var(--fg-2); stroke-width: 1.15; stroke-dasharray: 5 4; }
+.radial-edge--selection.is-on { opacity: 0.5; }
+.radial-arrow path { fill: var(--fg-1); }
+
+/* ---- marks ---- */
+.radial-node { transition: opacity var(--dur-2) var(--ease-out); }
+.radial-node .radial-mark { fill: var(--st); fill-opacity: 0.15; stroke: var(--st); stroke-width: 1.5; }
+.radial-node .radial-chip { fill: var(--st); }
+.radial-node.is-dim { opacity: 0.14; }                     /* faded, never removed */
+.radial-node:hover .radial-mark { stroke-width: 2.4; fill-opacity: 0.24; }
+.radial-node.is-near .radial-mark { stroke-width: 2.1; fill-opacity: 0.24; }
+.radial-node.is-selected .radial-mark { stroke-width: 2.8; fill-opacity: 0.32; }
+.radial-raise { pointer-events: none; }
+
+/* ---- names: upright callouts; leaves read along their own radius ---- */
+.radial-lbl { fill: var(--fg-1); pointer-events: none; }
+.radial-lbl--root { font-size: 23px; font-weight: 400; letter-spacing: -0.02em; text-anchor: middle; dominant-baseline: middle; }
+.radial-lbl--top { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; }
+.radial-lbl--container { font-size: 13px; font-weight: 400; }
+.radial-lbl--leaf { font-size: 11px; font-weight: 200; }
+.radial-lbl--count { fill: var(--fg-3); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; }
+.radial-lbl--id { fill: var(--fg-3); font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em; }
+.radial-halo { stroke: var(--bg-from); stroke-width: 4.2; stroke-linejoin: round; stroke-opacity: 0.85; paint-order: stroke fill; }
+.radial-probe { visibility: hidden; }
+
+/* ---- keyboard focus: a ring at screen size, so an overlapped or tiny mark is still found ---- */
+.radial-focus { pointer-events: none; }
+.radial-focus-ring { fill: none; stroke: var(--fg-1); stroke-width: 2; paint-order: stroke; }
+
+/* ---- glass chrome ---- */
+.radial-glass {
+  position: absolute;
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border: 1px solid var(--surface-glass-2);
+  border-radius: var(--radius-md);
+  color: var(--fg-1);
+}
+.radial-hud { bottom: 18px; left: 18px; display: flex; align-items: center; gap: 4px; padding: 6px; z-index: 2; }
+.radial-hud button { font-family: var(--font-mono); font-size: 14px; width: 30px; height: 30px; border: none;
+                     border-radius: var(--radius-sm); background: transparent; color: var(--fg-1); cursor: pointer; }
+.radial-hud button:hover { background: var(--surface-glass-2); }
+.radial-hud button:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; }
+.radial-hud .readout { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); min-width: 44px; text-align: center; }
+.radial-hud .readout--tier { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); padding: 0 6px; }
+.radial-hud .readout--selection { font-family: var(--font-sans); font-size: 11px; color: var(--fg-1); max-width: 220px;
+                                  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; text-align: left; }
+.radial-hud .readout--selection:empty { display: none; }
+
+.radial-legend-panel { bottom: 18px; right: 18px; width: 296px; max-height: calc(56% - 34px); overflow-y: auto;
+                       padding: 11px 16px 9px; font-size: 11px; z-index: 2; }
+.radial-legend-panel > summary { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+                                 color: var(--fg-2); cursor: pointer; list-style: none; }
+.radial-legend-panel > summary::-webkit-details-marker { display: none; }
+.radial-legend-panel > summary:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; border-radius: var(--radius-sm); }
+.radial-legend-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+                   color: var(--fg-2); margin: 10px 0 5px; }
+.radial-legend-row { display: flex; align-items: flex-start; gap: 9px; margin: 3px 0; }
+.radial-legend-txt { min-width: 0; flex: 1 1 auto; overflow-wrap: break-word; }
+.radial-legend-lbl { color: var(--fg-1); display: block; }
+.radial-legend-sub { color: var(--fg-2); font-size: 10px; display: block; line-height: 1.28; }
+.radial-legend-sw { width: 11px; height: 11px; border-radius: 3px; flex: none; margin-top: 3px; background: var(--st); }
+.radial-legend-line { flex: none; width: 26px; height: 0; margin-top: 8px; border-top: 1px solid transparent; position: relative; }
+.radial-legend-line--always { border-top: 1.9px solid var(--fg-1); }
+.radial-legend-line--selection { border-top: 1.15px dashed var(--fg-2); }
+.radial-legend-line.is-directed::after { content: ""; position: absolute; right: -2px; top: -4.5px;
+                                         border-left: 6px solid var(--fg-1); border-top: 3.5px solid transparent;
+                                         border-bottom: 3.5px solid transparent; }
+.radial-legend-shape { flex: none; width: 16px; height: 16px; margin-top: 1px; }
+.radial-legend-glyph { width: 16px; height: 16px; display: block; }
+.radial-legend-glyph * { fill: var(--fg-1); fill-opacity: 0.15; stroke: var(--fg-1); stroke-width: 1.2; }
+.radial-legend-glyph .chip { fill-opacity: 1; stroke: none; }
+.radial-legend-bound { margin-top: 9px; font-size: 10px; color: var(--fg-2); line-height: 1.38; }
+
+.radial-caption { bottom: 18px; left: 50%; transform: translateX(-50%); padding: 9px 14px; font-size: 10px;
+                  letter-spacing: var(--tracking-wide); color: var(--fg-2); text-align: center; line-height: 1.45; max-width: 420px; z-index: 1; }
+.radial-caption b { color: var(--fg-1); font-weight: 500; }
+
+/* ---- panels, and the responsive chrome that coordinates them (diagrams-radial-chrome.js) ----
+   A panel is the slot element itself, on the glass: [data-radial-slot="legend"] or
+   [data-radial-slot="caption"] carrying .radial-panel. Each sits in its corner by default. The
+   chrome module marks the canvas [data-radial-chrome="wide" | "compact"]: in wide it lays the
+   caption into the slot between the HUD and the legend; in compact it closes the panels behind
+   triggers in the shared disclosure grammar (surface-treatments.css), which join the HUD in one
+   control area, and opens one panel at a time upward from it, inside the room it measures. */
+.radial-panel { z-index: 2; }
+.radial-panel[hidden] { display: none; }
+.radial-panel[data-radial-slot="legend"] { bottom: 18px; right: 18px; width: 296px; max-height: calc(56% - 34px); overflow-y: auto;
+                                           padding: 11px 16px 9px; font-size: 11px; }
+.radial-panel[data-radial-slot="caption"] { bottom: 18px; left: 50%; transform: translateX(-50%); max-width: 420px; padding: 9px 14px;
+                                            font-size: 10px; letter-spacing: var(--tracking-wide); color: var(--fg-2); text-align: center;
+                                            line-height: 1.45; z-index: 1; }
+.radial-panel[data-radial-slot="caption"] b { color: var(--fg-1); font-weight: 500; }
+.radial-panel:focus-visible { outline: 2px solid var(--fg-1); outline-offset: -2px; }
+.radial-panel-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-2); }
+
+[data-radial-chrome="wide"] .radial-panel[data-radial-slot="caption"] { left: var(--radial-caption-left); width: var(--radial-caption-w);
+                                                                        max-width: none; transform: none; }
+
+.radial-chrome-triggers { position: absolute; z-index: 3; display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px;
+                          max-width: calc(100% - 36px); }
+.radial-chrome-triggers[hidden], .radial-chrome-triggers > .radial-chrome-trigger[hidden] { display: none; }
+[data-radial-chrome="compact"] .radial-chrome-triggers { left: var(--radial-row-left); bottom: var(--radial-row-bottom); }
+[data-radial-chrome-row="beside"] .radial-chrome-triggers { height: var(--radial-row-h); }
+/* the trigger's grammar is the shared disclosure's; its surface is this pattern's glass, restated
+   because the trigger resets a button's own chrome */
+.radial-chrome-triggers > .radial-chrome-trigger { flex: none; padding: 8px 14px 8px 12px; border-radius: var(--radius-md);
+                                                   background: var(--surface-glass); -webkit-backdrop-filter: blur(20px);
+                                                   backdrop-filter: blur(20px); border: 1px solid var(--surface-glass-2); }
+[data-radial-chrome-row="beside"] .radial-chrome-triggers > .radial-chrome-trigger { padding-top: 0; padding-bottom: 0; }
+[data-radial-chrome="compact"] .radial-panel { left: 18px; right: auto; bottom: var(--radial-panel-bottom); transform: none;
+                                               width: min(calc(100% - 36px), 560px); max-height: var(--radial-panel-max);
+                                               overflow-y: auto; overscroll-behavior: contain; text-align: left; z-index: 3; }
+[data-radial-chrome="compact"] .radial-panel[data-radial-slot="legend"] { width: min(calc(100% - 36px), 296px); }
+[data-radial-chrome="compact"] .radial-panel-h { display: none; }
+
+.radial-tick { position: absolute; width: 14px; height: 14px; border: 1px solid var(--surface-glass-2); pointer-events: none; z-index: 3; }
+.radial-tick.tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+.radial-tick.tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
+.radial-tick.bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
+.radial-tick.br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+
+/* ---- the chooser: every mark under or near a tap, when there is more than one ---- */
+.radial-chooser {
+  position: absolute; z-index: 6; min-width: 200px; max-width: 300px; max-height: 60%; overflow-y: auto;
+  padding: 8px; display: flex; flex-direction: column; gap: 2px;
+  background: var(--surface-glass); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border: 1px solid var(--surface-glass-2); border-radius: var(--radius-md); color: var(--fg-1);
+}
+.radial-chooser-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+                    color: var(--fg-2); padding: 2px 6px 6px; }
+.radial-chooser-item, .radial-chooser-zoom {
+  display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left; font-family: var(--font-sans);
+  font-size: 11.5px; color: var(--fg-1); background: transparent; border: none; border-radius: var(--radius-sm);
+  padding: 6px; cursor: pointer;
+}
+.radial-chooser-item:hover, .radial-chooser-zoom:hover { background: var(--surface-glass-2); }
+.radial-chooser-item:focus-visible, .radial-chooser-zoom:focus-visible { outline: 2px solid var(--fg-1); outline-offset: -2px; }
+.radial-chooser-zoom { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); }
+.radial-chooser-sw { width: 10px; height: 10px; border-radius: 3px; flex: none; margin-top: 3px; background: var(--st); }
+.radial-chooser-txt { min-width: 0; display: flex; flex-direction: column; }
+.radial-chooser-lbl { overflow-wrap: anywhere; }
+.radial-chooser-sub { color: var(--fg-2); font-size: 10px; overflow-wrap: anywhere; }
+
+/* ---- membership: a filter hides non-members, their limbs and the relations that lose an end.
+   Nothing moves; the layout is never recomputed (diagrams-radial-facets.js) ---- */
+.radial-node.is-out, .radial-spine.is-out, .radial-edge.is-out { display: none; }
+
+/* ---- the inspector (diagrams-radial-inspector.js): the slot element itself, on the glass. A
+   corner panel on a wide canvas; on a compact one a sheet across the top, collapsed to a pill
+   until it is opened. Its trigger takes the shared disclosure grammar (surface-treatments.css):
+   expanded it shows its indicator only, collapsed it carries its word. ---- */
+.radial-inspector { top: 18px; right: 18px; width: 322px; max-height: 40%; overflow-y: auto; overscroll-behavior: contain;
+                    padding: 16px 18px; font-size: 12px; line-height: 1.5; z-index: 2; }
+.radial-insp-bar { position: sticky; top: 0; float: right; z-index: 1; display: flex; align-items: center; gap: 8px;
+                   margin: -8px -10px 0 8px; }
+.radial-insp-name { display: none; margin: 0; }
+.radial-insp-toggle { min-width: 26px; height: 26px; padding: 0 6px; justify-content: center; border-radius: var(--radius-sm); }
+.radial-inspector[data-radial-expanded="false"] { width: auto; max-height: none; overflow: visible; padding: 6px 8px 6px 14px; }
+.radial-inspector[data-radial-expanded="false"] .radial-insp-bar { position: static; float: none; margin: 0; }
+.radial-inspector[data-radial-expanded="false"] .radial-insp-name { display: block; }
+.radial-insp-body[hidden] { display: none; }
+.radial-inspector:focus-visible { outline: 2px solid var(--fg-1); outline-offset: -2px; }
+.radial-inspector[data-radial-inspector="compact"] { left: 18px; right: 18px; width: auto; max-height: 46%; }
+.radial-inspector[data-radial-inspector="compact"][data-radial-expanded="false"] { left: auto; }
+.radial-insp-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; text-wrap: pretty; }
+.radial-insp-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+                 color: var(--fg-2); margin-bottom: 7px; }
+.radial-insp-rule { height: 1px; background: var(--line-2); margin: 12px 0; }
+.radial-insp-state { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.radial-insp-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--st, var(--fg-1)); flex: none; }
+.radial-insp-state-name { font-family: var(--font-mono); font-size: 11px; }
+.radial-insp-state-mean { color: var(--fg-2); }
+.radial-insp-field { margin: 9px 0; }
+.radial-insp-lbl { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+                   color: var(--fg-3); display: block; margin-bottom: 2px; }
+.radial-insp-val { color: var(--fg-1); text-wrap: pretty; }
+.radial-insp-mono { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-2); word-break: break-word; }
+.radial-insp-idle { color: var(--fg-2); white-space: pre-line; }
+.radial-insp-block { margin: 9px 0; }
+.radial-insp-block.has-tone { border-left: 2px solid var(--tone, var(--fg-3)); padding-left: 9px; }
+.radial-insp-tag { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.radial-insp-ref { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-1); background: transparent; border: none;
+                   border-bottom: 1px solid var(--fg-3); padding: 0; cursor: pointer; word-break: break-word; text-align: left; }
+.radial-insp-ref:hover { border-bottom-color: var(--fg-1); }
+.radial-insp-more, .radial-insp-back { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase;
+                                       color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--surface-glass-2);
+                                       border-radius: var(--radius-sm); padding: 7px 10px; cursor: pointer; margin-top: 9px; width: 100%;
+                                       text-align: left; }
+.radial-insp-back { margin: 0 0 10px; clear: right; }
+.radial-insp-more:hover, .radial-insp-back:hover { opacity: 0.9; }
+.radial-insp-note { color: var(--fg-3); font-size: 10px; line-height: 1.4; margin-top: 12px; border-top: 1px solid var(--line-2); padding-top: 9px; }
+.radial-insp-link { color: var(--fg-1); }
+.radial-inspector :focus-visible:where(:not(.surface-text-link, .surface-disclosure-trigger)) { outline: 2px solid var(--fg-1); outline-offset: 2px;
+                                                                                                border-radius: var(--radius-sm); }
+
+/* ---- the facets drawer (diagrams-radial-facets.js): closed by default behind its trigger in the
+   bar; open, it holds the left edge and ends above the control area ---- */
+.radial-drawer-trigger { gap: 8px; }
+.radial-drawer-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-3); display: inline-block; flex: none; }
+.radial-drawer-trigger.is-filtering { border-color: var(--fg-1); }
+.radial-drawer-trigger.is-filtering .radial-drawer-dot { background: var(--fg-1); }
+.radial-drawer { top: 18px; left: 18px; width: 344px; max-width: calc(100% - 36px); max-height: var(--radial-drawer-max, calc(100% - 36px));
+                 overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px 16px; z-index: 5; font-size: 12px; line-height: 1.45; }
+.radial-drawer[hidden] { display: none; }
+.radial-drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.radial-drawer-title { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-2); }
+.radial-drawer-close { background: transparent; border: none; color: var(--fg-2); font-size: 17px; line-height: 1; cursor: pointer; padding: 0 2px; }
+.radial-drawer-close:hover { color: var(--fg-1); }
+.radial-drawer-lbl { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3);
+                     display: block; margin-bottom: 5px; }
+.radial-drawer-q { width: 100%; font-family: var(--font-mono); font-size: 12px; color: var(--fg-1); background: var(--surface-glass-2);
+                   border: 1px solid var(--surface-glass-2); border-radius: var(--radius-sm); padding: 8px 10px; -webkit-appearance: none; appearance: none; }
+.radial-drawer-q::placeholder { color: var(--fg-3); }
+.radial-drawer-results { margin-top: 8px; max-height: 236px; overflow-y: auto; }
+.radial-drawer-r { display: grid; grid-template-columns: 52px 1fr auto; gap: 8px; align-items: baseline; width: 100%; text-align: left;
+                   background: transparent; border: none; border-bottom: 1px solid var(--line-2); color: var(--fg-1); padding: 7px 4px;
+                   cursor: pointer; font-family: var(--font-sans); font-size: 11.5px; }
+.radial-drawer-r:hover, .radial-drawer-r[aria-selected="true"] { background: var(--surface-glass-2); }
+.radial-drawer-rk { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); }
+.radial-drawer-rl { overflow-wrap: anywhere; }
+.radial-drawer-rs { font-family: var(--font-mono); font-size: 9px; color: var(--fg-3); white-space: nowrap; }
+.radial-drawer-none { color: var(--fg-2); font-size: 11px; padding: 8px 4px; }
+.radial-drawer-census { margin: 12px 0 4px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em; color: var(--fg-2);
+                        border-left: 2px solid var(--fg-3); padding-left: 9px; }
+.radial-drawer-census.is-active { color: var(--fg-1); border-left-color: var(--fg-1); border-left-width: 3px; }
+.radial-drawer-note { color: var(--fg-3); font-size: 10px; line-height: 1.4; margin: 8px 0 12px; }
+.radial-facet { border-top: 1px solid var(--line-2); padding: 7px 0; }
+.radial-facet summary { cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; list-style: none; }
+.radial-facet summary::-webkit-details-marker { display: none; }
+.radial-facet summary::before { content: "+"; font-family: var(--font-mono); color: var(--fg-3); margin-right: 7px; font-size: 11px; }
+.radial-facet[open] summary::before { content: "\2212"; }
+.radial-facet-title { font-size: 11.5px; color: var(--fg-1); flex: 1; }
+.radial-facet-family { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.radial-facet-note { color: var(--fg-3); font-size: 10px; line-height: 1.4; margin: 6px 0 7px; }
+.radial-facet-opt { display: flex; align-items: center; gap: 8px; padding: 4px 2px; font-size: 11px; cursor: pointer; }
+.radial-facet-opt.is-locked { cursor: default; color: var(--fg-3); }
+.radial-facet-opt input { accent-color: var(--fg-1); flex: none; margin: 0; }
+.radial-facet-sw { width: 10px; height: 10px; border-radius: 3px; flex: none; background: var(--st); }
+.radial-facet-lbl { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.radial-facet-n { font-family: var(--font-mono); font-size: 9px; color: var(--fg-3); flex: none; }
+.radial-facet-off { border-top: 1px solid var(--line-2); padding: 8px 0; }
+.radial-facet-offtag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.12em; color: var(--fg-3); border: 1px solid var(--line-2);
+                       border-radius: var(--radius-sm); padding: 2px 6px; margin-left: 8px; }
+.radial-drawer-reset { margin-top: 12px; width: 100%; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+                       color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--surface-glass-2); border-radius: var(--radius-sm);
+                       padding: 9px; cursor: pointer; }
+.radial-drawer-reset:hover { opacity: 0.9; }
+.radial-drawer :focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; border-radius: var(--radius-sm); }
+.radial-hud .readout--filter { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); padding: 0 8px 0 4px; min-width: 0; }
+.radial-hud .readout--filter.is-active { color: var(--fg-1); font-weight: 500; }
+.radial-hud .readout--filter:empty { display: none; }
+
+/* ---- the theme control (diagrams-radial-theme.js): a quiet mode selector in the bar ---- */
+.radial-theme-control { display: inline-flex; align-items: baseline; gap: 8px; font-family: var(--font-mono); font-size: var(--fs-caption);
+                        letter-spacing: var(--tracking-normal); text-transform: none; color: var(--fg-2); background: var(--surface-glass);
+                        border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: 8px 16px; cursor: pointer; white-space: nowrap;
+                        transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+.radial-theme-control:hover { opacity: 0.92; }
+.radial-theme-control:active { transform: scale(0.97); }
+.radial-theme-control:focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; }
+.radial-theme-glyph { font-size: 1.05em; line-height: 1; }
+
+/* ---- the export controls (diagrams-radial-export.js): compact actions (surface-action.css); a run
+   in progress and a failure are UI state, never a Spectral State color. The failure's words are on
+   the control itself for five seconds; its edge marks it too ---- */
+.radial-export-control[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+.radial-export-control.is-failed { border-color: var(--fg-1); }
+
+.radial-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+                  clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.radial-skip { position: absolute; left: 8px; top: -60px; z-index: 10; padding: 6px 10px; font-size: 12px;
+               color: var(--fg-1); background: var(--surface-glass-2); border-radius: var(--radius-sm); }
+.radial-skip:focus { top: 8px; }
+
+@media (max-width: 767px) {
+  .radial-bar { gap: 12px; padding: 10px 14px; }
+  /* two rows: the mark and the title, then the controls in one row that scrolls sideways */
+  .radial-bar { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "mark title" "actions actions"; row-gap: 8px; }
+  .radial-bar .mark { grid-area: mark; }
+  .radial-bar .title-block { grid-area: title; }
+  .radial-bar .spacer { display: none; }
+  .radial-bar [data-radial-slot="actions"] { grid-area: actions; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  .radial-bar [data-radial-slot="actions"] > * { flex: none; }
+  .radial-bar .title-block .s { display: none; }
+  .radial-legend-panel { width: auto; left: 18px; bottom: 66px; max-height: 48%; }
+  .radial-caption { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radial-canvas *, .radial-canvas *::before, .radial-canvas *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,7 +1,8 @@
 # `patterns/_diagram-shared/`
 
-Canonical source plane for text-layout logic that more than one static diagram engine
-consumes. Files here are **authored once and mirrored out** by
+Canonical source plane for support code that more than one diagram engine consumes: text
+layout for the static engines, and pointer input for the interactive ones. Files here are
+**authored once and mirrored out** by
 [`tools/sync-diagram-shared.mjs`](../../tools/sync-diagram-shared.mjs).
 
 ## The plane confers no authority
@@ -19,13 +20,17 @@ a later maintainer reads FLOW's absence as partial vendoring and "completes" it.
 
 | Member | Target set | Excluded |
 | --- | --- | --- |
-| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-interactive-spine` |
+| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-interactive-spine` · `diagram-interactive-radial` |
+| `diagrams-pointer.js` | `diagram-interactive-radial` | the static patterns · `diagram-interactive-spine`, which keeps its own mouse pan |
 
 ## Canonical and mirrors
 
 ```text
 canonical   patterns/_diagram-shared/diagrams-text-layout.js
 mirrors     patterns/diagram-static-{H,V,SEQ}/diagrams-text-layout.js
+
+canonical   patterns/_diagram-shared/diagrams-pointer.js
+mirrors     patterns/diagram-interactive-radial/diagrams-pointer.js
 ```
 
 A mirror is **byte-identical** to its canonical and is a generated artifact.
@@ -40,6 +45,13 @@ bundle directory rather than reaching across the repo; `--check` exists so a han
 fails loudly instead of surviving as a silent fork. Edit the canonical and re-emit.
 
 ## What a member owns, and what it must not
+
+`diagrams-pointer.js` owns gesture recognition for mouse, pen and touch on Pointer Events: pan past
+a tap slop, a centroid pinch, a moved gesture that swallows its click, and the wheel. It does **not**
+own a camera, a hit test or a selection: the consuming engine supplies its view, applies every
+change and decides what a tap means. Its gesture logic is a device-approved controller moved as
+donor code, with two declared corrections (a horizontal scroll no longer zooms; the pointer left
+after a pinch keeps its own type). Its own header carries the attach contract.
 
 `diagrams-text-layout.js` owns exact measurement, role metrics, cap application,
 deterministic line breaking, wrapped height and tspan emission.

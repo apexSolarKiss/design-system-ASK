@@ -446,3 +446,162 @@ declare 0.25 on the half-size figure                   that card only, on its
 
 A shape outside an adopting link takes nothing, so the unlinked card passes in every
 case above.
+
+## radial-contract.test.mjs
+
+Guards the **data contract, layout grammar and label solver** of the
+`diagram-interactive-radial` surface pattern, on the owner files themselves. It loads the
+three DOM-free modules into one global exactly as a page does, so the code tested is the code
+shipped. Scripted, not by eye:
+
+```
+node tests/radial-contract.test.mjs
+```
+
+```text
+P  identity, relations, records, unresolved and unsupported references, closed keys
+T  scalar types: every malformed owner value is a named error; absence is explicit
+L  the tested limits, each failing with its code one step past the bound
+S  shallow, ragged, deeper, flat, capacity and the specimen, under both allocations,
+   each holding the grammar invariants and deterministic
+G  the base hierarchy's equal-share geometry against a stored reference; the fan rule at
+   its boundary
+N  renaming every identifier, label, kind and plane leaves the geometry unchanged
+V  the label tiers, held names, a second target independent of the first, crowding, the
+   Fit's population over a sweep of small canvases, and template slots read as own properties
+I  opaque identifiers through the label layer: object-property names and delimiter-bearing
+   identifiers change no collision relationship (I1-I3, I6) and no decision of the short-canvas
+   population rule, which compares pair identities, not their number (I4, I5)
+X  negative controls: the invariant checks and the geometry comparison each fail for their
+   reason; X6 runs the I checks on mutated copies of the labels module, each of which must fail
+   the check written for it: three restore defect classes of the earlier bookkeeping (plain-object
+   grouping, pairs joined with '|', directed pairs joined with '>'), two are plausible
+   regressions (a directed pair stored undirected, the short-canvas rule comparing counts)
+```
+
+**Geometry is compared, not hashed.** `radial-geometry.mjs` holds the one rule both runtimes use:
+structure exactly (count, order, identifier, parent, depth, kind, mark radius, container count,
+whether it carries a fan radius),
+computed numbers within 1e-6 world units. The layout multiplies radii by `Math.cos` and
+`Math.sin`, which ECMAScript leaves implementation-approximated, so the last bit of a coordinate
+differs between engines (one unit in the last place between Node v22.12.0 and Chrome 154 on this
+layout)
+and a hash of raw output fails across runtimes with nothing moved. The tolerance's reasons, at
+both ends, are in the module's header, which keeps what was measured apart from what is derived.
+The root's count is checked against the reference's leaf total, since a reference may record the
+root's count by another rule; every computed number must be finite on both sides.
+
+**The reference is independent of the code it checks.** `radial-base-equal.reference.json` was
+computed by an implementation independent of the owner layout. Its provenance and the SHA-256 of
+each of its inputs (the layout source, the projection, the data) are recorded in the file, and it
+is stored, never regenerated from the layout under test. X2 shows the comparison passes a 4.6e-13
+perturbation of every coordinate and a displacement inside the tolerance, and fails a leaf moved
+just past it, a leaf moved to another container, two siblings declared in the other order, a
+wrong root count or root parent, a missing node, a dropped fan radius, a changed bound, a
+coordinate that is not a finite number, and the other allocation.
+
+## radial-fixture.html + radial-behavior.mjs
+
+The **browser behavior harness** of `diagram-interactive-radial`. `radial-behavior.mjs` serves
+this repository read-only on 127.0.0.1, opens `radial-fixture.html` (three hosts, the owner files
+and the specimen generator; no consumer code and no stub) in headless Chrome, and drives it
+with real mouse, wheel, touch and key input over the DevTools Protocol. Two per-shape sweeps
+visit every mark and run in the page instead: the click sweep calls the click's own resolution
+function at each mark's center, and a sample of real clicks per shape must agree with it; the
+keyboard sweep dispatches key events on the stage, and the K checks walk with real keys.
+Destroy is checked by the browser's own listener count. No npm dependency; Node 22+, Chrome at
+`$CHROME` or the default locations.
+
+```
+node tests/radial-behavior.mjs           # add --json for the measurements
+```
+
+```text
+M  the minimum composition         S  every hierarchy shape         P  pointer and wheel
+R  the relation layer's first state in both compositions: mount, remount, arrival claimed with
+   no link, resolved and unresolved deep links, after a selection clears; and, in the minimum
+   composition with motion not reduced, the first frame
+G  the reference geometry, computed in the browser                  L  renamed identifiers
+O  overlapping marks and the chooser; its focus when a resize closes it (to the figure, unless
+   a reader moved it elsewhere; none on destroy)                    T  touch: tap, pan, pinch
+F  Fit, the zoom floor, resize     K  the keyboard path             I  two instances, the event bus
+D  destroy and remount             E  error paths                   A  deep-link arrival
+V  a second label target           X  controls on the harness's own checks
+C  the responsive chrome, on the third host and once on the specimen shell: one window narrowed
+   step by step from 1600 to 390 CSS px and widened again, with no chrome box meeting another or
+   leaving the canvas; fresh compact load against resize arrival; a wide but short canvas; a
+   reader's panel kept, re-bounded, set aside and restored, forgotten after a reader action;
+   Escape, explicit Fit, a reader's own view across arrangements, focus handoff, an extreme size,
+   a phone turned, both themes, destroy and remount, chrome configuration errors; no flip or
+   refit loop where the Fit straddles a tier, a selection never changing the arrangement, Escape
+   forgetting a set-aside panel, no unreadable legend strip on a short wide canvas, focus never
+   passing through another control, refits carrying their cause
+```
+
+The first line of its output names the runtimes: Node and V8, and the browser and its V8.
+
+With `--json` it also records the chrome's narrowing sequence and the phone's turn (arrangement,
+open panel and Fit scale per CSS viewport). Per shape it also **measures, without judging**: the Fit's scale and clearance, the names it
+defers, the pairs of marks whose shapes overlap, how the click resolution resolves at each mark's
+center (directly, or through the chooser), the sampled centers that page chrome covers, and the
+keyboard reach. Accepting the contract's input limits
+says nothing about legibility; these numbers are what the overview actually shows.
+
+## radial-stack-fixture.html + radial-stack.mjs
+
+The **full-stack harness** of `diagram-interactive-radial`: every optional module (inspector,
+facets, legend, chrome, export, theme) on the synthetic composition, in two hosts, and once on the
+reference specimen, which the fixture loads only when a check asks for it. Keys that peel layers
+arrive as trusted DevTools input; the other checks drive the modules' own controls in the page.
+Each check is an in-page function, and group X runs some of them again against a planted fault in
+a copy of a module, each of which must fail the check written for it.
+
+```
+node tests/radial-stack.mjs              # add --json for the measurements
+```
+
+```text
+U  the inspector: views, preview, references and the way back, Escape, show-all, relation
+   direction and flags, locators, text never markup, malformed sections, a record arrival,
+   refits at the Fit only, the compact sheet and its exclusivity, a selection opening the sheet
+   with no refit (also over an open chrome panel), focus kept in the panel with trusted keys, the
+   live legend's notes and its shapes line; focus handed to the disclosure when a resize collapses
+   the panel (a narrow window; a short one under a coarse pointer) and left alone when it is
+   elsewhere; a reference to a filtered-out node with no facets module, to a node hidden by policy,
+   and the way back to a node filtered out since (the record closes; nothing else changes)
+Q  facets and search: the index, ranking and ties, what a result opens, OR within and AND across,
+   counts, census and readout, relations, refit (the whole layout when no item remains), a filter
+   clearing a hidden selection, the drawer's bound, edge and focus, exclusivity on a compact canvas,
+   the Escape order and the result keyboard with trusted keys, focus after a result closes the
+   drawer, no match, is-out; and, on the reference shell, an open drawer meeting a corner panel
+W  export with the whole stack in use, and the reference plates
+H  theme: the cycle, one owner per document, teardown
+N  the synthetic composition in every hierarchy shape, two instances, destroy and remount,
+   missing modules and slots, the minimum composition's membership, no reference content loaded
+R  the reference specimen on the complete stack
+X  planted faults: OR as AND, the record layer below the selection, rows without direction, an
+   unbounded drawer, a panel without its claim, a locator linking anything, the root framed alone,
+   a hidden selection kept, a selection refitting the opened sheet, the sheet claiming before it
+   leaves the Fit, a yielding obstacle ignored in wide, focus dropped when a view is replaced,
+   focus kept in a drawer another panel closes, a resize collapse without the focus handoff, a
+   reveal only through the facets module
+```
+
+## radial-export-fixture.html + radial-export.mjs
+
+The **export harness**: the page and diagram plates on the synthetic specimen, through the
+instance's `service('export')` and through real clicks on the controls. Sizes and filenames in both
+themes; byte-identical SVG for one page state; the reader's state untouched and the plate
+independent of the screen; the counts the plate lines receive; the failure surfaced on the control
+and its restoration; both font routes and their failures; raster controls showing the embedded
+faces and the read rules each change the pixels; negative controls for each plate check; legend
+notes and the shape key; malformed sections; the controls' slots; a real download; one run at a
+time; teardown during and after a run; and one click-time snapshot: a theme changed in either
+direction while the first export font's load is held at the native boundary leaves the plate (a
+diagram plate both ways, and a page plate with its mark, legend and caption) equal to that theme's
+plate without a change, with its theme and filename, and the page with the reader's new theme (a
+held load with no change is the control).
+
+```
+node tests/radial-export.mjs             # --out DIR keeps the review PNGs and the results
+```
