@@ -769,7 +769,7 @@
     function registerOverlay(o) { overlays.push(o); return function () { overlays = overlays.filter(function (x) { return x !== o; }); }; }
     function pushEscape(x) { escapes.push(x); escapes.sort(function (a, b) { return a.priority - b.priority; }); }
     function openChooser(t, sx, sy) {
-      closeChooser();
+      closeChooser(true);
       var ids = t.ids, shown = t.shown, more = ids.length - shown.length;
       var box = adopt(html('div', 'radial-chooser'));
       box.setAttribute('role', 'dialog');
@@ -789,7 +789,7 @@
         b.appendChild(tx);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
-          closeChooser();
+          closeChooser(true);
           select(k, 'chooser'); focusId = k; drawFocus();
           stage.focus({ preventScroll: true });
         });
@@ -800,7 +800,7 @@
       if (more > 0) {
         var z = html('button', 'radial-chooser-zoom', controls.zoomHere + ' (' + fill(controls.more, { count: more }) + ')');
         z.type = 'button';
-        z.addEventListener('click', function (ev) { ev.stopPropagation(); closeChooser(); zoomAt(2.5, sx, sy); stage.focus({ preventScroll: true }); });
+        z.addEventListener('click', function (ev) { ev.stopPropagation(); closeChooser(true); zoomAt(2.5, sx, sy); stage.focus({ preventScroll: true }); });
         box.appendChild(z); items.push(z);
       }
       box.addEventListener('keydown', function (ev) {
@@ -821,7 +821,7 @@
       var entry = { name: 'chooser', side: 'float', element: box, isOpen: function () { return !!chooser; },
                     dismiss: function () { closeChooser(); } };
       var esc = { name: 'chooser', priority: 30, isActive: function () { return !!chooser; },
-                  dismiss: function () { closeChooser(); stage.focus({ preventScroll: true }); } };
+                  dismiss: function () { closeChooser(true); stage.focus({ preventScroll: true }); } };
       chooser = { box: box, items: ids, unregister: registerOverlay(entry), esc: esc };
       pushEscape(esc);
       announce(fill(announceT.choose, { count: ids.length }));
@@ -831,14 +831,19 @@
       if (locked) { paint(k); return; }
       previewId = k; paint(k);
     }
-    function closeChooser() {
+    /* a chooser that closes on its own (a resize, a pan, a zoom, a filter) while it holds focus hands
+       focus to the figure, so the next key still reaches it; a caller that places focus itself passes own.
+       Focus a reader has moved elsewhere stays there, and destroy moves none */
+    function closeChooser(own) {
       if (!chooser) return;
       var c = chooser; chooser = null;
+      var held = !own && !destroyed && c.box.contains(document.activeElement);
       c.unregister();
       escapes = escapes.filter(function (x) { return x !== c.esc; });
       if (c.box.parentNode) c.box.parentNode.removeChild(c.box);
       created = created.filter(function (x) { return x !== c.box; });
       previewId = null; paint(locked);
+      if (held) stage.focus({ preventScroll: true });
     }
 
     /* ----------------------------------------------------- keyboard path -- */

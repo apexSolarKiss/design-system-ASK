@@ -522,7 +522,8 @@ R  the relation layer's first state in both compositions: mount, remount, arriva
    no link, resolved and unresolved deep links, after a selection clears; and, in the minimum
    composition with motion not reduced, the first frame
 G  the reference geometry, computed in the browser                  L  renamed identifiers
-O  overlapping marks and the chooser                                T  touch: tap, pan, pinch
+O  overlapping marks and the chooser; its focus when a resize closes it (to the figure, unless
+   a reader moved it elsewhere; none on destroy)                    T  touch: tap, pan, pinch
 F  Fit, the zoom floor, resize     K  the keyboard path             I  two instances, the event bus
 D  destroy and remount             E  error paths                   A  deep-link arrival
 V  a second label target           X  controls on the harness's own checks

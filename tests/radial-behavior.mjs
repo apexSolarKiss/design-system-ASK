@@ -30,7 +30,9 @@
         the wheel zooms about the pointer and a horizontal scroll does not
      O  overlapping marks: a click where marks overlap offers them all in a chooser, operable by
         pointer and by keyboard, closed by a pan or a zoom; every visible mark resolves from a
-        click at its own center, and sampled real clicks agree
+        click at its own center, and sampled real clicks agree; a resize that closes the chooser
+        while it holds focus hands focus to the figure, so the next Escape reaches it, while focus a
+        reader moved elsewhere stays, Escape keeps its own path and destroy moves no focus
      T  touch: a tap selects; a one-finger drag pans without selecting; a pinch zooms about its centroid
      F  Fit: an explicit Fit restores the fitted view and reports it; the zoom floor; a resize refits
      K  keyboard: Tab reaches the figure; the arrows walk the hierarchy and reach every visible node;
@@ -533,6 +535,60 @@ async function run() {
         const afterWheel = await p.ev(`!!FX.host('A').querySelector('.radial-chooser')`);
         check('O7 a pan or a wheel zoom closes the chooser, whose list belongs to the point it opened at', !afterPan && reopened && !afterWheel,
           J({ afterPan, reopened, afterWheel }));
+
+        /* focus when the chooser closes: a real click opens it over a selection, focus on its first item */
+        const ST = `FX.host('A').querySelector('[data-radial-slot="stage"]')`;
+        const fstate = () => p.ev(`(() => { const i = FX.inst.A, a = document.activeElement, s = i.state();
+          return { focus: a === ${ST} ? 'stage' : a === document.body ? 'body' : a.getAttribute('data-radial-control') || a.className, open: !!FX.host('A').querySelector('.radial-chooser'),
+                   sel: s.selection.locked, view: i.view(), members: JSON.stringify(s.membership) }; })()`);
+        const settle = async () => { await p.frames(); await p.ev('new Promise((r) => setTimeout(r, 120))'); await p.frames(); };
+        const openOver = async () => {
+          await p.size(1280, 800); await settle();
+          await p.ev(`(() => { const i = FX.inst.A; i.fit(); i.select(null); i.select(${J(o.a)}); return true; })()`); await p.frames();
+          const q = await p.ev(`H.overlapPoint('A')`);
+          await p.click(q.px, q.py);
+          return fstate();
+        };
+        const opened = (s) => s.open && /radial-chooser-item/.test(s.focus) && s.sel === o.a;
+        /* the same resize with no chooser open: the view the resize policy gives */
+        await p.size(1280, 800); await settle();
+        await p.ev(`(() => { const i = FX.inst.A; i.fit(); i.select(null); i.select(${J(o.a)}); return true; })()`); await p.frames();
+        await p.size(1240, 800); await settle();
+        const plain = await fstate();
+        const o8a = await openOver();
+        await p.size(1240, 800); await settle();
+        const o8b = await fstate();
+        await p.key('Escape');
+        const o8c = await fstate();
+        check('O8 a resize that closes the chooser while it holds focus hands focus to the figure, moving nothing else; the next Escape reaches it',
+          opened(o8a) && !o8b.open && o8b.focus === 'stage' && o8b.sel === o.a && o8b.members === o8a.members && J(o8b.view) === J(plain.view) && o8c.sel === null,
+          J({ opened: o8a.focus, after: { focus: o8b.focus, open: o8b.open, sel: o8b.sel, view: o8b.view }, plain: plain.view, escape: o8c.sel }));
+        const o9a = await openOver();
+        const hud = await p.ev(`(() => { const r = FX.host('A').querySelector('[data-radial-control="zoom-in"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+        await p.click(hud.x, hud.y);
+        const o9b = await fstate();
+        await p.size(1240, 800); await settle();
+        const o9c = await fstate();
+        check('O9 control: focus a reader moves to another control while the chooser is open stays there, through the close and the resize',
+          opened(o9a) && !o9b.open && o9b.focus === 'zoom-in' && o9c.focus === 'zoom-in' && o9c.sel === o.a, J({ opened: o9a.focus, moved: o9b.focus, after: o9c.focus, sel: o9c.sel }));
+        const o10a = await openOver();
+        await p.key('Escape');
+        const o10b = await fstate();
+        await p.key('Escape');
+        const o10c = await fstate();
+        check('O10 control: Escape closes the chooser with focus on the figure and the selection kept; the next Escape clears it',
+          opened(o10a) && !o10b.open && o10b.focus === 'stage' && o10b.sel === o.a && o10c.sel === null, J({ first: o10b.focus, kept: o10b.sel, second: o10c.sel }));
+        const o11a = await openOver();
+        /* the stage's focus events are counted, since restoring the host would blur a stage focused during destroy */
+        await p.ev(`(() => { const st = ${ST}; window.O11 = 0; const f = () => { window.O11++; }; st.addEventListener('focus', f); FX.inst.A.destroy(); st.removeEventListener('focus', f); return true; })()`); await p.frames();
+        const o11b = await p.ev(`({ focused: window.O11, stage: document.activeElement === ${ST}, tabindex: ${ST}.getAttribute('tabindex'), chooser: !!FX.host('A').querySelector('.radial-chooser') })`);
+        await p.ev(`FX.mount('A', 'deeper', { noArrival: true }); true`); await p.frames();
+        const o11c = await openOver();
+        await p.size(1240, 800); await settle();
+        const o11d = await fstate();
+        check('O11 control: destroy with focus in the chooser moves no focus to the stage it leaves; the remount\'s chooser hands focus to the figure on a resize',
+          opened(o11a) && o11b.focused === 0 && !o11b.stage && o11b.tabindex === null && !o11b.chooser && opened(o11c) && !o11d.open && o11d.focus === 'stage', J({ destroyed: o11b, remount: o11d.focus }));
+        await p.size(1280, 800); await settle();
       }
       check('O6 no exception', p.errors.length === 0, p.errors.join(' | '));
       await p.close();
