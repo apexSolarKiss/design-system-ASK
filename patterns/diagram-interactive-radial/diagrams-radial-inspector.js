@@ -442,7 +442,9 @@
     function rendered(e) { return !!e && e.getClientRects().length > 0; }
     function place() {
       set(slot, 'data-radial-inspector', compact ? 'compact' : 'wide');
-      set(slot, 'data-diagram-fit-edge', compact ? 'top' : 'right');
+      /* a collapsed compact pill is reserved as a right lane, so on a short landscape screen it costs
+         no full-width band of height; an expanded compact sheet still reserves the top */
+      set(slot, 'data-diagram-fit-edge', compact && expanded ? 'top' : 'right');
       set(slot, 'data-radial-expanded', expanded ? 'true' : 'false');
       /* an expanded compact sheet yields to another exclusive panel; the pill takes its room */
       set(slot, 'data-radial-obstacle', compact && expanded ? 'yields' : '');
