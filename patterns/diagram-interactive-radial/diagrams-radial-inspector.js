@@ -26,8 +26,9 @@
    the node is shown and selected, and a node hidden by policy is not reached.
 
    PLACEMENT. The panel is a corner panel on a wide canvas and a sheet across the top of a
-   compact one, where it starts collapsed. It declares the Fit edge it occupies (right, or top
-   when compact), so the Fit reserves it, and it is an exclusive overlay on a compact canvas:
+   compact one, where it starts collapsed. It declares the Fit edge it occupies (right; on a
+   compact canvas, top while the sheet is open and right while it is collapsed to its pill), so
+   the Fit reserves it, and it is an exclusive overlay on a compact canvas:
    opening it closes another exclusive panel, and opening one of those collapses it. The reader's
    own toggle refits only at the Fit; a selection that opens the panel does not refit, and brings
    the selected node into the room beside the panel instead. */

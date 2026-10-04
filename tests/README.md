@@ -563,12 +563,18 @@ node tests/radial-stack.mjs              # add --json for the measurements
 ```text
 U  the inspector: views, preview, references and the way back, Escape, show-all, relation
    direction and flags, locators, text never markup, malformed sections, a record arrival,
-   refits at the Fit only, the compact sheet and its exclusivity, a selection opening the sheet
+   refits at the Fit only, the compact sheet and its exclusivity, the Fit edge it declares by
+   state (the collapsed pill right, the open sheet top, wide right), a selection opening the sheet
    with no refit (also over an open chrome panel), focus kept in the panel with trusted keys, the
    live legend's notes and its shapes line; focus handed to the disclosure when a resize collapses
    the panel (a narrow window; a short one under a coarse pointer) and left alone when it is
    elsewhere; a reference to a filtered-out node with no facets module, to a node hidden by policy,
-   and the way back to a node filtered out since (the record closes; nothing else changes)
+   and the way back to a node filtered out since (the record closes; nothing else changes);
+   collapsing, expanding and a portrait / landscape turn with a record and a filter, at the Fit
+   (each change refits; the turn back restores the same Fit) and away from it (the camera stays);
+   and the two public expressions, the CFW reference and the Vellmark parks composition, in each
+   theme (the theme in force checked) on a touch page turned through short landscape sizes
+   (844x390 to 568x320), then portrait and wide, with the whole-map Fit standing clear at each
 Q  facets and search: the index, ranking and ties, what a result opens, OR within and AND across,
    counts, census and readout, relations, refit (the whole layout when no item remains), a filter
    clearing a hidden selection, the drawer's bound, edge and focus, exclusivity on a compact canvas,
@@ -584,7 +590,8 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    a hidden selection kept, a selection refitting the opened sheet, the sheet claiming before it
    leaves the Fit, a yielding obstacle ignored in wide, focus dropped when a view is replaced,
    focus kept in a drawer another panel closes, a resize collapse without the focus handoff, a
-   reveal only through the facets module
+   reveal only through the facets module, a collapsed pill reserving a band across the top again
+   (on the CFW reference at 568x320, where the drawing then stands under the controls)
 ```
 
 ## radial-export-fixture.html + radial-export.mjs

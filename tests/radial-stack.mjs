@@ -15,8 +15,11 @@
    GROUPS
      U  the inspector: idle, item, container, root and record views; preview; references, the way
         back and Escape; show-all; a reference to a filtered-out node; relation direction and flags;
-        locators; compact sheet and exclusivity; refits only at the Fit; text, never markup;
-        malformed sections; a record arrival
+        locators; compact sheet and exclusivity; the Fit edge by state (the collapsed pill right,
+        the open sheet top, wide right); refits only at the Fit; text, never markup; malformed
+        sections; a record arrival; expand, collapse and a portrait / landscape turn with a record
+        and a filter, at the Fit and away from it; the two public expressions standing clear at the
+        Fit on short landscape touch screens, and in portrait and wide
      Q  facets and search: the index; ranking and ties; what a result opens; OR within and AND
         across facets, counts, census and readout; relations; refit, and none for an empty result;
         a filter clearing a hidden selection but not a record; the Escape order; the drawer's
@@ -28,7 +31,8 @@
         remount, missing modules and slots, the minimum composition's membership, and no
         reference content loaded
      R  the reference specimen mounts the complete stack on its captured content
-     X  controls: a planted fault in a copy of a module fails the check written for it */
+     X  controls: a planted fault in a copy of a module fails the check written for it, or, for a
+        public expression, in a copy loaded into that page and remounted */
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -239,21 +243,31 @@ window.C = (function () {
     m.zoom(1.6); await frames(); const v = m.view(); const n = fits.length; q('#D .radial-insp-toggle').click(); await frames(); const v2 = m.view();
     return { ok: !a.inspector.expanded && fits.length >= 2 && fits.slice(0, 2).every((c) => c === 'reader') && fits.length === n && v.k === v2.k && v.x === v2.x,
              d: { fits, expandedAfter1: a.inspector.expanded, kept: v.k === v2.k } }; };
-  /* compact: collapsed at start, opened by a selection, the top edge, exclusive with the chrome panels */
+  /* compact: collapsed at start, opened by a selection, exclusive with the chrome panels. The Fit
+     edge follows the state: the collapsed pill declares the right, the open sheet the top */
   C.compact = async () => { const m = fresh(); await frames(); const slot = q('#D [data-radial-slot="inspector"]');
-    const a = { s: st().inspector, edge: slot.getAttribute('data-diagram-fit-edge'), obs: slot.getAttribute('data-radial-obstacle') };
+    const edge = () => slot.getAttribute('data-diagram-fit-edge');
+    const a = { s: st().inspector, edge: edge(), obs: slot.getAttribute('data-radial-obstacle') };
     m.select('VM-KQ-002'); await frames();
-    const b = { s: st().inspector, obs: slot.getAttribute('data-radial-obstacle') };
+    const b = { s: st().inspector, edge: edge(), obs: slot.getAttribute('data-radial-obstacle') };
     const trig = qa('#D .radial-chrome-trigger').find((t) => t.getAttribute('aria-controls') === q('#D [data-radial-slot="legend"]').id);
     trig.click(); await frames();
-    const c = { s: st().inspector, chrome: st().chrome.open };
+    const c = { s: st().inspector, edge: edge(), chrome: st().chrome.open };
     q('#D .radial-insp-toggle').click(); await frames();
-    const d = { s: st().inspector, chrome: st().chrome.open };
+    const d = { s: st().inspector, edge: edge(), chrome: st().chrome.open };
     esc(); await frames(); esc(); await frames();
-    const e = { s: st().inspector, sel: st().selection.locked };
-    return { ok: a.s.arrangement === 'compact' && !a.s.expanded && a.edge === 'top' && a.obs === '' && b.s.expanded && b.obs === 'yields' &&
-                 !c.s.expanded && c.chrome === 'legend' && d.s.expanded && d.chrome === null && e.sel === null,
-             d: { a, b: b.s.expanded, c, d, e } }; };
+    const e = { s: st().inspector, edge: edge(), sel: st().selection.locked };
+    return { ok: a.s.arrangement === 'compact' && !a.s.expanded && a.edge === 'right' && a.obs === '' && b.s.expanded && b.edge === 'top' && b.obs === 'yields' &&
+                 !c.s.expanded && c.edge === 'right' && c.chrome === 'legend' && d.s.expanded && d.edge === 'top' && d.chrome === null &&
+                 e.sel === null && !e.s.expanded && e.edge === 'right',
+             d: { a, b: [b.s.expanded, b.edge], c, d, e } }; };
+  /* wide: the corner panel declares the right edge, open or collapsed */
+  C.wideEdge = async () => { const m = fresh(); await frames(); const slot = q('#D [data-radial-slot="inspector"]'), edge = () => slot.getAttribute('data-diagram-fit-edge');
+    const a = { arr: st().inspector.arrangement, exp: st().inspector.expanded, edge: edge() };
+    q('#D .radial-insp-toggle').click(); await frames();
+    const b = { exp: st().inspector.expanded, edge: edge() };
+    q('#D .radial-insp-toggle').click(); await frames();
+    return { ok: a.arr === 'wide' && a.exp && a.edge === 'right' && !b.exp && b.edge === 'right', d: { a, b } }; };
 
   /* compact: a selection opens the sheet without refitting, and the node lands beside the sheet */
   C.compactReveal = async () => { const m = fresh(); await frames(); const k0 = m.view().k, fits = []; m.on('fit', (e) => fits.push(e.cause));
@@ -476,6 +490,19 @@ window.C = (function () {
     return { ok: d.nodes === 590 && d.rel === 217 && recs === 479 && d.entries === 1068 && !d.unresolved && !d.unsupported && /authority/i.test(t1) && tone && t2 === 'Seeding RSI Toward ASI' &&
                  d.census === '548 / 548 objects — complete map, no filter', d }; };
 
+  /* ---- a public expression at the Fit (the preview pages, RADIAL_MAP) ---- */
+  /* compact on a narrow or a short touch screen, where the collapsed pill declares the right edge;
+     otherwise wide, where the corner panel does. Either way the whole-map Fit stands clear */
+  C.exprFit = async (scheme) => { const m = RADIAL_MAP; await frames();
+    const s = m.state(), v = m.view(), f = m.report().fit, slot = q('[data-radial-slot="inspector"]'), html = document.documentElement;
+    const compact = matchMedia('(max-width: 767px), (max-height: 520px) and (pointer: coarse)').matches;
+    const d = { size: innerWidth + 'x' + innerHeight, theme: html.getAttribute('data-theme') || getComputedStyle(html).colorScheme,
+                arr: s.inspector.arrangement, exp: s.inspector.expanded, edge: slot.getAttribute('data-diagram-fit-edge'),
+                k: +v.k.toFixed(4), atFit: v.atFit, clear: f.clear, drawing: f.drawingClear, under: f.labelsUnder, outside: f.labelsOutside,
+                covered: f.covered.length, cause: f.cause };
+    return { ok: d.arr === (compact ? 'compact' : 'wide') && (!compact || !d.exp) && d.edge === 'right' && d.atFit && d.clear === true &&
+                 (!scheme || d.theme === scheme), d }; };
+
   /* ---- X: a planted fault in a copy of a module, then the check written for it ---- */
   C.plant = async (file, from, to) => {
     const src = await (await fetch('/patterns/diagram-interactive-radial/' + file)).text();
@@ -508,6 +535,37 @@ const KEYED = {
     return { ok, d: { setup, a, b } };
   },
   u20(P) { return KEYED.resizeFocus(P, [1200, 900], [390, 844], false); },
+  /* on a touch page, with a record open from a selection and a filter set: collapse, expand and a
+     portrait / landscape turn, first at the Fit, then away from it */
+  async u27(P) {
+    const settle = async () => { await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames(); };
+    await P.size(390, 844); await settle();
+    const n0 = await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); FX.mode('one'); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
+      m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243'); m.service('facets').set('status', [m.model.byId.get('VM-HG-243').state]);
+      return m.state().membership.visibleItems; })()`);
+    await settle(); await P.ev('FX.inst.D.fit("explicit")'); await settle();
+    const snap = (tag) => P.ev(`(() => { const m = FX.inst.D, s = m.state(), v = m.view(), f = m.report().fit;
+      return { tag: ${J(tag)}, exp: s.inspector.expanded, arr: s.inspector.arrangement,
+        edge: document.querySelector('#D [data-radial-slot="inspector"]').getAttribute('data-diagram-fit-edge'),
+        k: v.k, x: v.x, y: v.y, atFit: v.atFit, cause: f.cause, clear: f.clear,
+        kept: s.inspector.view === 'record' && s.inspector.target === 'OFFICE-N' && s.selection.locked === 'VM-HG-243' &&
+          s.membership.active && s.membership.visibleItems === ${n0} && s.facets.active.length === 1 }; })()`);
+    const toggle = async (tag) => { await P.ev(`document.querySelector('#D .radial-insp-toggle').click()`); await settle(); return snap(tag); };
+    const turn = async (w, h, tag) => { await P.size(w, h); await settle(); return snap(tag); };
+    const run = async () => [await toggle('collapse'), await toggle('expand'), await turn(844, 390, 'landscape'),
+      await toggle('L collapse'), await toggle('L expand'), await turn(390, 844, 'portrait')];
+    const fit = [await snap('fit')].concat(await run());
+    await P.ev('FX.inst.D.zoom(1.6)'); await settle();
+    const away = [await snap('zoomed')].concat(await run());
+    const same = (a, b) => Math.abs(a.k - b.k) < 1e-9 && Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
+    const states = (r) => J(r.map((x) => x.exp)) === J([true, false, true, true, false, true, true]);
+    const all = fit.concat(away);
+    const ok = n0 > 0 && all.every((r) => r.kept && r.arr === 'compact' && r.edge === (r.exp ? 'top' : 'right')) && states(fit) && states(away) &&
+      fit.every((r) => r.atFit) && [1, 2, 4, 5].every((i) => fit[i].cause === 'reader') && [3, 6].every((i) => fit[i].cause === 'resize') &&
+      fit[1].clear && fit[4].clear && same(fit[2], fit[0]) && same(fit[5], fit[3]) && same(fit[6], fit[0]) &&
+      away.every((r) => !r.atFit && same(r, away[0]));
+    return { ok, d: all.map((r) => [r.tag, r.exp ? 'open' : 'pill', r.edge, +r.k.toFixed(4), r.atFit, r.cause, r.clear, r.kept]) };
+  },
   /* a keyboard reader follows a reference to a record and comes back */
   async u17(P) {
     await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
@@ -642,10 +700,17 @@ async function run() {
       check('U22 a coarse pointer: a height that makes the canvas compact collapses the inspector with focus handed to its disclosure; Escape still closes the record',
         r.ok && r.d.setup.coarse, J(r.d)); }
     await P.size(390, 844); await P.frames();
-    await W('U15 compact: collapsed until a selection opens it; the top edge; exclusive with an opened chrome panel both ways; Escape collapses it', 'compact');
+    { const a = await at(P, 'compact');
+      await P.size(1280, 800); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+      const w = await at(P, 'wideEdge');
+      await P.size(390, 844); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+      measures.u15 = { compact: a.d, wide: w.d };
+      check('U15 compact: collapsed until a selection opens it; the collapsed pill declares the right edge and the open sheet the top, and wide keeps the right, open or collapsed; exclusive with an opened chrome panel both ways; Escape collapses it',
+        a.ok && w.ok, J({ wide: w.d, compact: [a.d.a.edge, a.d.b, a.d.c.edge, a.d.d.edge, a.d.e.edge] })); }
     await W('Q13 compact: the drawer, the chrome panels and the inspector sheet are exclusive', 'exclusive');
     await W('U16 compact: a selection opens the sheet with no refit, and the selected node lands beside the sheet, not under it', 'compactReveal');
     await W('U18 compact: a selection opening the sheet over an open chrome panel at the Fit closes the panel and refits nothing', 'compactClaimNoFit');
+    { const r = await KEYED.u27(P); measures.u27 = r.d; check('U27 compact, with a record and a filter: collapsing, expanding and a portrait / landscape turn and back keep the record, selection and filter, with the Fit edge following the state; at the Fit each change refits and the turn back restores the same Fit; away from it the camera stays', r.ok, J(r.d).slice(0, 400)); }
     { const r = await KEYED.q15(P); check('Q15 compact, with the keyboard: choosing a result closes the drawer with focus on its trigger, and Escape then clears the selection', r.ok, J(r.d)); }
     check('Q14 no uncaught error on the compact page', P.errors.length === 0, J(P.errors.slice(0, 3)));
     await P.close();
@@ -668,6 +733,40 @@ async function run() {
       }
       check('X11 a chrome planted to ignore a yielding obstacle in wide fails Q16', pl.planted && !x.ok, J(x.d));
       await Xp.close();
+    }
+
+    /* the two public expressions at the whole-map Fit, on a touch page turned through the short
+       landscape sizes, then portrait and wide, in each theme */
+    console.log('# U  the public expressions at the Fit');
+    {
+      const EXPR = { 'the CFW reference': '/patterns/_preview/diagram-interactive-radial.html', 'the Vellmark parks composition': '/patterns/_preview/diagram-interactive-radial.neutral.html' };
+      const SIZES = [[844, 390], [812, 375], [740, 340], [667, 375], [568, 320], [390, 844], [1280, 800]];
+      measures.exprFit = [];
+      for (const [name, page] of Object.entries(EXPR)) for (const scheme of ['light', 'dark']) {
+        const E = await open(b, base + page, { width: SIZES[0][0], height: SIZES[0][1], touch: true, scheme });
+        const rows = [];
+        for (const [i, [w, h]] of SIZES.entries()) {
+          if (i) { await E.size(w, h); await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 250))'); await E.frames(); }
+          rows.push(await E.ev(`C.exprFit(${J(scheme)})`));
+        }
+        measures.exprFit.push({ name, scheme, rows: rows.map((r) => r.d) });
+        const bad = rows.filter((r) => !r.ok).map((r) => [r.d.size, r.d.theme, r.d.edge, r.d.exp ? 'open' : 'pill', 'clear ' + r.d.clear, 'drawing ' + r.d.drawing]);
+        check(`U26 ${name}, ${scheme}: on a short landscape touch screen (844x390 to 568x320) and in portrait (390x844) the collapsed pill declares the right edge, and in wide (1280x800) the corner panel does; the whole-map Fit stands clear at each`,
+          !bad.length && E.errors.length === 0, J(bad.length ? bad : rows.map((r) => [r.d.size, r.d.k])).slice(0, 400));
+        await E.close();
+      }
+      /* its control: the pill planted to reserve a band across the top again, on the CFW reference at 568x320 */
+      const Xc = await open(b, base + EXPR['the CFW reference'], { width: 568, height: 320, touch: true });
+      const pl = await Xc.ev(`C.plant('diagrams-radial-inspector.js', ${J("set(slot, 'data-diagram-fit-edge', compact && expanded ? 'top' : 'right');")}, ${J("set(slot, 'data-diagram-fit-edge', compact ? 'top' : 'right');")})`);
+      let x = { ok: true, d: 'not planted' };
+      if (pl.planted) {
+        await Xc.ev(`(() => { const R = window.RADIAL_REFERENCE; RADIAL_MAP.destroy(); window.RADIAL_MAP = DIAGRAM_RADIAL.mount({ host: document.querySelector('[data-radial]'), data: R.data, adapter: R.adapter, modules: R.modules }); return true; })()`);
+        await Xc.ev('new Promise((r) => setTimeout(r, 300))'); await Xc.frames();
+        x = await Xc.ev('C.exprFit()');
+      }
+      check('X16 a collapsed pill planted to reserve a band across the top again fails U26\'s check on the CFW reference at 568x320: the whole-map Fit no longer stands clear, the drawing under the controls',
+        pl.planted && !x.ok && x.d.clear === false && x.d.drawing === false, J(x.d));
+      await Xc.close();
     }
 
     console.log('# W  export');
