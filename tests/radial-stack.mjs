@@ -26,8 +26,13 @@
         inspector folded with the panels on a desktop window, and its dynamic states there;
         selections at the narrowest window where the panels stand leaving no drawn mark under the
         wide panel; a search result and an arrival landing clear of the open sheet; the sheet
-        yielding to the open drawer; and the chrome and the inspector settling in one step where
-        they meet
+        yielding to the open drawer; a phone turned with the reading sheet open, however it was
+        opened, keeping the selected node on the canvas and beside the sheet; a camera the reader
+        moved kept through a turn and a resize; an arrived node left clear of the sheet as the
+        layout settles; the sheet's opening closing the drawer that folded the panels returning the
+        wide panel to the wide Fit; on a desktop page narrowed, a centered node kept in view and a
+        framed group framed again; and the chrome and the inspector settling in one step where they
+        meet
      Q  facets and search: the index; ranking and ties; what a result opens; OR within and AND
         across facets, counts, census and readout; relations; refit, and none for an empty result;
         a filter clearing a hidden selection but not a record; the Escape order; the drawer's
@@ -90,14 +95,18 @@ function serve() {
   return new Promise((r) => srv.listen(0, '127.0.0.1', () => r({ srv, base: `http://127.0.0.1:${srv.address().port}` })));
 }
 const KEYS = { Tab: 9, Enter: 13, Escape: 27, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
-async function open(b, url, { width = 1280, height = 800, touch = false, scheme = 'light' } = {}) {
+/* hold: a script URL fragment held at the network until every font face the page declares has loaded, so the
+   page's map mounts with its fonts settled; P.held then reports the faces loaded at the release */
+async function open(b, url, { width = 1280, height = 800, touch = false, scheme = 'light', hold = null } = {}) {
   const tgt = await (await fetch(`http://127.0.0.1:${b.port}/json/new?about:blank`, { method: 'PUT' })).json();
   const ws = new WebSocket(tgt.webSocketDebuggerUrl);
   await new Promise((r) => ws.addEventListener('open', r));
   let id = 0; const pending = new Map(), errors = []; let loaded; const onLoad = new Promise((r) => { loaded = r; });
+  let paused; const onPause = new Promise((r) => { paused = r; });
   ws.addEventListener('message', (ev) => {
     const m = JSON.parse(ev.data);
     if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(JSON.stringify(m.error))) : p.res(m.result); }
+    if (m.method === 'Fetch.requestPaused') paused(m.params.requestId);
     if (m.method === 'Page.loadEventFired') loaded();
     if (m.method === 'Runtime.exceptionThrown') errors.push(String(m.params.exceptionDetails?.exception?.description || m.params.exceptionDetails?.text));
   });
@@ -108,7 +117,19 @@ async function open(b, url, { width = 1280, height = 800, touch = false, scheme 
   if (touch) await call('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
   await call('Emulation.setFocusEmulationEnabled', { enabled: true });
+  if (hold) await call('Fetch.enable', { patterns: [{ urlPattern: '*' + hold + '*', requestStage: 'Request' }] });
   await call('Page.navigate', { url });
+  let held = null;
+  if (hold) {
+    const rid = await Promise.race([onPause, new Promise((r) => setTimeout(() => r(null), 15000))]);
+    const r = await call('Runtime.evaluate', { returnByValue: true, awaitPromise: true, expression:
+      '(async () => { for (let i = 0; i < 400 && !(document.querySelector("[data-radial-slot=stage]") && document.fonts.size > 0); i++) { if (document.body) void document.body.offsetHeight; await new Promise((r) => setTimeout(r, 25)); }' +
+      ' await Promise.all(Array.from(document.fonts).map((f) => f.load().catch(() => null)));' +
+      ' return { faces: document.fonts.size, loaded: Array.from(document.fonts).filter((f) => f.status === "loaded").length, status: document.fonts.status }; })()' });
+    held = Object.assign({ paused: !!rid }, r.result && r.result.value);
+    if (rid) await call('Fetch.continueRequest', { requestId: rid });
+    await call('Fetch.disable');
+  }
   await Promise.race([onLoad, new Promise((r) => setTimeout(r, 15000))]);
   const ev = async (expression) => {
     const r = await call('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
@@ -120,7 +141,7 @@ async function open(b, url, { width = 1280, height = 800, touch = false, scheme 
   const frames = () => ev('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))');
   const mouse = (type, x, y, extra = {}) => call('Input.dispatchMouseEvent', Object.assign({ type, x, y, button: 'none' }, extra));
   const P = {
-    ev, frames, errors, size, call,
+    ev, frames, errors, size, call, held,
     async move(x, y) { await mouse('mouseMoved', x, y); await frames(); },
     async key(k) {
       const code = KEYS[k];
@@ -651,9 +672,11 @@ window.C = (function () {
       : DIAGRAM_RADIAL.mount({ host, data: S.data, adapter: N.adapterFor(S.data, S.adapter), modules: N.modules });
     return true; };
   C.plant = async (file, from, to) => {
-    const src = await (await fetch('/patterns/diagram-interactive-radial/' + file)).text();
-    if (src.split(from).length !== 2) return { planted: false };
-    (0, eval)(src.replace(from, to));
+    let src = await (await fetch('/patterns/diagram-interactive-radial/' + file)).text();
+    /* one replacement, or several given as two lists in order; each anchor must occur exactly once */
+    const froms = [].concat(from), tos = [].concat(to);
+    for (const [i, f] of froms.entries()) { if (src.split(f).length !== 2) return { planted: false }; src = src.replace(f, tos[i]); }
+    (0, eval)(src);
     return { planted: true };
   };
   return C;
@@ -990,6 +1013,278 @@ const KEYED = {
     await P.key('Escape');
     const b = await P.ev(`FX.inst.D.state().selection.locked`);
     return { ok: a.sel === 'VM-KQ-002' && !a.open && /radial-drawer-trigger/.test(a.focus) && b === null, d: { a, b } };
+  }  ,
+  /* a phone turned with the reading sheet open: 390x844 to 844x390 and back, and the other way, the canvas compact
+     throughout. The sheet is opened four ways: from the Fit, by a selection under a filter with an evidence record
+     followed from the sheet; by a #node= arrival; by a search result; by a reference followed from the sheet. After
+     each turn the selection, record and filter are kept, the sheet stays open and the selected node lies on the
+     canvas and clear of the sheet by the reveal margin; a view made from the Fit is the new size's Fit, never smaller;
+     closing the sheet after a turn leaves the node on the canvas (from the Fit, at the Fit), and Fit restores the
+     overview. A record with no placed origin keeps its open view through the turn, at the new size's Fit. Once the
+     observers settle, nothing more happens */
+  async u36(b, base, page, scheme, plant) {
+    const out = { rows: [], fails: [] };
+    const S = `(() => { const m = RADIAL_MAP, s = m.state(), v = m.view(), sel = s.selection.locked, p = sel ? m.project(sel) : null;
+      const sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(), r = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect();
+      const open = s.inspector.expanded && s.inspector.arrangement === 'compact', g = 12, x = p ? sr.left + p.x : 0, y = p ? sr.top + p.y : 0;
+      const f = m.report().fit;
+      return { k: v.k, x: v.x, y: v.y, atFit: v.atFit, manual: v.manual, clear: f.clear, fitSeq: f.seq, fitCause: f.cause, fitScale: f.scale, sel, view: s.inspector.view, target: s.inspector.target, open,
+        chrome: s.chrome.arrangement, filter: s.facets.active.length, size: Math.round(sr.width) + 'x' + Math.round(sr.height),
+        onCanvas: !!p && p.x >= 0 && p.y >= 0 && p.x <= sr.width && p.y <= sr.height,
+        under: !!p && open && x >= r.left - g && x <= r.right + g && y >= r.top - g && y <= r.bottom + g,
+        active: document.activeElement === document.body ? 'body' : (document.activeElement.getAttribute('data-radial-slot') || document.activeElement.className) }; })()`;
+    const click = async (E, sel) => { const c = await E.ev(`(() => { const e = ${sel}; if (!e) return null; e.scrollIntoView({ block: 'nearest' }); const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      if (!c) return false; for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await E.call('Input.dispatchMouseEvent', { type, x: c.x, y: c.y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mousePressed' ? 1 : 0, clickCount: 1 });
+      await E.frames(); return true; };
+    const settle = async (E) => { await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 300))'); await E.frames(); };
+    const turn = async (E, w, h) => { await E.size(w, h); await settle(E); };
+    const go = async (url, w, h) => { const E = await open(b, url, { width: w, height: h, touch: true, scheme });
+      if (plant) { const pl = await E.ev(`C.plant(${J(plant.file)}, ${J(plant.from)}, ${J(plant.to)})`); if (!pl.planted) { await E.close(); return null; } await E.ev('C.remount()'); await settle(E); }
+      return E; };
+    const fail = (label, what, s) => out.fails.push([label + ': ' + what, s && { size: s.size, k: +(s.k || 0).toFixed(4), atFit: s.atFit, sel: s.sel, view: s.view, open: s.open, onCanvas: s.onCanvas, under: s.under, filter: s.filter }]);
+    /* the leaves the cases use: the first drawn leaf under the filter with an evidence record to follow, and the first with a placed reference */
+    const P0 = await go(base + page, 390, 844); if (!P0) return { ok: true, planted: false, d: 'not planted' };
+    const pick = await P0.ev(`(() => { const m = RADIAL_MAP, f = m.service('facets'), items = m.state().facets.options.filter((x) => x.family === 'items');
+      const o = items[0].options.filter((x) => !x.locked && x.count > 0).sort((a, c) => c.count - a.count)[0]; f.set(items[0].id, [o.value]);
+      const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      const refs = () => Array.from(document.querySelectorAll('[data-radial-slot="inspector"] [data-radial-ref]')).map((x) => x.getAttribute('data-radial-ref'));
+      let rec = null, ref = null;
+      for (const n of m.layout.nodes.filter((x) => x.kind === 'leaf' && drawn(x.id))) { m.select(n.id);
+        if (!rec) { const r = refs().find((x) => !m.project(x)); if (r) rec = { leaf: n.id, record: r }; }
+        if (!ref) { const r = refs().find((x) => m.project(x) && x !== n.id); if (r) ref = { leaf: n.id, to: r }; }
+        if (rec && ref) break; }
+      m.select(null); f.reset('module', true);
+      const recs = Array.from(m.model.byId.keys()).filter((id) => m.model.kindOf(id) === 'record');
+      return { facet: items[0].id, value: o.value, rec, ref, record: recs[0] || null }; })()`);
+    await P0.close();
+    if (!pick.rec || !pick.ref) return { ok: false, planted: true, d: { pick, fails: [['no leaf with an evidence record and a placed reference', null]] } };
+    for (const [w0, h0, w1, h1] of [[390, 844, 844, 390], [844, 390, 390, 844]]) {
+      const tag = `${w0}x${h0}`;
+      /* from the Fit, with a filter and an evidence record */
+      { const E = await go(base + page, w0, h0), L = 'Fit-origin record, ' + tag;
+        await E.ev(`(() => { const m = RADIAL_MAP; m.fit('explicit'); m.service('facets').set(${J(pick.facet)}, [${J(pick.value)}]); m.select(${J(pick.rec.leaf)}); return true; })()`); await settle(E);
+        await click(E, `Array.from(document.querySelectorAll('[data-radial-slot="inspector"] [data-radial-ref]')).find((x) => x.getAttribute('data-radial-ref') === ${J(pick.rec.record)})`); await settle(E);
+        const s0 = await E.ev(S); await turn(E, w1, h1); const s1 = await E.ev(S); await turn(E, w0, h0); const s2 = await E.ev(S); await turn(E, w1, h1); const s3 = await E.ev(S);
+        await click(E, `document.querySelector('.radial-insp-toggle')`); await settle(E); const s4 = await E.ev(S);
+        await click(E, `document.querySelector('[data-radial-control="fit"]')`); await settle(E); const s5 = await E.ev(S);
+        out.rows.push([L, [s0, s1, s2, s3, s4, s5].map((s) => [s.size, +s.k.toFixed(4), s.atFit, s.view, s.onCanvas, s.under])]);
+        const kept = (s) => s.sel === pick.rec.leaf && s.view === 'record' && s.target === pick.rec.record && s.filter === 1;
+        if (!(s0.open && kept(s0) && !s0.under)) fail(L, 'the record opens over the filtered Fit, its leaf beside the sheet', s0);
+        for (const [s, t] of [[s1, 'turned'], [s2, 'turned back'], [s3, 'turned again']])
+          if (!(kept(s) && s.open && s.onCanvas && !s.under && !s.manual && !s.atFit)) fail(L, t + ': the record, selection and filter kept, the sheet open, the leaf on the canvas and clear of it', s);
+        if (!(s4.atFit && s4.clear && kept(s4) && !s4.open && s4.onCanvas)) fail(L, 'closed after the turn: at the new size\'s Fit, the leaf on the canvas', s4);
+        const fresh = (s, prev) => s.fitSeq > prev.fitSeq && s.fitCause === 'resize' && Math.abs(s.k - s.fitScale) < 1e-9;
+        if (!(fresh(s1, s0) && fresh(s2, s1) && fresh(s3, s2))) fail(L, 'each turned view is a Fit made for the new size after the turn (its zoom the Fit\'s)', { ...s3, size: [s0, s1, s2, s3].map((x) => x.fitSeq + '/' + x.fitCause + '/' + (+x.fitScale).toFixed(4) + '/' + x.k.toFixed(4)).join(' ') });
+        if (!(s3.k >= s4.k * 0.995)) fail(L, 'the turned view is never smaller than the new size\'s Fit', { ...s3, size: s3.size + ' vs Fit ' + s4.k.toFixed(4) });
+        if (!(s5.atFit && s5.clear && kept(s5))) fail(L, 'Fit restores the overview with the record, selection and filter kept', s5);
+        if (E.errors.length) fail(L, 'no uncaught error', { size: E.errors.slice(0, 2).join(' | ') });
+        await E.close(); }
+      /* a #node= arrival */
+      { const E = await go(base + page + '#node=' + encodeURIComponent(pick.ref.leaf), w0, h0), L = 'link arrival, ' + tag;
+        await settle(E); const s0 = await E.ev(S); await turn(E, w1, h1); const s1 = await E.ev(S); await turn(E, w0, h0); const s2 = await E.ev(S); await turn(E, w1, h1); const s3 = await E.ev(S);
+        await click(E, `document.querySelector('.radial-insp-toggle')`); await settle(E); const s4 = await E.ev(S);
+        await click(E, `document.querySelector('[data-radial-control="fit"]')`); await settle(E); const s5 = await E.ev(S);
+        out.rows.push([L, [s0, s1, s2, s3, s4, s5].map((s) => [s.size, +s.k.toFixed(4), s.atFit, s.view, s.onCanvas, s.under])]);
+        const kept = (s) => s.sel === pick.ref.leaf && s.view === 'item';
+        if (!(kept(s0) && s0.open && s0.onCanvas && !s0.under)) fail(L, 'the arrival opens the sheet with its node beside it', s0);
+        for (const [s, t] of [[s1, 'turned'], [s2, 'turned back'], [s3, 'turned again']])
+          if (!(kept(s) && s.open && s.onCanvas && !s.under && !s.manual && Math.abs(s.k - s0.k) < 1e-9)) fail(L, t + ': the selection kept at the arrival\'s zoom, the sheet open, the node on the canvas and clear of it', s);
+        if (!(kept(s4) && !s4.open && s4.onCanvas)) fail(L, 'closed after the turn: the node stays on the canvas', s4);
+        if (!(s5.atFit && s5.clear && s5.sel === pick.ref.leaf)) fail(L, 'Fit restores the overview with the selection kept', s5);
+        if (E.errors.length) fail(L, 'no uncaught error', { size: E.errors.slice(0, 2).join(' | ') });
+        await E.close(); }
+      /* a search result, and a reference followed from the sheet */
+      for (const how of ['search result', 'followed reference']) {
+        const E = await go(base + page, w0, h0), L = how + ', ' + tag; let want;
+        if (how === 'search result') {
+          want = pick.rec.leaf;
+          await E.ev(`(() => { document.querySelector('.radial-drawer-trigger').click(); const i = document.querySelector('.radial-drawer-q'); i.value = ${J(want)}; i.dispatchEvent(new Event('input'));
+            const b = Array.from(document.querySelectorAll('.radial-drawer-r')).find((x) => x.textContent.indexOf(${J(want)}) >= 0); if (b) b.click(); return !!b; })()`);
+        } else {
+          want = pick.ref.to;
+          await E.ev(`(RADIAL_MAP.select(${J(pick.ref.leaf)}), true)`); await settle(E);
+          await click(E, `Array.from(document.querySelectorAll('[data-radial-slot="inspector"] [data-radial-ref]')).find((x) => x.getAttribute('data-radial-ref') === ${J(want)})`);
+        }
+        await settle(E); const s0 = await E.ev(S); await turn(E, w1, h1); const s1 = await E.ev(S); await turn(E, w0, h0); const s2 = await E.ev(S);
+        out.rows.push([L, [s0, s1, s2].map((s) => [s.size, +s.k.toFixed(4), s.atFit, s.view, s.onCanvas, s.under])]);
+        if (!(s0.sel === want && s0.open && s0.onCanvas && !s0.under)) fail(L, 'the ' + how + ' opens the sheet with its node beside it', s0);
+        for (const [s, t] of [[s1, 'turned'], [s2, 'turned back']])
+          if (!(s.sel === want && s.open && s.onCanvas && !s.under && !s.manual && Math.abs(s.k - s0.k) < 1e-9)) fail(L, t + ': the selection kept at its zoom, the sheet open, the node on the canvas and clear of it', s);
+        if (E.errors.length) fail(L, 'no uncaught error', { size: E.errors.slice(0, 2).join(' | ') });
+        await E.close();
+      }
+    }
+    /* an evidence record with no placed origin, opened by its arrival: its view and the focus stay through the turn, over a
+       Fit made for the new size; no node is invented. There must be one to test */
+    if (!pick.record) fail('record arrival', 'the composition declares an evidence record to arrive at', null);
+    else for (const [w0, h0, w1, h1] of [[390, 844, 844, 390], [844, 390, 390, 844]]) {
+      const E = await go(base + page + '#node=' + encodeURIComponent(pick.record), w0, h0), L = 'record arrival, ' + w0 + 'x' + h0;
+      await settle(E); await E.ev(`(document.querySelector('[data-radial-slot="inspector"]').focus({ preventScroll: true }), true)`);
+      const s0 = await E.ev(S); await turn(E, w1, h1); const s1 = await E.ev(S);
+      await click(E, `document.querySelector('[data-radial-control="fit"]')`); await settle(E); const f1 = await E.ev(S);
+      out.rows.push([L, [s0, s1, f1].map((s) => [s.size, +s.k.toFixed(4), s.atFit, s.view, s.target, s.active, s.fitSeq + '/' + s.fitCause])]);
+      if (!(s0.view === 'record' && s0.target === pick.record && s0.open && s0.sel === null)) fail(L, 'the record arrival opens its view in the sheet, with nothing selected', s0);
+      if (!(s1.view === 'record' && s1.target === pick.record && s1.open && s1.sel === null && s1.active === s0.active && !s1.manual))
+        fail(L, 'turned: the record, the open sheet and the focus kept, nothing selected', { ...s1, size: s1.size + ' focus ' + s0.active + '>>' + s1.active });
+      if (!(s1.fitSeq > s0.fitSeq && s1.fitCause === 'resize' && Math.abs(s1.k - s1.fitScale) < 1e-9 && s1.k >= f1.k * 0.995))
+        fail(L, 'turned: the drawing is a Fit made for the new size, never smaller than its Fit', { ...s1, size: s1.size + ' ' + s0.fitSeq + '>>' + s1.fitSeq + ' ' + s1.fitCause + ' vs Fit ' + f1.k.toFixed(4) });
+      if (E.errors.length) fail(L, 'no uncaught error', { size: E.errors.slice(0, 2).join(' | ') });
+      await E.close();
+    }
+    /* nothing more happens once the observers settle after a turn */
+    { const E = await go(base + page + '#node=' + encodeURIComponent(pick.ref.leaf), 390, 844), L = 'settled after a turn';
+      await settle(E); await E.ev(`(() => { window.__q = []; ['fit', 'placed', 'arrangement', 'obstacle'].forEach((t) => RADIAL_MAP.on(t, () => window.__q.push(t))); return true; })()`);
+      await turn(E, 844, 390); const n0 = await E.ev('window.__q.length');
+      await E.ev('new Promise((r) => setTimeout(r, 800))'); const q = await E.ev('window.__q.slice()');
+      out.rows.push([L, { during: n0, after: q.slice(n0) }]);
+      if (q.length !== n0) fail(L, 'no event after the turn settles (no resize feedback loop)', { size: J(q.slice(n0)) });
+      if (E.errors.length) fail(L, 'no uncaught error', { size: E.errors.slice(0, 2).join(' | ') });
+      await E.close(); }
+    return { ok: out.fails.length === 0, planted: true, d: { pick, rows: out.rows, fails: out.fails } };
+  },
+  /* the reader's own camera is never made again: a real touch pan and a real pinch with the sheet open, then a turn and
+     the turn back keep k, x and y; a change of height alone on the touch screen holds the center (y moves by half the
+     change); on a desktop page a real wheel zoom, the HUD's zoom control, and keyboard moves that pan away from a
+     node an arrival centered, then a resize, keep k, x and y */
+  async u37(b, base, page, scheme, plant) {
+    const fails = [], rows = [];
+    const V = `(() => { const v = RADIAL_MAP.view(); return { k: v.k, x: v.x, y: v.y, atFit: v.atFit, manual: v.manual, sel: RADIAL_MAP.state().selection.locked }; })()`;
+    const settle = async (E) => { await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 300))'); await E.frames(); };
+    const same = (a, c) => Math.abs(a.k - c.k) < 1e-9 && Math.abs(a.x - c.x) < 1e-6 && Math.abs(a.y - c.y) < 1e-6;
+    const go = async (w, h, touch, hash = '') => { const E = await open(b, base + page + hash, { width: w, height: h, touch, scheme });
+      if (plant) { const pl = await E.ev(`C.plant(${J(plant.file)}, ${J(plant.from)}, ${J(plant.to)})`); if (!pl.planted) { await E.close(); return null; } await E.ev('C.remount()'); await settle(E); }
+      return E; };
+    const leaf = async (E) => E.ev(`(() => { const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      const n = RADIAL_MAP.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id)); RADIAL_MAP.select(n.id); return n.id; })()`);
+    const touch = (E, type, pts) => E.call('Input.dispatchTouchEvent', { type, touchPoints: pts.map((q, i) => ({ x: q[0], y: q[1], id: i + 1 })) });
+    for (const how of ['pan', 'pinch']) {
+      const E = await go(390, 844, true); if (!E) return { ok: true, planted: false, d: 'not planted' };
+      await leaf(E); await settle(E);
+      const box = await E.ev(`(() => { const r = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(), s = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: Math.round((s.bottom + r.bottom) / 2) }; })()`);
+      if (how === 'pan') { await touch(E, 'touchStart', [[box.x, box.y]]); for (let i = 1; i <= 8; i++) await touch(E, 'touchMove', [[box.x + 5 * i, box.y - 7 * i]]); await touch(E, 'touchEnd', []); }
+      else { await touch(E, 'touchStart', [[box.x - 30, box.y], [box.x + 30, box.y]]); for (let i = 1; i <= 8; i++) await touch(E, 'touchMove', [[box.x - 30 - 6 * i, box.y], [box.x + 30 + 6 * i, box.y]]); await touch(E, 'touchEnd', []); }
+      await settle(E);
+      const v0 = await E.ev(V); await E.size(844, 390); await settle(E); const v1 = await E.ev(V); await E.size(390, 844); await settle(E); const v2 = await E.ev(V);
+      await E.size(390, 764); await settle(E); const v3 = await E.ev(V);
+      rows.push([how, [v0, v1, v2, v3].map((v) => [+v.k.toFixed(4), Math.round(v.x), Math.round(v.y), v.manual])]);
+      if (v0.atFit) fail('the real ' + how + ' moves the camera off the Fit', v0);
+      if (!(same(v1, v0) && same(v2, v0) && v1.sel === v0.sel)) fail('a turn and the turn back keep the ' + (how === 'pan' ? 'panned' : 'pinched') + ' camera (k, x, y)', [v0, v1, v2]);
+      if (!(Math.abs(v3.k - v2.k) < 1e-9 && Math.abs(v3.x - v2.x) < 1e-6 && Math.abs(v3.y - (v2.y - 40)) < 0.51)) fail('a change of height alone (-80px) holds the center: y moves by -40, k and x kept', [v2, v3]);
+      if (E.errors.length) fail('no uncaught error', E.errors.slice(0, 2));
+      await E.close();
+    }
+    for (const how of ['wheel', 'zoom control']) {
+      const E = await go(1440, 900, false); if (!E) return { ok: true, planted: false, d: 'not planted' };
+      await leaf(E); await settle(E);
+      if (how === 'wheel') { await E.call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 450, button: 'none' }); await E.call('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 600, y: 450, deltaX: 0, deltaY: -240 }); }
+      else { const c = await E.ev(`(() => { const r = document.querySelector('[data-radial-control="zoom-in"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+        for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await E.call('Input.dispatchMouseEvent', { type, x: c.x, y: c.y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mousePressed' ? 1 : 0, clickCount: 1 }); }
+      await settle(E);
+      const v0 = await E.ev(V); await E.size(1280, 900); await settle(E); const v1 = await E.ev(V);
+      rows.push([how, [v0, v1].map((v) => [+v.k.toFixed(4), Math.round(v.x), Math.round(v.y), v.manual])]);
+      if (!(!v0.atFit && same(v1, v0))) fail('the ' + how + ' moves the camera, and a resize keeps it (k, x, y)', [v0, v1]);
+      if (E.errors.length) fail('no uncaught error', E.errors.slice(0, 2));
+      await E.close();
+    }
+    /* keyboard moves away from a node an arrival centered: the camera they pan is the reader's */
+    { const id = await (async () => { const E0 = await open(b, base + page, { width: 1440, height: 900, scheme });
+        const x = await E0.ev(`RADIAL_MAP.layout.nodes.filter((n) => n.kind === 'leaf')[0].id`); await E0.close(); return x; })();
+      const E = await go(1440, 900, false, '#node=' + encodeURIComponent(id)); if (!E) return { ok: true, planted: false, d: 'not planted' };
+      await settle(E); const a = await E.ev(V);
+      await E.ev(`(document.querySelector('[data-radial-slot="stage"]').focus(), true)`);
+      let v0 = a;
+      for (const k of ['ArrowUp', 'ArrowUp', 'ArrowRight', 'ArrowRight', 'ArrowRight']) { await E.key(k); await settle(E); v0 = await E.ev(V); if (!same(v0, a)) break; }
+      await E.size(1280, 900); await settle(E); const v1 = await E.ev(V);
+      rows.push(['keyboard', [a, v0, v1].map((v) => [+v.k.toFixed(4), Math.round(v.x), Math.round(v.y)])]);
+      if (same(v0, a)) fail('keyboard moves pan the camera away from the arrival', [a, v0]);
+      else if (!(!v0.atFit && same(v1, v0))) fail('the keyboard\'s camera is the reader\'s, and a resize keeps it (k, x, y)', [v0, v1]);
+      if (E.errors.length) fail('no uncaught error', E.errors.slice(0, 2));
+      await E.close(); }
+    function fail(what, d) { fails.push([what, d]); }
+    return { ok: fails.length === 0, planted: true, d: { rows, fails } };
+  },
+  /* on a desktop page, views the map made, on a resize: a node an arrival centered stays in view at its zoom, and a group
+     the map framed is framed again for the new size */
+  async u40(b, base, page, scheme) {
+    const fails = [], rows = [];
+    const settle = async (E) => { await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 300))'); await E.frames(); };
+    const S = `(() => { const m = RADIAL_MAP, v = m.view(), f = m.report().fit, sel = m.state().selection.locked, p = sel ? m.project(sel) : null,
+      sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect();
+      return { k: v.k, atFit: v.atFit, manual: v.manual, fitSeq: f.seq, fitCause: f.cause, sel, size: Math.round(sr.width) + 'x' + Math.round(sr.height),
+        onCanvas: !!p && p.x >= 0 && p.y >= 0 && p.x <= sr.width && p.y <= sr.height }; })()`;
+    const E0 = await open(b, base + page, { width: 1440, height: 900, scheme });
+    const pick = await E0.ev(`(() => { const m = RADIAL_MAP; return { leaf: m.layout.nodes.filter((n) => n.kind === 'leaf')[0].id,
+      group: m.layout.nodes.filter((n) => n.kind !== 'leaf' && n.kind !== 'root' && n.depth === 1)[0].id }; })()`); await E0.close();
+    { const E = await open(b, base + page + '#node=' + encodeURIComponent(pick.leaf), { width: 1440, height: 900, scheme }); await settle(E);
+      const a = await E.ev(S); await E.size(1100, 900); await settle(E); const c = await E.ev(S);
+      rows.push(['arrival', [a, c].map((x) => [x.size, +x.k.toFixed(4), x.onCanvas, x.manual])]);
+      if (!(a.sel === pick.leaf && Math.abs(a.k - 1.35) < 1e-9 && c.sel === pick.leaf && c.onCanvas && Math.abs(c.k - a.k) < 1e-9 && !c.atFit))
+        fail('an arrival-centered node stays on the canvas at its zoom through the resize', [a, c]);
+      if (E.errors.length) fail('no uncaught error', E.errors.slice(0, 2));
+      await E.close(); }
+    { const E = await open(b, base + page, { width: 1440, height: 900, scheme }); await settle(E);
+      await E.ev(`(RADIAL_MAP.frame(${J(pick.group)}), true)`); await settle(E);
+      const a = await E.ev(S); await E.size(1100, 900); await settle(E); const c = await E.ev(S);
+      rows.push(['framed group', [a, c].map((x) => [x.size, +x.k.toFixed(4), x.fitSeq + '/' + x.fitCause])]);
+      if (!(a.fitCause === 'frame' && !a.atFit && c.fitCause === 'frame' && c.fitSeq > a.fitSeq && !c.atFit))
+        fail('a framed group is framed again for the new size', [a, c]);
+      if (E.errors.length) fail('no uncaught error', E.errors.slice(0, 2));
+      await E.close(); }
+    function fail(what, d) { fails.push([what, d]); }
+    return { ok: fails.length === 0, d: { pick, rows, fails } };
+  },
+  /* the first leaves each arrived at by a #node= link on a fresh 390x844 touch page, and once more with the engine held
+     at the network until every font face the page declares has loaded, so the map mounts with its fonts settled: once
+     the layout settles, the arrived node lies on the canvas and clear of the open sheet by the reveal margin, at the
+     arrival's zoom; the observers' first deliveries move nothing */
+  async u38(b, base, page, scheme, n, plant) {
+    const P0 = await open(b, base + page, { width: 390, height: 844, touch: true, scheme });
+    const ids = await P0.ev(`RADIAL_MAP.layout.nodes.filter((x) => x.kind === 'leaf').slice(0, ${n}).map((x) => x.id)`); await P0.close();
+    const near = `(() => { const m = RADIAL_MAP, s = m.state(), id = s.selection.locked, p = id ? m.project(id) : null, sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(),
+      r = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect(), x = p ? sr.left + p.x : 0, y = p ? sr.top + p.y : 0, g = 12;
+      return { id, k: m.view().k, y: p ? Math.round(p.y) : null, sheet: Math.round(r.bottom - sr.top), open: s.inspector.expanded, onCanvas: !!p && p.y >= 0 && p.y <= sr.height,
+        under: !!p && s.inspector.expanded && x >= r.left - g && x <= r.right + g && y >= r.top - g && y <= r.bottom + g, fonts: document.fonts.status }; })()`;
+    const rows = [];
+    for (const id of ids) for (const settled of [false, true]) {
+      const A = await open(b, base + page + '#node=' + encodeURIComponent(id), { width: 390, height: 844, touch: true, scheme, hold: settled && !plant ? 'diagrams-radial-engine.js' : null });
+      if (plant) { const pl = await A.ev(`C.plant(${J(plant.file)}, ${J(plant.from)}, ${J(plant.to)})`); if (!pl.planted) { await A.close(); return { ok: true, planted: false, d: 'not planted' }; }
+        await A.ev('C.remount()'); }
+      await A.ev('new Promise((r) => setTimeout(r, 600))'); await A.frames();
+      const s = await A.ev(near), resolved = await A.ev('!!(RADIAL_MAP.report().arrival && RADIAL_MAP.report().arrival.resolved)');
+      rows.push(Object.assign(s, { want: id, settled, fontsAtMount: A.held, resolved, errors: A.errors.length }));
+      await A.close();
+      if (plant) break;
+    }
+    const ok = rows.filter((x) => x.resolved);
+    const bad = ok.filter((x) => !(x.id === x.want && x.open && x.onCanvas && !x.under && Math.abs(x.k - 1.35) < 1e-9) || x.errors);
+    /* the settled rows are a control only where every declared face had loaded when the map mounted */
+    const unsettled = rows.filter((x) => x.settled && !(x.fontsAtMount && x.fontsAtMount.paused && x.fontsAtMount.faces > 0 && x.fontsAtMount.loaded === x.fontsAtMount.faces));
+    if (unsettled.length) return { ok: false, planted: true, d: { unsettled: unsettled.map((x) => [x.want, x.fontsAtMount]) } };
+    return { ok: ok.length >= rows.length - 2 && bad.length === 0, planted: true, d: { arrived: ok.length, of: rows.length, bad, sample: rows.slice(0, 2) } };
+  },
+  /* on a short wide desktop window where the open drawer alone folds the panels (the CFW reference at 1100x760): at the
+     Fit, with nothing selected and then with a node selected, the drawer opens and the panels fold; the sheet opened
+     there by its own toggle closes the drawer, the arrangement turns wide with no change of size, and the wide panel
+     returns to the wide Fit the view had before the drawer opened */
+  async u39(P) {
+    const fails = [], rows = [];
+    const S = `(() => { const m = RADIAL_MAP, s = m.state(), v = m.view(); return { k: v.k, atFit: v.atFit, sel: s.selection.locked,
+      insp: s.inspector.arrangement + (s.inspector.expanded ? ' open' : ' folded'), chrome: s.chrome.arrangement, drawer: s.facets.open }; })()`;
+    const settle = async () => { await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 300))'); await P.frames(); };
+    for (const pick of [false, true]) {
+      await P.ev(`(() => { const m = RADIAL_MAP; m.select(null); m.fit('explicit'); if (${pick}) { const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+        m.select(m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id)).id); } return true; })()`); await settle();
+      const s0 = await P.ev(S);
+      await P.ev(`document.querySelector('.radial-drawer-trigger').click()`); await settle(); const s1 = await P.ev(S);
+      await P.ev(`document.querySelector('.radial-insp-toggle').click()`); await settle(); const s2 = await P.ev(S);
+      rows.push([pick ? 'a node selected' : 'nothing selected', [s0, s1, s2].map((x) => [+x.k.toFixed(4), x.atFit, x.insp, x.chrome, x.drawer])]);
+      if (!(s0.atFit && s0.chrome === 'wide' && s1.drawer && s1.chrome === 'compact' && s1.atFit)) fail((pick ? 'selected' : 'idle') + ': the drawer opened at the Fit folds the panels', [s0, s1]);
+      if (!(!s2.drawer && s2.chrome === 'wide' && s2.insp === 'wide open' && s2.atFit && Math.abs(s2.k - s0.k) <= s0.k * 0.005 && s2.sel === s0.sel))
+        fail((pick ? 'selected' : 'idle') + ': the sheet\'s toggle closes the drawer, the arrangement turns wide and the wide panel returns to the wide Fit', [s0, s2]);
+    }
+    if (P.errors.length) fail('no uncaught error', P.errors.slice(0, 2));
+    function fail(what, d) { fails.push([what, d]); }
+    return { ok: fails.length === 0, d: { rows, fails } };
   }
 };
 
@@ -1215,6 +1510,35 @@ async function run() {
             r.ok && E.errors.length === 0, J(r.d.fails && r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 500));
           await E.close();
         }
+      /* a phone turned with the reading sheet open, the reader's own camera, and the first arrival's settle */
+      measures.turn = []; measures.manual = []; measures.settle = [];
+      for (const [name, page] of Object.entries(EXPR)) for (const scheme of ['light', 'dark']) {
+        const r = await KEYED.u36(b, base, page, scheme); measures.turn.push({ name, scheme, d: r.d });
+        check(`U36 ${name}, ${scheme}, touch: the reading sheet open while the phone turns, 390x844 to 844x390 and back and the other way, opened from the Fit under a filter with an evidence record followed, by a #node= arrival, by a search result and by a reference followed: after each turn the selection, the record and the filter are kept, the sheet stays open and the selected node lies on the canvas and clear of the sheet; from the Fit the turned view is the new size's Fit, never smaller, and closing the sheet returns to it; from a node the map centered its zoom is kept and closing leaves the node on the canvas; Fit restores the overview; a record with no placed origin keeps its view and the focus through the turn; and nothing more happens once the observers settle`,
+          r.ok, J(r.d.fails && r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 600));
+      }
+      for (const [name, page] of Object.entries(EXPR)) {
+        const r = await KEYED.u37(b, base, page, 'light'); measures.manual.push({ name, d: r.d });
+        check(`U37 ${name}: a camera the reader moved is kept: a real touch pan and a real pinch with the sheet open keep k, x and y through a turn and the turn back, and a change of height alone holds the center (y by half the change); a real wheel zoom, the HUD's zoom control and keyboard moves that pan away from an arrival keep k, x and y through a desktop resize`,
+          r.ok, J(r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 600));
+      }
+      for (const [name, page] of Object.entries(EXPR)) for (const scheme of ['light', 'dark']) {
+        const r = await KEYED.u38(b, base, page, scheme, 6); measures.settle.push({ name, scheme, d: r.d });
+        check(`U38 ${name}, ${scheme}, touch at 390x844: the first 6 leaves each arrived at by a #node= link on a fresh page, and again with every font face loaded before the map mounts: once the layout settles, the arrived node lies on the canvas and clear of the open sheet at the arrival's zoom; the bar filling in after the map mounts moves nothing`,
+          r.ok, J(r.d).slice(0, 500));
+      }
+      for (const scheme of ['light', 'dark']) {
+        const E = await open(b, base + EXPR['the CFW reference'], { width: 1100, height: 760, scheme });
+        const r = await KEYED.u39(E); measures.back = (measures.back || []).concat([{ scheme, d: r.d }]);
+        check(`U39 the CFW reference, ${scheme}, at 1100x760, where the open drawer alone folds the panels: at the Fit, idle and with a node selected, the sheet opened by its own toggle closes the drawer, the arrangement turns wide with no change of size, and the wide panel returns to the wide Fit`,
+          r.ok, J(r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 500));
+        await E.close();
+      }
+      for (const [name, page] of Object.entries(EXPR)) {
+        const r = await KEYED.u40(b, base, page, 'light'); measures.desktopMade = (measures.desktopMade || []).concat([{ name, d: r.d }]);
+        check(`U40 ${name}, desktop 1440x900 narrowed to 1100x900: a node a #node= arrival centered stays on the canvas at its zoom, and a group the map framed is framed again for the new size`,
+          r.ok, J(r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 500));
+      }
     }
     /* their controls: a planted inspector in a copy loaded into the CFW reference, remounted */
     {
@@ -1253,9 +1577,9 @@ async function run() {
         check('X27 a resize planted to keep a reading state open without taking the new arrangement\'s Fit fails U31 on the CFW reference at 860x1150: the cramped sheet keeps the wide arrangement\'s Fit, a far smaller drawing',
           pl.planted && !x.ok && x.d.fails.some((f) => /takes the Fit of the new arrangement/.test(f[0])), J(x.d.fails || x.d)); }
       { const { pl, x } = await control("      if (api.view().atFit || back) api.fit('resize');", "      if (api.view().atFit) api.fit('resize');",
-          [860, 1150], false, (X) => KEYED.u31(X, 'light', [860, 1150], 1100));
-        check('X28 the wide panel planted not to return to the Fit the sheet left fails U31 on the CFW reference at 860x1150: roomy again, the view stays where the sheet\'s reveal left it',
-          pl.planted && !x.ok && x.d.fails.some((f) => /back at the Fit the sheet left/.test(f[0])), J(x.d.fails || x.d)); }
+          [1100, 760], false, (X) => KEYED.u39(X));
+        check('X28 the wide panel planted not to return to the Fit the sheet left fails U39 on the CFW reference at 1100x760: the sheet\'s opening closes the drawer and the arrangement turns wide with no change of size, and the view stays off the wide Fit',
+          pl.planted && !x.ok && x.d.fails.some((f) => /returns to the wide Fit/.test(f[0])), J(x.d.fails || x.d)); }
     }
 
     console.log('# W  export');
@@ -1311,6 +1635,25 @@ async function run() {
     { const from = '      Promise.resolve().then(function () { if (api.selection().locked === id) keepTarget(); });\n';
       const r = await KEYED.u35(b, base, EXPR['the CFW reference'], [880, 700], 'light', 12, { file: 'diagrams-radial-inspector.js', from, to: '' });
       check('X25 the select handler planted without its deferred check fails U35 on the CFW reference at 880x700: arrived nodes end under the open sheet', r.planted && !r.ok && r.d.arrival.some((x) => x.under), J(r.d).slice(0, 300)); }
+    /* the reading-view controls, each planted on the public expression it names */
+    { const r = await KEYED.u36(b, base, EXPR['the Vellmark parks composition'], 'light', { file: 'diagrams-radial-engine.js',
+        from: "      if (!manual && made) reframe('resize'); else apply();\n", to: "      apply();\n" });
+      check('X30 a size change planted to keep a view the map made fails U36 on Vellmark: a turned phone keeps the old view, the selected node off the canvas or under the sheet',
+        r.planted && !r.ok && r.d.fails.some((f) => /turned/.test(f[0]) && f[1] && (f[1].onCanvas === false || f[1].under === true)), J(r.d.fails || r.d).slice(0, 300)); }
+    { const r = await KEYED.u36(b, base, EXPR['the CFW reference'], 'light', { file: 'diagrams-radial-inspector.js', from: "      beside(api.selection().locked, ev.basis === 'fit');\n", to: '' });
+      check('X33 an inspector planted not to place the selected node beside its sheet after a turn fails U36 on the CFW reference: the turned view is made again, and the node ends under the open sheet',
+        r.planted && !r.ok && r.d.fails.some((f) => /turned/.test(f[0]) && f[1] && f[1].under === true), J(r.d.fails || r.d).slice(0, 300)); }
+    { const r = await KEYED.u37(b, base, EXPR['the Vellmark parks composition'], 'light', { file: 'diagrams-radial-engine.js', from: 'view.y = v.y; atFit = false; manual = true; scheduleApply();', to: 'view.y = v.y; atFit = false; scheduleApply();' });
+      check('X31 a pan planted not to count as the reader\'s fails U37 on Vellmark: the panned camera is made again by the turn',
+        r.planted && !r.ok && r.d.fails.some((f) => /pan/.test(f[0])), J(r.d.fails || r.d).slice(0, 300)); }
+    { const r = await KEYED.u37(b, base, EXPR['the CFW reference'], 'light', { file: 'diagrams-radial-engine.js', from: '      atFit = false; manual = true; apply();\n', to: '      atFit = false; apply();\n' });
+      check('X34 a keyboard move planted not to count as the reader\'s fails U37 on the CFW reference: the resize makes the keyboard\'s camera again around the arrived node',
+        r.planted && !r.ok && r.d.fails.some((f) => /keyboard/.test(f[0])), J(r.d.fails || r.d).slice(0, 300)); }
+    { const r = await KEYED.u38(b, base, EXPR['the Vellmark parks composition'], 'light', 6, { file: 'diagrams-radial-engine.js',
+        from: ['function remember() { sw = W(); sh = H(); }', 'if (manual || !made) {', "      if (!manual && made) reframe('resize'); else apply();\n"],
+        to: ['function remember() { if (!sw) { sw = W(); sh = H(); } }', 'if (true) {', "      apply();\n"] });
+      check('X32 the stage size planted to be remembered once, as the map mounts, with every view treated as the reader\'s, fails U38 on Vellmark: the bar filling in after the map mounts moves the arrived node under the open sheet',
+        r.planted && !r.ok && r.d.bad.some((x) => x.under), J(r.d).slice(0, 300)); }
   } finally {
     srv.close();
     await stop(b);

@@ -362,6 +362,18 @@
     /* --------------------------------------------------------------- view -- */
     var view = { k: 1, x: 0, y: 0 }, fitK = 1, wholeK = 0, atFit = false, fitCause = null;
     var held = null, fitSeq = 0, lastFit = null, frame = 0;
+    /* WHO MADE THE VIEW. manual: the reader or the page has moved the camera (a pan, a pinch, the wheel,
+       a zoom control or zoom(), a keyboard move or focus() that pans) since the map last placed it.
+       made: the last placement the map made itself, made again for a new stage size while the view is
+       not the reader's: the Fit ('fit'), a framed group ('frame') or a node centered by an arrival, a
+       search result or a reference followed ('node'). sw, sh: the stage size that placement was made
+       for. */
+    var manual = false, made = null, sw = 0, sh = 0;
+    /* room: the bands the chrome reserves as it stands after a size change away from the Fit, measured as
+       a Fit would measure them; the visible area reads them in place of the last Fit's, which belong to
+       the size it was made at. A Fit clears it, its own bands being current */
+    var room = null;
+    function remember() { sw = W(); sh = H(); }
     /* MEMBERSHIP. null: every node and relation (no facet module, or no filter). Otherwise the
        member nodes (the root always; a container while any member leaf lies under it) and,
        separately, the member relations; memberCount is each container's member leaves. */
@@ -372,7 +384,7 @@
     function project(n) { return { x: n.x * view.k + view.x, y: n.y * view.k + view.y }; }
     function W() { return stage.clientWidth; }
     function H() { return stage.clientHeight; }
-    function bands() { return lastFit ? { left: lastFit.leftBand || 0, right: lastFit.rightBand || 0, top: lastFit.topBand || 0, bottom: lastFit.bottomBand || 0 } : {}; }
+    function bands() { var f = room || lastFit; return f ? { left: f.leftBand || 0, right: f.rightBand || 0, top: f.topBand || 0, bottom: f.bottomBand || 0 } : {}; }
     function tier() { return R.labels.tierFor(LC.tiers, view.k); }
     function solveInput(h) {
       return { nodes: L.nodes, view: view, W: W(), H: H(), tier: tier(), visible: visible, shownCount: shownCount,
@@ -424,7 +436,7 @@
       var nk = clampK(view.k * f);
       view.x = cx - (cx - view.x) * (nk / view.k);
       view.y = cy - (cy - view.y) * (nk / view.k);
-      view.k = nk; atFit = false; scheduleApply();
+      view.k = nk; atFit = false; manual = true; scheduleApply();
     }
 
     /* ---------------------------------------------------------------- Fit -- */
@@ -472,16 +484,22 @@
     }
     /* every Fit chooses again, from the chrome as it stands: the declared edges, or the optional
        edges where any are declared; the larger placement that clears wins, and a tie keeps the declared */
-    function fitTo(b, whole, cause) {
+    function choose(b) {
       var r = placement(b, edge);
       r.option = false;
       if (canvas.querySelector('[data-radial-fit-option]')) {
         var a = placement(b, option);
         if (a.clear && (!r.clear || a.scale > r.scale)) { r = a; r.option = true; }
       }
+      return r;
+    }
+    function fitTo(b, whole, cause) {
+      var r = choose(b);
+      room = null;
       view.k = r.scale; view.x = r.tx; view.y = r.ty;
       fitK = r.scale; if (whole) wholeK = r.scale;
       lastFit = r; atFit = !!whole; fitCause = cause;
+      manual = false; made = { basis: whole ? 'fit' : 'frame', id: null }; remember();
       held = null;
       apply();
       if (whole) {
@@ -540,7 +558,7 @@
       var vr = visibleArea(), p = project(n), m = 24;
       if (p.x >= vr.x0 + m && p.x <= vr.x1 - m && p.y >= vr.y0 + m && p.y <= vr.y1 - m) return;
       view.x += (vr.x0 + vr.x1) / 2 - p.x; view.y += (vr.y0 + vr.y1) / 2 - p.y;
-      atFit = false; apply();
+      atFit = false; manual = true; apply();
     }
     /* bring a node into the room a panel over the drawing leaves (cover: the panel's box in stage
        coordinates): the largest free band beside it within the visible area. The view pans only if
@@ -566,7 +584,7 @@
       var nk = clampK(k || Math.max(view.k, 1.35));
       var vr = visibleArea();
       view.k = nk; view.x = (vr.x0 + vr.x1) / 2 - n.x * nk; view.y = (vr.y0 + vr.y1) / 2 - n.y * nk;
-      atFit = false; apply(); return true;
+      atFit = false; manual = false; made = { basis: 'node', id: nid }; remember(); apply(); return true;
     }
     function subtree(nid) {
       var out = [];
@@ -580,6 +598,7 @@
       if (n.kind === 'root') { fit(cause || 'reader'); return true; }
       var b = R.layout.boundsOf(subtree(nid), 60);
       fitTo(b, false, 'frame');
+      made.id = nid;
       announce(fill(announceT.frame, { label: n.label }));
       return true;
     }
@@ -941,7 +960,7 @@
     var pointer = root.DIAGRAM_POINTER.attach({
       stage: stage, signal: signal, clampK: clampK,
       getView: function () { return { k: view.k, x: view.x, y: view.y }; },
-      setView: function (v) { closeChooser(); view.k = v.k; view.x = v.x; view.y = v.y; atFit = false; scheduleApply(); },
+      setView: function (v) { closeChooser(); view.k = v.k; view.x = v.x; view.y = v.y; atFit = false; manual = true; scheduleApply(); },
       zoomAt: function (f, cx, cy) { zoomAt(f, cx, cy); }
     });
 
@@ -959,19 +978,50 @@
     }
 
     /* -------------------------------------------------------------- resize -- */
-    /* A size change refits at the Fit. On a touch screen a change of height alone (the address
-       bar, the keyboard) keeps the reader's own pan and zoom away from the Fit, holding the center. */
-    var sw = W(), sh = H();
+    /* A size change refits at the Fit. A camera the reader has moved stays where it is: on a touch
+       screen a change of height alone (the address bar, the keyboard) holds its center. A view the map
+       made itself is made again for the new size: the Fit, a framed group, or the centered node brought
+       back into the visible area at its zoom, the selection taking its place; then the modules, told by
+       the placed event, put the selection beside their open panels. The comparison is with the size the
+       last placement was made for, so a settling layout cannot move a view already made for it. A view is
+       made again only once every module has arranged its chrome for the new size: a second observer, made
+       after the modules mount (a window listener where there is no observer), looks after theirs, and measures
+       the room that chrome reserves for any view off the Fit, the reader's included. */
+    remember();
+    var resized = false;
     function onResize() {
       var w = W(), h = H();
       if (w === sw && h === sh) return;
       closeChooser();
-      if (!atFit && COARSE.matches && w === sw && h !== sh) { view.y += (h - sh) / 2; apply(); }
-      else if (atFit) fit('resize');
-      else apply();
+      var ow = sw, oh = sh;
       sw = w; sh = h;
+      if (atFit) { fit('resize'); return; }
+      if (manual || !made) { if (COARSE.matches && w === ow && h !== oh) view.y += (h - oh) / 2; apply(); }
+      resized = true;
     }
-    var ro = null;
+    function settled() {
+      if (!resized || destroyed) return;
+      resized = false;
+      if (atFit) return;
+      room = choose(visibleBounds());
+      if (!manual && made) reframe('resize'); else apply();
+    }
+    function reframe(cause) {
+      var basis = made.basis, id = locked || made.id;
+      if (basis === 'fit') fit(cause);
+      else if (basis === 'frame' && made.id && byId.has(made.id) && visible(made.id)) {
+        var g = made.id;
+        fitTo(R.layout.boundsOf(subtree(g), 60), false, 'frame');
+        made.id = g;
+      }
+      else if (id && byId.has(id) && visible(id)) {
+        var vr = visibleArea(), p = project(byId.get(id)), m = 24;
+        if (p.x >= vr.x0 + m && p.x <= vr.x1 - m && p.y >= vr.y0 + m && p.y <= vr.y1 - m) { made = { basis: 'node', id: id }; apply(); }
+        else centerOn(id, view.k);
+      } else apply();
+      emit('placed', { cause: cause, basis: basis, id: id || null });
+    }
+    var ro = null, late = null;
     if (root.ResizeObserver) { ro = new root.ResizeObserver(function () { onResize(); }); ro.observe(stage); }
     else on(root, 'resize', onResize);
     if (document.readyState !== 'complete') on(root, 'load', function () { if (atFit) fit('load'); });
@@ -1003,7 +1053,7 @@
                 registerOverlay: registerOverlay, controls: controls, slot: function (name) { return host.querySelector('[data-radial-slot="' + name + '"]'); },
                 /* for a module that changes the reserved chrome: read the view, refit (it decides
                    whether, by atFit), join the Escape stack, and place a node on the stage */
-                view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause }; },
+                view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause, manual: manual }; },
                 fit: function (cause) { if (!destroyed) fit(cause || 'module'); },
                 escape: function (x) { pushEscape(x); return function () { escapes = escapes.filter(function (e) { return e !== x; }); }; },
                 project: function (nid) { var n = byId.get(nid); return n ? project(n) : null; },
@@ -1040,6 +1090,11 @@
     var mounted = [];
     try {
       listed.forEach(function (m) { mounted.push({ name: m, inst: R.modules[m].mount(api, adapter[m]) }); });
+      if (ro) { late = new root.ResizeObserver(function () { settled(); }); late.observe(stage); }
+      else on(root, 'resize', settled);
+      /* while the room is in use, a panel that changes (opening, folding, yielding) is measured again, once the
+         modules have heard of it */
+      onEvent('obstacle', function () { if (room && !atFit && !destroyed) { room = choose(visibleBounds()); apply(); } });
       /* the relation layer's first state, before any reader action: with nothing selected, every
          drawn-always relation is on and every drawn-on-selection relation is off */
       paint(locked);
@@ -1059,6 +1114,7 @@
       closeChooser();
       ac.abort();
       if (ro) ro.disconnect();
+      if (late) late.disconnect();
       if (frame && root.cancelAnimationFrame) root.cancelAnimationFrame(frame);
       if (hoverFrame && root.cancelAnimationFrame) root.cancelAnimationFrame(hoverFrame);
       created.slice().reverse().forEach(function (e) { if (e.parentNode) e.parentNode.removeChild(e); });
@@ -1081,9 +1137,9 @@
       project: function (nid) { var n = byId.get(nid); return n ? project(n) : null; },
       hits: function (sx, sy, tolPx) { return hits(sx, sy, tolPx === undefined ? tolerance() : tolPx); },
       tap: function (sx, sy, tolPx) { return tapAt(sx, sy, tolPx); },
-      view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause }; },
+      view: function () { return { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause, manual: manual }; },
       state: function () {
-        var s = { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause },
+        var s = { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause, manual: manual },
                   selection: { locked: locked, preview: previewId, focus: focusId },
                   lod: { tier: tier().name, deferred: R.labels.deferred(solution) },
                   overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }),
