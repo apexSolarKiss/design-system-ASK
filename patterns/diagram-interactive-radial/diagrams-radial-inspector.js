@@ -26,11 +26,26 @@
    the node is shown and selected, and a node hidden by policy is not reached.
 
    PLACEMENT. The panel is a corner panel on a wide canvas and a sheet across the top of a
-   compact one, where it starts collapsed. It declares the Fit edge it occupies (right, or top
-   when compact), so the Fit reserves it, and it is an exclusive overlay on a compact canvas:
-   opening it closes another exclusive panel, and opening one of those collapses it. The reader's
-   own toggle refits only at the Fit; a selection that opens the panel does not refit, and brings
-   the selected node into the room beside the panel instead. */
+   compact one, where it starts collapsed. A canvas is compact on a narrow or short window, and
+   also while the chrome module's measured arrangement is compact: the panel folds with the
+   panels around the map. The wide panel declares the right edge, and keeps that lane because it
+   grows with what it shows, with no refit. Collapsed to its pill, a small box that keeps its size
+   until the next Fit, it declares the top edge with the right as its option, and the Fit keeps
+   whichever reservation leaves the larger placement that clears. The open compact sheet is an
+   exclusive overlay and reserves nothing: opening it closes another exclusive panel, opening one
+   of those collapses it, and an explicit Fit dismisses it where it covers the drawing.
+   OPENING AND CLOSING. Entering compact folds a panel that is open only by default; a reader's
+   inspection (a selection, a record, or the panel opened with its own toggle) stays open, as the
+   sheet, unless another exclusive panel is open, to which it yields. From the Fit the view takes
+   the new arrangement's Fit and leaves it with the selected node beside the sheet, and a camera
+   the reader has moved stays put. Opening the sheet, by the toggle or a selection, never refits:
+   the view leaves the Fit and the selected node is brought into the room beside the sheet, and
+   so it is again whenever what the open sheet shows changes, or a search result or an arrival is
+   centered on. (Where the sheet's opening closes the panel that had folded the others, the
+   arrangement turns wide, and the wide panel returns to the Fit as below.) Closing the sheet, or
+   the arrangement turning back to the wide panel, returns to the Fit when the sheet was opened
+   there and the camera is as it left it; otherwise the camera stays. The reader's own toggle on
+   a wide canvas refits only at the Fit. */
 (function (root) {
   'use strict';
 
@@ -180,8 +195,13 @@
     set(slot, 'data-radial-obstacle', '');
     set(slot, 'tabindex', '-1');                          /* where focus goes when the view under it is replaced */
 
-    var view = 'idle', target = null, origin = null, showAll = false, expanded = !COMPACT.matches, destroyed = false;
-    var compact = COMPACT.matches;
+    var view = 'idle', target = null, origin = null, showAll = false, destroyed = false;
+    /* compact: a narrow or short window, or the chrome module's measured compact arrangement */
+    var folded = api.canvas.getAttribute('data-radial-chrome') === 'compact';
+    var compact = COMPACT.matches || folded, expanded = !compact;
+    var opened = false;              /* the reader opened the panel with its own toggle */
+    var probing = false;             /* shown in its wide form while the chrome measures */
+    var sheetView = null;            /* the camera as the open panel left it, and whether it left the Fit */
 
     function kindOf(x) { return x && x.kind !== undefined ? M.kinds.get(x.kind) || null : null; }
     function stateOf(x) { return x && x.state !== undefined ? M.states.get(x.state) || null : null; }
@@ -378,6 +398,7 @@
       body.appendChild(out);
       tone(st);
       slot.scrollTop = 0;
+      keepTarget();
       if (focused) {
         var to = body.querySelector('.radial-insp-back') || slot;
         try { to.focus({ preventScroll: true }); } catch (e) { to.focus(); }
@@ -436,13 +457,20 @@
       if (M.kindOf(id) === 'record') { openRecord(id, view === 'record' ? origin : (target || null), 'reader'); return; }
       if (!reach(id) || !api.select(id, 'inspector', 'reader')) return;
       api.centerOn(id, Math.max(api.view().k, 1.35));
+      keepTarget();
     }
 
     /* ------------------------------------------------- expand / collapse -- */
     function rendered(e) { return !!e && e.getClientRects().length > 0; }
     function place() {
       set(slot, 'data-radial-inspector', compact ? 'compact' : 'wide');
-      set(slot, 'data-diagram-fit-edge', compact ? 'top' : 'right');
+      /* the open compact sheet is an overlay over the drawing and reserves nothing */
+      set(slot, 'data-diagram-fit-edge', compact ? (expanded ? 'none' : 'top') : 'right');
+      /* the collapsed pill keeps its size until the next Fit, so it can be reserved above the drawing
+         or beside it, and the Fit keeps the larger placement that clears. The wide panel grows with a
+         selection, with no refit: a band above it sized as it stands at the Fit would not hold it, so
+         it keeps its lane */
+      set(slot, 'data-radial-fit-option', compact && !expanded ? 'right' : null);
       set(slot, 'data-radial-expanded', expanded ? 'true' : 'false');
       /* an expanded compact sheet yields to another exclusive panel; the pill takes its room */
       set(slot, 'data-radial-obstacle', compact && expanded ? 'yields' : '');
@@ -460,33 +488,105 @@
       var to = rendered(toggle) ? toggle : slot;
       try { to.focus({ preventScroll: true }); } catch (e) { to.focus(); }
     }
+    function same(a, b) { return Math.abs(a.k - b.k) < 1e-9 && Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6; }
+    /* the open panel over the drawing: the view leaves the Fit and the node, if any, is brought into the
+       room beside it. On a compact canvas the camera is kept, so that closing the sheet can tell whether
+       the reader has moved it since */
+    function beside(id, fromFit) {
+      var sr = api.slot('stage').getBoundingClientRect(), r = slot.getBoundingClientRect();
+      api.reveal(id || null, { l: r.left - sr.left, t: r.top - sr.top, r: r.right - sr.left, b: r.bottom - sr.top });
+      var v = api.view();
+      sheetView = compact ? { k: v.k, x: v.x, y: v.y, fit: !!fromFit } : null;
+    }
+    /* what the open sheet shows changed (a selection, a record, a reference followed, more rows): the
+       selected node stays beside it. A record has no placed mark of its own to bring in */
+    function keepTarget() {
+      if (!compact || !expanded || probing || destroyed) return;
+      var id = api.selection().locked, p = id ? api.project(id) : null;
+      if (!p) return;
+      var sr = api.slot('stage').getBoundingClientRect(), r = slot.getBoundingClientRect(), x = sr.left + p.x, y = sr.top + p.y, m = 12;
+      if (x < r.left - m || x > r.right + m || y < r.top - m || y > r.bottom + m) return;
+      beside(id, !!sheetView && sheetView.fit && same(api.view(), sheetView));
+    }
+    /* a reader's inspection: a selection, a record, or the panel opened with its own toggle */
+    function inspecting() { return view === 'record' || !!api.selection().locked || opened; }
     function expand(on, cause, refit, reveal) {
       if (on === expanded) return;
       if (!on) handoff();
+      var atFit = api.view().atFit;
+      /* closing returns to the Fit when the panel was opened there and the camera is as it left it */
+      var back = !on && !!sheetView && sheetView.fit && same(api.view(), sheetView);
       expanded = on;
+      if (!on) { opened = false; sheetView = null; }
       place();
       /* the view leaves the Fit before the other panels close or the chrome hears of the change, so
          nothing refits behind it */
-      if (refit === false && on) {
-        var sr = api.slot('stage').getBoundingClientRect(), r = slot.getBoundingClientRect();
-        api.reveal(reveal === undefined ? null : reveal, { l: r.left - sr.left, t: r.top - sr.top, r: r.right - sr.left, b: r.bottom - sr.top });
-      }
+      if (refit === false && on) beside(reveal === undefined ? api.selection().locked : reveal, atFit);
       if (on && compact) api.claim('inspector');            /* one exclusive panel at a time */
       api.emit('obstacle', { cause: cause });
-      if (refit !== false && api.view().atFit && cause !== 'fit') api.fit(cause === 'compact' ? 'resize' : cause);
+      if (refit !== false && cause !== 'fit' && (atFit || back)) api.fit(cause === 'compact' ? 'resize' : cause === 'claim' ? 'reader' : cause);
     }
-    on(toggle, 'click', function (ev) { ev.stopPropagation(); expand(!expanded, 'reader'); });
-    function onCompact() {
-      if (destroyed || COMPACT.matches === compact) return;
-      compact = COMPACT.matches;
-      var was = expanded;
-      if (was && compact) handoff();                         /* the resize hides the body */
-      expanded = !compact;                                   /* compact starts collapsed; wide expanded */
+    on(toggle, 'click', function (ev) {
+      ev.stopPropagation();
+      if (!expanded) opened = true;
+      /* opening the compact sheet never refits: it brings the selected node beside it */
+      if (!expanded && compact) expand(true, 'reader', false, api.selection().locked);
+      else expand(!expanded, 'reader');
+    });
+    /* the window or the chrome's arrangement made the canvas compact or wide */
+    function arrange() {
+      var next = COMPACT.matches || folded;
+      if (destroyed || next === compact) return;
+      var atFit = api.view().atFit, was = expanded;
+      /* the sheet goes as it came: opened at the Fit, with the camera as it left it, the wide panel
+         returns to the Fit */
+      var back = !next && was && !!sheetView && sheetView.fit && same(api.view(), sheetView);
+      compact = next;
+      /* a reader's inspection stays open, as the sheet, unless another exclusive panel is open: a resize
+         is not a reader opening the sheet, so it yields to that panel, as it does when that panel opens */
+      var keep = compact && was && inspecting() && !api.othersOpen('inspector');
+      if (compact && was && !keep) handoff();               /* the body hides */
+      expanded = compact ? keep : true;                     /* compact folds a panel open only by default; wide shows it */
+      if (!expanded) opened = false;
+      sheetView = null;
       place();
+      if (keep) {
+        /* from the Fit the view takes the Fit of the new arrangement and leaves it, with the selected
+           node beside the sheet; a camera the reader has moved stays where it is, since a resize is not
+           a reader's action */
+        if (atFit) { api.fit('resize'); beside(api.selection().locked, true); }
+        else { var v = api.view(); sheetView = { k: v.k, x: v.x, y: v.y, fit: false }; }
+        api.emit('obstacle', { cause: 'resize' });
+        return;
+      }
       api.emit('obstacle', { cause: 'resize' });
-      if (was !== expanded && api.view().atFit) api.fit('resize');
+      if (api.view().atFit || back) api.fit('resize');
     }
-    if (COMPACT.addEventListener) COMPACT.addEventListener('change', onCompact, { signal: signal });
+    if (COMPACT.addEventListener) COMPACT.addEventListener('change', arrange, { signal: signal });
+    api.on('arrangement', function (ev) {
+      if (destroyed) return;
+      folded = ev.arrangement === 'compact';
+      var was = compact;
+      arrange();
+      /* the window made the canvas compact before the chrome settled: a sheet still as the resize left it
+         (opened at the Fit, the camera as it left it) takes the settled Fit again */
+      if (was === compact && compact && expanded && !!sheetView && sheetView.fit && same(api.view(), sheetView)) {
+        api.fit('resize'); beside(api.selection().locked, true);
+      }
+    });
+    /* while the chrome measures its wide arrangement, a panel folded only by the chrome stands in its
+       wide form, open in its corner, so that the chrome's decision never depends on this panel's folding */
+    api.on('probe', function (ev) {
+      if (destroyed) return;
+      if (ev.arrangement === 'wide') {
+        probing = compact && !COMPACT.matches;
+        if (!probing) return;
+        slot.setAttribute('data-radial-inspector', 'wide');
+        slot.setAttribute('data-radial-expanded', 'true');
+        slot.setAttribute('data-radial-obstacle', '');
+        body.hidden = false;
+      } else if (probing) { probing = false; place(); }
+    });
     function on(t, type, fn) { t.addEventListener(type, fn, { signal: signal }); }
 
     on(body, 'click', function (ev) {
@@ -519,6 +619,10 @@
       }
       showNode(ev.id, true);
       if (!expanded) expand(true, ev.cause === 'load' ? 'load' : 'reader', false, ev.id);
+      /* a module that selects may move the camera right after (a search result and an arrival are
+         centered on): once it has, the selected node is kept beside the open sheet */
+      var id = ev.id;
+      Promise.resolve().then(function () { if (api.selection().locked === id) keepTarget(); });
     });
     api.on('preview', function (ev) {
       if (destroyed || view === 'record' || api.selection().locked) return;

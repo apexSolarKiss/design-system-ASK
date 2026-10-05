@@ -15,8 +15,19 @@
    GROUPS
      U  the inspector: idle, item, container, root and record views; preview; references, the way
         back and Escape; show-all; a reference to a filtered-out node; relation direction and flags;
-        locators; compact sheet and exclusivity; refits only at the Fit; text, never markup;
-        malformed sections; a record arrival
+        locators; compact sheet and exclusivity; the Fit edges by state (the collapsed pill top
+        with the right as its option, the open sheet an overlay reserving nothing, the wide panel
+        right); refits only at the Fit; text, never markup; malformed sections; a record arrival;
+        a resize into compact keeping a reader's record open and folding an idle panel; the sheet
+        opened and closed with a record and a filter through a portrait / landscape turn, at the
+        Fit and away from it; the two public expressions framed at the Fit (clear, as large as the
+        best reservation of the inspector, and where the panels fold as large as with it folded)
+        on a touch page and a desktop page; on each, the same turn with a record and a filter; the
+        inspector folded with the panels on a desktop window, and its dynamic states there;
+        selections at the narrowest window where the panels stand leaving no drawn mark under the
+        wide panel; a search result and an arrival landing clear of the open sheet; the sheet
+        yielding to the open drawer; and the chrome and the inspector settling in one step where
+        they meet
      Q  facets and search: the index; ranking and ties; what a result opens; OR within and AND
         across facets, counts, census and readout; relations; refit, and none for an empty result;
         a filter clearing a hidden selection but not a record; the Escape order; the drawer's
@@ -28,7 +39,8 @@
         remount, missing modules and slots, the minimum composition's membership, and no
         reference content loaded
      R  the reference specimen mounts the complete stack on its captured content
-     X  controls: a planted fault in a copy of a module fails the check written for it */
+     X  controls: a planted fault in a copy of a module fails the check written for it, or, for a
+        public expression, in a copy loaded into that page and remounted */
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -239,21 +251,42 @@ window.C = (function () {
     m.zoom(1.6); await frames(); const v = m.view(); const n = fits.length; q('#D .radial-insp-toggle').click(); await frames(); const v2 = m.view();
     return { ok: !a.inspector.expanded && fits.length >= 2 && fits.slice(0, 2).every((c) => c === 'reader') && fits.length === n && v.k === v2.k && v.x === v2.x,
              d: { fits, expandedAfter1: a.inspector.expanded, kept: v.k === v2.k } }; };
-  /* compact: collapsed at start, opened by a selection, the top edge, exclusive with the chrome panels */
+  /* wide: the panel collapsed at the Fit, then opened again by a selection, which reveals the node
+     beside it and so leaves the Fit; the reader's toggle then collapses it with no refit */
+  C.wideToggle = async () => { const m = fresh(); await frames(); const t = q('#D .radial-insp-toggle');
+    t.click(); await frames(); const a = { exp: st().inspector.expanded, atFit: m.view().atFit };
+    m.select('VM-KQ-002'); await frames(); const b = { exp: st().inspector.expanded, atFit: m.view().atFit, arr: st().inspector.arrangement };
+    const fits = []; m.on('fit', (e) => fits.push(e.cause)); const v0 = m.view();
+    t.click(); await frames(); const v = m.view();
+    return { ok: !a.exp && a.atFit && b.exp && b.arr === 'wide' && !b.atFit && !st().inspector.expanded && fits.length === 0 && v.k === v0.k && v.x === v0.x && v.y === v0.y,
+             d: { a, b, fits, kept: v.k === v0.k && v.x === v0.x && v.y === v0.y } }; };
+  /* compact: collapsed at start, opened by a selection, exclusive with the chrome panels. The Fit
+     edges follow the state: the collapsed pill declares the top with the right as its option, and
+     the open sheet, an overlay, reserves nothing */
   C.compact = async () => { const m = fresh(); await frames(); const slot = q('#D [data-radial-slot="inspector"]');
-    const a = { s: st().inspector, edge: slot.getAttribute('data-diagram-fit-edge'), obs: slot.getAttribute('data-radial-obstacle') };
+    const edge = () => slot.getAttribute('data-diagram-fit-edge') + '/' + slot.getAttribute('data-radial-fit-option');
+    const a = { s: st().inspector, edge: edge(), obs: slot.getAttribute('data-radial-obstacle') };
     m.select('VM-KQ-002'); await frames();
-    const b = { s: st().inspector, obs: slot.getAttribute('data-radial-obstacle') };
+    const b = { s: st().inspector, edge: edge(), obs: slot.getAttribute('data-radial-obstacle') };
     const trig = qa('#D .radial-chrome-trigger').find((t) => t.getAttribute('aria-controls') === q('#D [data-radial-slot="legend"]').id);
     trig.click(); await frames();
-    const c = { s: st().inspector, chrome: st().chrome.open };
+    const c = { s: st().inspector, edge: edge(), chrome: st().chrome.open };
     q('#D .radial-insp-toggle').click(); await frames();
-    const d = { s: st().inspector, chrome: st().chrome.open };
+    const d = { s: st().inspector, edge: edge(), chrome: st().chrome.open };
     esc(); await frames(); esc(); await frames();
-    const e = { s: st().inspector, sel: st().selection.locked };
-    return { ok: a.s.arrangement === 'compact' && !a.s.expanded && a.edge === 'top' && a.obs === '' && b.s.expanded && b.obs === 'yields' &&
-                 !c.s.expanded && c.chrome === 'legend' && d.s.expanded && d.chrome === null && e.sel === null,
-             d: { a, b: b.s.expanded, c, d, e } }; };
+    const e = { s: st().inspector, edge: edge(), sel: st().selection.locked };
+    return { ok: a.s.arrangement === 'compact' && !a.s.expanded && a.edge === 'top/right' && a.obs === '' && b.s.expanded && b.edge === 'none/null' && b.obs === 'yields' &&
+                 !c.s.expanded && c.edge === 'top/right' && c.chrome === 'legend' && d.s.expanded && d.edge === 'none/null' && d.chrome === null &&
+                 e.sel === null && !e.s.expanded && e.edge === 'top/right',
+             d: { a, b: [b.s.expanded, b.edge], c, d, e } }; };
+  /* wide: the corner panel declares the right edge alone, open or collapsed */
+  C.wideEdge = async () => { const m = fresh(); await frames(); const slot = q('#D [data-radial-slot="inspector"]');
+    const edge = () => slot.getAttribute('data-diagram-fit-edge') + '/' + slot.getAttribute('data-radial-fit-option');
+    const a = { arr: st().inspector.arrangement, exp: st().inspector.expanded, edge: edge() };
+    q('#D .radial-insp-toggle').click(); await frames();
+    const b = { exp: st().inspector.expanded, edge: edge() };
+    q('#D .radial-insp-toggle').click(); await frames();
+    return { ok: a.arr === 'wide' && a.exp && a.edge === 'right/null' && !b.exp && b.edge === 'right/null', d: { a, b } }; };
 
   /* compact: a selection opens the sheet without refitting, and the node lands beside the sheet */
   C.compactReveal = async () => { const m = fresh(); await frames(); const k0 = m.view().k, fits = []; m.on('fit', (e) => fits.push(e.cause));
@@ -476,7 +509,147 @@ window.C = (function () {
     return { ok: d.nodes === 590 && d.rel === 217 && recs === 479 && d.entries === 1068 && !d.unresolved && !d.unsupported && /authority/i.test(t1) && tone && t2 === 'Seeding RSI Toward ASI' &&
                  d.census === '548 / 548 objects — complete map, no filter', d }; };
 
+  /* ---- a public expression at the Fit (the preview pages, RADIAL_MAP) ---- */
+  /* At the whole-map Fit the drawing stands clear (its names in the clearance check), and it is as
+     large as the best reservation of the inspector that clears: measured here by declaring each
+     edge it can hold (the collapsed pill top or right; the open compact sheet top; the wide panel,
+     which grows with a selection, right) with no option, fitting, and restoring. On the amended
+     tree that is a consistency check of the engine's choice; the controls and the earlier trees
+     carry the discrimination. So is the fold comparison where the panel already stands folded (the
+     overview against itself): it discriminates where the panel stands open, as on X18 and the
+     earlier trees. An explicit Fit then gives the same view as the one under test */
+  C.frame = async (scheme) => { const m = RADIAL_MAP; await frames();
+    const slot = q('[data-radial-slot="inspector"]'), html = document.documentElement;
+    const read = () => { const v = m.view(), f = m.report().fit; return { k: v.k, x: v.x, y: v.y, atFit: v.atFit, clear: f.clear, drawing: f.drawingClear, option: !!f.option }; };
+    const s = m.state(), now = read(), E = slot.getAttribute('data-diagram-fit-edge'), A = slot.getAttribute('data-radial-fit-option');
+    const edges = s.inspector.arrangement !== 'compact' ? ['right'] : s.inspector.expanded ? ['none'] : ['top', 'right'], one = {};
+    for (const e of edges) { slot.setAttribute('data-diagram-fit-edge', e); slot.removeAttribute('data-radial-fit-option'); m.fit('explicit'); await frames(); one[e] = read(); }
+    slot.setAttribute('data-diagram-fit-edge', E); if (A === null) slot.removeAttribute('data-radial-fit-option'); else slot.setAttribute('data-radial-fit-option', A);
+    m.fit('explicit'); await frames();
+    /* the chrome's compact arrangement with nothing inspected: the overview is the one the panel
+       folded leaves, measured by folding it with its own toggle when it stands open */
+    let fold = null;
+    if (s.chrome && s.chrome.arrangement === 'compact' && s.inspector.view === 'idle' && !s.selection.locked) {
+      if (s.inspector.expanded) {
+        q('.radial-insp-toggle').click(); await frames(); m.fit('explicit'); await frames(); fold = read().k;
+        q('.radial-insp-toggle').click(); await frames(); m.fit('explicit'); await frames();
+      } else fold = now.k;
+    }
+    const again = read();
+    const best = Math.max.apply(null, edges.map((e) => one[e].clear ? one[e].k : 0));
+    const r4 = (x) => +x.toFixed(4);
+    const d = { size: innerWidth + 'x' + innerHeight, theme: html.getAttribute('data-theme') || getComputedStyle(html).colorScheme,
+                insp: s.inspector.arrangement + (s.inspector.expanded ? ' open' : ' collapsed'), edge: E + '/' + A, chrome: s.chrome && s.chrome.arrangement,
+                k: r4(now.k), best: r4(best), top: one.top ? r4(one.top.k) + (one.top.clear ? '' : ' not clear') : null,
+                right: one.right ? r4(one.right.k) + (one.right.clear ? '' : ' not clear') : null,
+                fold: fold === null ? null : r4(fold), atFit: now.atFit, clear: now.clear, drawing: now.drawing, option: now.option };
+    return { ok: now.atFit && now.clear === true && now.k >= best * 0.995 && (fold === null || now.k >= fold * 0.995) && Math.abs(again.k - now.k) < 1e-9 && Math.abs(again.x - now.x) < 1e-6 &&
+                 Math.abs(again.y - now.y) < 1e-6 && (!scheme || d.theme === scheme), d }; };
+
+  /* a wide desktop window at the Fit: a sample of selections grows the wide panel; no drawn mark may
+     end up under it (the panel takes its right lane, and a selection neither refits nor moves) */
+  C.cover = async () => { const m = RADIAL_MAP; await frames();
+    const slot = q('[data-radial-slot="inspector"]'), sr = q('[data-radial-slot="stage"]').getBoundingClientRect(), s0 = m.state();
+    const drawn = (id) => { const g = q('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+    const idle = slot.getBoundingClientRect().height, k = m.view().k;
+    let n = 0, grown = 0, worst = 0, at = null;
+    for (const node of m.layout.nodes.filter((x, i) => i % 7 === 0)) {
+      m.select(node.id); await frames(); n++;
+      const pr = slot.getBoundingClientRect(); grown = Math.max(grown, pr.height);
+      let c = 0;
+      for (const x of m.layout.nodes) { if (!drawn(x.id)) continue; const p = m.project(x.id), X = sr.left + p.x, Y = sr.top + p.y;
+        if (X >= pr.left && X <= pr.right && Y >= pr.top && Y <= pr.bottom) c++; }
+      if (c > worst) { worst = c; at = node.id; }
+    }
+    m.select(null); await frames();
+    const d = { size: innerWidth + 'x' + innerHeight, insp: s0.inspector.arrangement + (s0.inspector.expanded ? ' open' : ' collapsed'),
+                edge: slot.getAttribute('data-diagram-fit-edge') + '/' + slot.getAttribute('data-radial-fit-option'), k: +k.toFixed(4), option: !!m.report().fit.option,
+                samples: n, idle: Math.round(idle), grown: Math.round(grown), worstUnder: worst, at, atFit: m.view().atFit, kept: m.view().k === k };
+    return { ok: s0.inspector.arrangement === 'wide' && s0.inspector.expanded && n > 10 && grown > idle + 50 && worst === 0 && d.atFit && d.kept, d }; };
+  /* a public expression: a filter, a drawn leaf selected under it and a record opened from it */
+  C.exprSetup = () => { const m = RADIAL_MAP, f = m.service('facets');
+    const drawn = (id) => { const g = q('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+    let rec = null; m.model.byId.forEach((x, id) => { if (!rec && m.model.kindOf(id) === 'record') rec = id; });
+    for (const cb of qa('input[data-radial-facet]')) {
+      f.set(cb.getAttribute('data-radial-facet'), [cb.value]);
+      const leaf = m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id));
+      if (leaf && rec) { m.select(leaf.id); m.service('inspector').openRecord(rec, leaf.id);
+        return { facet: cb.getAttribute('data-radial-facet'), value: cb.value, leaf: leaf.id, rec, items: m.state().membership.visibleItems }; }
+      f.reset('reader');
+    }
+    return null; };
+  /* the inspector's wide panel placed (by a test style) over the legend's corner: the chrome's wide
+     arrangement fails on it, the inspector folds with the compact arrangement, and the two must settle
+     in one step: the chrome decides compact once, counted from before the mount, and nothing after */
+  C.settle = async () => { if (FX.inst.D) { FX.inst.D.destroy(); FX.inst.D = null; } FX.mode('one');
+    const st = document.createElement('style'); st.textContent = '#D [data-radial-inspector="wide"] { top: auto; bottom: 18px; }'; document.head.appendChild(st);
+    /* every arrangement the chrome decides, from before the mount: its emit, wrapped for this mount */
+    const arr = [], chrome = DIAGRAM_RADIAL.modules.chrome, mount0 = chrome.mount;
+    chrome.mount = function (api, cfg) { const emit = api.emit;
+      api.emit = function (t, e) { if (t === 'arrangement') arr.push(e && e.arrangement); return emit.apply(api, arguments); };
+      return mount0.call(this, api, cfg); };
+    let m = null, err = null, n = 0, d = null;
+    try {
+      try { m = FX.mount('D', 'specimen'); m.on('arrangement', () => n++); await new Promise((r) => setTimeout(r, 600)); await frames(); }
+      catch (e) { err = String((e && e.message) || e).slice(0, 80); }
+      const s = m ? m.state() : null;
+      d = { err, n, decided: arr.slice(0, 12), chrome: s && s.chrome ? s.chrome.arrangement : null, insp: s ? s.inspector.arrangement + (s.inspector.expanded ? ' open' : ' folded') : null };
+    } finally {
+      chrome.mount = mount0;
+      try { if (m) m.destroy(); } catch (e) { /* torn down */ }
+      FX.inst.D = null; st.remove();
+    }
+    /* one step: the chrome decides compact once, during the mount, and nothing after */
+    return { ok: !err && n === 0 && J(d.decided) === J(['compact']) && d.chrome === 'compact' && d.insp === 'compact folded', d }; };
+  /* for the reading states: the first filter value that keeps a drawn leaf and a record offering a
+     reference to a drawn node, and among those records the one with the most to show. Each record is
+     opened from the leaf in turn, the overview restored, then the chosen record opened from the leaf */
+  C.readingSetup = async () => { const m = RADIAL_MAP, f = m.service('facets'), insp = m.service('inspector');
+    const drawn = (id) => { const g = q('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+    const recs = []; m.model.byId.forEach((x, id) => { if (m.model.kindOf(id) === 'record') recs.push(id); });
+    const rest = async () => { insp.show(null); if (m.state().inspector.expanded) q('.radial-insp-toggle').click(); m.select(null); m.fit('explicit'); await frames(); };
+    for (const cb of qa('input[data-radial-facet]')) {
+      f.set(cb.getAttribute('data-radial-facet'), [cb.value]);
+      const leaf = m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id));
+      let best = null;
+      if (leaf) {
+        m.select(leaf.id); await frames();
+        for (const rec of recs) {
+          insp.openRecord(rec, leaf.id);
+          const body = q('.radial-insp-body'), h = body ? body.scrollHeight : 0;
+          const ref = qa('.radial-insp-body .radial-insp-ref').map((x) => x.getAttribute('data-radial-ref')).find((id) => id !== leaf.id && m.model.kindOf(id) !== 'record' && drawn(id));
+          if (ref && (!best || h > best.h)) best = { rec, h, ref, bottom: q('[data-radial-slot="inspector"]').getBoundingClientRect().bottom };
+        }
+        await rest();
+      }
+      if (best) { m.select(leaf.id); insp.openRecord(best.rec, leaf.id);
+        return { facet: cb.getAttribute('data-radial-facet'), value: cb.value, leaf: leaf.id, rec: best.rec, h: best.h, ref: best.ref, bottom: best.bottom,
+                 items: m.state().membership.visibleItems }; }
+      f.reset('reader');
+    }
+    return null; };
+  /* at the overview, a drawn node (a group or a leaf) whose own short view leaves it beside the sheet,
+     where the tallest record's sheet (its bottom edge at bottom) would cover it: opened by its selection */
+  C.growNode = async (bottom) => { const m = RADIAL_MAP;
+    const drawn = (id) => { const g = q('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+    const sr = q('[data-radial-slot="stage"]').getBoundingClientRect();
+    const y = (id) => sr.top + m.project(id).y;
+    const nodes = m.layout.nodes.filter((x) => x.kind !== 'root' && drawn(x.id) && y(x.id) < bottom - 16).sort((a, b) => y(b.id) - y(a.id));
+    for (const n of nodes.slice(0, 40)) {
+      const v0 = m.view(); m.select(n.id); await frames();
+      const r = q('[data-radial-slot="inspector"]').getBoundingClientRect(), v = m.view();
+      if (m.state().inspector.expanded && y(n.id) > r.bottom + 16 && y(n.id) < bottom - 16 && Math.abs(v.x - v0.x) < 1e-6 && Math.abs(v.y - v0.y) < 1e-6)
+        return { node: n.id, kind: n.kind, y: Math.round(y(n.id)), sheet: Math.round(r.bottom), tall: Math.round(bottom) };
+      if (m.state().inspector.expanded) q('.radial-insp-toggle').click(); m.select(null); m.fit('explicit'); await frames();
+    }
+    return null; };
   /* ---- X: a planted fault in a copy of a module, then the check written for it ---- */
+  /* a preview page's map mounted again, after a plant: the CFW reference or the neutral composition */
+  C.remount = () => { const host = q('[data-radial]'), R = window.RADIAL_REFERENCE, S = window.RADIAL_SPECIMEN, N = window.RADIAL_NEUTRAL;
+    RADIAL_MAP.destroy();
+    window.RADIAL_MAP = R ? DIAGRAM_RADIAL.mount({ host, data: R.data, adapter: R.adapter, modules: R.modules })
+      : DIAGRAM_RADIAL.mount({ host, data: S.data, adapter: N.adapterFor(S.data, S.adapter), modules: N.modules });
+    return true; };
   C.plant = async (file, from, to) => {
     const src = await (await fetch('/patterns/diagram-interactive-radial/' + file)).text();
     if (src.split(from).length !== 2) return { planted: false };
@@ -489,12 +662,13 @@ window.C = (function () {
 
 /* checks driven with trusted keys, each a function of a page so a control can rerun it */
 const KEYED = {
-  /* B1: a resize that collapses the inspector hands focus inside it to its disclosure; Escape then
-     still closes the record. `to` is the compacting size; a touch page compacts by its height */
-  async resizeFocus(P, from, to, outside) {
+  /* B1: a resize to a compact canvas. A reader's open record stays open, as the sheet, with focus in it,
+     and Escape still closes the record first; a panel open only by default folds; focus on an unrelated
+     control stays where it is either way. `to` is the compacting size; a touch page compacts by its height */
+  async resizeFocus(P, from, to, outside, rec) {
     await P.size(from[0], from[1]); await P.frames();
-    const setup = await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
-      m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243');
+    const setup = await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen');
+      ${outside && !rec ? '' : `m.select('VM-HG-243'); m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243');`}
       const t = ${outside ? `document.querySelector('#D .radial-drawer-trigger')` : `document.querySelector('#D .radial-insp-back')`}; t.focus();
       return { focus: document.activeElement.className, expanded: m.state().inspector.expanded, coarse: matchMedia('(pointer: coarse)').matches }; })()`);
     await P.size(to[0], to[1]); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
@@ -503,11 +677,298 @@ const KEYED = {
     let b = null;
     if (!outside) { await P.key('Escape'); b = await P.ev(`(() => { const s = FX.inst.D.state(); return { view: s.inspector.view, sel: s.selection.locked }; })()`); }
     await P.size(1280, 800); await P.frames();
-    const ok = setup.expanded && !a.expanded && a.arrangement === 'compact' && a.view === 'record' && a.sel === 'VM-HG-243' &&
-      (outside ? /radial-drawer-trigger/.test(a.focus) : /radial-insp-toggle/.test(a.focus) && a.inHost && b.view === 'item' && b.sel === 'VM-HG-243');
+    /* a reader's open record stays open, as the sheet, with focus in it; a panel open only by default folds */
+    const ok = setup.expanded && a.arrangement === 'compact' && (outside
+      ? (rec ? a.expanded && a.view === 'record' && a.sel === 'VM-HG-243' : !a.expanded && a.view === 'idle') && /radial-drawer-trigger/.test(a.focus)
+      : a.expanded && a.view === 'record' && a.sel === 'VM-HG-243' && /radial-insp-back/.test(a.focus) && a.inHost && b.view === 'item' && b.sel === 'VM-HG-243');
     return { ok, d: { setup, a, b } };
   },
   u20(P) { return KEYED.resizeFocus(P, [1200, 900], [390, 844], false); },
+  /* with a filter, a selected leaf and a record open from it: from the overview (the sheet folded, at the
+     Fit), open and close the sheet, and turn tall portrait > short portrait > landscape > short portrait
+     > tall portrait, first at the Fit and then away from it. Opening never refits or shrinks the drawing
+     and keeps the leaf beside the sheet; closing returns to the Fit the sheet was opened from; a turn
+     refits at the Fit and keeps the camera away from it */
+  async walk(P, I, pre, want, scheme) {
+    const settle = async () => { await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames(); };
+    const snap = (tag) => P.ev(`(() => { const m = ${I}, s = m.state(), v = m.view(), f = m.report().fit, html = document.documentElement;
+      const slot = document.querySelector('${pre}[data-radial-slot="inspector"]'), sr = document.querySelector('${pre}[data-radial-slot="stage"]').getBoundingClientRect();
+      const r = slot.getBoundingClientRect(), p = m.project(${J(want.leaf)});
+      const under = !!p && s.inspector.expanded && sr.left + p.x >= r.left && sr.left + p.x <= r.right && sr.top + p.y >= r.top && sr.top + p.y <= r.bottom;
+      return { tag: ${J(tag)}, exp: s.inspector.expanded, arr: s.inspector.arrangement,
+        edge: slot.getAttribute('data-diagram-fit-edge') + '/' + slot.getAttribute('data-radial-fit-option'),
+        k: v.k, x: v.x, y: v.y, atFit: v.atFit, cause: f.cause, clear: f.clear, under, theme: html.getAttribute('data-theme') || getComputedStyle(html).colorScheme,
+        kept: s.inspector.view === 'record' && s.inspector.target === ${J(want.rec)} && s.selection.locked === ${J(want.leaf)} && s.membership.active &&
+          s.membership.visibleItems === ${want.items} && s.facets.active.length === 1 }; })()`);
+    const toggle = async (tag) => { await P.ev(`document.querySelector('${pre}.radial-insp-toggle').click()`); await settle(); return snap(tag); };
+    const turn = async (w, h, tag) => { await P.size(w, h); await settle(); return snap(tag); };
+    if ((await snap('start')).exp) await toggle('fold');
+    await P.ev(`${I}.fit('explicit')`); await settle();
+    const run = async (first) => [await snap(first), await toggle('open'), await toggle('close'), await turn(393, 666, 'short'),
+      await toggle('S open'), await toggle('S close'), await turn(844, 390, 'landscape'), await toggle('L open'), await toggle('L close'),
+      await turn(393, 666, 'short again'), await turn(390, 844, 'tall again')];
+    const fit = await run('fit');
+    await P.ev(`${I}.zoom(1.6)`); await settle();
+    const away = await run('zoomed');
+    const same = (a, b) => Math.abs(a.k - b.k) < 1e-9 && Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
+    const open = [1, 4, 7], shut = [0, 2, 3, 5, 6, 8, 9, 10];
+    const states = (r) => r.every((x, i) => x.exp === open.includes(i));
+    const all = fit.concat(away);
+    const ok = all.every((r) => r.kept && r.arr === 'compact' && r.edge === (r.exp ? 'none/null' : 'top/right') && (!scheme || r.theme === scheme)) &&
+      states(fit) && states(away) &&
+      shut.every((i) => fit[i].atFit && fit[i].clear) && open.every((i) => !fit[i].atFit && Math.abs(fit[i].k - fit[i - 1].k) < 1e-9 && !fit[i].under) &&
+      [2, 5, 8].every((i) => fit[i].cause === 'reader') && [3, 6, 9, 10].every((i) => fit[i].cause === 'resize') &&
+      same(fit[2], fit[0]) && same(fit[5], fit[3]) && same(fit[8], fit[6]) && same(fit[9], fit[3]) && same(fit[10], fit[0]) &&
+      away.every((r) => !r.atFit) && open.every((i) => !away[i].under && Math.abs(away[i].k - away[i - 1].k) < 1e-9) &&
+      [2, 5, 8, 3, 6, 9, 10].every((i) => same(away[i], away[i - 1]));
+    return { ok, d: { want, rows: all.map((r) => [r.tag, r.exp ? 'open' : 'pill', r.edge, +r.k.toFixed(4), r.atFit, r.cause, r.clear, r.under, r.kept]) } };
+  },
+  /* a reader's inspection in the open wide panel, with focus on a button inside it, and the drawer open
+     (by its service, so the focus stays): a resize to a compact canvas, where the sheet yields to the
+     drawer, folds the panel and hands that focus to its disclosure. (A panel open only by default
+     shows no control of its own to focus: a hover preview clears before the resize folds it) */
+  async u33(P) {
+    await P.size(1200, 900); await P.frames();
+    const setup = await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
+      const b = document.querySelector('#D .radial-insp-body button'); if (b) b.focus(); m.service('facets').open(true); const s = m.state();
+      return { view: s.inspector.view, sel: s.selection.locked, expanded: s.inspector.expanded, arrangement: s.inspector.arrangement, drawer: s.facets.open,
+        focused: !!b && document.activeElement === b }; })()`);
+    await P.size(390, 844); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+    const a = await P.ev(`(() => { const s = FX.inst.D.state(); return { expanded: s.inspector.expanded, arrangement: s.inspector.arrangement, view: s.inspector.view,
+      sel: s.selection.locked, drawer: s.facets.open, focus: document.activeElement.className, inHost: FX.host('D').contains(document.activeElement) }; })()`);
+    await P.size(1280, 800); await P.frames();
+    return { ok: setup.view === 'item' && setup.sel === 'VM-HG-243' && setup.expanded && setup.arrangement === 'wide' && setup.drawer && setup.focused &&
+      a.arrangement === 'compact' && !a.expanded && a.drawer && a.sel === 'VM-HG-243' && /radial-insp-toggle/.test(a.focus) && a.inHost, d: { setup, a } };
+  },
+  /* the CFW reference at 1100x760, where the open drawer alone folds the panels: with a node selected the
+     drawer opens and the sheet yields to it, one arrangement reported; closing it returns the wide panel.
+     A search result chosen there opens the sheet, which closes the drawer as on a phone: the panels
+     return to wide, the node beside the panel. Then Vellmark at 1100x1150 narrowed to 940 with the drawer
+     open over a selection: the sheet yields, the drawer and the focus in it stay */
+  async u34(b, base, page2, plant) {
+    const planted = async (X) => { if (!plant) return true; const pl = await X.ev(`C.plant(${J(plant.file)}, ${J(plant.from)}, ${J(plant.to)})`);
+      if (pl.planted) { await X.ev('C.remount()'); await X.ev('new Promise((r) => setTimeout(r, 300))'); await X.frames(); } return pl.planted; };
+    const E = await open(b, base + '/patterns/_preview/diagram-interactive-radial.html', { width: 1100, height: 760 });
+    if (!(await planted(E))) { await E.close(); return { ok: true, planted: false, d: 'not planted' }; }
+    const settle = async () => { await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 300))'); await E.frames(); };
+    const S = (x) => E.ev(`(() => { const m = RADIAL_MAP, s = m.state(), sel = s.selection.locked, p = sel ? m.project(sel) : null;
+      const sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(), r = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect();
+      return { drawer: s.facets.open, aria: document.querySelector('.radial-drawer-trigger').getAttribute('aria-expanded'), chrome: s.chrome.arrangement,
+        insp: s.inspector.arrangement + (s.inspector.expanded ? ' open' : ' folded'), view: s.inspector.view, sel, focus: document.activeElement.className,
+        under: !!p && s.inspector.expanded && sr.left + p.x >= r.left && sr.left + p.x <= r.right && sr.top + p.y >= r.top && sr.top + p.y <= r.bottom, events: window.__arr.slice() }; })()`);
+    await E.ev(`(() => { const m = RADIAL_MAP; window.__arr = []; m.on('arrangement', (e) => window.__arr.push(e.arrangement));
+      const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      m.select(m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id)).id); return true; })()`);
+    await settle(); const a0 = await S();
+    await E.ev(`document.querySelector('.radial-drawer-trigger').click()`); await settle(); const a1 = await S();
+    await E.ev(`document.querySelector('.radial-drawer-trigger').click()`); await settle(); const a2 = await S();
+    const q = await E.ev(`(() => { const m = RADIAL_MAP; m.select(null); m.fit('explicit'); window.__arr = [];
+      const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      return m.layout.nodes.filter((x) => x.kind === 'leaf' && drawn(x.id))[3].id; })()`);
+    await settle();
+    await E.ev(`(() => { document.querySelector('.radial-drawer-trigger').click(); const i = document.querySelector('.radial-drawer-q'); i.value = ${J(q)}; i.dispatchEvent(new Event('input')); return true; })()`);
+    await settle(); const a3 = await S();
+    await E.ev(`(() => { const b = Array.from(document.querySelectorAll('.radial-drawer-r')).find((x) => x.textContent.indexOf(${J(q)}) >= 0); b.click(); return true; })()`);
+    await settle(); const a4 = await S();
+    const errs = E.errors.length; await E.close();
+    const V = await open(b, base + page2, { width: 1100, height: 1150 });
+    await planted(V);
+    const vs = async () => V.ev(`(() => { const s = RADIAL_MAP.state(); return { drawer: s.facets.open, chrome: s.chrome.arrangement, insp: s.inspector.arrangement + (s.inspector.expanded ? ' open' : ' folded'),
+      view: s.inspector.view, sel: s.selection.locked, focus: document.activeElement.className }; })()`);
+    await V.ev(`(() => { const m = RADIAL_MAP; const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      m.select(m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id)).id); document.querySelector('.radial-drawer-trigger').click(); return true; })()`);
+    await V.frames(); await V.ev('new Promise((r) => setTimeout(r, 300))'); const b0 = await vs();
+    await V.size(940, 1150); await V.frames(); await V.ev('new Promise((r) => setTimeout(r, 300))'); await V.frames(); const b1 = await vs();
+    const errs2 = V.errors.length; await V.close();
+    const ok = errs === 0 && errs2 === 0 &&
+      a0.insp === 'wide open' && a0.chrome === 'wide' && !!a0.sel &&
+      a1.drawer && a1.aria === 'true' && /radial-drawer-q/.test(a1.focus) && a1.chrome === 'compact' && a1.insp === 'compact folded' && a1.sel === a0.sel && a1.view === a0.view && J(a1.events) === J(['compact']) &&
+      !a2.drawer && a2.chrome === 'wide' && a2.insp === 'wide open' && a2.sel === a0.sel && J(a2.events) === J(['compact', 'wide']) &&
+      a3.drawer && a3.chrome === 'compact' && a3.insp === 'compact folded' &&
+      a4.sel === q && !a4.drawer && /radial-drawer-trigger/.test(a4.focus) && a4.chrome === 'wide' && a4.insp === 'wide open' && !a4.under && J(a4.events) === J(['compact', 'wide']) &&
+      b0.drawer && b0.chrome === 'wide' && /radial-drawer-q/.test(b0.focus) && !!b0.sel &&
+      b1.drawer && b1.chrome === 'compact' && b1.insp === 'compact folded' && b1.sel === b0.sel && /radial-drawer-q/.test(b1.focus);
+    return { ok, planted: true, d: { a0, a1, a2, a3, a4, b0, b1 } };
+  },
+  /* a public expression on a landscape desktop window where the panels fold: a #node= arrival, and a search
+     result, for each of the first leaves; the arrived or chosen node is clear of the open sheet by the
+     reveal margin */
+  async u35(b, base, page, size, scheme, n, plant) {
+    const planted = async (X) => { if (!plant) return true; const pl = await X.ev(`C.plant(${J(plant.file)}, ${J(plant.from)}, ${J(plant.to)})`);
+      if (pl.planted) { await X.ev('C.remount()'); await X.ev('new Promise((r) => setTimeout(r, 300))'); await X.frames(); } return pl.planted; };
+    const P0 = await open(b, base + page, { width: size[0], height: size[1], scheme });
+    if (!(await planted(P0))) { await P0.close(); return { ok: true, planted: false, d: 'not planted' }; }
+    const ids = await P0.ev(`RADIAL_MAP.layout.nodes.filter((x) => x.kind === 'leaf').slice(0, ${n}).map((x) => x.id)`);
+    const near = `(id) => { const m = RADIAL_MAP, s = m.state(), p = m.project(id), sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(),
+      r = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect(), x = sr.left + p.x, y = sr.top + p.y, g = 12;
+      return { id, sel: s.selection.locked, open: s.inspector.expanded && s.inspector.arrangement === 'compact', chrome: s.chrome.arrangement,
+        under: s.inspector.expanded && x >= r.left - g && x <= r.right + g && y >= r.top - g && y <= r.bottom + g }; }`;
+    const search = [];
+    for (const id of ids) {
+      search.push(await P0.ev(`(async () => { const m = RADIAL_MAP; m.select(null); m.fit('explicit'); await new Promise((r) => requestAnimationFrame(r));
+        document.querySelector('.radial-drawer-trigger').click(); const i = document.querySelector('.radial-drawer-q'); i.value = ${J(id)}; i.dispatchEvent(new Event('input'));
+        const b = Array.from(document.querySelectorAll('.radial-drawer-r')).find((x) => x.textContent.indexOf(${J(id)}) >= 0);
+        if (!b) { document.querySelector('.radial-drawer-trigger').click(); return { id: ${J(id)}, missing: true }; }
+        b.click(); await new Promise((r) => setTimeout(r, 120)); return (${near})(${J(id)}); })()`));
+    }
+    const errs = P0.errors.length; await P0.close();
+    const arrival = [];
+    for (const id of ids) {
+      const A = await open(b, base + page + '#node=' + encodeURIComponent(id), { width: size[0], height: size[1], scheme });
+      await A.ev('new Promise((r) => setTimeout(r, 300))'); await A.frames(); await planted(A);
+      arrival.push(Object.assign(await A.ev(`(${near})(${J(id)})`), { resolved: await A.ev('!!(RADIAL_MAP.report().arrival && RADIAL_MAP.report().arrival.resolved)'), errors: A.errors.length }));
+      await A.close();
+    }
+    const sOk = search.filter((x) => !x.missing), aOk = arrival.filter((x) => x.resolved);
+    const ok = errs === 0 && sOk.length >= n - 2 && aOk.length >= n - 2 && arrival.every((x) => x.errors === 0) &&
+      sOk.every((x) => x.sel === x.id && x.open && x.chrome === 'compact' && !x.under) && aOk.every((x) => x.sel === x.id && x.open && !x.under);
+    return { ok, planted: true, d: { search: search.filter((x) => x.missing || x.under || !x.open).concat(sOk.length ? [] : ['none']), arrival: arrival.filter((x) => x.under || !x.open || !x.resolved),
+      searched: sOk.length, arrived: aOk.length } };
+  },
+  /* on the fixture's touch page */
+  async u27(P) {
+    await P.size(390, 844); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+    const n0 = await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); FX.mode('one'); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
+      m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243'); m.service('facets').set('status', [m.model.byId.get('VM-HG-243').state]);
+      return m.state().membership.visibleItems; })()`);
+    return KEYED.walk(P, 'FX.inst.D', '#D ', { leaf: 'VM-HG-243', rec: 'OFFICE-N', items: n0 });
+  },
+  /* on a public expression's touch page */
+  async u29(P, scheme) {
+    const want = await P.ev('C.exprSetup()');
+    if (!want) return { ok: false, d: 'no filter value keeps a drawn leaf, or no record' };
+    return KEYED.walk(P, 'RADIAL_MAP', '', want, scheme);
+  },
+  /* a public expression on a desktop window where the panels around the map fold: hover, a selection,
+     a record, a reference followed and a node selected under the open sheet, closing, Fit, a reading
+     state carried to a roomy window and back, then a manual camera through the transitions */
+  async u31(P, scheme, size, roomy) {
+    const settle = async () => { await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 300))'); await P.frames(); };
+    const S = (tag) => P.ev(`(() => { const m = RADIAL_MAP, s = m.state(), v = m.view(), html = document.documentElement, q = (x) => document.querySelector(x);
+      const meets = (a, c) => !!a && !!c && a.left < c.right && c.left < a.right && a.top < c.bottom && c.top < a.bottom;
+      const sr = q('[data-radial-slot="stage"]').getBoundingClientRect(), r = q('[data-radial-slot="inspector"]').getBoundingClientRect();
+      const drawing = q('[data-radial] .radial-world').getBoundingClientRect();   /* the drawn marks, as the engine measures them */
+      const sel = s.selection.locked, p = sel ? m.project(sel) : null, open = s.inspector.expanded && s.inspector.arrangement === 'compact';
+      /* the selected node under the open panel, sheet or corner panel */
+      const row = q('.radial-chrome-triggers');
+      return { tag: ${J(tag)}, exp: s.inspector.expanded, arr: s.inspector.arrangement, chrome: s.chrome.arrangement, view: s.inspector.view, target: s.inspector.target, sel,
+        k: v.k, x: v.x, y: v.y, atFit: v.atFit, clear: m.report().fit.clear, covered: (m.report().covered || []).indexOf('inspector') >= 0,
+        over: open && meets(r, drawing), under: !!p && s.inspector.expanded && sr.left + p.x >= r.left && sr.left + p.x <= r.right && sr.top + p.y >= r.top && sr.top + p.y <= r.bottom,
+        preview: s.selection.preview, sheetH: Math.round(r.height),
+        controls: open && (meets(r, q('[data-radial-slot="hud"]').getBoundingClientRect()) || (!!row && !row.hidden && meets(r, row.getBoundingClientRect()))),
+        filter: s.facets.active.length, items: s.membership.visibleItems, focus: document.activeElement.className, inHost: !!q('[data-radial]').contains(document.activeElement),
+        theme: html.getAttribute('data-theme') || getComputedStyle(html).colorScheme }; })()`);
+    const ev = (x) => P.ev(x);
+    const same = (a, b) => Math.abs(a.k - b.k) < 1e-9 && Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
+    const fails = [];
+    const must = (cond, what, x) => { if (!cond) fails.push([what, x && x.tag, x && x.exp !== undefined ? { sel: x.sel, view: x.view, exp: x.exp, atFit: x.atFit, under: x.under, filter: x.filter, focus: x.focus, inHost: x.inHost } : undefined]); };
+    const truthful = (x) => x.covered === x.over || (x.covered && !x.over);   /* an open sheet over the drawing is reported */
+    await P.size(size[0], size[1]); await settle();
+    const o0 = await S('overview');
+    must(!o0.exp && o0.arr === 'compact' && o0.chrome === 'compact' && o0.atFit && o0.clear && !o0.covered && o0.theme === scheme, 'overview folded at the Fit', o0);
+    /* hover is not a request to open: a leaf the pointer alone hits, clear of the panels, is previewed */
+    const leaf0 = await ev(`(() => { const m = RADIAL_MAP, sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect();
+      const n = m.layout.nodes.filter((x) => x.kind === 'leaf').find((x) => { const p = m.project(x.id), h = m.hits(p.x, p.y, 0).inside;
+        return p.x > 60 && p.x < sr.width - 60 && p.y > 160 && p.y < sr.height - 160 && h.length === 1 && h[0] === x.id; });
+      if (!n) return null; const p = m.project(n.id); return { id: n.id, x: sr.left + p.x, y: sr.top + p.y }; })()`);
+    must(!!leaf0, 'a leaf the pointer alone hits');
+    let h = o0;
+    if (leaf0) { await P.move(leaf0.x, leaf0.y); h = await S('hover');
+      must(h.preview === leaf0.id && h.view === 'item' && h.target === leaf0.id && !h.exp && !h.sel, 'hover previews the leaf and leaves the panel folded', h); await P.move(5, 5); }
+    /* a selection over the whole map: the sheet opens over the drawing, and the report says so, while the
+       last Fit's own record stays as it was; closing returns to that Fit */
+    /* the leaf lowest on the screen, so that the sheet opens over the top of the drawing without a pan */
+    await ev(`(() => { const m = RADIAL_MAP; const leaves = m.layout.nodes.filter((x) => x.kind === 'leaf'); leaves.sort((p, q) => m.project(q.id).y - m.project(p.id).y); m.select(leaves[0].id); return leaves[0].id; })()`);
+    await settle(); const sa = await S('whole map selection');
+    must(sa.exp && sa.over && sa.covered && !sa.under && !sa.controls && !sa.atFit && Math.abs(sa.k - o0.k) < 1e-9, 'over the whole map the open sheet is reported as covering it, the node beside it, no shrink', sa);
+    /* a node under the open sheet, selected: brought beside it */
+    const hid = await ev(`(() => { const m = RADIAL_MAP, r = document.querySelector('[data-radial-slot="inspector"]').getBoundingClientRect(), sr = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect();
+      const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      const n = m.layout.nodes.find((x) => x.kind === 'leaf' && drawn(x.id) && (() => { const p = m.project(x.id); return sr.left + p.x > r.left + 4 && sr.left + p.x < r.right - 4 && sr.top + p.y > r.top + 4 && sr.top + p.y < r.bottom - 4; })());
+      if (!n) return null; m.select(n.id); return n.id; })()`);
+    await settle(); const s4 = await S('select under the sheet');
+    must(!!hid && s4.sel === hid && s4.exp && !s4.under, 'a node selected under the open sheet is brought beside it', s4);
+    await ev(`document.querySelector('.radial-insp-toggle').click()`); await settle(); const sb = await S('closed');
+    must(!sb.exp && sb.atFit && same(sb, o0) && !sb.covered, 'closed: back at the same Fit, nothing covering', sb);
+    await ev(`RADIAL_MAP.select(null)`); await settle();
+    /* a filter, a leaf selected under it, and the record with the most to show that offers a reference to
+       a drawn node, opened from it: the sheet opens as a bounded overlay */
+    const want = await ev('C.readingSetup()'); await settle();
+    must(!!want, 'a filter value keeps a drawn leaf and a record that offers a reference to a drawn node');
+    if (!want) return { ok: false, d: { fails } };
+    const pick = want;
+    const s1 = await S('record open');
+    must(s1.exp && s1.view === 'record' && s1.sel === want.leaf && !s1.atFit && !s1.under && !s1.controls && truthful(s1), 'the record opens the sheet, the leaf beside it, the controls clear, the coverage reported', s1);
+    /* an explicit Fit dismisses a covering sheet and keeps the record, the selection and the filter */
+    await ev(`RADIAL_MAP.fit('explicit')`); await settle(); const s2 = await S('fit');
+    must(s2.atFit && s2.clear && s2.view === 'record' && s2.sel === want.leaf && s2.filter === 1 && (s2.exp ? !s2.over : true), 'Fit: overview, record, selection and filter kept', s2);
+    /* opened with its toggle from the Fit: no refit, no shrink */
+    if (!s2.exp) { await ev(`document.querySelector('.radial-insp-toggle').click()`); await settle(); }
+    const s3 = await S('toggle open');
+    must(s3.exp && !s3.atFit && Math.abs(s3.k - s2.k) < 1e-9 && !s3.under && !s3.controls && truthful(s3), 'opened from the Fit: the drawing keeps its scale, the leaf beside the sheet', s3);
+    /* the record again, then a reference to a drawn placed node followed while the sheet is open */
+    await ev(`RADIAL_MAP.service('inspector').openRecord(${J(want.rec)}, RADIAL_MAP.state().selection.locked)`); await settle();
+    const s5 = await S('record again'); must(s5.view === 'record' && s5.exp && !s5.under, 'the record reopened, its node beside the sheet', s5);
+    const ref = await ev(`(() => { const m = RADIAL_MAP; const drawn = (id) => { const g = document.querySelector('[data-radial-id="' + CSS.escape(id) + '"]'); return !!g && !g.classList.contains('is-out'); };
+      const b = Array.from(document.querySelectorAll('.radial-insp-body .radial-insp-ref')).find((x) => { const id = x.getAttribute('data-radial-ref'); return id !== m.state().selection.locked && m.model.kindOf(id) !== 'record' && drawn(id); });
+      if (!b) return null; const id = b.getAttribute('data-radial-ref'); b.click(); return id; })()`);
+    await settle(); const s6 = await S('reference followed');
+    must(!!ref && s6.sel === ref && s6.view !== 'record' && s6.exp && !s6.under && s6.filter === 1, 'a reference followed in the open sheet lands beside it, the filter kept', s6);
+    /* the reader's Escape with focus inside: it clears the selection and folds the sheet; the view it
+       showed is replaced first, which keeps focus on the panel, shown as its pill (the hand-off to the
+       disclosure when a body hides with focus in it is U33's); the filter stays, and so does the camera
+       the reference moved */
+    const inside = await ev(`(() => { const x = document.querySelector('.radial-insp-body button'); if (x) x.focus(); return !!x && document.activeElement === x; })()`);
+    must(inside, 'focus inside the open sheet', s6);
+    await P.key('Escape'); await settle(); const s7 = await S('escape');
+    must(s7.sel === null && s7.view === 'idle' && !s7.exp && /radial-insp-toggle|radial-inspector/.test(s7.focus) && s7.inHost && !s7.atFit && s7.filter === 1, 'Escape clears the selection and folds the sheet, focus kept on the panel, the filter and the camera kept', s7);
+    await ev(`RADIAL_MAP.fit('explicit')`); await settle(); const s8 = await S('fit again');
+    must(s8.atFit && s8.clear && s8.filter === 1, 'Fit restores the overview, the filter kept', s8);
+    /* the sheet grows over its node: a node's own short view leaves it beside the sheet, then the tallest
+       record grows the sheet past the node, and the node is brought beside it */
+    const g = await ev(`C.growNode(${pick.bottom})`); await settle();
+    must(!!g, 'a node a short view leaves beside the sheet and the tallest record would cover', { tag: J(pick) });
+    let sg = null;
+    if (g) { const s0 = await S('short view');
+      await ev(`RADIAL_MAP.service('inspector').openRecord(${J(pick.rec)}, ${J(g.node)})`); await settle(); sg = await S('record grows');
+      must(s0.exp && s0.sel === g.node && sg.view === 'record' && sg.exp && sg.sheetH > s0.sheetH + 40 && !sg.under && sg.sel === g.node, 'the record grows the sheet past its node, which is brought beside it', sg);
+      await ev(`document.querySelector('.radial-insp-toggle').click()`); await settle(); await ev(`(RADIAL_MAP.select(null), RADIAL_MAP.fit('explicit'), true)`); await settle(); }
+    /* a reading state at the Fit of a roomy window, carried to the cramped one and back: from the Fit the
+       view leaves it with the node beside the sheet; once off the Fit, a resize keeps the camera */
+    await P.size(roomy, size[1]); await settle(); await ev(`RADIAL_MAP.fit('explicit')`); await settle();
+    await ev(`(() => { const m = RADIAL_MAP; m.select(${J(want.leaf)}); m.service('inspector').openRecord(${J(want.rec)}, ${J(want.leaf)}); return true; })()`); await settle();
+    const s9 = await S('roomy reading');
+    must(s9.arr === 'wide' && s9.exp && s9.view === 'record' && s9.atFit, 'roomy: the record in the open corner panel, at the Fit', s9);
+    await P.size(size[0], size[1]); await settle(); const s10 = await S('cramped');
+    must(s10.k >= s8.k * 0.995, 'cramped: the sheet takes the Fit of the new arrangement before it leaves it, at least the overview the pill leaves', s10);
+    must(s10.arr === 'compact' && s10.exp && s10.view === 'record' && s10.sel === want.leaf && s10.filter === 1 && !s10.atFit && !s10.under && !s10.controls && truthful(s10), 'cramped: the record still open, as the sheet, the node beside it', s10);
+    await P.size(roomy, size[1]); await settle(); const s11 = await S('roomy again');
+    must(s11.arr === 'wide' && s11.exp && s11.view === 'record' && s11.sel === want.leaf && s11.filter === 1 && s11.atFit && same(s11, s9) && !s11.under,
+      'roomy again: the panel open with the record, back at the Fit the sheet left', s11);
+    await P.size(size[0], size[1]); await settle(); const s11b = await S('cramped again');
+    must(s11b.k >= s8.k * 0.995, 'cramped: the sheet takes the Fit of the new arrangement before it leaves it, at least the overview the pill leaves', s11b);
+    must(s11b.arr === 'compact' && s11b.exp && s11b.view === 'record' && s11b.sel === want.leaf && s11b.filter === 1 && !s11b.atFit && !s11b.under, 'cramped again: the sheet open from the Fit, the node beside it', s11b);
+    /* the reader moves the camera: then a resize keeps it, both ways */
+    await ev(`RADIAL_MAP.zoom(1.25)`); await settle(); const m0 = await S('moved');
+    await P.size(roomy, size[1]); await settle(); const m1 = await S('roomy, moved');
+    must(m1.arr === 'wide' && m1.exp && m1.view === 'record' && m1.sel === want.leaf && m1.filter === 1 && same(m1, m0), 'roomy: a camera the reader moved is kept', m1);
+    await P.size(size[0], size[1]); await settle(); const m2 = await S('cramped, moved');
+    must(m2.arr === 'compact' && m2.exp && m2.view === 'record' && m2.sel === want.leaf && m2.filter === 1 && same(m2, m1), 'cramped: a camera the reader moved is kept', m2);
+    await ev(`document.querySelector('.radial-insp-toggle').click()`); await settle();
+    await ev(`RADIAL_MAP.fit('explicit')`); await settle(); const s12 = await S('overview again');
+    must(!s12.exp && s12.atFit && s12.clear, 'closed and fitted: the overview again', s12);
+    /* stability: nothing more happens once the observers settle */
+    const hush = () => ev(`(async () => { const m = RADIAL_MAP; let n = 0; ['arrangement', 'fit', 'obstacle'].forEach((t) => m.on(t, () => n++)); await new Promise((r) => setTimeout(r, 600)); return n; })()`);
+    const quiet = await hush();
+    must(quiet === 0, 'no event after the observers settle', { tag: 'quiet ' + quiet });
+    /* a manual camera through the transitions: kept at every size, and quiet at the narrow one and at the end */
+    await ev(`RADIAL_MAP.zoom(1.6)`); await settle(); const c0 = await S('zoomed');
+    const cams = [], WS = [767, size[0], roomy, size[0]];
+    for (const [i, w] of WS.entries()) { await P.size(w, size[1]); await settle(); cams.push(await S('camera at ' + w));
+      if (w === 767 || i === WS.length - 1) { const n = await hush(); must(n === 0, 'no event after the observers settle', { tag: 'quiet at ' + w + ': ' + n }); } }
+    cams.forEach((c) => must(!c.atFit && same(c, c0), 'the manual camera kept through the resize', c));
+    return { ok: !fails.length, d: { fails, want, pick, grow: g, rows: [o0, h, sa, s4, sb, s1, s2, s3, s5, s6, s7, s8].concat(sg ? [sg] : []).concat([s9, s10, s11, s11b, m0, m1, m2, s12]).map((x) => [x.tag, x.arr, x.exp ? 'open' : 'folded', +x.k.toFixed(4), x.atFit, x.under, x.covered, x.over]) } };
+  },
   /* a keyboard reader follows a reference to a record and comes back */
   async u17(P) {
     await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen'); m.select('VM-HG-243');
@@ -569,6 +1030,7 @@ async function run() {
     await W('U12 a malformed section is a named error; a missing header hook fails the mount', 'section');
     await W('U13 an arrival naming an undrawn record opens its view', 'arrivalRecord');
     await W('U14 wide: collapsing and expanding refit at the Fit with the reader\'s cause, and away from it keep the view', 'toggleRefit');
+    await W('U14b wide: the panel collapsed at the Fit and opened again by a selection, which leaves the Fit to reveal the node: the reader\'s toggle then collapses it with no refit', 'wideToggle');
 
     console.log('# Q  facets and search');
     await W('Q1 the index holds every placed container and item and every record', 'index');
@@ -608,8 +1070,11 @@ async function run() {
         /radial-drawer-q/.test(b2) && /^VM-KQ-00/.test(c || ''), J({ a, b: b2, c }));
     }
 
-    { const r = await KEYED.u20(P); check('U20 a resize to a narrow canvas collapses the inspector with focus handed from the record to its disclosure; the record and selection stay, and Escape still closes the record', r.ok, J(r.d)); }
-    { const r = await KEYED.resizeFocus(P, [1200, 900], [390, 844], true); check('U21 control: focus on an unrelated visible control stays there when the inspector collapses', r.ok, J(r.d)); }
+    { const r = await KEYED.u20(P); check('U20 a resize to a narrow canvas keeps a reader\'s open record, as the compact sheet: the record, the selection and the focus in the panel stay, and Escape still closes the record', r.ok, J(r.d)); }
+    { const r = await KEYED.resizeFocus(P, [1200, 900], [390, 844], true); check('U21 control: a panel open only by default folds on the resize, and focus on an unrelated visible control stays there', r.ok, J(r.d)); }
+    { const r = await KEYED.resizeFocus(P, [1200, 900], [390, 844], true, true); check('U21b with a record open and focus on an unrelated visible control: the resize keeps the record, open as the sheet, and the focus where it was', r.ok, J(r.d)); }
+    { const r = await KEYED.u33(P); check('U33 a selection in the open wide panel with focus on a button inside it, and the drawer open: a resize to a compact canvas, where the sheet yields to the drawer, folds the panel, keeps the selection and the drawer, and hands that focus to its disclosure', r.ok, J(r.d)); }
+    await W('U32 the inspector\'s wide panel placed over the legend\'s corner (a test style): the chrome\'s wide arrangement fails on it, the inspector folds with the compact one, and the two settle in one step: the chrome decides compact once, counted from before the mount, and nothing after', 'settle');
     { const r = await KEYED.u17(P); check('U17 with the keyboard: a record opened from a reference keeps focus in the panel (on the way back), and Escape then closes the record', r.ok, J(r.d)); }
 
     await W('U19 the live legend draws plane and kind notes under their labels, and a shapes line in place of the kind rows and their notes', 'legendNotes');
@@ -639,13 +1104,20 @@ async function run() {
     P = await open(b, url, { width: 390, height: 844, touch: true });
     console.log('# U, Q on a compact canvas');
     { const r = await KEYED.resizeFocus(P, [1200, 900], [1200, 500], false);
-      check('U22 a coarse pointer: a height that makes the canvas compact collapses the inspector with focus handed to its disclosure; Escape still closes the record',
+      check('U22 a coarse pointer: a height that makes the canvas compact keeps the open record, as the sheet, with focus in it; Escape still closes the record',
         r.ok && r.d.setup.coarse, J(r.d)); }
     await P.size(390, 844); await P.frames();
-    await W('U15 compact: collapsed until a selection opens it; the top edge; exclusive with an opened chrome panel both ways; Escape collapses it', 'compact');
+    { const a = await at(P, 'compact');
+      await P.size(1280, 800); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+      const w = await at(P, 'wideEdge');
+      await P.size(390, 844); await P.frames(); await P.ev('new Promise((r) => setTimeout(r, 250))'); await P.frames();
+      measures.u15 = { compact: a.d, wide: w.d };
+      check('U15 compact: collapsed until a selection opens it; the collapsed pill declares the top edge with the right as its option and the open sheet, an overlay, reserves nothing, and wide declares the right alone, open or collapsed; exclusive with an opened chrome panel both ways; Escape collapses it',
+        a.ok && w.ok, J({ wide: w.d, compact: [a.d.a.edge, a.d.b, a.d.c.edge, a.d.d.edge, a.d.e.edge] })); }
     await W('Q13 compact: the drawer, the chrome panels and the inspector sheet are exclusive', 'exclusive');
     await W('U16 compact: a selection opens the sheet with no refit, and the selected node lands beside the sheet, not under it', 'compactReveal');
     await W('U18 compact: a selection opening the sheet over an open chrome panel at the Fit closes the panel and refits nothing', 'compactClaimNoFit');
+    { const r = await KEYED.u27(P); measures.u27 = r.d; check('U27 compact, with a record and a filter: collapsing, expanding and a portrait / landscape turn and back keep the record, selection and filter, with the Fit edges following the state; at the Fit, opening never refits or shrinks the drawing and keeps the leaf beside the sheet, closing returns to the same Fit, a turn refits and the turn back restores the same Fit; away from it the camera stays', r.ok, J(r.d).slice(0, 400)); }
     { const r = await KEYED.q15(P); check('Q15 compact, with the keyboard: choosing a result closes the drawer with focus on its trigger, and Escape then clears the selection', r.ok, J(r.d)); }
     check('Q14 no uncaught error on the compact page', P.errors.length === 0, J(P.errors.slice(0, 3)));
     await P.close();
@@ -670,6 +1142,122 @@ async function run() {
       await Xp.close();
     }
 
+    /* the two public expressions at the whole-map Fit: a touch page turned from tall portrait through
+       short portrait and the short landscape sizes and back, then tablet and wide; a desktop page
+       narrowed past the lower panels' and the inspector's transitions and widened again */
+    console.log('# U  the public expressions at the Fit');
+    const EXPR = { 'the CFW reference': '/patterns/_preview/diagram-interactive-radial.html', 'the Vellmark parks composition': '/patterns/_preview/diagram-interactive-radial.neutral.html' };
+    {
+      const TURN = [[390, 844], [393, 666], [390, 664], [844, 390], [812, 375], [740, 340], [667, 375], [568, 320], [393, 666], [390, 844], [820, 1180], [1280, 800]];
+      const DESK = [1280, 1100, 940, 860, 820, 768, 767, 768, 820, 860, 940, 1100, 1280].map((w) => [w, 1150]);
+      measures.frame = [];
+      const walk = async (name, page, scheme, sizes, touch) => {
+        const E = await open(b, base + page, { width: sizes[0][0], height: sizes[0][1], touch, scheme });
+        const rows = [];
+        for (const [i, [w, h]] of sizes.entries()) {
+          if (i) { await E.size(w, h); await E.frames(); await E.ev('new Promise((r) => setTimeout(r, 250))'); await E.frames(); }
+          rows.push(await E.ev(`C.frame(${J(scheme)})`));
+        }
+        measures.frame.push({ name, scheme, touch, rows: rows.map((r) => r.d) });
+        await E.close();
+        return { rows, errors: E.errors.length };
+      };
+      const row = (d) => [d.size, d.insp, d.edge, d.k, 'best ' + d.best, 'fold ' + d.fold, d.clear ? 'clear' : 'NOT clear', d.atFit ? 'at Fit' : 'off Fit'];
+      /* each desktop size loaded fresh: the same Fit as the walk reaches there, within 0.5% */
+      const fresh = async (page, scheme, walked) => { const out = [];
+        for (const w of [...new Set(DESK.map((x) => x[0]))]) {
+          const E = await open(b, base + page, { width: w, height: 1150, scheme });
+          const r = await E.ev(`C.frame(${J(scheme)})`), ks = walked.rows.filter((x) => x.d.size === w + 'x1150').map((x) => x.d.k);
+          out.push({ ok: r.ok && E.errors.length === 0 && ks.length > 0 && ks.every((k) => Math.abs(k - r.d.k) <= r.d.k * 0.005), d: r.d, walked: ks });
+          await E.close();
+        }
+        return out; };
+      for (const [name, page] of Object.entries(EXPR)) for (const scheme of ['light', 'dark']) {
+        const t = await walk(name, page, scheme, TURN, true), bad = t.rows.filter((r) => !r.ok).map((r) => row(r.d));
+        check(`U26 ${name}, ${scheme}, touch: tall portrait (390x844) to short portrait (393x666, 390x664), the short landscape sizes (844x390 to 568x320) and back, then tablet and wide: at each the whole-map Fit stands clear and is as large as the best single reservation of the inspector that clears (within 0.5%), and an explicit Fit gives the same view`,
+          !bad.length && t.errors === 0, J(bad.length ? bad : t.rows.map((r) => [r.d.size, r.d.k])).slice(0, 500));
+        { const E = await open(b, base + page, { width: 390, height: 844, touch: true, scheme });
+          const r = await KEYED.u29(E, scheme); measures.state = (measures.state || []).concat([{ name, scheme, d: r.d }]);
+          check(`U29 ${name}, ${scheme}, touch: with a filter, a selection and a record, collapsing, expanding and a turn from tall portrait to short portrait, landscape, short portrait and tall portrait keep all three, with the Fit edges following the state; at the Fit, opening never refits or shrinks the drawing and keeps the leaf beside the sheet, closing returns to the same Fit, a turn refits and each return restores the same Fit; away from it the camera stays`,
+            r.ok && E.errors.length === 0, J(r.d.rows ? r.d.rows.filter((x, i) => i < 3) : r.d).slice(0, 400));
+          await E.close(); }
+        const d = await walk(name, page, scheme, DESK, false), badD = d.rows.filter((r) => !r.ok).map((r) => row(r.d));
+        const f = await fresh(page, scheme, d), badF = f.filter((r) => !r.ok).map((r) => row(r.d).concat(['walked ' + r.walked.join(' ')]));
+        measures.fresh = (measures.fresh || []).concat([{ name, scheme, rows: f.map((r) => [r.d.size, r.d.insp, r.d.k, r.walked]) }]);
+        check(`U28 ${name}, ${scheme}, desktop: narrowed from 1280 to 767 and widened again at 1150 tall, past the lower panels' transition and both sides of the inspector's, and each size loaded fresh: at each the whole-map Fit stands clear and is as large as the best single reservation of the inspector that clears and, where the panels fold with nothing inspected, as the overview the panel leaves folded (within 0.5%); an explicit Fit gives the same view; and a fresh load reaches the same Fit as the walk`,
+          !badD.length && !badF.length && d.errors === 0, J(badD.length || badF.length ? badD.concat(badF) : d.rows.map((r) => [r.d.size, r.d.k])).slice(0, 500));
+      }
+      measures.cover = [];
+      for (const [name, page, w] of [['the CFW reference', EXPR['the CFW reference'], 940], ['the Vellmark parks composition', EXPR['the Vellmark parks composition'], 1100]])
+        for (const scheme of ['light', 'dark']) {
+          const E = await open(b, base + page, { width: w, height: 1150, scheme });
+          const r = await E.ev('C.cover()'); measures.cover.push(r.d);
+          check(`U30 ${name}, ${scheme}, at ${w}x1150, the narrowest desktop window where the panels around the map stand: selections at the Fit grow the open wide panel, and no drawn mark ends up under it; the view stays at the Fit`,
+            r.ok && E.errors.length === 0, J(r.d));
+          await E.close();
+        }
+      { const r = await KEYED.u34(b, base, EXPR['the Vellmark parks composition']); measures.yields = r.d;
+        check('U34 the CFW reference at 1100x760, where the open drawer alone folds the panels: with a node selected the drawer opens, with focus in its search, and the sheet yields to it, one arrangement reported; closing the drawer returns the wide panel with the selection. A search result chosen there opens the sheet, which closes the drawer as on a phone, focus to its trigger: the panels return to wide, the node beside the panel, two arrangements in order. Vellmark at 1100x1150 narrowed to 940 with the drawer open over a selection: the sheet yields, and the drawer and the focus in its search stay',
+          r.ok, J(r.d).slice(0, 600)); }
+      measures.landing = [];
+      for (const [name, page, size] of [['the CFW reference', EXPR['the CFW reference'], [880, 700]], ['the Vellmark parks composition', EXPR['the Vellmark parks composition'], [940, 700]]])
+        for (const scheme of ['light', 'dark']) {
+          const r = await KEYED.u35(b, base, page, size, scheme, 12); measures.landing.push({ name, scheme, d: r.d });
+          check(`U35 ${name}, ${scheme}, landscape desktop at ${size[0]}x${size[1]}, where the panels fold: for the first 12 leaves (at least 10 resolved and found), a #node= arrival and a search result open the sheet with the node clear of it by the reveal margin`,
+            r.ok, J(r.d).slice(0, 500));
+        }
+      measures.dynamic = [];
+      for (const [name, page, size, roomy] of [['the CFW reference', EXPR['the CFW reference'], [860, 1150], 1100], ['the Vellmark parks composition', EXPR['the Vellmark parks composition'], [940, 1150], 1280]])
+        for (const scheme of ['light', 'dark']) {
+          const E = await open(b, base + page, { width: size[0], height: size[1], scheme });
+          const r = await KEYED.u31(E, scheme, size, roomy); measures.dynamic.push({ name, scheme, d: r.d });
+          check(`U31 ${name}, ${scheme}, desktop at ${size[0]}x${size[1]}, where the panels around the map fold: hover previews a leaf and leaves the inspector folded; over the whole map the open sheet is reported as covering it; a record, a node selected under the open sheet, a reference followed from the record with the most to show, and that record growing the sheet past its node each keep the selected node beside the sheet, with the coverage reported; opening from the Fit keeps the drawing's scale; the reader's Escape clears the selection and folds the sheet with focus kept on the panel; Fit restores the overview; a reading state at the Fit of a ${roomy} wide window is carried to the cramped one and back to the same Fit, and a camera the reader moves is kept both ways; nothing more happens once the observers settle; and a manual camera is kept through every resize`,
+            r.ok && E.errors.length === 0, J(r.d.fails && r.d.fails.length ? r.d.fails : r.d.rows).slice(0, 500));
+          await E.close();
+        }
+    }
+    /* their controls: a planted inspector in a copy loaded into the CFW reference, remounted */
+    {
+      const ALT = "      set(slot, 'data-radial-fit-option', compact && !expanded ? 'right' : null);";
+      const control = async (from, to, size, touch, fn, file) => {
+        const X = await open(b, base + EXPR['the CFW reference'], { width: size[0], height: size[1], touch });
+        const pl = await X.ev(`C.plant(${J(file || 'diagrams-radial-inspector.js')}, ${J(from)}, ${J(to)})`);
+        let x = { ok: true, d: 'not planted' };
+        if (pl.planted) {
+          await X.ev(`(() => { const R = window.RADIAL_REFERENCE; RADIAL_MAP.destroy(); window.RADIAL_MAP = DIAGRAM_RADIAL.mount({ host: document.querySelector('[data-radial]'), data: R.data, adapter: R.adapter, modules: R.modules }); return true; })()`);
+          await X.ev('new Promise((r) => setTimeout(r, 300))'); await X.frames();
+          x = typeof fn === 'function' ? await fn(X) : await X.ev(fn || 'C.frame()');
+        }
+        await X.close();
+        return { pl, x };
+      };
+      { const { pl, x } = await control(ALT, "      set(slot, 'data-radial-fit-option', null);", [568, 320], true);
+        check('X16 the collapsed pill planted with no option, reserved across the top alone, fails U26 on the CFW reference at 568x320: the whole-map Fit no longer stands clear, the drawing under the controls',
+          pl.planted && !x.ok && x.d.clear === false && x.d.drawing === false, J(x.d)); }
+      { const { pl, x } = await control("      set(slot, 'data-diagram-fit-edge', compact ? (expanded ? 'none' : 'top') : 'right');",
+          "      set(slot, 'data-diagram-fit-edge', compact ? (expanded ? 'none' : 'right') : 'right');", [393, 666], true);
+        check('X17 the collapsed pill planted to the right alone fails U26 on the CFW reference at 393x666: the Fit stands clear but well under the best single reservation, the drawing squeezed beside the pill',
+          pl.planted && !x.ok && x.d.clear === true && x.d.k < x.d.best * 0.995, J(x.d)); }
+      { const { pl, x } = await control("      folded = ev.arrangement === 'compact';\n", "", [860, 1150], false);
+        check('X18 an inspector planted to ignore the chrome\'s arrangement fails U28 on the CFW reference at 860x1150: the idle panel stays open beside a drawing far smaller than the one it leaves folded',
+          pl.planted && !x.ok && x.d.fold !== null && x.d.k < x.d.fold * 0.995, J(x.d)); }
+      { const { pl, x } = await control("covered: overlays.filter(function (o) { return o.isOpen() && covers(o.element); }).map(function (o) { return o.name; }),",
+          "covered: lastFit ? lastFit.covered : [],", [860, 1150], false, (X) => KEYED.u31(X, 'light', [860, 1150], 1100), 'diagrams-radial-engine.js');
+        check('X20 a report planted to say only what the last Fit covered fails U31 on the CFW reference at 860x1150: the open sheet lies over the drawing and is not reported',
+          pl.planted && !x.ok && x.d.fails.some((f) => /reported as covering/.test(f[0])), J(x.d.fails || x.d)); }
+      { const { pl, x } = await control("    function keepTarget() {\n", "    function keepTarget() { return;\n", [860, 1150], false, (X) => KEYED.u31(X, 'light', [860, 1150], 1100));
+        check('X21 an inspector planted not to keep the selected node beside the open sheet fails U31 on the CFW reference at 860x1150: a node selected under the sheet stays under it, and so does a node the growing record covers',
+          pl.planted && !x.ok && x.d.fails.some((f) => /under the open sheet/.test(f[0])) && x.d.fails.some((f) => /grows the sheet past its node/.test(f[0])), J(x.d.fails || x.d)); }
+      { const { pl, x } = await control("        if (atFit) { api.fit('resize'); beside(api.selection().locked, true); }", "        if (atFit) beside(api.selection().locked, true);",
+          [860, 1150], false, (X) => KEYED.u31(X, 'light', [860, 1150], 1100));
+        check('X27 a resize planted to keep a reading state open without taking the new arrangement\'s Fit fails U31 on the CFW reference at 860x1150: the cramped sheet keeps the wide arrangement\'s Fit, a far smaller drawing',
+          pl.planted && !x.ok && x.d.fails.some((f) => /takes the Fit of the new arrangement/.test(f[0])), J(x.d.fails || x.d)); }
+      { const { pl, x } = await control("      if (api.view().atFit || back) api.fit('resize');", "      if (api.view().atFit) api.fit('resize');",
+          [860, 1150], false, (X) => KEYED.u31(X, 'light', [860, 1150], 1100));
+        check('X28 the wide panel planted not to return to the Fit the sheet left fails U31 on the CFW reference at 860x1150: roomy again, the view stays where the sheet\'s reveal left it',
+          pl.planted && !x.ok && x.d.fails.some((f) => /back at the Fit the sheet left/.test(f[0])), J(x.d.fails || x.d)); }
+    }
+
     console.log('# W  export');
     await groupW(b, url);
 
@@ -688,25 +1276,41 @@ async function run() {
        "if (!expanded) expand(true, ev.cause === 'load' ? 'load' : 'reader', false, ev.id);",
        "if (!expanded) expand(true, ev.cause === 'load' ? 'load' : 'reader');", 'compactReveal', { width: 390, height: 844, touch: true }],
       ['X10 the sheet planted to claim before it leaves the Fit fails U18', 'diagrams-radial-inspector.js',
-       "      expanded = on;\n      place();", "      expanded = on;\n      if (on && compact) api.claim('inspector');\n      place();", 'compactClaimNoFit', { width: 390, height: 844, touch: true }]
+       "      if (!on) { opened = false; sheetView = null; }\n      place();", "      if (!on) { opened = false; sheetView = null; }\n      if (on && compact) api.claim('inspector');\n      place();", 'compactClaimNoFit', { width: 390, height: 844, touch: true },
+       (r) => r.d.fits.length > 0]
     ];
     plants.push(
       ['X12 a panel planted to drop focus when its view is replaced fails U17', 'diagrams-radial-inspector.js', '      if (focused) {', '      if (false) {', KEYED.u17, {}],
-      ['X14 a resize planted to hide the body without the focus handoff fails U20', 'diagrams-radial-inspector.js',
-       '      if (was && compact) handoff();', '', KEYED.u20, {}],
+      ['X14 a resize planted to fold a reader\'s inspection fails U20: the sheet folds', 'diagrams-radial-inspector.js',
+       "      var keep = compact && was && inspecting() && !api.othersOpen('inspector');", '      var keep = false;', KEYED.u20, {}, (r) => !!r.d.a && !r.d.a.expanded],
+      ['X19 a chrome planted to measure the inspector as it stands, with no probe, fails U32: the two fold and unfold each other until the mount fails', 'diagrams-radial-chrome.js',
+       "      api.emit('probe', { arrangement: 'wide' });\n", '', 'settle', {}, (r) => /call stack/i.test(r.d.err || '') && r.d.decided.length > 1],
+      ['X29 the camera planted to be kept for the wide panel too fails U14b: its toggle refits away from the Fit', 'diagrams-radial-inspector.js',
+       '      sheetView = compact ? { k: v.k, x: v.x, y: v.y, fit: !!fromFit } : null;', '      sheetView = { k: v.k, x: v.x, y: v.y, fit: !!fromFit };', 'wideToggle', {}, (r) => r.d.fits.length > 0],
+      ['X23 a resize planted to hide the body without the hand-off fails U33: the focus is lost', 'diagrams-radial-inspector.js',
+       '      if (compact && was && !keep) handoff();               /* the body hides */\n', '', KEYED.u33, {}, (r) => !r.d.a.expanded && !r.d.a.inHost],
       ['X15 a reference planted to reveal only through the facets module fails U23', 'diagrams-radial-inspector.js',
        "if (f && f.reset) f.reset('reader'); else api.membership.reset('reader');", "if (f && f.reset) f.reset('reader');", 'followNoFacets', {}],
       ['X13 a drawer planted to keep focus when another panel closes it fails Q15', 'diagrams-radial-facets.js',
        "setOpen(false, cause === 'claim' ? 'reader' : cause || 'module'); } });", "setOpen(false, cause === 'claim' ? 'reader' : cause || 'module', cause !== 'claim'); } });",
        KEYED.q15, { width: 390, height: 844, touch: true }]);
-    for (const [name, file, from, to, fn, opts] of plants) {
+    for (const [name, file, from, to, fn, opts, why] of plants) {
       const Q = await open(b, url, opts);
       const pl = await Q.ev(`C.plant(${J(file)}, ${J(from)}, ${J(to)})`);
       let r = { ok: true, d: 'not run' };
       if (pl.planted) { try { r = typeof fn === 'function' ? await fn(Q) : await at(Q, fn); } catch (e) { r = { ok: false, d: 'threw: ' + String(e).slice(0, 120) }; } }
-      check(name, pl.planted && !r.ok, pl.planted ? J(r.d).slice(0, 200) : 'the fault could not be planted: the module text changed');
+      /* where a reason is named, the check fails for it */
+      let because = true; if (why && pl.planted) { try { because = !!why(r); } catch (e) { because = false; } }
+      check(name, pl.planted && !r.ok && because, pl.planted ? J(r.d).slice(0, 200) : 'the fault could not be planted: the module text changed');
       await Q.close();
     }
+    /* the controls run on the public expressions: the sheet planted to stay open over the drawer, and the
+       select handler planted without the deferred check */
+    { const x = await KEYED.u34(b, base, EXPR['the Vellmark parks composition'], { file: 'diagrams-radial-inspector.js', from: "inspecting() && !api.othersOpen('inspector')", to: 'inspecting()' });
+      check('X24 the sheet planted to stay open over another open exclusive panel when the arrangement folds fails U34: the drawer\'s opening folds the panels and the sheet and the drawer stand open at once', x.planted && !x.ok && x.d.a1.insp === 'compact open' && x.d.a1.drawer, J(x.d).slice(0, 300)); }
+    { const from = '      Promise.resolve().then(function () { if (api.selection().locked === id) keepTarget(); });\n';
+      const r = await KEYED.u35(b, base, EXPR['the CFW reference'], [880, 700], 'light', 12, { file: 'diagrams-radial-inspector.js', from, to: '' });
+      check('X25 the select handler planted without its deferred check fails U35 on the CFW reference at 880x700: arrived nodes end under the open sheet', r.planted && !r.ok && r.d.arrival.some((x) => x.under), J(r.d).slice(0, 300)); }
   } finally {
     srv.close();
     await stop(b);
