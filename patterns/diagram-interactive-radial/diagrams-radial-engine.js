@@ -456,12 +456,28 @@
       });
       return out;
     }
-    function fitTo(b, whole, cause) {
-      var r = fitCandidate(b, { top: edge('top'), bottom: edge('bottom'), left: edge('left'), right: edge('right') });
+    /* chrome that declares an optional edge (data-radial-fit-option: a panel in a corner, which can
+       be reserved beside the drawing or above it) is reserved there instead, and at no other edge */
+    function option(e) {
+      return '[data-diagram-fit-edge="' + e + '"]:not([data-radial-fit-option]), [data-radial-fit-option="' + e + '"]';
+    }
+    function placement(b, E) {
+      var r = fitCandidate(b, { top: E('top'), bottom: E('bottom'), left: E('left'), right: E('right') });
       r.mode = 'side';
       if (COMPACT.matches) {
-        var band = fitCandidate(b, { top: edge('top'), left: edge('left'), right: null, bottom: edge('bottom') + ', ' + edge('right') });
+        var band = fitCandidate(b, { top: E('top'), left: E('left'), right: null, bottom: E('bottom') + ', ' + E('right') });
         if (band.clear && (!r.clear || band.scale > r.scale)) { r = band; r.mode = 'band'; }
+      }
+      return r;
+    }
+    /* every Fit chooses again, from the chrome as it stands: the declared edges, or the optional
+       edges where any are declared; the larger placement that clears wins, and a tie keeps the declared */
+    function fitTo(b, whole, cause) {
+      var r = placement(b, edge);
+      r.option = false;
+      if (canvas.querySelector('[data-radial-fit-option]')) {
+        var a = placement(b, option);
+        if (a.clear && (!r.clear || a.scale > r.scale)) { r = a; r.option = true; }
       }
       view.k = r.scale; view.x = r.tx; view.y = r.ty;
       fitK = r.scale; if (whole) wholeK = r.scale;
@@ -1015,6 +1031,11 @@
                 /* an exclusive overlay closes the others when it opens */
                 claim: function (name) {
                   overlays.slice().forEach(function (o) { if (o.exclusive && o.name !== name && o.isOpen()) o.dismiss('claim'); });
+                },
+                /* whether another exclusive overlay is open: a panel that would stay open without a
+                   reader opening it yields to it instead of claiming */
+                othersOpen: function (name) {
+                  return overlays.some(function (o) { return o.exclusive && o.name !== name && o.isOpen(); });
                 } };
     var mounted = [];
     try {
@@ -1072,7 +1093,9 @@
         return s;
       },
       report: function () {
-        return { fit: lastFit, unresolved: model.unresolved, unsupported: model.unsupported, hiddenRefs: model.hiddenRefs,
+        /* fit is the last Fit as it was made; covered is what covers the drawing or its names now */
+        return { fit: lastFit, covered: overlays.filter(function (o) { return o.isOpen() && covers(o.element); }).map(function (o) { return o.name; }),
+                 unresolved: model.unresolved, unsupported: model.unsupported, hiddenRefs: model.hiddenRefs,
                  hidden: Array.from(model.hidden), undrawnRelations: undrawn, ignoredAdapterSections: ignored,
                  arrival: arrivalState, modules: listed.slice() };
       },

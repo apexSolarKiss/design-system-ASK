@@ -58,7 +58,12 @@
    control area ends below one that reaches into the panels' lane, unless it is marked "yields":
    an open exclusive overlay that a panel opening here closes, so it takes no room. A compact panel
    opened here is exclusive too: opening it closes the other modules' exclusive overlays. A
-   module announces a change of its obstacles with the 'obstacle' event. */
+   module announces a change of its obstacles with the 'obstacle' event. A module whose panel folds
+   with the compact arrangement (the inspector) is measured in its wide form: while this module
+   judges the wide arrangement it announces a 'probe' event, { arrangement: 'wide' } before and
+   { arrangement: null } after, and such a panel shows itself as it would stand in wide between the
+   two. The arrangement therefore never depends on the panel's own folding, and the two settle in
+   one step. */
 (function (root) {
   'use strict';
 
@@ -307,7 +312,13 @@
       if (!(cr.width > 0 && cr.height > 0)) return;
       var fa = document.activeElement, before = arrangement;
       var top = open ? open.el.scrollTop : 0;
-      if (layWide()) {
+      /* the wide arrangement is judged with every other module's panel as it would stand in wide:
+         a panel that folds with this arrangement (the inspector) shows its wide form while this
+         measures, so the decision never depends on what that panel did because of it */
+      api.emit('probe', { arrangement: 'wide' });
+      var wide = layWide();
+      api.emit('probe', { arrangement: null });
+      if (wide) {
         arrangement = 'wide';
         unplace(); edges(false);
         row.hidden = true;

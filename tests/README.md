@@ -563,18 +563,49 @@ node tests/radial-stack.mjs              # add --json for the measurements
 ```text
 U  the inspector: views, preview, references and the way back, Escape, show-all, relation
    direction and flags, locators, text never markup, malformed sections, a record arrival,
-   refits at the Fit only, the compact sheet and its exclusivity, the Fit edge it declares by
-   state (the collapsed pill right, the open sheet top, wide right), a selection opening the sheet
-   with no refit (also over an open chrome panel), focus kept in the panel with trusted keys, the
-   live legend's notes and its shapes line; focus handed to the disclosure when a resize collapses
-   the panel (a narrow window; a short one under a coarse pointer) and left alone when it is
-   elsewhere; a reference to a filtered-out node with no facets module, to a node hidden by policy,
-   and the way back to a node filtered out since (the record closes; nothing else changes);
-   collapsing, expanding and a portrait / landscape turn with a record and a filter, at the Fit
-   (each change refits; the turn back restores the same Fit) and away from it (the camera stays);
-   and the two public expressions, the CFW reference and the Vellmark parks composition, in each
-   theme (the theme in force checked) on a touch page turned through short landscape sizes
-   (844x390 to 568x320), then portrait and wide, with the whole-map Fit standing clear at each
+   refits at the Fit only, the compact sheet and its exclusivity, the Fit edges it declares by
+   state (the collapsed pill top with the right as its option, the open sheet an overlay that
+   reserves nothing, the wide panel right), a selection opening the sheet with no refit (also
+   over an open chrome panel), focus kept in the panel with trusted keys, the live legend's notes
+   and its shapes line; a resize into compact keeping a reader's open record as the sheet, with
+   focus in it (a narrow window; a short one under a coarse pointer), and folding a panel open
+   only by default, with unrelated focus left alone; a record kept open on the resize with
+   unrelated focus left alone; a reader's inspection yielding to the open drawer on the resize,
+   with focus inside it handed to its disclosure; on a wide canvas, the panel's own toggle
+   refitting only at the Fit after a selection opened it again; a reference to a
+   filtered-out node with no facets module, to a node hidden by policy, and the way back to a
+   node filtered out since (the record closes; nothing else changes); with a record and a
+   filter, the sheet opened and closed through a turn tall portrait > short portrait > landscape
+   > short portrait > tall portrait, at the Fit (opening never refits or shrinks the drawing and
+   keeps the node beside the sheet; closing returns to the same Fit; each turn refits) and away
+   from it (the camera stays); and
+   the two public expressions, the CFW reference and the Vellmark parks composition, in each
+   theme (the theme in force checked): framed at the whole-map Fit on a touch page turned from
+   tall portrait through short portrait (393x666, 390x664) and the short landscape sizes
+   (844x390 to 568x320) and back, then tablet and wide, and on a desktop page 1150 tall narrowed
+   from 1280 to 767 and widened again, and each of its sizes loaded fresh, each Fit clear (its
+   names in the clearance check), as large, within 0.5%, as the best reservation of the inspector
+   that clears (each edge it can hold, measured by declaring it alone), and, where the panels
+   around the map fold with nothing inspected, as large as the overview the inspector leaves
+   folded, a fresh load reaching the walk's Fit; the same walk with a filter, a selection and a
+   record kept through it; on a desktop window where the panels around the map fold, the
+   inspector folded with them and its dynamic states: hover previews a leaf and leaves it
+   folded; over the whole map the open sheet is reported, live, as covering the drawing; a
+   record, a node selected under the open sheet, a reference followed from the record with the
+   most to show, and that record growing the sheet past its node each keep the selected node
+   beside the sheet; the reader's Escape clears the selection and folds the sheet, focus kept on
+   the panel; Fit restores the overview; a reading state carried from a roomy window to the
+   cramped one takes the new arrangement's Fit before the sheet leaves it, and back returns to
+   the roomy Fit, and a camera the reader moves is kept both ways; nothing more happens once the
+   observers settle, at the end and at the narrow size; a manual camera is kept through every
+   resize; on a landscape desktop window where the panels fold, an arrival and a search result
+   land clear of the open sheet; at the narrowest desktop window where the panels stand,
+   selections that grow the open wide panel leave no drawn mark under it; where the open drawer
+   alone folds the panels, the sheet over a selection yields to it, and a search result chosen
+   there closes it as on a phone, and on a window narrowed past the fold with the drawer open
+   over a selection, the sheet yields and the drawer and its focus stay; and, with the wide
+   panel placed over the legend's corner by a test style, the chrome and the inspector settle in
+   one step, the arrangement counted from before the mount
 Q  facets and search: the index, ranking and ties, what a result opens, OR within and AND across,
    counts, census and readout, relations, refit (the whole layout when no item remains), a filter
    clearing a hidden selection, the drawer's bound, edge and focus, exclusivity on a compact canvas,
@@ -589,9 +620,21 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    unbounded drawer, a panel without its claim, a locator linking anything, the root framed alone,
    a hidden selection kept, a selection refitting the opened sheet, the sheet claiming before it
    leaves the Fit, a yielding obstacle ignored in wide, focus dropped when a view is replaced,
-   focus kept in a drawer another panel closes, a resize collapse without the focus handoff, a
-   reveal only through the facets module, a collapsed pill reserving a band across the top again
-   (on the CFW reference at 568x320, where the drawing then stands under the controls)
+   focus kept in a drawer another panel closes, a reveal only through the facets module, a
+   resize folding a reader's inspection, a resize hiding the body without the focus hand-off, a
+   chrome measuring the inspector as it stands (with no probe: the two fold and unfold each other
+   until the mount fails); loaded into the CFW reference and remounted, the collapsed pill with
+   no option (at 568x320 the drawing then stands under the controls), the collapsed pill to the
+   right alone (at 393x666 the Fit stands clear but squeezed beside it), an inspector ignoring
+   the chrome's arrangement (at 860x1150 the idle panel stays open beside a far smaller drawing),
+   a report saying only what the last Fit covered (the open sheet over the drawing goes
+   unreported), an inspector not keeping the selected node beside the open sheet (a node selected
+   under it, and one the growing record covers, stay under it), a resize keeping a reading state
+   open without taking the new arrangement's Fit (the cramped sheet over a far smaller drawing),
+   the wide panel not returning to the Fit the sheet left, the sheet staying open over the open
+   drawer when the arrangement folds, and a selection without its deferred check (arrived nodes
+   end under the sheet); on the fixture, the camera kept for the wide panel too (its toggle then
+   refits away from the Fit); a control that names its reason fails for it
 ```
 
 ## radial-export-fixture.html + radial-export.mjs
