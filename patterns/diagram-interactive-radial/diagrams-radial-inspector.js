@@ -44,8 +44,9 @@
    centered on. (Where the sheet's opening closes the panel that had folded the others, the
    arrangement turns wide, and the wide panel returns to the Fit as below.) Closing the sheet, or
    the arrangement turning back to the wide panel, returns to the Fit when the sheet was opened
-   there and the camera is as it left it; otherwise the camera stays. The reader's own toggle on
-   a wide canvas refits only at the Fit. */
+   there and the camera is as it left it; otherwise the camera stays, unless that comes with a
+   change of size, which makes a view the map made again (the engine's placed). The reader's own
+   toggle on a wide canvas refits only at the Fit. */
 (function (root) {
   'use strict';
 
@@ -552,9 +553,10 @@
       place();
       if (keep) {
         /* from the Fit the view takes the Fit of the new arrangement and leaves it, with the selected
-           node beside the sheet; a camera the reader has moved stays where it is, since a resize is not
-           a reader's action */
+           node beside the sheet; a view the map made keeps its node beside the sheet too; a camera the
+           reader has moved stays where it is, since a resize is not a reader's action */
         if (atFit) { api.fit('resize'); beside(api.selection().locked, true); }
+        else if (!api.view().manual) beside(api.selection().locked, false);
         else { var v = api.view(); sheetView = { k: v.k, x: v.x, y: v.y, fit: false }; }
         api.emit('obstacle', { cause: 'resize' });
         return;
@@ -573,6 +575,13 @@
       if (was === compact && compact && expanded && !!sheetView && sheetView.fit && same(api.view(), sheetView)) {
         api.fit('resize'); beside(api.selection().locked, true);
       }
+    });
+    /* a size change that keeps the canvas compact (a phone turned): the engine made its view again for
+       the new size, and the open sheet keeps the selected node beside it; closing it then returns to the
+       Fit when that view was made from one. A camera the reader has moved is not made again */
+    api.on('placed', function (ev) {
+      if (destroyed || !compact || !expanded || probing) return;
+      beside(api.selection().locked, ev.basis === 'fit');
     });
     /* while the chrome measures its wide arrangement, a panel folded only by the chrome stands in its
        wide form, open in its corner, so that the chrome's decision never depends on this panel's folding */

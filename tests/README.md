@@ -603,7 +603,22 @@ U  the inspector: views, preview, references and the way back, Escape, show-all,
    selections that grow the open wide panel leave no drawn mark under it; where the open drawer
    alone folds the panels, the sheet over a selection yields to it, and a search result chosen
    there closes it as on a phone, and on a window narrowed past the fold with the drawer open
-   over a selection, the sheet yields and the drawer and its focus stay; and, with the wide
+   over a selection, the sheet yields and the drawer and its focus stay; on a touch page turned
+   390x844 to 844x390 and back, and the other way, with the reading sheet open (opened from the
+   Fit under a filter with an evidence record followed, by a #node= arrival, by a search result
+   and by a reference followed), the selection, record and filter kept, the sheet open and the
+   selected node on the canvas and clear of it after each turn, a view made from the Fit the new
+   size's Fit, never smaller, a node the map centered kept at its zoom, closing the sheet after a
+   turn leaving the node on the canvas, Fit restoring the overview, a record with no placed origin
+   keeping its view and the focus over a Fit made for the new size, and nothing more once the
+   observers settle; a camera the reader moved (a real pan, pinch, wheel or zoom control, or
+   keyboard moves that pan away from an arrival) kept through a turn and a desktop resize, a change
+   of height alone holding its center; the first leaves arrived at by a #node= link on a fresh
+   phone page, and again with every font face loaded before the map mounts, clear of the open
+   sheet once the layout settles; where the open drawer alone folds the panels, the sheet opened
+   by its own toggle closing the drawer and the wide panel returning to the wide Fit with no change
+   of size; on a desktop page narrowed, a node an arrival centered kept on the canvas at its zoom
+   and a group the map framed framed again; and, with the wide
    panel placed over the legend's corner by a test style, the chrome and the inspector settle in
    one step, the arrangement counted from before the mount
 Q  facets and search: the index, ranking and ties, what a result opens, OR within and AND across,
@@ -631,9 +646,17 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    unreported), an inspector not keeping the selected node beside the open sheet (a node selected
    under it, and one the growing record covers, stay under it), a resize keeping a reading state
    open without taking the new arrangement's Fit (the cramped sheet over a far smaller drawing),
-   the wide panel not returning to the Fit the sheet left, the sheet staying open over the open
+   the wide panel not returning to the Fit the sheet left (where the sheet's opening closes the
+   drawer that folded the panels, the view stays off the wide Fit), the sheet staying open over the
+   open
    drawer when the arrangement folds, and a selection without its deferred check (arrived nodes
-   end under the sheet); on the fixture, the camera kept for the wide panel too (its toggle then
+   end under the sheet); on the public expressions, a size change keeping a view the map made (a
+   turned phone leaves the selected node off the canvas or under the sheet), an inspector not
+   placing the node beside its sheet after a turn (the node ends under it), a pan not counted as
+   the reader's (the turn makes the panned camera again), a keyboard move not counted as the
+   reader's (the resize makes its camera again), and the stage size remembered only as
+   the map mounts with every view treated as the reader's (the bar filling in moves an arrived
+   node under the sheet); on the fixture, the camera kept for the wide panel too (its toggle then
    refits away from the Fit); a control that names its reason fails for it
 ```
 
