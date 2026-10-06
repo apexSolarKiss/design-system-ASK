@@ -4,13 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>spine behavior fixture</title>
-<!-- The behavior fixture of the interactive spine pattern. Served from the repository root by
+<!-- The gesture fixture of the interactive spine pattern. Served from the repository root by
      tests/spine-behavior.mjs, which drives it with real pointer, touch and wheel input. It is the
-     canonical shell's structure loading the owner files by reference, in the shell's order: no
-     consumer code and no stub. The fail-closed checks use tests/spine-error-fixture.html. -->
+     canonical shell's canvas structure and stylesheets loading the owner files by reference, in the
+     shell's order, without the exporter and its font carrier: no consumer code and no stub. The
+     composition checks (C) load the canonical shell itself, exporter included; the fail-closed
+     checks use tests/spine-error-fixture.html. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../spectral-state.css">
 <link rel="stylesheet" href="../patterns/diagram-interactive-spine/diagrams-interactive-spine.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
 </head>
 <body>
 

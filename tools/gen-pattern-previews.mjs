@@ -36,7 +36,8 @@ const SHELLS = [
   // hard-codes a light theme, so it is not the gallery's illustration of static mode.
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
-  { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html', previewFit: { scaleMult: 1.3 } },
+  // The spine preview takes the canonical Fit unchanged: it shows what a consumer receives.
+  { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
   // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured
   // research content under reference/ (a pattern-local subdirectory, declared in localDirs), drawn
   // through the complete module stack. The neutral shell runs the same stack on the generated synthetic
