@@ -43,7 +43,7 @@ body {
 
 /* ---- canvas ---- */
 .canvas-wrap { position: relative; overflow: hidden; }
-#stage { position: absolute; inset: 0; cursor: grab; }
+#stage { position: absolute; inset: 0; cursor: grab; touch-action: none; }
 #stage.panning { cursor: grabbing; }
 svg { width: 100%; height: 100%; display: block; }
 

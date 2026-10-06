@@ -547,6 +547,45 @@ center (directly, or through the chooser), the sampled centers that page chrome 
 keyboard reach. Accepting the contract's input limits
 says nothing about legibility; these numbers are what the overview actually shows.
 
+## spine-fixture.html + spine-error-fixture.html + spine-behavior.mjs
+
+The **browser behavior harness** of `diagram-interactive-spine`. `spine-behavior.mjs` serves this
+repository read-only on 127.0.0.1, opens `spine-fixture.html` (the canonical shell's structure,
+loading the owner files by reference in the shell's order; no consumer code and no stub) in headless
+Chrome, and drives it with real mouse, wheel and touch input over the DevTools Protocol. The camera
+is read from `#vp`'s transform, the selection from `.node.sel` and the inspector, the gesture
+controller's listeners by the browser's own count. `spine-error-fixture.html` serves the fail-closed
+checks: it leaves out the one support file `?omit=pointer` or `?omit=fit` names. No npm dependency;
+Node 22+, Chrome at `$CHROME` or the default locations.
+
+```
+node tests/spine-behavior.mjs           # add --json for the measured Fit views
+```
+
+```text
+M  mouse: click selects, empty canvas clears, hover previews; a drag pans by exactly its distance
+   and never changes the selection, from empty canvas or from a node; a move inside the 4px tap
+   slop does not pan; one wheel step is x1.12 about the pointer; a horizontal scroll does not zoom;
+   the zoom-out floor is the lower of 0.25 and the Fit scale
+T  touch (390x844): the stage carries touch-action: none and the panels do not; a tap selects and
+   clears; a swipe pans by its distance without changing the selection, from empty canvas or from a
+   node; a pinch zooms about its centroid; pinching in stops at the wheel's floor
+F  Fit: the Fit control restores the fresh-load view; a resize refits; the floor tracks a Fit below
+   0.25 on a constrained canvas
+L  lifecycle: after a second render the stage carries one gesture controller, and a drag or a
+   wheel step acts once; a render during a drag leaves no gesture state behind
+E  error paths: without diagrams-pointer.js, or without diagrams-fit.js, the engine throws its
+   named error and draws nothing
+```
+
+**Its control is the spine before it consumed the shared pointer.** Run against that tree, M3
+(node drag), M4 (tap slop), M7 (horizontal scroll), T0-T6 (touch; T6 because no tap selected
+anything to clear), L1 (listener count), L4 (a render during a drag) and E1 (the pointer guard) fail
+for their stated reason. The mouse click, drag, wheel step, floor, hover and Fit checks pass
+unchanged, and so do E2 (the fit guard predates the pointer) and L2 and L3 (a stale handler acts on
+its own detached view).
+Headless touch emulation is **not** iPhone or Safari evidence; the pattern's device gate is separate.
+
 ## radial-stack-fixture.html + radial-stack.mjs
 
 The **full-stack harness** of `diagram-interactive-radial`: every optional module (inspector,

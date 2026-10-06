@@ -6,7 +6,7 @@ A reusable scaffold for an **interactive information-architecture state surface*
 
 ## What this pattern is
 
-A small consumption pattern. Seven files:
+A small consumption pattern. Eight files:
 
 - `README.md` — this file
 - `diagram-interactive-spine.html` — the shell page (bar, canvas, inspector, legend, HUD, caption)
@@ -25,6 +25,7 @@ A small consumption pattern. Seven files:
 The inspector and legend are side chrome that grows vertically with its content. Reserving them as full-width top/bottom bands would spend page height on panels occupying a narrow column; as side lanes their measured edge bounds the cost by width, so a tall populated inspector costs no page height at all.
 
 **Narrow-width fallback.** Side lanes need horizontal room to exist. The inspector (320px) and HUD (329px) together consume 649px, so below roughly 860px of canvas width the horizontal safe region falls under the utility's minimum and both lanes are dropped, leaving the figure obstructed. Only in that case — an unresolved collision *and* a discarded horizontal reservation — does the engine refit with the panels' vertical extent (`.inspector` top, `.hud + .legend + .caption` bottom). That costs page height, which is why it is not the primary classification, but it can still clear. If the fallback cannot clear either, the more legible primary placement stands. Panel heights are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the fit is **algebraically equivalent to the previous fit, with no intentional geometry change** — the engine expresses its long-standing 60px content margin as *expanded bounds* with zero subtractive clearance, and passes its historical `clientWidth`/`clientHeight` viewport measurement explicitly. (Equivalent floating-point evaluation orders may differ at machine precision only.) This pattern passes zero subtractive clearance, so the constrained-clearance branch introduced by this owner correction does not alter its fit — its historical margin remains expressed entirely through the expanded bounds.
+- `diagrams-pointer.js` — **DS-owned shared pointer controller, a GENERATED MIRROR.** Canonical source is `patterns/_diagram-shared/diagrams-pointer.js`; this copy is emitted by `tools/sync-diagram-shared.mjs` and is byte-identical to the radial pattern's. It recognizes pan, pinch, tap and wheel on Pointer Events for mouse, pen and touch; the engine keeps the camera, the zoom range and every selection decision. **Load it BEFORE `diagrams-fit.js` and the engine**, as the radial pattern does — the engine throws a named error if it is missing rather than falling back to a mouse-only pan. Never hand-edit it; edit the canonical and re-emit.
 - `diagrams-interactive-spine.css` — the interactive style layer
 - `export-png.js` — 3840×2880 PNG export that bakes the resolved state colors inline
 
@@ -51,11 +52,13 @@ window.IA_STATE_SPINE = {
 
 ## Interactions
 
-Hover previews a node (its relationships + inspector); click locks it; click empty space clears. The inspector shows the node's state + meaning and its metadata. Pan (drag), zoom (wheel / HUD), fit (`⤢`). The `PNG page` button exports a 3840×2880 poster with the resolved state colors baked in (theme-correct at click time); `PNG diagram` exports the spine canvas only (see PNG export below).
+Hover previews a node (its relationships + inspector) for a mouse; click or tap locks it; click or tap empty space clears. The inspector shows the node's state + meaning and its metadata. Pan (drag with the primary mouse button, a pen or one finger, from anywhere on the stage, a node included), pinch (two fingers, about their centroid), zoom (wheel / HUD), fit (`⤢`). The `PNG page` button exports a 3840×2880 poster with the resolved state colors baked in (theme-correct at click time); `PNG diagram` exports the spine canvas only (see PNG export below).
+
+**Pointer and touch** (`diagrams-pointer.js`): a drag pans once it passes a tap slop (4px for a mouse, 12px for a finger or pen), so a tap still selects; a moved gesture swallows the click that follows it, so a pan never selects or clears; the wheel zooms one 1.12 step about the pointer, and a horizontal scroll does not zoom. Pinch and wheel share the HUD's zoom range, whose floor tracks the most recent Fit. The stage carries `touch-action: none`, so a gesture on the stage pans or pinches the diagram instead of scrolling or zooming the page; the inspector, legend and HUD sit outside the stage, so their taps are unchanged (they are not scroll containers; content that does not fit is clipped, as before). Fit, the resize refit and the zoom floor are unchanged. A hover preview answers a mouse only, so a touch tap selects rather than previews.
 
 ## How to use it
 
-1. Copy the seven files into your project (e.g. `docs/diagrams/interactive/`).
+1. Copy the eight files into your project (e.g. `docs/diagrams/interactive/`).
 2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts + `fonts-embedded.js` (the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server) — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs.
 3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
 4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
@@ -102,8 +105,8 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What not to edit
 
-- `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js`, `diagrams-fit.js` (the shared engine + style + export — modifications break inheritance)
-- The script load order in the shell — `diagrams-fit.js` must load before the engine; the engine hard-fails if it is absent
+- `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js`, `diagrams-fit.js`, `diagrams-pointer.js` (the shared engine + style + export + support — modifications break inheritance)
+- The script load order in the shell — `diagrams-pointer.js` and `diagrams-fit.js` must load before the engine; the engine hard-fails if either is absent
 - The Spectral State role vocabulary (the eight `--state-*` roles) — inherited; do not rename or recolor
 - The load order (`colors_and_type.css` → `spectral-state.css` → pattern CSS)
 

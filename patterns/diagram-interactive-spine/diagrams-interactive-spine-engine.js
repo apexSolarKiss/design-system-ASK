@@ -13,6 +13,7 @@
    this engine / CSS / export are design-system-owned — do not edit them.
 
    Public: window.IA_SPINE.render(window.IA_STATE_SPINE)
+   Requires diagrams-fit.js and diagrams-pointer.js loaded before it (it fails closed otherwise).
 */
 (function () {
   'use strict';
@@ -24,6 +25,14 @@
   if (!window.DIAGRAM_FIT || typeof window.DIAGRAM_FIT.compute !== 'function') {
     throw new Error('Diagram fit support is missing. Load diagrams-fit.js before the diagram engine.');
   }
+  /* FAIL-CLOSED likewise on the shared pointer controller. diagrams-pointer.js is the DS-owned
+     generated mirror of patterns/_diagram-shared/diagrams-pointer.js and must load BEFORE this
+     engine. No mouse-only fallback is kept: a consumer that re-vendored the engine without it
+     would look current while touch could not pan or pinch the stage. */
+  if (!window.DIAGRAM_POINTER || typeof window.DIAGRAM_POINTER.attach !== 'function') {
+    throw new Error('Diagram pointer support is missing. Load diagrams-pointer.js before the diagram engine.');
+  }
+  var gestures = null;                                   // the live controller's AbortController
   var NS = 'http://www.w3.org/2000/svg';
 
   function el(tag, attrs, parent) {
@@ -99,12 +108,15 @@
         ts.textContent = ln;
       });
       g.addEventListener('click', function (e) { e.stopPropagation(); locked = n.id; selectNode(n, true); });
-      g.addEventListener('mouseenter', function () { if (!locked) selectNode(n, false); });
-      g.addEventListener('mouseleave', function () { if (!locked) clearSel(); });
+      /* Hover previews for a mouse only, never mid-pan. A touch tap fires compatibility mouse events;
+         previewing on them would re-render the inspector under the finger before the tap's click
+         arrives, so on a phone the click would land on the inspector instead of the node. */
+      g.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse' && !locked && !(pointer && pointer.panning())) selectNode(n, false); });
+      g.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse' && !locked) clearSel(); });
     });
 
     // ---- selection / dimming / inspector ----
-    var locked = null;
+    var locked = null, pointer = null;
     function relatedSet(n) {
       var set = {}; set[n.id] = 1;
       if (n.group === 'mode') {
@@ -271,34 +283,43 @@
       sc = f.scale; tx = f.tx; ty = f.ty;
       applyVp();
     }
+    function clampK(k) { return Math.max(fittedMinScale, Math.min(3, k)); }
     function zoomAt(cx, cy, factor) {
-      var ns = Math.max(fittedMinScale, Math.min(3, sc * factor));
+      var ns = clampK(sc * factor);
       var k = ns / sc;
       tx = cx - (cx - tx) * k; ty = cy - (cy - ty) * k; sc = ns; applyVp();
     }
 
-    var panning = false, moved = false, sx = 0, sy = 0, otx = 0, oty = 0;
-    stage.addEventListener('mousedown', function (e) {
-      if (e.target.closest && e.target.closest('.node')) return;
-      panning = true; moved = false; sx = e.clientX; sy = e.clientY; otx = tx; oty = ty; stage.classList.add('panning');
+    /* Pan, pinch and wheel come from the shared pointer controller (diagrams-pointer.js), one
+       controller for mouse, pen and touch on Pointer Events. It recognizes gestures only; this
+       engine keeps the camera (sc, tx, ty), its zoom range and every selection decision.
+         one pointer    pans past the tap slop (4px mouse, 12px finger or pen), from anywhere on
+                        the stage, a node included; a tap still reaches the stage as a click
+         two pointers   pinch about their centroid, inside the same range as the HUD and wheel:
+                        clampK, whose floor tracks the most recent Fit
+         moved gesture  swallows the click that follows it, so a pan never selects or clears
+         wheel          one 1.12 step about the pointer, this pattern's historical step; a
+                        horizontal scroll (deltaY 0) does not zoom
+       The stage carries touch-action: none (diagrams-interactive-spine.css), so the page does not
+       scroll or zoom under a gesture on the stage; the panels sit outside the stage and keep their own taps. A node's
+       hover preview answers a mouse only (the node listeners above), so a tap selects rather than previews.
+       Fit, the HUD, the resize refit and the floor are unchanged. A second render replaces the
+       controller rather than stacking listeners, and drops any gesture still in flight. */
+    if (gestures) { gestures.abort(); stage.classList.remove('panning'); }
+    gestures = new AbortController();
+    pointer = window.DIAGRAM_POINTER.attach({
+      stage: stage,
+      signal: gestures.signal,
+      wheelStep: 1.12,
+      getView: function () { return { k: sc, x: tx, y: ty }; },
+      setView: function (v) { sc = v.k; tx = v.x; ty = v.y; applyVp(); },
+      zoomAt: function (factor, cx, cy) { zoomAt(cx, cy, factor); },
+      clampK: clampK
     });
-    window.addEventListener('mousemove', function (e) {
-      if (!panning) return;
-      var dx = e.clientX - sx, dy = e.clientY - sy;
-      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
-      tx = otx + dx; ty = oty + dy; applyVp();
-    });
-    window.addEventListener('mouseup', function () { if (panning) { panning = false; stage.classList.remove('panning'); } });
     stage.addEventListener('click', function (e) {
-      if (moved) return;
       if (e.target.closest && e.target.closest('.node')) return;
       locked = null; clearSel(); inspectorIdle();
-    });
-    stage.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      var r = wrapEl.getBoundingClientRect();
-      zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 1 / 1.12);
-    }, { passive: false });
+    }, { signal: gestures.signal });
 
     var zi = document.getElementById('zoomIn'), zo = document.getElementById('zoomOut'), zf = document.getElementById('zoomFit');
     if (zi) zi.addEventListener('click', function () { var r = wrapEl.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, 1.15); });

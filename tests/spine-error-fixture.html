@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>spine error fixture</title>
+<!-- The fail-closed fixture of the interactive spine pattern, for tests/spine-behavior.mjs's E group.
+     It loads the owner scripts in the shell's order and leaves out the one ?omit names
+     (?omit=pointer or ?omit=fit), recording what the engine throws. No stylesheet: it checks the
+     engine's refusal, not a rendering. -->
+</head>
+<body>
+<div id="canvasWrap"><div id="stage"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<div id="inspector"></div><div id="legendRows"></div></div>
+<script>
+(function () {
+  var omit = new URLSearchParams(location.search).get('omit');
+  var dir = '../patterns/diagram-interactive-spine/';
+  var files = ['diagram-interactive-spine.source.js', 'diagrams-pointer.js', 'diagrams-fit.js', 'diagrams-interactive-spine-engine.js']
+    .filter(function (f) { return !(omit === 'pointer' && f === 'diagrams-pointer.js') && !(omit === 'fit' && f === 'diagrams-fit.js'); });
+  window.FX = { errors: [] };
+  window.addEventListener('error', function (e) { window.FX.errors.push(String(e.message)); });
+  (function next(i) {
+    if (i === files.length) {
+      try { window.IA_SPINE.render(window.IA_STATE_SPINE); } catch (err) { window.FX.errors.push(String(err.message)); }
+      document.documentElement.dataset.ready = '1';
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = dir + files[i];
+    s.onload = function () { next(i + 1); };
+    s.onerror = function () { window.FX.errors.push('load failed: ' + files[i]); next(i + 1); };
+    document.body.appendChild(s);
+  })(0);
+})();
+</script>
+</body>
+</html>

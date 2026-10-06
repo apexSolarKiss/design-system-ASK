@@ -37,6 +37,7 @@ const MEMBERS = [
     canonical: 'patterns/_diagram-shared/diagrams-pointer.js',
     targets: [
       'patterns/diagram-interactive-radial/diagrams-pointer.js',
+      'patterns/diagram-interactive-spine/diagrams-pointer.js',
     ],
   },
 ];
