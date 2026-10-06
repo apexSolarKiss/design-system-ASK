@@ -21,7 +21,7 @@ a later maintainer reads FLOW's absence as partial vendoring and "completes" it.
 | Member | Target set | Excluded |
 | --- | --- | --- |
 | `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-interactive-spine` · `diagram-interactive-radial` |
-| `diagrams-pointer.js` | `diagram-interactive-radial` | the static patterns · `diagram-interactive-spine`, which keeps its own mouse pan |
+| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` | the static patterns |
 
 ## Canonical and mirrors
 
@@ -30,7 +30,7 @@ canonical   patterns/_diagram-shared/diagrams-text-layout.js
 mirrors     patterns/diagram-static-{H,V,SEQ}/diagrams-text-layout.js
 
 canonical   patterns/_diagram-shared/diagrams-pointer.js
-mirrors     patterns/diagram-interactive-radial/diagrams-pointer.js
+mirrors     patterns/diagram-interactive-{radial,spine}/diagrams-pointer.js
 ```
 
 A mirror is **byte-identical** to its canonical and is a generated artifact.

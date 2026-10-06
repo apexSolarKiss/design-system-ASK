@@ -547,6 +547,85 @@ center (directly, or through the chooser), the sampled centers that page chrome 
 keyboard reach. Accepting the contract's input limits
 says nothing about legibility; these numbers are what the overview actually shows.
 
+## spine-fixture.html + spine-error-fixture.html + spine-behavior.mjs
+
+The **browser behavior harness** of `diagram-interactive-spine`. `spine-behavior.mjs` serves this
+repository read-only on 127.0.0.1, opens `spine-fixture.html` (the canonical shell's canvas structure
+and stylesheets, loading the owner files by reference in the shell's order, without the exporter;
+no consumer code and no stub) in headless Chrome, and drives it with real mouse, wheel and touch
+input over the DevTools Protocol. The composition group (C) opens the canonical shell itself, exporter
+and font carrier included, through the consumer mirrors `_dsa-tokens/` and `_dsa-surface/`, which the
+server maps onto this repository's root. The camera
+is read from `#vp`'s transform, the selection from `.node.sel` and the inspector, the gesture
+controller's listeners by the browser's own count. `spine-error-fixture.html` serves the fail-closed
+checks: it leaves out the one support file `?omit=pointer` or `?omit=fit` names. No npm dependency;
+Node 22+, Chrome at `$CHROME` or the default locations.
+
+```
+node tests/spine-behavior.mjs           # add --json for the measured Fit views
+```
+
+```text
+M  mouse: click selects, empty canvas clears, hover previews; a drag pans by exactly its distance
+   and never changes the selection, from empty canvas or from a node; a move inside the 4px tap
+   slop does not pan; one wheel step is x1.12 about the pointer; a horizontal scroll does not zoom;
+   the zoom-out floor is the lower of 0.25 and the Fit scale
+T  touch (390x844): the stage carries touch-action: none and the panels do not; a tap selects and
+   clears; a swipe pans by its distance without changing the selection, from empty canvas or from a
+   node; a pinch zooms about its centroid; pinching in stops at the wheel's floor
+F  Fit: the Fit control restores the fresh-load view; a resize refits; the floor tracks a Fit below
+   0.25 on a constrained canvas
+L  lifecycle: after a second render the stage carries one gesture controller, and a drag or a
+   wheel step acts once; a render during a drag leaves no gesture state behind
+C  composition, the complete shell (exporter and font carrier included). C1-C5 at 1280x1400,
+   1440x900, 390x844, 390x664, 844x390, 768x1024 and 960x1050, light and dark: with the exporter's
+   buttons in the HUD, the settled first view, an explicit Fit and a second Fit are one view; no
+   panel or control lies on another or leaves the canvas, and nothing covers a control; the drawing
+   runs under no chrome; the Fit is the largest clear overview the harness's reference arrangements
+   find through diagrams-fit.js, and keeps at least 80% of the scale the canvas could give the
+   drawing with only the HUD reserved, a bound that knows no arrangement. C6-C11 and C7b, compact at
+   390x844, 390x664 and 844x390 in light and 390x844 in dark: About, Legend and Inspector are
+   offered and start closed; each opens its panel alone, inside the canvas and clear of the band,
+   scrolling where its content is taller than its room, and the camera agrees with how the engine
+   reports the panel entered the Fit (reserved: moved clear at the same scale; overlay: unmoved);
+   Escape closes it onto its trigger; a tap on a node opens its inspector with the node in view
+   above the sheet, scrolling a record taller than the sheet; Legend and Inspector trade places
+   without losing the selection; after a reader's pan, opening and closing a panel moves nothing.
+   C12, wide at 1440x900, 1280x720 and 1280x600: the tallest record fills the inspector in its
+   corner, clear of the legend, caption and HUD and of the drawing, scrolling and in the tab order
+   where it is taller than its room. C13: a window resized through 390x844, 844x390, 768x1024 and
+   back, after a reader's pan, and across the arrangement change with a panel open, arrives where a
+   fresh load does. C16: a camera the reader zoomed stays put through a webfont load, a HUD that
+   grows and shrinks and the page load. C14-C15, light and dark: PNG page from the compact
+   arrangement carries every legend row (one more of each label than the drawing alone) and the
+   caption and no trigger word, and equals the wide arrangement's; PNG diagram carries no title,
+   caption, legend title or trigger word and does not depend on the arrangement; both run to their
+   download without an alert
+E  error paths: without diagrams-pointer.js, or without diagrams-fit.js, the engine throws its
+   named error and draws nothing
+```
+
+**Its control is the spine before it consumed the shared pointer.** Run against that tree, M3
+(node drag), M4 (tap slop), M7 (horizontal scroll), T0-T6 (touch; T6 because no tap selected
+anything to clear), L1 (listener count), L4 (a render during a drag) and E1 (the pointer guard) fail
+for their stated reason. The mouse click, drag, wheel step, floor, hover and Fit checks pass
+unchanged, and so do E2 (the fit guard predates the pointer) and L2 and L3 (a stale handler acts on
+its own detached view).
+**The composition group's control is the spine with the shared pointer but before its responsive
+chrome** (the pointer integration alone, with this harness). There C1 fails at every view: the
+exporter's buttons arrive after the first Fit, and an explicit Fit then lands elsewhere — smaller on
+the desktops, where the HUD's left lane grows, and moved on the phones and in short landscape. C2
+fails at both phone heights, in short landscape, at 768x1024 and at 960x1050 (the caption, legend and
+HUD overlap, the caption buries the PNG buttons, and the inspector runs over the legend). C4 fails at
+the desktops and the tablet, whose Fit falls far below the bound, and at the phones, where no
+reference arrangement clears among the overlapping panels. C6-C10 and C7b fail for want of the
+triggers; C12 at 1280x600, where the inspector runs over the legend; C13 because a resize lands off
+the fresh-load view, overlapping; and C16 because its Fit does not return to the first view (C1's
+defect: the reader's camera itself stays put there). C3, C14, and C12 at the two taller views, fail
+there only for want of report(), an arrangement to name or the inspector's tab stop; that engine's
+drawing ran under no chrome at these views and its exports were already arrangement-independent.
+Headless touch emulation is **not** iPhone or Safari evidence; the pattern's device gate is separate.
+
 ## radial-stack-fixture.html + radial-stack.mjs
 
 The **full-stack harness** of `diagram-interactive-radial`: every optional module (inspector,
