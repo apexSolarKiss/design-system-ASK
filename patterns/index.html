@@ -58,15 +58,14 @@
      moves from the lifted --surface-glass-2 to --surface-glass, and the radius
      and padding take the tokenised --radius-lg / --space-6 in place of the
      local 14px / 22px 22px 18px. */
-  /* Card metadata, variants and actions stay on Caption; the title and its
-     description take the shared panel roles. */
+  /* Card metadata, the preview-group label and the actions stay on Caption;
+     the title and its description take the shared panel roles. */
   .card .cls { font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--fg-3); }
 
   /* Foreground only — the supporting type role is the shared contract's. */
   .card p { color: var(--fg-2); }
-  .card .variant { color: var(--fg-3); font-size: var(--fs-caption); margin: 2px 0 -2px; }
-  /* The action ROW is this page's: where the controls sit in the card, how they
-     wrap, and the rhythm above them. The controls themselves are the shared
+  /* The action ROWS are this page's: how the controls in a row lay out and
+     wrap; where they sit in the card is the action area's (below). The controls themselves are the shared
      surface-action contract, and every declaration that used to sit here — the
      family, size, weight, tracking, padding, radius, fill, border, foreground,
      and the whole hover/press/focus contract — now resolves from
@@ -83,11 +82,22 @@
          stops depending on this page's mono body default;
        - `white-space` becomes normal, replacing the local `nowrap`.
 
-     What adoption does NOT change: the row's own layout, its 8px gap, its
-     `margin-top: auto` bottom-anchoring, and its 6px lead-in all stay here,
-     because the shared contract deliberately owns the controls and not the
-     composition around them. */
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
+     What adoption does NOT change: the row's own layout and its 8px gap stay
+     here, because the shared contract deliberately owns the controls and not
+     the composition around them. */
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  /* The action area. Each card ends in ONE block, bottom-anchored as a unit, so
+     spare card height sits above the whole block and never between a label and
+     its links or between peer previews. Inside it: the card's preview, or a
+     labeled group of peer previews, then the README in its own row. The step
+     before README (--space-5) is larger than any step inside the preview group
+     (8px: --space-2 under the label, the rows' own gap between peers), so
+     README reads as the whole pattern's documentation rather than as part of
+     the last preview; the block's top padding (--space-1) keeps the Previews
+     label nearer its links than the description above it. */
+  .card .resources { align-self: stretch; margin-top: auto; padding-top: var(--space-1); display: flex; flex-direction: column; gap: var(--space-5); }
+  .card .previews { display: flex; flex-direction: column; gap: var(--space-2); }
+  .card .previews-label { color: var(--fg-3); font-size: var(--fs-caption); }
   .group-label { grid-column: 1 / -1; font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase;
                  color: var(--fg-3); margin: 8px 0 -6px; }
   /* Closing note — payload, not the shell footer. The shell's own footer sits
@@ -121,8 +131,8 @@
       <nav class="surface-breadcrumb" aria-label="Breadcrumb">
         <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">pattern previews</span></h1>
       </nav>
-      <p class="surface-lede">Live, owner-facing previews of every pattern in the catalog — the Class A
-          diagram family, the Class B artifact templates, and the surface-shell page pattern this gallery
+      <p class="surface-lede">Live, owner-facing previews of every pattern in the catalog — the diagram
+          patterns, the Class B artifact templates, and the surface-shell page pattern this gallery
           itself consumes.</p>
       <span class="surface-badge">owner preview &gt;&gt; do not vendor</span>
     </div>
@@ -133,15 +143,19 @@
   <main class="surface-payload">
   <div class="grid">
 
-    <div class="group-label">Class A // diagram patterns</div>
+    <div class="group-label">Diagram patterns</div>
 
     <div class="card surface-panel">
       <div class="cls">Class A // static</div>
       <h2 class="surface-panel-title">diagram-static-H</h2>
       <p class="surface-panel-support">Horizontal cascade tree: a root fans right into sections, then nodes // group boxes + held + legacy states.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-static-H.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="diagram-static-H/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/diagram-static-H.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-static-H/README.md">README</a>
+        </div>
       </div>
     </div>
 
@@ -149,9 +163,13 @@
       <div class="cls">Class A // static</div>
       <h2 class="surface-panel-title">diagram-static-V</h2>
       <p class="surface-panel-support">Vertical centered spine: a top-anchored trunk drops through centered stages // for linear top-down structure.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-static-V.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="diagram-static-V/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/diagram-static-V.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-static-V/README.md">README</a>
+        </div>
       </div>
     </div>
 
@@ -159,26 +177,32 @@
       <div class="cls">Class A // static</div>
       <h2 class="surface-panel-title">diagram-static-SEQ</h2>
       <p class="surface-panel-support">Sequence / stepped chain: an ordered left-to-right progression of stages with per-step notes.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-static-SEQ.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="diagram-static-SEQ/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/diagram-static-SEQ.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-static-SEQ/README.md">README</a>
+        </div>
       </div>
     </div>
 
     <div class="card surface-panel">
       <div class="cls">Class A // static</div>
       <h2 class="surface-panel-title">diagram-static-FLOW</h2>
-      <p class="surface-panel-support">Convergence flow: fields converge into a resolved slot, realization reconverges into conformance. Both
-         previews render the same full-chrome shell off one source model // static is topology-only, interactive
-         adds node inspection + pinning.</p>
-      <div class="variant">static (full chrome, topology only) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-static-FLOW-static.html">preview // static</a>
-      </div>
-      <div class="variant">interactive (full chrome + node inspection) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-static-FLOW-interactive.html">preview // interactive</a>
-        <a class="surface-action surface-action--secondary" href="diagram-static-FLOW/README.md">README</a>
+      <p class="surface-panel-support">Convergence flow, shown as topology alone or with node inspection + pinning. Both previews use
+         the same model and full diagram chrome.</p>
+      <div class="resources">
+        <div class="previews" role="group" aria-labelledby="previews-flow">
+          <div class="previews-label" id="previews-flow">Previews</div>
+          <div class="actions">
+            <a class="surface-action" href="_preview/diagram-static-FLOW-static.html">Static</a>
+            <a class="surface-action" href="_preview/diagram-static-FLOW-interactive.html">Interactive</a>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-static-FLOW/README.md">README</a>
+        </div>
       </div>
     </div>
 
@@ -187,9 +211,32 @@
       <h2 class="surface-panel-title">diagram-interactive-spine</h2>
       <p class="surface-panel-support">Interactive IA state spine: a pan/zoom spine whose nodes carry an inspector + Spectral State color // color
          encodes state only.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-interactive-spine.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="diagram-interactive-spine/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/diagram-interactive-spine.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-interactive-spine/README.md">README</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card surface-panel">
+      <div class="cls">Surface // interactive diagram</div>
+      <h2 class="surface-panel-title">diagram-interactive-radial</h2>
+      <p class="surface-panel-support">A live radial map of a containment hierarchy. Consciousness + free will is a captured research
+         reference; Vellmark parks is a synthetic example. Both run the same pattern.</p>
+      <div class="resources">
+        <div class="previews" role="group" aria-labelledby="previews-radial">
+          <div class="previews-label" id="previews-radial">Previews</div>
+          <div class="actions">
+            <a class="surface-action" href="_preview/diagram-interactive-radial.html">Consciousness + free will</a>
+            <a class="surface-action" href="_preview/diagram-interactive-radial.neutral.html">Vellmark parks</a>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="diagram-interactive-radial/README.md">README</a>
+        </div>
       </div>
     </div>
 
@@ -200,27 +247,33 @@
       <h2 class="surface-panel-title">output-artifact</h2>
       <p class="surface-panel-support">The Class B output-artifact document template, on the document register: title + metadata + sections +
          provenance footer // line intensity for its own rules.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/output-artifact.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="output-artifact/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/output-artifact.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="output-artifact/README.md">README</a>
+        </div>
       </div>
     </div>
 
     <div class="card surface-panel">
       <div class="cls">Class B // sealed interactive archive</div>
       <h2 class="surface-panel-title">message-archive</h2>
-      <p class="surface-panel-support">One sealed, self-contained archive per merged conversation timeline: two-party and group bubble modes,
-         four explicit attachment states, offline search + year jump. Participant color encodes <b>identity</b>,
-         never state. Both previews render the SAME canonical template off one source // they differ only in
-         the pattern-local role values.</p>
-      <div class="variant">default-ASK (the ASK-preferred visual default) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/message-archive-default-ASK.html">preview // default-ASK</a>
-      </div>
-      <div class="variant">AA-compliant (accessibility-tuned roles + chrome) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/message-archive-AA-compliant.html">preview // AA-compliant</a>
-        <a class="surface-action surface-action--secondary" href="message-archive/README.md">README</a>
+      <p class="surface-panel-support">A sealed conversation archive for two-party + group conversations, with offline search + year
+         navigation. Participant color encodes identity, not state. The same template and source are shown in the
+         ASK-preferred default and the accessibility-tuned AA-compliant flavor.</p>
+      <div class="resources">
+        <div class="previews" role="group" aria-labelledby="previews-archive">
+          <div class="previews-label" id="previews-archive">Previews</div>
+          <div class="actions">
+            <a class="surface-action" href="_preview/message-archive-default-ASK.html">default-ASK</a>
+            <a class="surface-action" href="_preview/message-archive-AA-compliant.html">AA-compliant</a>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="message-archive/README.md">README</a>
+        </div>
       </div>
     </div>
 
@@ -236,31 +289,13 @@
          Tier 1 + Tier 2 but hard-codes no consumer's <b>Tier 3</b>, so a consumer fills the slot with its
          own mark. This gallery, the repo root, and the style guide all consume it — the preview is its
          Tier-3-neutral specimen. Not Class A and not Class B.</p>
-      <div class="actions">
-        <a class="surface-action" href="_preview/surface-shell.html">preview</a>
-        <a class="surface-action surface-action--secondary" href="surface-shell/README.md">README</a>
-      </div>
-    </div>
-
-    <div class="card surface-panel">
-      <div class="cls">Surface // interactive diagram</div>
-      <h2 class="surface-panel-title">diagram-interactive-radial</h2>
-      <p class="surface-panel-support">A context-agnostic radial map of a containment hierarchy for a live page: the root at the center,
-         containers in wedges, items fanned beyond them, relations drawn by declared plane. Pan, pinch, wheel,
-         Fit, level-of-detail names, selection, a keyboard path over the hierarchy, a chooser where marks
-         overlap, an inspector, search and filters, PNG export, and panels that fold behind triggers beside the HUD
-         when they no longer fit. A consumer vendors the owner files byte-identical and supplies its data, its words and its
-         page; nothing is sealed. Two expressions of the same radial pattern: a captured consciousness and free will
-         research map, and a synthetic parks system. Each supplies its own data and configuration; both use the same
-         layout, navigation, inspection, filtering and export machinery.</p>
-      <div class="variant">Consciousness + free will (captured research reference) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-interactive-radial.html">preview // reference</a>
-      </div>
-      <div class="variant">Vellmark parks (synthetic parks example) //</div>
-      <div class="actions">
-        <a class="surface-action" href="_preview/diagram-interactive-radial.neutral.html">preview // synthetic</a>
-        <a class="surface-action surface-action--secondary" href="diagram-interactive-radial/README.md">README</a>
+      <div class="resources">
+        <div class="actions">
+          <a class="surface-action" href="_preview/surface-shell.html">preview</a>
+        </div>
+        <div class="actions">
+          <a class="surface-action surface-action--secondary" href="surface-shell/README.md">README</a>
+        </div>
       </div>
     </div>
 
