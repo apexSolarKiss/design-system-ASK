@@ -371,6 +371,36 @@ python3 -m http.server 8080
 node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
 ```
 
+**The document-register key**, `surface-document.html`, takes the same check in two parts. Its
+records-and-inspector section selects a record at load and hides the other records' views, as a
+consuming surface may. A link in a hidden view renders no box, so its states can be proven only in
+a run where its view is shown:
+
+```
+python3 -m http.server 8080
+node tools/check-role-conformance.mjs --url http://127.0.0.1:8080/surface-document.html
+node tools/check-role-conformance.mjs --url 'http://127.0.0.1:8080/surface-document.html#view-CFW-N-217' --scope '#view-CFW-N-217'
+```
+
+The first run checks the whole page at load and is expected to **fail** with exactly six
+`C9.unrendered` findings per theme and no other finding: the relation links of the two hidden
+views that hold any, four in `CFW-N-217` and two in `CFW-S-435`. It is kept because it is the
+only run that covers the rest of the page; 10 of the page's 16 governed links are driven in it.
+The second is run once per record — `CFW-C-008`, `CFW-N-217`, `CFW-S-435` and `CFW-S-014` — with
+the address selecting that record and the scope narrowing the check to its view. Each run passes;
+the `CFW-S-014` view holds no governed link, so its run checks roles only. Together the runs drive
+every governed link, the six hidden ones included. The scope never stands in for the selection:
+scoped to `#view-CFW-N-217` while another record is selected, the check still fails, with four
+`C9.unrendered` per theme.
+
+Limits: each run proves the selection the page loads with, after the runner has opened every
+disclosure; none drives a selection change, the adapter's focus handling or the way back, which
+are page-local. The key's five locator links stand in `code.doc-code` outside any text role, so
+they are not governed links (C7) and no run drives them. Both parts give the same result at the
+runner's default 1440×900 and at 375×812 (`--width 375 --height 812 --mobile`), in both themes.
+Revisit this account when the key gains another hidden population, when the whole-page run is
+offered as evidence on its own, or when the checker changes.
+
 ## attention-edge-fixture.html
 
 Guards **the attention edge adopted by class** in `surface-action.css`:

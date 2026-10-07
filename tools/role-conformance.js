@@ -159,6 +159,12 @@
      is not measured; counts reports measured and unmeasured groups, and
      structured blocks that declare no groups, apart, so neither is read as a
      passing group. A pass covers the declared groups only.
+   - C8 compares family, size and weight only. It never compares letter
+     case, leading, tracking or color; C1 compares case only for the roles
+     whose matrix entry declares a transform, four of the fourteen.
+   - A valid profile exempts its members' own text from C8: check()
+     reports each member with its computed metrics under `profiles` but
+     compares it against no role, so a profile narrows what a pass proves.
 */
 (function (global) {
   'use strict';

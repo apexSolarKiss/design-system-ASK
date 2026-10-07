@@ -4,7 +4,7 @@ A context-agnostic interactive radial diagram for a **live surface**. The data d
 
 It is a **surface pattern**, not an artifact scaffold: a consumer takes it as pinned, byte-identical local copies of the owner files, supplies its own data, adapter and page, and re-syncs when the owner contract changes. Nothing is generated, sealed or frozen. The owner never knows a consumer's identifiers, field names, vocabulary or how many tiers its subject should have.
 
-**Its primary example is real research content.** The preview is a reference specimen: the public content of the Consciousness + Free Will research map, captured on 2026-10-02, drawn through these generic modules (§Reference specimen). A synthetic composition with nothing in common with it runs the same modules for development and tests.
+**Its primary example is real research content.** The pattern has two public expressions, each with a gallery preview. The first is a reference specimen: the public content of the Consciousness + Free Will research map, captured on 2026-10-02, drawn through these generic modules (§Reference specimen). The second is a synthetic parks composition with nothing in common with it, which runs the same modules on its own data and adapter; it also serves development and tests.
 
 **Geometry claim bound.** Radial distance grows with containment depth along each lineage. A wedge's width is its unit's weight. Angle and adjacency encode nothing. Relations are encoded only through declared planes, drawn by line style. Level of detail hides names and never changes membership.
 
@@ -34,10 +34,10 @@ Load the scripts in that order, each as a classic script, then mount. The engine
 **The package's other files are example content**, never machinery, and a consumer replaces them:
 
 ```text
-diagram-interactive-radial.html                  the reference shell: the preview's page
+diagram-interactive-radial.html                  the reference shell: the reference preview's page
 reference/cfw/atlas-data.public.js               the reference content, as captured (unchanged)
 reference/cfw/cfw-reference.adapter.js           its adapter: projection, words, fields, facets
-diagram-interactive-radial.neutral.html          the synthetic shell
+diagram-interactive-radial.neutral.html          the synthetic shell: the synthetic preview's page
 diagram-interactive-radial.source.js             synthetic data and its words (tools/gen-radial-specimen.mjs)
 diagram-interactive-radial.neutral.adapter.js    its full-stack adapter, for any hierarchy shape
 ```
@@ -394,7 +394,7 @@ The preview's content is the public data of the **Consciousness + Free Will** re
 
 **What is the research's, and what is the owner's.** The captured file is the input. `cfw-reference.adapter.js` is consumer code: it restates the research map's own projection (its region partition, its branch ladder, how a status reads as a governed state, which relations sit on which plane) and declares every word, field, facet and plate line the reader sees. The shell is the page around it. Everything else is the generic modules, unchanged and loaded the same way by the synthetic composition. The modules do not load, read or name the reference files; the checks name them only to classify them, and two harnesses load the reference shell on purpose.
 
-**The synthetic composition** (`diagram-interactive-radial.neutral.html`) runs the complete stack on a generated city park system, with other identifiers, fields, words and hierarchy, and its adapter serves every hierarchy shape the tests use. It is for development and tests, not a second application.
+**The synthetic composition** (`diagram-interactive-radial.neutral.html`) runs the complete stack on a generated city park system, with other identifiers, fields, words and hierarchy, and its adapter serves every hierarchy shape the tests use. It is the pattern's second public expression, labeled synthetic, and it also serves development and tests; it is not a second application, engine or production use case, and it adds no second pattern contract.
 
 ## Checks
 
