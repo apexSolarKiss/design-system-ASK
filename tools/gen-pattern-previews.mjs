@@ -20,9 +20,9 @@ const ROOT = process.cwd();
 const PATTERNS = path.join(ROOT, 'patterns');
 const OUT = path.join(PATTERNS, '_preview');
 
-// FLOW previews declare all four chrome rectangles available (panels overlay instead of shrinking
-// the figure); a shared constant so the static + interactive FLOW previews get an IDENTICAL camera.
-const FLOW_PREVIEW_FIT = { dropSelectors: ['topSelector', 'bottomSelector', 'leftSelector', 'rightSelector'] };
+// No shell declares preview fit tuning. The FLOW previews once declared every panel available, so
+// panels overlaid the figure instead of shrinking it; the canonical FLOW Fit now tests the panels
+// against the marks actually drawn, so both FLOW previews show what a consumer receives.
 
 // canonical shell → { dir, out preview filename, previewFit?, flowMode?, flavor? }
 const SHELLS = [
@@ -34,8 +34,8 @@ const SHELLS = [
   // generator forces FLOW_MODE='static' for the static output. The canonical chrome-free export shell
   // (diagram-static-FLOW.html) is intentionally NOT previewed — it owns the export/article role and
   // hard-codes a light theme, so it is not the gallery's illustration of static mode.
-  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      previewFit: FLOW_PREVIEW_FIT, flowMode: 'static' },
-  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html', previewFit: FLOW_PREVIEW_FIT },
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      flowMode: 'static' },
+  { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html' },
   // The spine preview takes the canonical Fit unchanged: it shows what a consumer receives.
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
   // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured
