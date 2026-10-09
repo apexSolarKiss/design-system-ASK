@@ -1,7 +1,7 @@
 # `patterns/_diagram-shared/`
 
 Canonical source plane for support code that more than one diagram engine consumes: text
-layout for the static engines, and pointer input for the interactive ones. Files here are
+layout for the static engines, and pointer input for every engine. Files here are
 **authored once and mirrored out** by
 [`tools/sync-diagram-shared.mjs`](../../tools/sync-diagram-shared.mjs).
 
@@ -21,7 +21,7 @@ a later maintainer reads FLOW's absence as partial vendoring and "completes" it.
 | Member | Target set | Excluded |
 | --- | --- | --- |
 | `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-interactive-spine` · `diagram-interactive-radial` |
-| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` | the static patterns |
+| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` · `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` · `diagram-static-FLOW` | — |
 
 ## Canonical and mirrors
 
@@ -31,6 +31,7 @@ mirrors     patterns/diagram-static-{H,V,SEQ}/diagrams-text-layout.js
 
 canonical   patterns/_diagram-shared/diagrams-pointer.js
 mirrors     patterns/diagram-interactive-{radial,spine}/diagrams-pointer.js
+            patterns/diagram-static-{H,V,SEQ,FLOW}/diagrams-pointer.js
 ```
 
 A mirror is **byte-identical** to its canonical and is a generated artifact.
@@ -52,6 +53,22 @@ own a camera, a hit test or a selection: the consuming engine supplies its view,
 change and decides what a tap means. Its gesture logic is a device-approved controller moved as
 donor code, with two declared corrections (a horizontal scroll no longer zooms; the pointer left
 after a pinch keeps its own type). Its own header carries the attach contract.
+
+**v2 (2026-10-08) serves the static engines too.** A static canvas holds the panels laid over the
+drawing, so the caller names them in `exclude`: a press there stays native and a wheel there scrolls
+unless it is a trackpad pinch. The controller marks the stage it owns with `data-diagram-pointer`,
+which `diagrams.css` keys `touch-action: none` on. With `exclude` it also lays its own `touch-action: none` layer under the drawing and the panels, so
+the panels keep the browser's own touch behavior, page zoom included. A moved gesture's click is
+swallowed only when a pointer produced it, for at most 500 ms and never past the next press, so a
+keyboard or programmatic activation — Enter on a linked card after a touch pan — and a tap on the
+HUD straight after a pan are never eaten. Only a primary-button press starts a gesture, so a middle
+click, a right click and a pen's barrel stay native.
+
+The radial and spine engines pass no `exclude`, so they get no layer and keep their panels outside
+the stage. Three v2 changes do reach them, all deliberate: a non-primary pen or touch press (a pen's
+barrel) no longer pans; a moved gesture's click token now expires and never swallows a keyboard or
+programmatic click (v1 swallowed the next click whatever produced it); and their stage carries
+`data-diagram-pointer`. Their behavior suites pass against v2 unchanged.
 
 `diagrams-text-layout.js` owns exact measurement, role metrics, cap application,
 deterministic line breaking, wrapped height and tspan emission.

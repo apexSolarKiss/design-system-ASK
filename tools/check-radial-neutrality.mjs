@@ -74,7 +74,7 @@ const REFERENCE = {
 };
 
 const LEXICON = new Set(`
-a above adapter all allocation already always an anchor and announce api aria array arrival arrow arrowdown
+a abort above absolute adapter all allocation already always an anchor and announce api aria array arrival arrow arrowdown
 arrowleft arrowright arrowup at attach auto band be before between blur boolean bottom bound button by
 canvas capacity carries census center children chip choose chooser chrome circle clampk class clear cleared
 clears click close coarse complete conflict container containers contains contract contracterror control

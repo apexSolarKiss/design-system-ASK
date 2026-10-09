@@ -38,6 +38,10 @@ const MEMBERS = [
     targets: [
       'patterns/diagram-interactive-radial/diagrams-pointer.js',
       'patterns/diagram-interactive-spine/diagrams-pointer.js',
+      'patterns/diagram-static-H/diagrams-pointer.js',
+      'patterns/diagram-static-V/diagrams-pointer.js',
+      'patterns/diagram-static-SEQ/diagrams-pointer.js',
+      'patterns/diagram-static-FLOW/diagrams-pointer.js',
     ],
   },
 ];

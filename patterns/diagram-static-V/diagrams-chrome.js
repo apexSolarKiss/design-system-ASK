@@ -1,4 +1,4 @@
-/* diagrams-chrome.js — design-system-ASK responsive diagram chrome (v1, 2026-09-28)
+/* diagrams-chrome.js — design-system-ASK responsive diagram chrome (v1, 2026-09-28; room rule 2026-10-08)
 
    DS-OWNED SUPPORT FILE. Do not hand-edit in a consumer; re-vendor byte-identical.
 
@@ -14,8 +14,13 @@
    For each .diagram-info[data-diagram-chrome] on the page:
      1  DECIDE. The chrome is COMPACT when the canvas is narrower than NARROW, or when the
         panels, laid out open (the wide layout) and measured, would take more than a third
-        of the canvas height or need more width than the canvas gives them. Otherwise it is
-        WIDE. Every narrow screen starts compact; other constrained canvases are measured.
+        of the canvas height, need more width than the canvas gives them, or leave the
+        drawing less room between them and the HUD than diagrams-fit.js needs to keep it
+        clear of both (MIN_DRAW plus a GUTTER on each side). Below that room the fit
+        discards its reservation and the drawing runs under the open panels — a short
+        landscape phone under a two-row header is the case — so the panels close behind
+        their triggers instead. Otherwise it is WIDE. Every narrow screen starts compact;
+        other constrained canvases are measured.
      2  WIDE. Every panel is visible, and the header keeps its subtitle and stamp; the
         triggers are hidden.
      3  COMPACT.
@@ -54,7 +59,7 @@
    In compact, the trigger row and the open panel declare data-diagram-fit-edge="bottom",
    so diagrams-fit.js reserves the whole control area, HUD included, as bottom chrome.
    After anything that changes that area or the header — a mode switch, a panel opening or
-   closing, the band changing, the webfonts landing — this file dispatches
+   closing, the band changing, the HUD changing size, the webfonts landing — this file dispatches
    `diagram-chrome-change` on the canvas wrap, one animation frame later so the change
    has laid out. What an engine writes into an open panel is not such a change: the drawing
    is placed when the panel opens and does not chase its content. A resize is handled one
@@ -82,6 +87,8 @@
   var EDGE = 18;            // the chrome's inset from the canvas edges (diagrams.css)
   var GAP = 8;              // the space between the band and an open panel, and between the HUD and a row above it
   var SIDE = 12;            // the space between the HUD and the triggers when they share the band
+  var GUTTER = 26;          // diagrams-fit.js: the gutter every caller passes around a reserved panel
+  var MIN_DRAW = 120;       // diagrams-fit.js: the least room it reserves into; below it the reservation is discarded
 
   function each(list, fn) { for (var i = 0; i < list.length; i++) fn(list[i], i); }
   function rendered(el) { return !!el && el.getClientRects().length > 0; }
@@ -175,7 +182,10 @@
       var ir = info.getBoundingClientRect();
       var tooWide = false;
       each(pairs, function (x) { if (!x.guest && x.p.scrollWidth > x.p.clientWidth + 1) tooWide = true; });
-      return tooWide || ir.height > wr.height * OPEN_SHARE;
+      var hud = wrap.querySelector('.hud');
+      var floor = hud && rendered(hud) ? hud.getBoundingClientRect().top : wr.bottom;
+      var room = (floor - GUTTER) - (ir.bottom + GUTTER);
+      return tooWide || ir.height > wr.height * OPEN_SHARE || room < MIN_DRAW;
     }
 
     /* Compact geometry: the band beside or above the HUD, and the open panel's region. */
@@ -202,11 +212,15 @@
       info.removeAttribute('data-diagram-chrome-band');
     }
     /* Everything the fit depends on — the mode, the band, which panel is open (compact) or the
-       laid-out block's height (wide), and the canvas; a change is announced once. */
+       laid-out block's height (wide), the HUD's size and the canvas; a change is announced once.
+       The HUD is in it because the exporter adds its buttons after load: a HUD that grows under
+       a drawing already placed must move the drawing, not just the triggers. */
     function signature() {
       var wr = wrap.getBoundingClientRect(), o = mode === 'compact' ? openPair() : null;
+      var hud = wrap.querySelector('.hud'), hr = hud && rendered(hud) ? hud.getBoundingClientRect() : null;
       return [mode, info.getAttribute('data-diagram-chrome-band'), info.style.getPropertyValue('--diagram-info-bottom'),
               o ? o.p.id : '', mode === 'wide' ? Math.round(info.getBoundingClientRect().height) : 0,
+              hr ? Math.round(hr.width) + 'x' + Math.round(hr.height) : '',
               Math.round(wr.width), Math.round(wr.height)].join('|');
     }
     function settle() {
