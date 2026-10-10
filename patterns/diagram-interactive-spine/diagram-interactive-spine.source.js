@@ -23,7 +23,7 @@
 window.IA_STATE_SPINE = {
   meta: {
     title: '[IA state surface]',
-    subtitle: '[axis-independent state surface · what is earned / held / deflated, and where]',
+    subtitle: '[axis-independent state surface // what is earned / held / deflated, and where]',
     stamp: { source: 'source-v1', render: 'render-v1', date: '[YYYY-MM-DD]' },
   },
 

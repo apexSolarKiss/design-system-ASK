@@ -194,8 +194,16 @@ window.C = (function () {
     const k = m.model.kinds.get(n.kindId), s = m.model.states.get(n.state), raw = m.model.byId.get(n.id);
     const kind = q('#D .radial-insp-kind').textContent, title = q('#D .radial-insp-title').textContent, sn = q('#D .radial-insp-state-name').textContent;
     const tone = FX.host('D').querySelector('[data-radial-slot="inspector"]').style.getPropertyValue('--st');
-    return { ok: kind === k.id + ' — ' + k.label && title === raw.label && sn === s.label && tone === 'var(--state-' + n.state + ')' && st().inspector.view === 'item',
+    return { ok: kind === k.id + ' // ' + k.label && title === raw.label && sn === s.label && tone === 'var(--state-' + n.state + ')' && st().inspector.view === 'item',
              d: { kind, title, sn, tone } }; };
+  /* an adapter's own kind line is kept as given, its own punctuation included; an empty one draws no line */
+  C.kindOverride = async () => { const own = 'own kind \u2014 as given', item = (kind) => { const a = FX.adapterFor('specimen'), h = a.inspector.header;
+      a.inspector.header = (t) => t.type === 'item' ? Object.assign({}, h(t), { kind }) : h(t); return a; };
+    let m = fresh('specimen', { adapter: item(own) }); m.select(leafOf(m, (n) => n.kindId).id); await frames();
+    const one = qa('#D .radial-insp-kind').map((x) => x.textContent);
+    m = fresh('specimen', { adapter: item('') }); m.select(leafOf(m, (n) => n.kindId).id); await frames();
+    const two = qa('#D .radial-insp-kind').length, title = q('#D .radial-insp-title') && q('#D .radial-insp-title').textContent;
+    return { ok: one.length === 1 && one[0] === own && two === 0 && !!title, d: { one, two, title } }; };
   C.preview = async () => { const m = fresh(); await frames();
     const sr = q('#D [data-radial-slot="stage"]').getBoundingClientRect();
     const single = m.layout.nodes.filter((n) => n.kind === 'leaf').find((n) => { const p = m.project(n.id); return p.x > 40 && p.y > 40 && p.x < sr.width - 360 && p.y < sr.height - 80 && m.hits(p.x, p.y, 0).inside.length === 1 && m.hits(p.x, p.y, 0).inside[0] === n.id; });
@@ -1302,6 +1310,7 @@ async function run() {
     console.log('# U  the inspector');
     await W('U1 idle: the panel names itself and shows the adapter\'s idle text, untinted', 'idle');
     await W('U2 an item: the default kind line, its title, its state row, tinted by its state', 'item');
+    await W('U2b an adapter\'s own kind line is kept as given, its punctuation included, and an empty one draws no line', 'kindOverride');
     const pv = await at(P, 'preview');
     if (pv.ok) {
       await P.move(pv.d.at.x, pv.d.at.y);
@@ -1617,7 +1626,11 @@ async function run() {
        "if (f && f.reset) f.reset('reader'); else api.membership.reset('reader');", "if (f && f.reset) f.reset('reader');", 'followNoFacets', {}],
       ['X13 a drawer planted to keep focus when another panel closes it fails Q15', 'diagrams-radial-facets.js',
        "setOpen(false, cause === 'claim' ? 'reader' : cause || 'module'); } });", "setOpen(false, cause === 'claim' ? 'reader' : cause || 'module', cause !== 'claim'); } });",
-       KEYED.q15, { width: 390, height: 844, touch: true }]);
+       KEYED.q15, { width: 390, height: 844, touch: true }],
+      ['X35 the default kind line planted with the dash it replaced fails U2', 'diagrams-radial-inspector.js',
+       "t.kind.id + ' // ' + t.kind.label", "t.kind.id + ' \\u2014 ' + t.kind.label", 'item', {}, (r) => / \u2014 /.test(r.d.kind)],
+      ['X36 an adapter\'s kind line planted to be replaced by the default fails U2b', 'diagrams-radial-inspector.js',
+       'var kindLine = h.kind !== undefined ? h.kind : (', 'var kindLine = (', 'kindOverride', {}, (r) => r.d.one[0] !== 'own kind \u2014 as given']);
     for (const [name, file, from, to, fn, opts, why] of plants) {
       const Q = await open(b, url, opts);
       const pl = await Q.ev(`C.plant(${J(file)}, ${J(from)}, ${J(to)})`);

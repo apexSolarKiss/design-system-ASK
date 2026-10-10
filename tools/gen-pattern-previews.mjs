@@ -158,7 +158,7 @@ const PREVIEW_FIT = (cfg) => `<script>
 // Inert panel hint for the forced-static FLOW preview. In static mode the engine installs no node
 // hit layer, so the interactive shell's "hover a node …" copy would be inaccurate; the panel keeps
 // its box + footprint and states the honest static affordance.
-const STATIC_FLOW_HINT = 'Static view — topology only. Open the interactive preview for node definitions.';
+const STATIC_FLOW_HINT = 'Static view // topology only. Open the interactive preview for node definitions.';
 
 // Fail-closed single replacement: throw unless the pattern matches EXACTLY once, so a changed
 // canonical shell can never silently emit the wrong artifact — e.g. an interactive page under the

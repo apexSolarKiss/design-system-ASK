@@ -2,17 +2,17 @@
 
 A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static members `diagram-static-H` (horizontal cascade), `diagram-static-V` (vertical centered spine), `diagram-static-SEQ` (ordered arrowed sequence), and `diagram-static-FLOW` (convergence flow).
 
-`diagram-interactive-spine` is **Class A — interactive**. It is *not* `diagram-static-V-interactive`: static-vs-interactive is the artifact-class distinction, encoded in the name.
+`diagram-interactive-spine` is **Class A // interactive**. It is *not* `diagram-static-V-interactive`: static-vs-interactive is the artifact-class distinction, encoded in the name.
 
 ## What this pattern is
 
 A small consumption pattern. Eight files:
 
-- `README.md` — this file
-- `diagram-interactive-spine.html` — the shell page (bar, canvas, inspector, legend, HUD, caption; the engine adds the compact triggers)
-- `diagram-interactive-spine.source.js` — the IA data, as a single `window.IA_STATE_SPINE` literal (**consumer-owned**)
-- `diagrams-interactive-spine-engine.js` — the layout + interaction engine (`window.IA_SPINE.render`)
-- `diagrams-fit.js` — **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* glass panels and, **only when the figure would actually collide with one**, centers it in the edge-safe region that remains. A placement that already clears the chrome is kept exactly as-is — reservation is overlap-gated, so a figure is never shrunk to avoid chrome it does not reach, so a wide, short figure no longer renders its top band underneath them. **This pattern's panel anatomy differs from the static siblings**, and the engine decides which edge each panel costs (below).
+- `README.md` // this file
+- `diagram-interactive-spine.html` // the shell page (bar, canvas, inspector, legend, HUD, caption; the engine adds the compact triggers)
+- `diagram-interactive-spine.source.js` // the IA data, as a single `window.IA_STATE_SPINE` literal (**consumer-owned**)
+- `diagrams-interactive-spine-engine.js` // the layout + interaction engine (`window.IA_SPINE.render`)
+- `diagrams-fit.js` // **DS-owned shared fit support.** Computes the default zoom-to-fit transform: it measures the *visible* glass panels and, **only when the figure would actually collide with one**, centers it in the edge-safe region that remains. A placement that already clears the chrome is kept exactly as-is — reservation is overlap-gated, so a figure is never shrunk to avoid chrome it does not reach, so a wide, short figure no longer renders its top band underneath them. **This pattern's panel anatomy differs from the static siblings**, and the engine decides which edge each panel costs (below).
 
 **Zoom floor tracks Fit.** The ordinary zoom-out floor is this pattern's historical base scale, but the panel-aware fit can legitimately land below it on a constrained viewport. When it does, the live floor becomes the fitted scale, so zoom-out is a no-op at Fit rather than *increasing* the scale (which would reverse the control's direction). Fit itself is never clamped — clamping it would restore the panel collision the helper exists to avoid.
 
@@ -31,9 +31,9 @@ compact    the HUD, the trigger row and any open panel: one bottom band
 ```
 
 With this pattern's own chrome the first wins or ties wherever the canvas is wide: the inspector's lane is wider than the legend, so the legend's lane costs nothing more, and the caption is taller than the HUD, so a HUD lane buys nothing. The others decide where a consumer's legend is wider than the inspector or its caption shorter than the HUD. The HUD was once always a left lane. With the exporter's buttons it is over 300px wide, and as a lane it reserved that width down the whole canvas for a control in its bottom-left corner, so an explicit Fit gave the drawing barely half the canvas width; it is now one arrangement among four, chosen only where it costs less. The helper can report a placement that exactly fills its reserved axis as obstructed by a float rounding of a fraction of a pixel, so the engine re-tests such a result against the same visible panels with 0.5px of the gutter's tolerance; a real overlap is far larger and still fails. Panel sizes are measured live, never hard-coded, and hidden or zero-area panels reserve nothing. **Load it immediately BEFORE the engine** — the engine throws a named error if it is missing rather than silently falling back to the old geometry. **Byte-identical to the copies in the sibling patterns** — shared by convention, not a runtime import; re-vendor it alongside the engine. With no visible panels the fit is **algebraically equivalent to the previous fit, with no intentional geometry change** — the engine expresses its long-standing 60px content margin as *expanded bounds* with zero subtractive clearance, and passes its historical `clientWidth`/`clientHeight` viewport measurement explicitly. (Equivalent floating-point evaluation orders may differ at machine precision only.) This pattern passes zero subtractive clearance, so the constrained-clearance branch introduced by this owner correction does not alter its fit — its historical margin remains expressed entirely through the expanded bounds.
-- `diagrams-pointer.js` — **DS-owned shared pointer controller, a GENERATED MIRROR.** Canonical source is `patterns/_diagram-shared/diagrams-pointer.js`; this copy is emitted by `tools/sync-diagram-shared.mjs` and is byte-identical to the radial pattern's. It recognizes pan, pinch, tap and wheel on Pointer Events for mouse, pen and touch; the engine keeps the camera, the zoom range and every selection decision. **Load it BEFORE `diagrams-fit.js` and the engine**, as the radial pattern does — the engine throws a named error if it is missing rather than falling back to a mouse-only pan. Never hand-edit it; edit the canonical and re-emit.
-- `diagrams-interactive-spine.css` — the interactive style layer
-- `export-png.js` — 3840×2880 PNG export that bakes the resolved state colors inline
+- `diagrams-pointer.js` // **DS-owned shared pointer controller, a GENERATED MIRROR.** Canonical source is `patterns/_diagram-shared/diagrams-pointer.js`; this copy is emitted by `tools/sync-diagram-shared.mjs` and is byte-identical to the radial pattern's. It recognizes pan, pinch, tap and wheel on Pointer Events for mouse, pen and touch; the engine keeps the camera, the zoom range and every selection decision. **Load it BEFORE `diagrams-fit.js` and the engine**, as the radial pattern does — the engine throws a named error if it is missing rather than falling back to a mouse-only pan. Never hand-edit it; edit the canonical and re-emit.
+- `diagrams-interactive-spine.css` // the interactive style layer
+- `export-png.js` // 3840×2880 PNG export that bakes the resolved state colors inline
 
 It is **not** a component library, a generator, a build pipeline, or a project-specific surface. It is a starting point for a project's own interactive IA, building on [design-system-ASK](../../README.md) foundations.
 
@@ -51,10 +51,10 @@ window.IA_STATE_SPINE = {
 };
 ```
 
-- **`group`** — `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state).
-- **`state`** — exactly one of the eight Spectral State roles. Drives node color.
-- **`modes`** — ids of the mode nodes a node intersects; selection draws the relationships and isolates the set.
-- **`evidence` / `qualifier` / `pointer`** — inspector metadata (never encoded in hue). `pointer` is the authoritative repo source for that node.
+- **`group`** // `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state).
+- **`state`** // exactly one of the eight Spectral State roles. Drives node color.
+- **`modes`** // ids of the mode nodes a node intersects; selection draws the relationships and isolates the set.
+- **`evidence` / `qualifier` / `pointer`** // inspector metadata (never encoded in hue). `pointer` is the authoritative repo source for that node.
 
 ## Interactions
 
@@ -86,8 +86,8 @@ Hover previews a node (its relationships + inspector) for a mouse; click or tap 
 
 The HUD exposes two PNG exports, both rasterizing the live render through one path (`exportPng({ mode })`):
 
-- **`PNG page`** — the chromed poster: a 3840×2880 render with header, caption, and legend on the resolved gradient field. Auto-export route `?export=png`; filename carries the theme (see Artifact naming below). This is the existing export; its contract is unchanged.
-- **`PNG diagram`** — the spine canvas only: no header, HUD, caption, or legend, on the resolved gradient field, at the spine's natural (variable) aspect. Auto-export route `?export=png-diagram`; filename `<slug>-diagram-<theme>.png`.
+- **`PNG page`** // the chromed poster: a 3840×2880 render with header, caption, and legend on the resolved gradient field. Auto-export route `?export=png`; filename carries the theme (see Artifact naming below). This is the existing export; its contract is unchanged.
+- **`PNG diagram`** // the spine canvas only: no header, HUD, caption, or legend, on the resolved gradient field, at the spine's natural (variable) aspect. Auto-export route `?export=png-diagram`; filename `<slug>-diagram-<theme>.png`.
 
 Neither export depends on the arrangement: the panels are the same authored elements in every state, so a legend and caption folded behind their triggers still reach `PNG page`, the trigger words never do, and `PNG diagram` stays chrome-free.
 
@@ -131,7 +131,7 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 - **Color encodes state only.** Evidence depth, risk, mode coverage, repo pointers live in the inspector, never in hue.
 - **One state role per node.**
-- **Title by dimension, not the umbrella.** This surface depicts *state* (status / maturity) of the architecture — it is not "the" information architecture. Title it for its dimension, e.g. **"Information architecture — state"** (the placeholder default), not the bare "Information architecture". Structural diagrams name their axis (ontology, inheritance); this one names its dimension (state). Claiming the umbrella title would imply the other diagrams are sub-views of this one — they are peers.
+- **Title by dimension, not the umbrella.** This surface depicts *state* (status / maturity) of the architecture — it is not "the" information architecture. Title it for its dimension, e.g. **"Information architecture // state"** (the placeholder default), not the bare "Information architecture". Structural diagrams name their axis (ontology, inheritance); this one names its dimension (state). Claiming the umbrella title would imply the other diagrams are sub-views of this one — they are peers.
 - **Consumer owns** source data, chrome, generation, sealing + the frozen artifact; **design-system owns** engine / CSS / export script.
 - **Offline / no CDN**; local pinned `_dsa-tokens` and `_dsa-surface` mirrors. No Tier 3.
 
@@ -141,8 +141,8 @@ design-system-ASK supplies Tier 1 + Tier 2 (and the Spectral State primitive). T
 
 ## Class A static vs interactive · Class B
 
-- **Class A — static:** `diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ`, `diagram-static-FLOW` (structural; state-free).
-- **Class A — interactive:** `diagram-interactive-spine` (this pattern; state-bearing; consumes Spectral State).
+- **Class A // static:** `diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ`, `diagram-static-FLOW` (structural; state-free).
+- **Class A // interactive:** `diagram-interactive-spine` (this pattern; state-bearing; consumes Spectral State).
 - **Class B:** `patterns/output-artifact/` (project-output artifacts).
 
 The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2; they serve different artifact classes.

@@ -39,7 +39,7 @@
       sections: function (t, ctx) {
         if (t.type === 'record') return [
           { type: 'fields', fields: [{ label: 'identifier', value: t.id, mono: true }] },
-          { type: 'references', title: 'linked \u2014 {count}', items: ctx.links(t.id).map(function (l) {
+          { type: 'references', title: 'linked // {count}', items: ctx.links(t.id).map(function (l) {
             return { id: l.other.id, button: l.other.label, detail: (l.edge.type || '') + (l.direction === 'out' ? ' \u2192' : ' \u2190') };
           }) }
         ];
@@ -59,8 +59,8 @@
             { label: 'opened', value: d.opened === undefined || d.opened === null ? null : String(d.opened) },
             { label: 'facilities', value: d.facilities, format: 'list' }
           ] },
-          { type: 'relations', title: 'links \u2014 {count}', never: 'declared, never drawn', outside: 'filtered out' },
-          { type: 'references', title: 'records \u2014 {count}', head: 3, items: ctx.links(t.id).map(function (l) {
+          { type: 'relations', title: 'links // {count}', never: 'declared, never drawn', outside: 'filtered out' },
+          { type: 'references', title: 'records // {count}', head: 3, items: ctx.links(t.id).map(function (l) {
             return { id: l.other.id, button: l.other.label, detail: l.edge.type };
           }) }
         ];

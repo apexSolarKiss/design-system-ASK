@@ -21,9 +21,9 @@ A foundational design system for **ASK** — a meta-brand expressed through a si
 Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers on top of these tokens elsewhere; it does not live here.
 
 ### Source materials
-- `assets/logo-ASK.svg` — primary vector wordmark, `fill: currentColor`
-- `assets/logo-ASK-white.png` — raster wordmark, white on transparent (light-mode pairing)
-- `assets/logo-ASK-lavender-ASK.png` — raster wordmark, lavender-ASK on transparent (dark-mode pairing)
+- `assets/logo-ASK.svg` // primary vector wordmark, `fill: currentColor`
+- `assets/logo-ASK-white.png` // raster wordmark, white on transparent (light-mode pairing)
+- `assets/logo-ASK-lavender-ASK.png` // raster wordmark, lavender-ASK on transparent (dark-mode pairing)
 - Canonical spec: `visual-identity-system.md` (in ASK's canonical context, not in this repo)
 - Operator-side vector working source: `ASK 9 4.ai` (Illustrator file, not in this repo by design — production assets only)
 
@@ -33,9 +33,9 @@ Scope is the meta-brand. Sub-brand theming (production, builder, artist) layers 
 
 This repo carries three kinds of material:
 
-1. **Foundations** — tokens, type, color, assets, and visual rules. The irreducible expression of the system and the inheritance source for other ASK-family surfaces.
-2. **Artifact-inheritance scaffolds** — small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them. A scaffold may be wholly static, or may carry self-contained client-side navigation and still freeze for audit; either way it **inherits at generation time and seals**.
-3. **Surface patterns** — contracts for **live deployed surfaces**: a page shell, or a live component a page mounts. They frame or run on a page that stays live, and they **do not seal**: a consumer references or vendors the pattern and re-syncs when it changes, rather than freezing an output for audit. `surface-shell` and `diagram-interactive-radial` are the instances.
+1. **Foundations** // tokens, type, color, assets, and visual rules. The irreducible expression of the system and the inheritance source for other ASK-family surfaces.
+2. **Artifact-inheritance scaffolds** // small, auditable patterns, added when earned, that show consuming projects how to inherit the foundations without redefining them. A scaffold may be wholly static, or may carry self-contained client-side navigation and still freeze for audit; either way it **inherits at generation time and seals**.
+3. **Surface patterns** // contracts for **live deployed surfaces**: a page shell, or a live component a page mounts. They frame or run on a page that stays live, and they **do not seal**: a consumer references or vendors the pattern and re-syncs when it changes, rather than freezing an output for audit. `surface-shell` and `diagram-interactive-radial` are the instances.
 
 The distinction in 2 versus 3 is the lifecycle, and it is load-bearing. An artifact scaffold produces something finished and frozen. A surface pattern produces something that keeps running. Do not apply sealing, freezing, or generation-time inheritance rules to a surface pattern.
 
@@ -43,11 +43,11 @@ The document register (`surface-document.css`) and the surface treatments (`surf
 
 These are consumption patterns, not components. They are not a generator, not a build pipeline, not an npm package, and not a component library. The catalog holds **two artifact classes plus one separate surface-pattern group**:
 
-- **Class A** — system / architecture diagram templates, in two kinds:
+- **Class A** // system / architecture diagram templates, in two kinds:
   - **static:** **`diagram-static-H`** (horizontal left→right top-aligned cascade), **`diagram-static-V`** (vertical top→down centered spine), **`diagram-static-SEQ`** (ordered top→down arrowed sequence — succession, not hierarchy), and **`diagram-static-FLOW`** (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back) — structural; state-free. A page of any of the four may opt in to a shared responsive chrome that lays out its caption and legend together and, on a narrow or crowded canvas, closes them behind triggers in one control area with the HUD; an adopting consumer vendors `diagrams-chrome.js` with the bundle and `surface-panel.css` then `surface-treatments.css` for the triggers. Each pattern's README carries the contract.
-  - **interactive:** **`diagram-interactive-spine`** — a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
-- **Class B** — project-output artifact templates: **`output-artifact`** (static document) and **`message-archive`** (sealed interactive archive — offline search + navigation over frozen content). Client-side navigation over embedded content does not make an artifact Class A and does not earn a new class.
-- **Surface patterns** — the separate group, not a third artifact class: **`surface-shell`** (the shared header, control slot, and flush-right footer that make a family of surfaces read as one artifact family with different payloads) and **`diagram-interactive-radial`** (a context-agnostic interactive radial map of a containment hierarchy, mounted on a live page). Each runs on a live page and seals nothing, so neither is a sealed output artifact, and the radial pattern is not a Class A scaffold: it is not inherited at generation time. **The group is not "Class C"** — it is a named group by lifecycle, not a taxonomy.
+  - **interactive:** **`diagram-interactive-spine`** // a navigable, stateful IA state surface that consumes the Spectral State primitive for node color. The taxonomy encodes static-vs-interactive, not just orientation (the interactive spine is also vertical).
+- **Class B** // project-output artifact templates: **`output-artifact`** (static document) and **`message-archive`** (sealed interactive archive — offline search + navigation over frozen content). Client-side navigation over embedded content does not make an artifact Class A and does not earn a new class.
+- **Surface patterns** // the separate group, not a third artifact class: **`surface-shell`** (the shared header, control slot, and flush-right footer that make a family of surfaces read as one artifact family with different payloads) and **`diagram-interactive-radial`** (a context-agnostic interactive radial map of a containment hierarchy, mounted on a live page). Each runs on a live page and seals nothing, so neither is a sealed output artifact, and the radial pattern is not a Class A scaffold: it is not inherited at generation time. **The group is not "Class C"** — it is a named group by lifecycle, not a taxonomy.
 
 Artifact scaffolds — Class A and Class B only — inherit at generation time and freeze for audit. A sealed interactive artifact may retain client-side navigation over embedded content; it introduces no live data dependency. Downstream projects supply their own Tier 3 identity, their own source-truth posture, and their own content and domain structure. Hosting a scaffold here does not make this repo the owner of downstream project content.
 
@@ -117,14 +117,14 @@ Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibil
 
 **The wordmark uses its own mode-specific brand pairing — it does not inherit the body text color — and it sits on the gradient, not on a fixed lavender-ASK block.**
 
-- **Light mode** — `#FFFFFF` wordmark on the light gradient (the wordmark's brand pairing — **not** the `#6A637F` light-mode text).
-- **Dark mode** — `#D4C6E1` (lavender-ASK) wordmark on the dark gradient (here it coincides with the `#D4C6E1` dark-mode text).
+- **Light mode** // `#FFFFFF` wordmark on the light gradient (the wordmark's brand pairing — **not** the `#6A637F` light-mode text).
+- **Dark mode** // `#D4C6E1` (lavender-ASK) wordmark on the dark gradient (here it coincides with the `#D4C6E1` dark-mode text).
 
 In any UI surface — page, card, preview, component — the mark goes on the gradient. The fixed `#D4C6E1` lavender-ASK field is **only** for the standalone exported asset (the JPG/vector deliverable). It is not a UI background. Do not place the wordmark on a flat lavender-ASK block anywhere in the system.
 
 `logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so one vector file can be used for both mode pairings when its container sets the correct wordmark color. The two PNGs are raster pairings/fallbacks.
 
-### Browser icons — the one other exported-asset instance
+### Browser icons // the one other exported-asset instance
 
 The prohibition above is about **UI surfaces**. The **browser icon** is not one: like the standalone exported deliverable, it is a fixed asset, and it carries the wordmark on the flat `#D4C6E1` field by design — fitted to a square. It is the *compact square application of the exported-asset treatment*, not a third wordmark treatment and not a new logo.
 
@@ -139,7 +139,7 @@ These are **Tier-3 implementation assets**. The visual decision stays with the i
 
 Two integration profiles, because ASK browser surfaces are not all origins.
 
-**A — deployed origin.** The full four-file package at the origin root, root-absolute head paths:
+**A // deployed origin.** The full four-file package at the origin root, root-absolute head paths:
 
 ```html
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -149,7 +149,7 @@ Two integration profiles, because ASK browser surfaces are not all origins.
 
 `/favicon.ico` needs no declaration — it answers the browser's automatic root probe and covers pages that declare nothing.
 
-**B — package-local browser artifact.** A mutable operator package a reader opens directly from its own directory rather than over an origin. Paths are relative to the artifact HTML at the package root, because a leading `/` there resolves to the filesystem or origin root, not to the package:
+**B // package-local browser artifact.** A mutable operator package a reader opens directly from its own directory rather than over an origin. Paths are relative to the artifact HTML at the package root, because a leading `/` there resolves to the filesystem or origin root, not to the package:
 
 ```html
 <!-- Package-local browser artifact — paths relative to this HTML file -->
@@ -174,15 +174,17 @@ The README, card labels, and any docs in this repo speak in a **calm, declarativ
 | Person | Impersonal / declarative. Do not invent a studio "we" — ASK is a personal meta-brand, not a collective. Describe the system as a thing that exists, not a thing "we made". |
 | Casing | Sentence case in headings and body. UPPERCASE only for small labels (≤14px), tracked by role: Inter Caption at 0.14em, mono operative labels at 0.08em. |
 | Length | Short. One idea per sentence. |
-| Punctuation | Periods, em-dashes, commas. No exclamation marks. No "Introducing:" lead-ins. |
+| Punctuation | Periods, em-dashes, commas in running prose. Structural joins take ` // ` (below). No exclamation marks. No "Introducing:" lead-ins. |
 | Numerals | Spell out one through nine in copy; figures in UI labels and prices. |
 | Adjective hygiene | No "revolutionary", "leading", "powerful", "next-gen", "AI-powered". Replace with one concrete noun. |
 | Verbs | Plain present tense. "The system uses Inter", not "we use Inter". |
 | Emoji (scoped) | **No emoji in this design system's own surfaces** (README, cards, docs). This rule applies to the system, not to ASK universally — ASK's broader personal contexts have a sanctioned exception (a single purple heart used as personal branding) which lives outside this repo. Do not propagate a blanket "ASK never uses emoji" rule. |
 
-**Exception to the punctuation rule — protected payloads.** The ASK tagline (`order from chaos // beauty in systems`) and its LinkedIn variant are **protected payloads**: fixed brand strings rendered verbatim, `//` intact. They are exempt from the punctuation and voice rules in the table above — the `//` is part of the string, not prose written in this system's voice. Never normalize it to an em-dash. Canonically defined in `brand-architecture.md`.
+**Exception to the punctuation rule // protected payloads.** The ASK tagline (`order from chaos // beauty in systems`) and its LinkedIn variant are **protected payloads**: fixed brand strings rendered verbatim, `//` intact. They are exempt from the punctuation and voice rules in the table above — the `//` is part of the string, not prose written in this system's voice. Never normalize it to an em-dash. Canonically defined in `brand-architecture.md`.
 
-ASK's *personal* writing voice is a separate convention (terminalcore — slash-slash for em dashes, plus for ampersand, double-angle arrows). That voice belongs to ASK's personal channels — **not** the design system. Keep them strictly separate. The design system always speaks the calm sentence-case voice above.
+**Structural separators.** Where one part locates, numbers, names or labels the next, the join is ` // `, with a space on each side: composed headings, numbered headings, label-to-title joins, a name or term followed by its description, and a key followed by its value, as in `Question 2 // Should the market square stay in the study?`. This is shared ASK-family presentation grammar, not ASK's personal voice. A bullet, middle dot or dash is not chosen as an alternative join for the same role. Peer items and a record's peer fields keep their own separator; a colon or period that introduces a value or numbers a heading stays; a string that is only spoken, such as an accessible name or an announcement, keeps its natural wording, and visual punctuation is not injected into it; and source text, quotations, identifiers, technical syntax, ranges and prose punctuation are preserved. There is no global dash or bullet replacement. The separator selects no font, weight, size, tracking, color or component, and the text keeps its role. It applies to new and revised material.
+
+ASK's *personal* writing voice, terminalcore, is otherwise a separate convention: slash-slash in place of em dashes in running prose, plus for ampersand, double-angle arrows. That voice belongs to ASK's personal channels, **not** the design system. The design system speaks the calm sentence-case voice above, and the structural separator is the one element the two share.
 
 ### Voice examples
 
@@ -202,10 +204,10 @@ ASK's *personal* writing voice is a separate convention (terminalcore — slash-
 
 ### Color
 
-**Backgrounds — two diagonal gradients.** Both 45° (bottom-left → top-right); the lighter end is top-right in light, bottom-left in dark.
+**Backgrounds // two diagonal gradients.** Both 45° (bottom-left → top-right); the lighter end is top-right in light, bottom-left in dark.
 
-- **Light** — `linear-gradient(45deg, #D4C6E1 → #E2D3F0)`. Text is `#6A637F` (the approved dark-purple foreground).
-- **Dark** — `linear-gradient(45deg, #201D26 → #0A090C)`. Text is `#D4C6E1`.
+- **Light** // `linear-gradient(45deg, #D4C6E1 → #E2D3F0)`. Text is `#6A637F` (the approved dark-purple foreground).
+- **Dark** // `linear-gradient(45deg, #201D26 → #0A090C)`. Text is `#D4C6E1`.
 
 The gradient is **fixed to the viewport** (`background-attachment: fixed`), so scrolling reveals one continuous field.
 
@@ -235,7 +237,7 @@ Two consequences worth stating, because both are easy to undo by accident:
 This is a **foundation** property, not a pattern feature. A pattern or surface must not declare
 `background-color` or `color-scheme` on the root to correct its own edge.
 
-**Core set — the named values.** Everything fundamental is built from these:
+**Core set // the named values.** Everything fundamental is built from these:
 
 | Token | Hex | Use |
 | --- | --- | --- |
@@ -248,11 +250,11 @@ This is a **foundation** property, not a pattern feature. A pattern or surface m
 
 **High-contrast foreground — registered uses.** `--fg-high-contrast` binds `--ask-ink-light` as an **opt-in** foreground role, and this list is its registry: a use is approved only if it appears here. The role never rebinds the default gradient-surface foreground ramp — `--fg-1` / `--fg-2` / `--fg-3` stay as approved — it is never the default foreground, and it is never selected by font size. A bounded element or region may opt in where the ordinary roles do not carry enough contrast, and only by registration below. The list order is organizational, not chronological.
 
-1. `message-archive` pattern roles — one bounded use with two limbs:
+1. `message-archive` pattern roles // one bounded use with two limbs:
    - participant ink and search-highlight text on the sanctioned colored fills;
    - in the AA-compliant **light** theme, essential page chrome, the archive title, and the focus indicator, where the ordinary foreground roles fail. In dark those page-level roles return to the normal dark foreground role.
-2. `--fg-on-card` — text on the fixed `--surface-solid` role, which does not flip with the theme and so takes a foreground that does not either.
-3. `method-ASK` D11 `system-ASK` hero — in the light theme, the figure-local diagram text roles opt into `--fg-high-contrast` after measured normal-text failure against the lavender gradient. Dark remains on the ordinary diagram roles. This is a bounded consumer-local use; it does not rebind `--fg-1` / `--fg-2` / `--fg-3`, alter the shared diagram patterns, or authorize another surface.
+2. `--fg-on-card` // text on the fixed `--surface-solid` role, which does not flip with the theme and so takes a foreground that does not either.
+3. `method-ASK` D11 `system-ASK` hero // in the light theme, the figure-local diagram text roles opt into `--fg-high-contrast` after measured normal-text failure against the lavender gradient. Dark remains on the ordinary diagram roles. This is a bounded consumer-local use; it does not rebind `--fg-1` / `--fg-2` / `--fg-3`, alter the shared diagram patterns, or authorize another surface.
 
 A new use requires all three of the following before merge: measured evidence that the ordinary foreground roles are insufficient for the exact bounded element or region; explicit ASK source-of-intent authorization; and registration in this list. Density, legal, tabular, accessibility, or a comparable context may create the pressure that justifies *proposing* a use — none of them authorizes one on its own.
 
@@ -359,7 +361,7 @@ The **primary-label role** names a thing the system has — a surface, a route, 
 
 **Both `surface-shell` title forms take 1.16**: the plain title and the breadcrumbed title alike. Those two forms differ in landmark and in linkability — never in leading, and never in family. The breadcrumb's older pattern-local `1.35` was **retired**: it had been measured against an underline that was a border, and survived the change to a text decoration by inertia. Nothing carries it now.
 
-`.surface-title` in the `surface-shell` pattern is the **structural locator** and is mono. That covers **both** of the pattern's title forms — the plain `<h1>` and the breadcrumbed title — because both carry `.surface-title`. `.surface-panel-title` in `surface-panel.css` is the **panel primary label** and is Inter, and it stays Inter **whatever the label says** — a panel may name something technical or structural, and may carry `//` or any other terminalcore grammar, without changing family. Those two selectors are the canonical implementations; neither is conformed to the other, and the shared size, weight and tracking are what still make a primary label read as one object across surfaces. **No family is ever derived from a payload string.**
+`.surface-title` in the `surface-shell` pattern is the **structural locator** and is mono. That covers **both** of the pattern's title forms — the plain `<h1>` and the breadcrumbed title — because both carry `.surface-title`. `.surface-panel-title` in `surface-panel.css` is the **panel primary label** and is Inter, and it stays Inter **whatever the label says** — a panel may name something technical or structural, and may carry `//` or any other ASK punctuation, without changing family. Those two selectors are the canonical implementations; neither is conformed to the other, and the shared size, weight and tracking are what still make a primary label read as one object across surfaces. **No family is ever derived from a payload string.**
 
 Supporting copy under either stays on the Small Inter step, so that pair separates on size rather than weight. `colors_and_type.css` is unchanged by this role: its generic `.mono` utility remains for code, technical and tabular use, and the mono **structural-locator** exception is applied only through `.surface-title`. The compact action (`.surface-action`) is a **separate** mono exception, with its own metric and its own canonical selector — it is not an implementation of this role.
 
@@ -389,14 +391,14 @@ The **compact-action role** is the label on a small control — a chip, a route 
 ### Borders, shadows, transparency
 - **Hairlines** at `rgba(white, 0.45)` on light gradient and `rgba(lavender-ASK, 0.22)` on dark. Always 1px. No passage rail takes the hairline value: a quotation's rail is the emphasis violet, and a neutral outer rail on a set-apart passage is retired.
 - **Shadows** are long and soft. Three steps: `sm` (1px), `md` (24px), `lg` (60px). No hard drop shadows, no inner shadows, no colored shadows. Zero-blur interaction rings — the focus glow, the attention edge's 0.5px ring, and the inset 1px ring a borderless adopting object draws where a border would sit — are edge paint, not elevation shadows, and this line does not govern them. The content-emphasis bloom (`surface-treatments.css`) is emphasis paint, not elevation: a persistent, role-assigned accent whose dose is set per theme. This line does not govern it either.
-- **Glass cards** — the preferred container on the gradient field, selected on three separate axes. **Material:** the `--surface-glass` fill (white at 14% on light, lavender-ASK at 6% on dark) with a 1px `--line-1` hairline, plus a 20px backdrop blur where the material blurs — the page material (`.surface-material-page`) blurs; the panel material (`.surface-material-panel`, used by the disclosure) does not. **Attachment:** corner treatment only — `radius-lg (22)` on every corner of a free-standing surface (`.surface-attach-free`); a surface joined at its top or bottom edge rounds only its free corners (`.surface-attach-top`, `.surface-attach-bottom`); a surface joined along its full width rounds none (`.surface-attach-full-width`); a chip takes `radius-pill` (`.surface-attach-chip`). Attachment sets no fill, blur, edge or shadow. `surface-shell`'s navigation panel realizes the same corner rule pattern-locally and also drops the border on its joined edge; it does not consume these classes. **Elevation:** chosen per role — `.surface-panel` rests on `shadow-md`; a surface that is not a content panel is flush (`.surface-elevation-flush`) unless its role raises it (`.surface-elevation-raised`). `surface-panel.css` is the complete component selecting page material, free attachment and raised elevation, and it authors that recipe once: the matching axis classes share its declarations by selector grouping, while the linked panel's hover and focus rules and the composed emphasis shadow name `shadow-md` again, because a box-shadow list cannot compose across rules. The gradient shows through.
+- **Glass cards** // the preferred container on the gradient field, selected on three separate axes. **Material:** the `--surface-glass` fill (white at 14% on light, lavender-ASK at 6% on dark) with a 1px `--line-1` hairline, plus a 20px backdrop blur where the material blurs — the page material (`.surface-material-page`) blurs; the panel material (`.surface-material-panel`, used by the disclosure) does not. **Attachment:** corner treatment only — `radius-lg (22)` on every corner of a free-standing surface (`.surface-attach-free`); a surface joined at its top or bottom edge rounds only its free corners (`.surface-attach-top`, `.surface-attach-bottom`); a surface joined along its full width rounds none (`.surface-attach-full-width`); a chip takes `radius-pill` (`.surface-attach-chip`). Attachment sets no fill, blur, edge or shadow. `surface-shell`'s navigation panel realizes the same corner rule pattern-locally and also drops the border on its joined edge; it does not consume these classes. **Elevation:** chosen per role — `.surface-panel` rests on `shadow-md`; a surface that is not a content panel is flush (`.surface-elevation-flush`) unless its role raises it (`.surface-elevation-raised`). `surface-panel.css` is the complete component selecting page material, free attachment and raised elevation, and it authors that recipe once: the matching axis classes share its declarations by selector grouping, while the linked panel's hover and focus rules and the composed emphasis shadow name `shadow-md` again, because a box-shadow list cannot compose across rules. The gradient shows through.
 
 ### Containment
 
 Three questions, asked in order; the first two inform the third and do not decide it. **Semantic identity** — is this a distinct section, quotation, finding or decision? **Interaction identity** — does it need its own control, focus behavior or navigation target? **Presentation requirement** — does the reader need a separate visual plane, or only grouping, attribution, indentation, spacing or a local boundary? Only the third selects a treatment, from least to most: ordinary flow (the default) · subordinate grouping (`.doc-hierarchy` — spacing and one quiet rule; no wash, blur or shadow) · quotation anatomy (`.doc-quote` — the passage rail, body-sized text and attribution; not a container) · disclosure (`details.surface-disclosure` — a trigger and an expanded region) · separate surface (`.surface-separate` with one material, one attachment and one elevation — earned when the object overlays, scrolls independently, arrives from outside the reading flow, or is a whole unit set apart for emphasis or comparison). An addressable subsection stays in ordinary flow; an attributed quotation takes no surface.
 
 ### Hover, press, focus
-- **Hover** — opacity drops 1.0 → 0.92, and/or the border changes; a closed disclosure's trigger changes its foreground only; an open one already rests at the raised foreground. **No arbitrary new hue is introduced**: where a border changes color, it resolves either to something the element already carries or, for the shaped populations below, to the palette's emphasis magenta. The treatment is **role-driven**, and the roles genuinely differ — do not conform one to another:
+- **Hover** // opacity drops 1.0 → 0.92, and/or the border changes; a closed disclosure's trigger changes its foreground only; an open one already rests at the raised foreground. **No arbitrary new hue is introduced**: where a border changes color, it resolves either to something the element already carries or, for the shaped populations below, to the palette's emphasis magenta. The treatment is **role-driven**, and the roles genuinely differ — do not conform one to another:
 
   | role | hover treatment |
   | --- | --- |
@@ -415,8 +417,8 @@ Three questions, asked in order; the first two inform the third and do not decid
   **Hover and focus share this paint and nothing else.** They remain independent states answering different questions, so a shaped object that is hovered and focused shows one edge rather than two competing indicators, and the 0.92 opacity drop stays hover's alone. Two objects, one hovered and one focused, show the same edge; only hover's opacity drop tells them apart. An adopting object takes no drop from this rule, so its own hover, where it has one, is what tells its states apart.
 
   **The list is closed.** Compact actions, full-panel links and objects that adopt the edge share the attention treatment — one contract: compact actions and adopting objects share one set of declarations in `surface-action.css`, and the full-panel link keeps its own in `surface-panel.css`, composed with its resting shadow — and generic anchors alone keep the foreground-bound one; a future bordered control inherits neither by being interactive, and joins only by being named here or by adopting `.surface-attention-edge`. The class is opt-in and never inferred. It gives the edge alone, so an adopting object without a hover behavior of its own looks the same hovered as focused. It removes the browser's focus ring, so an object adopts it only with an anatomy that paints: its own border, the borderless ring, or a marked shape. The borderless ring paints beneath the object's content, so it suits a control whose content stays clear of its edge. A consumer rule that sets the object's border color, or its marked shape's stroke, on hover or focus, later in source or at a higher specificity, overrides the edge and is retired on adoption. `--surface-attention-edge-scale` is a geometric input, not a token: the effective uniform scale from the marked shape's own units to CSS pixels on the page, a plain positive number, 1 where nothing declares it, supplied by whatever scales the figure. Only the SVG attention stroke reads it. An adopting object with a resting or hover shadow restates it with the ring in its own rules, as the full-panel link composes with its own. The edge reaches only the page's own document: a control inside an embedded document from another origin, such as a video player's own buttons, keeps that document's focus indicator. Inert panels do not hover. A disclosure trigger joins neither shared treatment; its rows in the hover and focus tables are its own.
-- **Press** — `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. The fragmenting population is exactly `.surface-text-link` and breadcrumb links (`.surface-title a`); they press without geometry, hover raising the underline to full opacity and holding element opacity at 1, so on them the 0.92 drop reads as press rather than as hover. The identity mark is a box and keeps the scale; so do footer destinations, through `surface-action.css` rather than through a rule of the shell's. `patterns/surface-shell/README.md` carries the state model. **Reduced motion.** Under `prefers-reduced-motion: reduce`, compact actions and full-panel links drop their transitions and their press scale; their hover and focus paint still applies, instantly. The shell's own reduced-motion rules stay the shell's.
-- **Focus** — never the browser default. Across the live-surface modules and the shell there are **four anatomies by role**, which are not interchangeable; artifact patterns such as `message-archive` own pattern-local indicators:
+- **Press** // `transform: scale(0.97)`, 120ms ease-out. No darker fill. **Exception: inline text that wraps.** A scale press needs a transformable box, and giving one to a wrapping link changes how its text breaks — a segment wider than its column stops fragmenting and swells to the full column. The fragmenting population is exactly `.surface-text-link` and breadcrumb links (`.surface-title a`); they press without geometry, hover raising the underline to full opacity and holding element opacity at 1, so on them the 0.92 drop reads as press rather than as hover. The identity mark is a box and keeps the scale; so do footer destinations, through `surface-action.css` rather than through a rule of the shell's. `patterns/surface-shell/README.md` carries the state model. **Reduced motion.** Under `prefers-reduced-motion: reduce`, compact actions and full-panel links drop their transitions and their press scale; their hover and focus paint still applies, instantly. The shell's own reduced-motion rules stay the shell's.
+- **Focus** // never the browser default. Across the live-surface modules and the shell there are **four anatomies by role**, which are not interchangeable; artifact patterns such as `message-archive` own pattern-local indicators:
 
   | role | focus indicator |
   | --- | --- |

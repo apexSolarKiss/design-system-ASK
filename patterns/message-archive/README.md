@@ -1,6 +1,6 @@
 # Pattern // message archive
 
-**Class B — sealed interactive archive.**
+**Class B // sealed interactive archive.**
 
 A reusable scaffold for a conversation archive: one self-contained `.html` per archive **timeline**, rendered from a source-neutral normalized model, sealed for audit, and readable offline with client-side search and year navigation.
 
@@ -41,13 +41,13 @@ reactions[]
   type · actor_id · target_message_id · reacted_at   // reacted_at optional where unavailable
 ```
 
-## Reaction fidelity — two valid source representations
+## Reaction fidelity // two valid source representations
 
 `reactions[]` is a **destination, not a mandate.** Sources represent reactions in more than one way, and forcing every reaction-like record into that array can destroy source truth rather than normalize it.
 
-**Structured targeted reaction** — manifest mode `structured-targeted`. Use `reactions[]` only where the source carries a **deterministic target relationship** — enough to populate `target_message_id` without speculative association.
+**Structured targeted reaction** // manifest mode `structured-targeted`. Use `reactions[]` only where the source carries a **deterministic target relationship** — enough to populate `target_message_id` without speculative association.
 
-**Source-native reaction message** — manifest mode `message-records`. Where the source itself exports a reaction as an **ordinary message record**, with its own sender and timestamp, and supplies no deterministic target relationship, preserve it 1:1 in `messages[]`:
+**Source-native reaction message** // manifest mode `message-records`. Where the source itself exports a reaction as an **ordinary message record**, with its own sender and timestamp, and supplies no deterministic target relationship, preserve it 1:1 in `messages[]`:
 
 - keep its source provenance and its place in the ordinary message count;
 - **do not infer a target** from quoted text, proximity, matching prose, or any other heuristic evidence;
@@ -58,7 +58,7 @@ A source that genuinely contains both representations is `mixed`, and mixed is v
 
 The distinction the manifest must preserve is between a **relationship the source recorded** and one the **consumer inferred**. An inferred association presented as source truth is a fidelity failure even when the guess is good — and a heuristic that resolves most records still strands the remainder in a different representation from their siblings.
 
-## Attachment fidelity — four states, none silent
+## Attachment fidelity // four states, none silent
 
 ```text
 embedded            bytes inlined into the sealed file
@@ -92,7 +92,7 @@ Color answers *which person*. It never encodes urgency, evidence, status, approv
 
 The pattern-local values are **not foundation tokens**. They do not enter the general palette, are not available as general-purpose colors, and authorize no use outside this pattern. Where a role reuses an existing canonical token it does so **by reference**, without redefining it. The three raw emphasis accents are unchanged and remain sparing.
 
-## Supported capacity — seven participants
+## Supported capacity // seven participants
 
 ```text
 Supported capacity: seven distinct participants total, including the author.
@@ -126,11 +126,11 @@ Both share one DOM, one geometry, one script, one theme mechanism, one attachmen
 
 | Role | `default-ASK` | `AA-compliant` |
 |---|---|---|
-| author — light | `var(--ask-ui-accent-1)` `#8b79a2` | `#7f6b99` |
+| author // light | `var(--ask-ui-accent-1)` `#8b79a2` | `#7f6b99` |
 | participant c | `#c44fc4` | `#c95fc9` |
 | participant d | `#a56bd4` | `#a870d6` |
 
-Shared by both: author — dark `#6e5c86` · participant a `var(--ask-ui-accent-2)` `#ae87c2` · participant b `var(--ask-surface)` `#bfb3d4` · participant e `#569dbd` · participant ink `var(--fg-high-contrast)` `#201d26`.
+Shared by both: author // dark `#6e5c86` · participant a `var(--ask-ui-accent-2)` `#ae87c2` · participant b `var(--ask-surface)` `#bfb3d4` · participant e `#569dbd` · participant ink `var(--fg-high-contrast)` `#201d26`.
 
 `default-ASK` is the preferred treatment — **not** a defect, not a legacy state, not a version awaiting correction. Its lower-contrast metadata rendering is intentional and must not be pulled toward AA.
 
@@ -142,16 +142,16 @@ It claims that the **canonical pattern's built-in visual roles, controls, defaul
 
 It does **not** claim that every downstream archive is compliant regardless of consumer-supplied content, Tier 3 overlays, custom media, or modification. **Final rendered archives require the consumer's own validation** after content and overlays are applied.
 
-## Foreground is inherited — no global rebind
+## Foreground is inherited // no global rebind
 
 The template adds no global `--fg-*` rebind. Every foreground is role-scoped and applied by class, so none can leak into inherited prose. `#201d26` reaches this pattern only as the foundation's **opt-in high-contrast role** (`--fg-high-contrast`), and it does so through two distinct limbs — not one:
 
-- **participant ink** (`--ma-ink`) — bubble text on the sanctioned colored fills, and the search-highlight text that rides those same fills;
-- **AA-compliant page-level roles, light theme only** — `--ma-page-aa`, which carries essential page chrome and the archive title, and `--ma-focus`, the AA focus indicator, where the ordinary foreground roles do not clear the applicable threshold.
+- **participant ink** (`--ma-ink`) // bubble text on the sanctioned colored fills, and the search-highlight text that rides those same fills;
+- **AA-compliant page-level roles, light theme only** // `--ma-page-aa`, which carries essential page chrome and the archive title, and `--ma-focus`, the AA focus indicator, where the ordinary foreground roles do not clear the applicable threshold.
 
 In **dark**, `--ma-page-aa` and `--ma-focus` resolve to `var(--fg-1)`, the normal dark foreground role: the high-contrast role is a light-theme measure here, not a permanent substitution. Both limbs are registered together as one bounded pattern use in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**. The role does not become the default foreground anywhere.
 
-## Source data is untrusted — escaping contract
+## Source data is untrusted // escaping contract
 
 Message text, participant labels, attachment filenames, channel labels, reaction values, source pointers, and the precomputed `data-s` search string are all **source-derived data emitted into HTML**. A malformed or markup-bearing message must not be able to corrupt the archive or become executable content.
 
@@ -206,7 +206,7 @@ The editable template **links** `./_dsa-tokens/colors_and_type.css` as a build i
 
 Two sealing modes are valid. **Declare which one the artifact used in its manifest.** The mechanical mode can be inspected in the delivered bytes; input-file provenance, recorded hashes, and whether a fidelity downgrade was deliberate cannot be established from those bytes alone.
 
-### `embedded-data-uri` — preferred, full fidelity
+### `embedded-data-uri` // preferred, full fidelity
 
 For a single delivered HTML:
 
@@ -218,7 +218,7 @@ For a single delivered HTML:
 
 Bind each embedded payload to the **copied mirror file and its recorded hash**. Base64-encoding an arbitrary local font that merely shares a name is not this mode.
 
-### `fallback-stacks` — permitted, documented downgrade
+### `fallback-stacks` // permitted, documented downgrade
 
 Where the consumer deliberately chooses not to embed font bytes:
 

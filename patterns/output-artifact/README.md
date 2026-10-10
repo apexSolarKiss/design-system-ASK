@@ -8,10 +8,10 @@ This is a **Class B** scaffold (project-output artifact templates), distinct fro
 
 A small consumption pattern. Four files:
 
-- `README.md` — this file
-- `static-output-artifact.html` — the template (`output-artifact v3`), on the document register
-- `MANIFEST.md.example` — the per-artifact provenance record (records the upstream SHA + per-file sha256)
-- `hard-fail-checklist.md` — the fails-inheritance test list
+- `README.md` // this file
+- `static-output-artifact.html` // the template (`output-artifact v3`), on the document register
+- `MANIFEST.md.example` // the per-artifact provenance record (records the upstream SHA + per-file sha256)
+- `hard-fail-checklist.md` // the fails-inheritance test list
 
 The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific template. It is a starting point for downstream artifacts that consume design-system-ASK foundations. The *renderer* that seals an artifact for delivery (see "Sealed output") is the **consuming project's** tooling and is not shipped here.
 
@@ -46,11 +46,11 @@ Adoption is per table and stays the consuming project's decision. A table that m
 
 Run the register's rendered check on a delivered artifact — `node tools/check-role-conformance.mjs --url <artifact>`, from a design-system-ASK checkout at the commit the artifact's `MANIFEST.md` records. It proves that every element carrying a role computes to that role, and it reports a page with no governed text as vacuous. It does not fail text that carries no role: it lists that text as `unmapped`, and the hard-fail checklist requires that list to be empty.
 
-## Foreground is inherited — no local rebind
+## Foreground is inherited // no local rebind
 
 The foundation (`colors_and_type.css`) resolves the `--fg-*` ramp in light and dark, and the register's roles bind text to it. Since the foundation light-mode foreground ramp landed (the approved dark-purple foreground — `#6A637F` — on the light lavender field, not near-black ink), **prose reads correctly in both modes with no local foreground CSS**. This template therefore takes its text foreground from the register's roles on the foundation `--fg-*` and **does not** rebind `--fg-*` / `--line-*`. Do not reintroduce a local `--fg` rebind — it is no longer needed and would fork the foreground from the foundation.
 
-## The one sanctioned Class B override — line intensity
+## The one sanctioned Class B override // line intensity
 
 Report rules, borders, table lines, and dividers read too faint at the foundation hairline (white `.45` / `.22`) on the light lavender field. The template carries a **Class B-scoped** token — `--artifact-line` / `--artifact-line-soft` — that uses **stronger white lines in light mode** and inherits the foundation lavender lines in dark mode. It is applied to the artifact's **own geometry** (the metadata strip, the rules on the cells of a table that does not adopt the document table composition, the provenance footer, `hr`) — never to a table the composition draws, a text foreground, a passage rail or the disclosure's panel — so it cannot affect prose color or a register treatment. An adopted table takes the composition's own approved line treatment instead, on the foundation lines: `--line-2` under each row and `--line-1` under the header row. This is the single legitimate token override for the class.
 
@@ -97,7 +97,7 @@ A rendered output artifact is a **frozen audit object** once it is reviewed, acc
 - A reviewed, accepted, or shared artifact is frozen. Regenerating it produces a **new** artifact, not an edit of the old one.
 - Do **not** overwrite or delete a prior reviewed artifact as "stale". Superseding means **history, not deletion** — prior reviewed renders stay retained.
 
-**Naming — consumer-owned.** The audit rule above is fixed; the filename shape is not. The scaffold prescribes no single default — choose the flavor that matches the artifact's rhythm:
+**Naming // consumer-owned.** The audit rule above is fixed; the filename shape is not. The scaffold prescribes no single default — choose the flavor that matches the artifact's rhythm:
 
 - **Date-driven** outputs: `YYYY-MM-DD_<artifact-name>.html`
 - **Iterative / revision-driven** outputs: `<artifact-name>_v<N>.html`

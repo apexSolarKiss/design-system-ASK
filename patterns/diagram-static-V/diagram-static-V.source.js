@@ -19,7 +19,7 @@
 window.TREE_DIAGRAM = {
   kind: 'root',
   label: '[project-root]',
-  note: '[short root context · what this axis depicts]',
+  note: '[short root context // what this axis depicts]',
   children: [
     {
       kind: 'section', label: 'first axis',

@@ -670,8 +670,10 @@ node tests/radial-stack.mjs              # add --json for the measurements
 ```
 
 ```text
-U  the inspector: views, preview, references and the way back, Escape, show-all, relation
-   direction and flags, locators, text never markup, malformed sections, a record arrival,
+U  the inspector: views, the default kind line and an adapter's own kept as given (its
+   punctuation, and an empty one drawing none), preview, references and the way back, Escape,
+   show-all, relation direction and flags, locators, text never markup, malformed sections,
+   a record arrival,
    refits at the Fit only, the compact sheet and its exclusivity, the Fit edges it declares by
    state (the collapsed pill top with the right as its option, the open sheet an overlay that
    reserves nothing, the wide panel right), a selection opening the sheet with no refit (also
@@ -766,7 +768,9 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    reader's (the resize makes its camera again), and the stage size remembered only as
    the map mounts with every view treated as the reader's (the bar filling in moves an arrived
    node under the sheet); on the fixture, the camera kept for the wide panel too (its toggle then
-   refits away from the Fit); a control that names its reason fails for it
+   refits away from the Fit); the default kind line planted with the dash it replaced, and an
+   adapter's kind line planted to be replaced by the default; a control that names its reason
+   fails for it
 ```
 
 ## radial-export-fixture.html + radial-export.mjs
