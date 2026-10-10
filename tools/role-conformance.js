@@ -2,7 +2,8 @@
 
    A browser-side check with no dependencies. Load it into a rendered page
    (tools/check-role-conformance.mjs injects it; tests/role-conformance-
-   fixture.html loads it with a <script> tag) and call
+   fixture.html and tests/review-semantics-fixture.html load it with a
+   <script> tag) and call
 
      ASKRoleConformance.check({ scope, profiles })
         scope     an element or a selector; the whole document when omitted
@@ -15,7 +16,7 @@
                   invalid one exempts nothing.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped }. Each finding carries a rule (C0–C11) and a reason code, such
+   unmapped }. Each finding carries a rule (C0–C12) and a reason code, such
    as C1.size or C4.underline, so a fixture can require the exact reason.
 
    check() reads the page at rest. The interaction states (C9) need real
@@ -128,6 +129,61 @@
                         declare none, and nothing here infers a group from
                         blank lines, capitals or spacing
 
+     C12 annotations    (Review Semantics) applies only where the
+                        annotation composition's classes appear: .doc-mark,
+                        mark.doc-passage-mark, .doc-annotation-note,
+                        .doc-annotation-item, .doc-annotations and
+                        .doc-annotation-list. A data-review, data-evidence or
+                        data-state attribute alone opts nothing in, and an
+                        Evidence State or Spectral State presentation authored
+                        outside the composition is its owner's, not C12's. Each
+                        finding names its basis: syntax (classes, attributes,
+                        vocabulary) or computed (what the page computes for
+                        borders, background, the ::before marker and the
+                        mark's box). C12 never judges whether an item's role is
+                        the right one. A transparent role token is a finding;
+                        see LIMITS for what the token comparison does not
+                        establish.
+                        Syntax: every .doc-mark carries the operative label
+                        role, so C1 holds its words (C12.role); it carries
+                        exactly one of data-review, data-evidence or data-state
+                        (C12.facet), a value in that facet's vocabulary
+                        (C12.vocab) and rendered words (C12.label). A facet
+                        attribute sits on a mark, a passage mark or a
+                        not-yet-testable note, never on the composition's rows,
+                        items, lists or other notes, and no composition class
+                        combines with a content role, a rail, a panel, a
+                        compact action or an emphasis chip (C12.attach).
+                        Computed: a mark is a rendered inline-flex box; a review
+                        mark draws a 1px solid outline on all four sides with
+                        all four corners at --radius-sm; an evidence or state
+                        mark draws no outline and no rail, and its ::before
+                        marker is generated, displayed as a box, visible and
+                        10px square, every corner round (at least 5px) for
+                        evidence and square (at most the registered 2px) for
+                        state, a percentage corner resolved against the box
+                        (C12.geometry); each is drawn in its role's token as
+                        it resolves at the mark, never transparent
+                        (C12.color). A not-yet-testable mark keeps its hollow
+                        2px dashed marker and, outside a not-yet-testable note,
+                        its 2px dashed rail, in that role's value (C12.nyt). A
+                        passage mark names a pending judgment, proposed or open
+                        (C12.vocab), sits in body text, keeps the text's color,
+                        draws no underline and no border, shows its tint (the
+                        role's value at the passage dose, the registered 18%
+                        or 26%) and names, among its aria-describedby ids, the
+                        .doc-annotation-note that records it (C12.passage). A
+                        not-yet-testable note draws that role's 2px dashed rail
+                        and never takes .doc-hierarchy; any other note composes
+                        the hierarchy rail; no note sits inside a framing,
+                        synthesis or emphasis panel (C12.note). A row, item or
+                        list draws no rail, border or wash (C12.rail).
+                        Not checked here: rails or underlines outside the
+                        composition, a content passage's own rail included,
+                        and paint that computed borders, background and the
+                        marker's box do not show (border-image, outline,
+                        box-shadow, background-image, transforms, clip-path)
+
    STATUS
      pass      no finding, and at least one governed element was checked
      fail      one or more findings
@@ -144,6 +200,10 @@
      when the runner drives them.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
+   - C12 compares a mark with its role token as it resolves at the mark. It
+     does not independently establish that a local rebinding of that token is
+     authorized: adopted role bindings stay governed by review-semantics.md,
+     and a local exception requires the applicable explicit authorization.
    - C0 reads tokens at the scope root and at governed elements. A region that
      redefines a token but holds no governed text is outside this check at
      page scope; scope the check to it to test it.
@@ -701,6 +761,109 @@
         }
         before = lines[lines.length - 1];
       }
+    }
+
+    /* C12 annotations (Review Semantics): applies where the annotation composition's
+       classes appear. Syntax and computed findings are named as such. */
+    const VOCAB = { review: ['proposed', 'open', 'accepted', 'declined', 'none'],
+      evidence: ['supported', 'partially-supported', 'unresolved', 'weakened', 'not-yet-testable'],
+      state: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed', 'neutral'] };
+    const FACETS = Object.keys(VOCAB);
+    const COMPOSITION = '.doc-mark, mark.doc-passage-mark, .doc-annotation-note, .doc-annotation-item, .doc-annotations, .doc-annotation-list';
+    const NOTE_NYT = '.doc-annotation-note[data-evidence="not-yet-testable"]';
+    const clear = (color) => /^transparent$|rgba\(\s*[\d.]+,\s*[\d.]+,\s*[\d.]+,\s*0\s*\)|\/\s*0(\.0+)?\s*\)$/.test(color);
+    const drawn = (c, side) => c['border' + side + 'Style'] !== 'none' && c['border' + side + 'Style'] !== 'hidden' && px(c['border' + side + 'Width']) > 0 && !clear(c['border' + side + 'Color']);
+    const CORNERS = ['TopLeft', 'TopRight', 'BottomRight', 'BottomLeft'];
+    const corners = (c) => CORNERS.map((k) => c['border' + k + 'Radius']);
+    /* A corner in px; a percentage resolves against the box's shorter side. */
+    const radius = (r, w, h) => { const v = String(r).trim().split(/\s+/)[0]; return v.endsWith('%') ? parseFloat(v) / 100 * Math.min(w, h) : px(v); };
+    const shown = (c) => c.display !== 'none' && c.visibility === 'visible' && parseFloat(c.opacity) > 0;
+    /* A mark draws its outline and its marker only as a rendered flex box: an
+       inline ::before is not blockified and draws nothing at any width. */
+    const boxed = (el, c) => el.getClientRects().length > 0 && /^(inline-)?flex$/.test(c.display);
+    const PANEL = '.surface-separate.surface-material-panel, .surface-emphasis';
+    const syn = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'syntax', ...detail });
+    const cmp = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'computed', ...detail });
+    for (const m of all('.doc-mark')) {
+      counts['doc-mark'] = (counts['doc-mark'] || 0) + 1;
+      if (!m.classList.contains('doc-label')) syn('C12', 'role', m, { message: 'a mark\'s words are the operative label: .doc-mark carries .doc-label' });
+      const facets = FACETS.filter((f) => m.hasAttribute('data-' + f));
+      if (facets.length !== 1) { syn('C12', 'facet', m, { message: 'a mark carries exactly one of data-review, data-evidence or data-state', facets }); continue; }
+      const f = facets[0];
+      const v = m.getAttribute('data-' + f);
+      if (!VOCAB[f].includes(v)) { syn('C12', 'vocab', m, { message: 'a ' + f + ' mark names a role outside its vocabulary', value: v }); continue; }
+      const words = typeof m.innerText === 'string' ? m.innerText : m.textContent;
+      if (!VISIBLE.test(words)) syn('C12', 'label', m, { message: 'a mark states its role in rendered words; color never carries it alone' });
+      const c = getComputedStyle(m);
+      const b = getComputedStyle(m, '::before');
+      const want = probe(m, `border-left:1px solid var(--${f}-${v})`).border;
+      if (!boxed(m, c)) { cmp('C12', 'geometry', m, { message: 'a mark is a rendered inline-flex box: its outline and its marker draw only there', display: c.display }); continue; }
+      const box = m.getBoundingClientRect();
+      if (f === 'review') {
+        const sm = px(tokenAt(document.documentElement, '--radius-sm') || '0');
+        const outline = ['Top', 'Right', 'Bottom', 'Left'].every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - 1) <= TOL);
+        if (!outline) cmp('C12', 'geometry', m, { message: 'a review mark draws a 1px solid outline on all four sides' });
+        else if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - sm) > TOL)) cmp('C12', 'geometry', m, { message: 'a review mark takes --radius-sm on all four corners, this composition\'s choice', got: corners(c) });
+        else if (['Top', 'Right', 'Bottom', 'Left'].some((s) => c['border' + s + 'Color'] !== want || clear(c['border' + s + 'Color']))) cmp('C12', 'color', m, { message: 'a review mark\'s outline is its role token, and not transparent', expected: want, got: c.borderTopColor });
+      } else {
+        const nyt = f === 'evidence' && v === 'not-yet-testable';
+        if (drawn(c, 'Top') || drawn(c, 'Right') || drawn(c, 'Bottom') || (!nyt && drawn(c, 'Left'))) cmp('C12', 'geometry', m, { message: 'an ' + f + ' mark draws no outline and no rail: its geometry is its marker' });
+        const generated = b.content !== 'none' && b.content !== 'normal';
+        const r = corners(b).map((x) => radius(x, 10, 10));
+        if (!generated || !shown(b) || b.display === 'inline' || Math.abs(px(b.width) - 10) > TOL || Math.abs(px(b.height) - 10) > TOL) {
+          cmp('C12', 'geometry', m, { message: 'an ' + f + ' mark draws its 10px marker', content: b.content, display: b.display, visibility: b.visibility, opacity: b.opacity, width: b.width, height: b.height });
+        } else if (f === 'evidence' ? !r.every((x) => x >= 5 - TOL) : !r.every((x) => x <= 2 + TOL)) {
+          cmp('C12', 'geometry', m, { message: f === 'evidence' ? 'an evidence marker is round: every corner at least half its 10px side' : 'a state marker is square: every corner at most the registered 2px', got: corners(b) });
+        } else if (nyt) {
+          const ring = ['Top', 'Right', 'Bottom', 'Left'].every((s) => b['border' + s + 'Style'] === 'dashed' && Math.abs(px(b['border' + s + 'Width']) - 2) <= TOL && b['border' + s + 'Color'] === want && !clear(want));
+          if (!ring || !clear(b.backgroundColor)) cmp('C12', 'nyt', m, { message: 'not yet testable keeps its hollow 2px dashed marker in its own value' });
+        } else if (b.backgroundColor !== want || clear(b.backgroundColor)) cmp('C12', 'color', m, { message: 'an ' + f + ' mark\'s marker is its role token, and not transparent', expected: want, got: b.backgroundColor });
+        if (nyt && !m.closest(NOTE_NYT) && !(c.borderLeftStyle === 'dashed' && Math.abs(px(c.borderLeftWidth) - 2) <= TOL && c.borderLeftColor === want && !clear(want))) {
+          cmp('C12', 'nyt', m, { message: 'not yet testable keeps its 2px dashed rail outside a not-yet-testable note', style: c.borderLeftStyle, width: c.borderLeftWidth });
+        }
+      }
+    }
+    for (const el of all('[data-review], [data-evidence], [data-state]')) {
+      if (!el.matches(COMPOSITION) || el.matches('.doc-mark, mark.doc-passage-mark') || el.matches(NOTE_NYT)) continue;
+      syn('C12', 'attach', el, { message: 'a facet attribute sits on a mark, a passage mark or a not-yet-testable note, not on a row, item, list or other note' });
+    }
+    const CONTENT_ROLES = ROLE_CLASSES.filter((r) => r !== 'doc-label').map((r) => '.' + r).join(', ');
+    for (const el of all(COMPOSITION)) {
+      if (el.matches(RAILED + ', ' + PANEL + ', .surface-separate, .surface-action, .surface-emphasis-chip, ' + CONTENT_ROLES)) syn('C12', 'attach', el, { message: 'an annotation class never combines with a content role, a rail, a panel, a compact action or an emphasis chip' });
+    }
+    for (const pm of all('mark.doc-passage-mark')) {
+      counts['doc-passage-mark'] = (counts['doc-passage-mark'] || 0) + 1;
+      const v = pm.getAttribute('data-review');
+      if (!['proposed', 'open'].includes(v || '')) { syn('C12', 'vocab', pm, { message: 'a passage mark names a pending judgment: proposed or open', value: v }); continue; }
+      const host = pm.parentElement && pm.parentElement.closest(BODY_ROLES + ', .doc-quote > p, .doc-table-cell');
+      const ids = (pm.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+      const note = ids.map((id) => document.getElementById(id)).find((n) => n && n.classList.contains('doc-annotation-note'));
+      const dose = tokenAt(pm, '--review-passage-dose');
+      const c = getComputedStyle(pm);
+      const tint = probe(pm, `border-left:1px solid color-mix(in srgb, var(--review-${v}) var(--review-passage-dose, 0%), transparent)`).border;
+      if (!host) syn('C12', 'passage', pm, { message: 'a passage mark sits inside body text' });
+      else if (c.color !== getComputedStyle(host).color) cmp('C12', 'passage', pm, { message: 'a passage mark keeps the text\'s color', expected: getComputedStyle(host).color, got: c.color });
+      if (c.textDecorationLine !== 'none') cmp('C12', 'passage', pm, { message: 'a passage mark draws no underline: in this composition the scope cue is the tint' });
+      if (drawn(c, 'Left') || drawn(c, 'Right') || drawn(c, 'Top') || drawn(c, 'Bottom')) cmp('C12', 'passage', pm, { message: 'a passage mark draws no rail or border' });
+      if (clear(c.backgroundColor) || c.backgroundColor !== tint) cmp('C12', 'passage', pm, { message: 'a passage mark shows its tint: its role\'s value at the passage dose', expected: tint, got: c.backgroundColor });
+      else if (!['18%', '26%'].includes(dose)) cmp('C12', 'passage', pm, { message: 'the passage dose is the registered 18% light or 26% dark', got: dose });
+      if (!note) syn('C12', 'passage', pm, { message: 'a passage mark names its .doc-annotation-note through aria-describedby' });
+    }
+    for (const n of all('.doc-annotation-note')) {
+      counts['doc-annotation-note'] = (counts['doc-annotation-note'] || 0) + 1;
+      const c = getComputedStyle(n);
+      const nytValue = probe(n, 'border-left:2px dashed var(--evidence-not-yet-testable, transparent)').border;
+      if (n.matches(NOTE_NYT)) {
+        /* Not yet testable's rail is checked first: the hierarchy rail never stands in for it. */
+        if (n.matches('.doc-hierarchy')) syn('C12', 'note', n, { message: 'a not-yet-testable note takes that role\'s dashed rail, never the hierarchy rail' });
+        if (!(c.borderLeftStyle === 'dashed' && Math.abs(px(c.borderLeftWidth) - 2) <= TOL && c.borderLeftColor === nytValue && !clear(nytValue))) cmp('C12', 'note', n, { message: 'a not-yet-testable note draws that role\'s 2px dashed rail', style: c.borderLeftStyle, width: c.borderLeftWidth });
+      } else if (!n.matches('.doc-hierarchy')) cmp('C12', 'note', n, { message: 'a note composes the hierarchy rail, or is a not-yet-testable evidence note on that role\'s 2px dashed rail' });
+      if (n.parentElement && n.parentElement.closest(PANEL)) syn('C12', 'note', n, { message: 'a note never sits inside a panel: it follows the panel' });
+    }
+    const inRows = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-list > dt, .doc-annotation-list > dd';
+    for (const el of all(inRows)) {
+      const c = getComputedStyle(el);
+      if (['Top', 'Right', 'Bottom', 'Left'].some((s) => drawn(c, s)) || !clear(c.backgroundColor)) cmp('C12', 'rail', el, { message: 'a row, item or list draws no rail, border or wash: the composition\'s one rail is not yet testable\'s, on a note or a mark', border: c.borderLeftStyle + ' ' + c.borderLeftWidth, background: c.backgroundColor });
     }
 
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : 'pass';

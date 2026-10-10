@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review Semantics // key</title>
+<meta name="description" content="Visual key for Review Semantics: the Review State profile under the Spectral State family and the document annotation composition. Reads review-semantics.css live.">
+<!-- Visual key for Review Semantics (review-semantics.css + review-semantics.md).
+     Reads the foundation, the compact-action module, the four register modules, the
+     two state modules and this module live, in the contract's load order; theme-aware
+     (light default · dark via prefers-color-scheme / [data-theme="dark"]). Open
+     directly. The content is schematic. -->
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="surface-action.css">
+<link rel="stylesheet" href="surface-panel.css">
+<link rel="stylesheet" href="surface-text-link.css">
+<link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-treatments.css">
+<link rel="stylesheet" href="spectral-state.css">
+<link rel="stylesheet" href="evidence-state.css">
+<link rel="stylesheet" href="review-semantics.css">
+<style>
+  /* Page ground. Not background-attachment: fixed — on a page taller than the
+     viewport a fixed gradient covers only the first screen. */
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { box-sizing: border-box; max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  @media (max-width: 640px) { .page { padding: var(--space-6) var(--space-4); } }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <header class="doc-titled">
+    <p class="doc-label">v0.1 // profile under the Spectral State family · opt-in document composition</p>
+    <h1 class="doc-title">Review Semantics</h1>
+    <p class="doc-lede">One review vocabulary, composed with the document register, Evidence State and Spectral State. Each of five questions keeps its own answer: what a passage is doing, where it came from, what the evidence supports, what judgment is asked or made, and what condition an architectural element is in.</p>
+  </header>
+
+  <section class="doc-section" aria-labelledby="questions-title">
+    <h2 class="doc-section-title" id="questions-title">Five questions, five owners</h2>
+    <div class="doc-table-scroll" role="region" aria-label="The five questions" tabindex="0">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label" scope="col">Question</th><th class="doc-label" scope="col">Answered by</th><th class="doc-label" scope="col">It cannot establish</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-body">What is this passage doing?</td><td class="doc-body">Document role: prose, quotation, callout, framing, synthesis</td><td class="doc-body">Whether it is true, accepted or in force</td></tr>
+          <tr><td class="doc-body">Where did it come from?</td><td class="doc-body">Basis: a keyed value, no color</td><td class="doc-body">Whether it is supported or accepted</td></tr>
+          <tr><td class="doc-body">What does the evidence support?</td><td class="doc-body">Evidence State: a dot</td><td class="doc-body">Acceptance, permission or maturity</td></tr>
+          <tr><td class="doc-body">What judgment is asked or made, about what, by whom, at which scope?</td><td class="doc-body">Review State: an outline</td><td class="doc-body">A new origin, new evidence or authority beyond the decision</td></tr>
+          <tr><td class="doc-body">What condition is this architectural element in?</td><td class="doc-body">Spectral State: a square</td><td class="doc-body">That every claim or use around the element is accepted</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="review-title">
+    <h2 class="doc-section-title" id="review-title">Review State // the five roles</h2>
+    <div class="doc-table-scroll" role="region" aria-label="Review marks" tabindex="0">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label" scope="col">Mark</th><th class="doc-label" scope="col">Meaning</th><th class="doc-label" scope="col">Value and relationship</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></td><td class="doc-body">A candidate statement or change, awaiting a decision. It says nothing about whether the content is wrong or weakly supported.</td><td class="doc-body">Spectral proposed, by reference: a candidate on another axis</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span></td><td class="doc-body">The same role, used only when someone has asked for existing words to change. It shares paint with Proposed, not event identity.</td><td class="doc-body">As above</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="open">Open question</span></td><td class="doc-body">A named matter held until someone answers it.</td><td class="doc-body">Spectral held, by reference: an element deliberately held open, on another axis. Evidence unresolved shares the value.</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></td><td class="doc-body">A recorded decision to adopt or to permit, naming what, who and the scope. A narrow scope is a whole decision, not a partial one.</td><td class="doc-body">Spectral earned, by reference: green</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="declined">Declined</span></td><td class="doc-body">A recorded decision not to adopt or not to permit, naming what, who and the scope. It does not say the statement is false.</td><td class="doc-body">Spectral deflated, by reference: red</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label" data-review="none">No decision recorded</span></td><td class="doc-body">Shown only where the absence matters. It is not a refusal or an acceptance, and not a hold: a hold is an open question.</td><td class="doc-body">The faintest neutral</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="other-title">
+    <h2 class="doc-section-title" id="other-title">The other marks, basis and checks</h2>
+    <dl class="doc-annotation-list">
+      <dt class="doc-label">State</dt>
+      <dd>
+        <span class="doc-mark doc-label" data-state="earned">Earned</span>
+        <span class="doc-mark doc-label" data-state="structural">Structural</span>
+        <span class="doc-mark doc-label" data-state="partial">Partial</span>
+        <span class="doc-mark doc-label" data-state="deflated">Deflated</span>
+        <span class="doc-mark doc-label" data-state="held">Held</span>
+        <span class="doc-mark doc-label" data-state="external">External</span>
+        <span class="doc-mark doc-label" data-state="proposed">Proposed</span>
+      </dd>
+      <dt class="doc-label">Basis</dt>
+      <dd><span class="doc-meta">owner-stated, observed in supplied material, analyst synthesis</span></dd>
+      <dt class="doc-label">Evidence</dt>
+      <dd>
+        <span class="doc-mark doc-label" data-evidence="supported">Supported</span>
+        <span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span>
+        <span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span>
+        <span class="doc-mark doc-label" data-evidence="weakened">Weakened</span>
+        <span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span>
+      </dd>
+      <dt class="doc-label">Check</dt>
+      <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
+    </dl>
+    <div class="doc-prose">
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="roles-title">
+    <h2 class="doc-section-title" id="roles-title">Document roles stay as they are</h2>
+    <blockquote class="doc-quote">
+      <p>A quotation: someone's words, on the violet rail.</p>
+      <footer>Represented voice</footer>
+    </blockquote>
+    <p class="doc-body surface-emphasis-rail">A callout: the document's own point, on the magenta rail.</p>
+    <div class="doc-hierarchy doc-group">
+      <p class="doc-body">A level inside a level, on the neutral hierarchy rail.</p>
+    </div>
+    <div class="doc-prose">
+      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A mark follows the content it concerns and never repaints it.</p>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="scope-title">
+    <h2 class="doc-section-title" id="scope-title">The composition at its scopes</h2>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">A block // an annotation row after it</h3>
+      <div class="doc-group">
+        <p class="doc-body">A statement under review, as one block of document text.</p>
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
+          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="supported">Supported</span><span class="doc-meta">9 of 14, counted</span></span>
+          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1 · carried unchanged</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">One item, several questions // an annotation list</h3>
+      <div class="doc-group">
+        <p class="doc-body">A method component, version 0.3.</p>
+        <dl class="doc-annotation-list" aria-label="Annotations for the method component">
+          <dt class="doc-label">State</dt>
+          <dd><span class="doc-mark doc-label" data-state="structural">Structural</span><span class="doc-meta">schema-proven; not yet run end to end</span></dd>
+          <dt class="doc-label">Basis</dt>
+          <dd><span class="doc-meta">analyst synthesis</span></dd>
+          <dt class="doc-label">Evidence</dt>
+          <dd><span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span><span class="doc-meta">tested in 2 of 5 cases</span></dd>
+          <dt class="doc-label">Review</dt>
+          <dd><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">version 0.3 · reviewer, round 2 · bounded trial</span></dd>
+          <dt class="doc-label">Production use</dt>
+          <dd><span class="doc-mark doc-label" data-review="none">No decision recorded</span><span class="doc-meta">no permission recorded</span></dd>
+        </dl>
+        <p class="doc-body">The bounded trial is a whole decision with a narrow scope. It supplies no evidence and permits no production use.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">A table cell // items on its first baseline</h3>
+      <div class="doc-table-scroll" role="region" aria-label="Positions and their decisions" tabindex="0">
+        <table class="doc-table">
+          <thead><tr><th class="doc-label" scope="col">Earlier position</th><th class="doc-label" scope="col">Decision</th></tr></thead>
+          <tbody>
+            <tr><td class="doc-body">P-1 // the first position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="declined">Declined</span><span class="doc-meta">reviewer, round 1 · replaced by P-2</span></span></span></td></tr>
+            <tr><td class="doc-body">P-2 // the second position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">reviewer, round 1</span></span></span></td></tr>
+            <tr><td class="doc-body">P-3 // the third position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">carried to round 3</span></span></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Words inside a block // a passage mark and its note</h3>
+      <div class="doc-group">
+        <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="key-note-1">two props or fewer</mark>, and the <a class="surface-text-link" href="#questions-title">key</a> explains the marks.</p>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-1">
+          <div class="doc-annotations">
+            <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “two props or fewer” · owner, round 2</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="doc-prose">
+        <p class="doc-meta">Beside the document's link underline, colored words that go nowhere can read as a link. Within this composition the scope cue is therefore the tint; this is the composition's choice, not a general rule about underlines.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Not yet testable // its whole contract</h3>
+      <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span><span class="doc-meta">no readings can exist until next season</span></span>
+        </div>
+        <p class="doc-body">Lavender-gray, a dashed rail, a hollow marker and the visible label. Inside the note, the note's rail is the one rail.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">A question // a section with an Open question mark</h3>
+      <div class="doc-section">
+        <h4 class="doc-deep-title">Question 2 // Should the market square stay in the study?</h4>
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">awaiting the reviewer</span></span>
+          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Proposed</span><span class="doc-meta">suggested answer: leave it out this round</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="compare-title">
+    <h2 class="doc-section-title" id="compare-title">Comparisons</h2>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">One value, two axes</h3>
+      <dl class="doc-annotation-list" aria-label="Shared values across axes">
+        <dt class="doc-label">Green</dt>
+        <dd>
+          <span class="doc-mark doc-label" data-state="earned">Earned</span>
+          <span class="doc-mark doc-label" data-evidence="supported">Supported</span>
+          <span class="doc-mark doc-label" data-review="accepted">Accepted</span>
+        </dd>
+        <dt class="doc-label">Red</dt>
+        <dd>
+          <span class="doc-mark doc-label" data-state="deflated">Deflated</span>
+          <span class="doc-mark doc-label" data-review="declined">Declined</span>
+        </dd>
+      </dl>
+      <div class="doc-prose">
+        <p class="doc-body">A shared value is not a shared meaning. The square, the dot and the outline, the key and the words say which question each mark answers.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">One callout, proposed and then accepted</h3>
+      <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
+      <div class="doc-annotations">
+        <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Proposed</span><span class="doc-meta">round 2 · studio</span></span>
+      </div>
+      <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
+      <div class="doc-annotations">
+        <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">round 3 · owner</span></span>
+      </div>
+      <div class="doc-prose">
+        <p class="doc-body">The rail is the callout's and does not change with the decision. The mark after it does.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">The same word on two axes</h3>
+      <dl class="doc-annotation-list" aria-label="A proposed element under review">
+        <dt class="doc-label">State</dt>
+        <dd><span class="doc-mark doc-label" data-state="proposed">Proposed</span><span class="doc-meta">a candidate pipeline stage, not yet pressured</span></dd>
+        <dt class="doc-label">Review</dt>
+        <dd><span class="doc-mark doc-label" data-review="proposed">Proposed</span><span class="doc-meta">its adoption, for the lead's decision</span></dd>
+      </dl>
+      <div class="doc-prose">
+        <p class="doc-body">Word and value are shared; the key and the geometry, a square and an outline, say which question each answers.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Mark, chip or action</h3>
+      <div class="doc-annotations">
+        <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Proposed</span><span class="doc-meta">review mark</span></span>
+      </div>
+      <p class="surface-emphasis-chip surface-emphasis--magenta">thesis</p>
+      <div class="doc-actions">
+        <a class="surface-action" href="#questions-title">compact action</a>
+      </div>
+      <div class="doc-prose">
+        <p class="doc-body">The mark takes the small corner, which keeps an inert mark from looking like a control beside a compact action. It differs from the chip in its fainter label words, its value family, its review vocabulary and its place after the content it concerns; the chip names why a unit is emphasized and heads a panel.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-titled">
+    <p class="doc-meta">Schematic content. Reads the foundation, the register modules, Spectral State, Evidence State and review-semantics.css live.</p>
+  </footer>
+</main>
+<script src="surface-document-overflow.js"></script>
+</body>
+</html>

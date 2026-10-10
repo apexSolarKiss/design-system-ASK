@@ -54,6 +54,7 @@ Evidence State derivation
 2. On a consuming element, set color from a single role token, e.g. `fill: var(--evidence-supported)` or `color: var(--evidence-weakened)`.
 3. For `not-yet-testable`, apply the full presentation contract (lavender-gray + dashed rail + hollow marker + visible label) — never color alone.
 4. Keep the evidence labels visible; do not relabel reused roles by their Spectral State names.
+5. In a document, the [Review Semantics](review-semantics.md) annotation composition shows an evidence role as a labeled dot and keeps the `not-yet-testable` contract whole. Evidence State's other presentations are unaffected.
 
 ```css
 /* example — consuming surface */

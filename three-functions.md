@@ -10,7 +10,8 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 semantic color
 ├── state
 │   ├── Spectral State
-│   └── Evidence State — profile under Spectral State
+│   ├── Evidence State // profile under Spectral State
+│   └── Review State // profile under Spectral State
 │
 └── function / role
     └── Three Functions
@@ -126,6 +127,8 @@ function role   → fill / principal node treatment
 state           → outline, badge, or separate state marker
 evidence state  → evidence marker, rail, dash, or labeled annotation
 ```
+
+In a document that adopts [Review Semantics](review-semantics.md), review is a further axis, and the composition applies this contract with all three apart: state takes the separate state marker (a square), evidence the evidence marker (a dot), and review the outline. A diagram keeps the contract above.
 
 ## Tiers
 

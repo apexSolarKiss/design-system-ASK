@@ -11,7 +11,7 @@
 
    GOVERNED SET — one explicit list, no auto-discovery (GOVERNED below): the
    foundation, the live-surface and document modules, the surface-shell
-   stylesheet, the three primitive keys, the document-register key, the style
+   stylesheet, the four primitive keys, the document-register key, the style
    guide, the two public indexes and the output-artifact template. A governed
    file that is missing fails. Outside the set by declared disposition,
    because they own pattern-local metrics or are fixtures: the diagram
@@ -114,6 +114,7 @@ const GOVERNED = [
   'three-functions.html',
   'spectral-state.html',
   'evidence-state.html',
+  'review-semantics.html',
   'surface-document.html',
   'preview/styleguide.html',
   'index.html',

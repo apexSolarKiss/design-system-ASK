@@ -1,0 +1,361 @@
+/* =========================================================================
+   review-semantics.css // Review Semantics
+
+   An opt-in composition for documents that are reviewed. It keeps five
+   questions apart, so that answering one never answers another:
+
+     document role     what the passage is doing         the document register
+     basis             where the statement came from     a keyed, neutral value
+     evidence          what the evidence supports         Evidence State profile
+     review            what judgment is asked or made,    Review State (this file)
+                       about what, by whom, at which scope
+     state             the condition of an architectural  Spectral State
+                       element, where the item is one
+
+   It owns two facets and nothing else:
+
+     1  REVIEW STATE // a sanctioned profile under the Spectral State family,
+        built the way Evidence State is: it reuses existing values by
+        reference, keeps its own labels and meanings, and mints no value. Its
+        scope is narrow: the review condition of an identified item or
+        request. It owns no evidence judgment, no authority and no workflow.
+        Its module also carries the document marks for the other two state
+        axes (facet 2).
+     2  ANNOTATION // the inert marks, items, rows, lists, passage marks and
+        notes that attach review, evidence, state and basis to the exact
+        content they concern, without repainting that content's role.
+
+   APPLICABILITY. Every rule here applies to elements carrying this module's
+   classes: .doc-mark, mark.doc-passage-mark, .doc-annotation-note,
+   .doc-annotation-item, .doc-annotations and .doc-annotation-list. A
+   data-review, data-evidence or data-state attribute alone opts nothing in
+   and paints nothing. Evidence State and Spectral State presentations
+   authored outside this composition, such as a consumer's own evidence
+   assignment or a separately authored not-yet-testable note with its own
+   rail, stay governed by those owners, not by this module.
+
+   Load order: after the four register modules, the state modules, then this
+   file. The order is part of the contract.
+     colors_and_type.css → surface-panel.css → surface-text-link.css →
+     surface-document.css → surface-treatments.css → spectral-state.css →
+     evidence-state.css → review-semantics.css
+
+   Offline; no CDN. Theme-aware through the foundation's [data-theme] +
+   prefers-color-scheme model: every color resolves through a token that
+   already flips; the passage-mark dose is the one value this file sets per
+   theme.
+
+   STATUS: v0.1 // first version. Opt-in. A consumer takes it through its own
+   gates; no existing document is recolored by its arrival. Contract:
+   review-semantics.md; visual key: review-semantics.html.
+
+   ---------------------------------------------------------------------------
+   FACET 1 // REVIEW STATE (profile)
+   ---------------------------------------------------------------------------
+   Review meaning       Value                      Relationship
+     proposed           value of --state-proposed  correspondence: a candidate,
+                                                   not yet decided
+     open               value of --state-held      correspondence: a named open
+                                                   question; Evidence
+                                                   unresolved shares the value
+     accepted           value of --state-earned    a recorded decision to adopt
+                                                   or permit, at its scope
+     declined           value of --state-deflated  a recorded decision not to
+                                                   adopt or permit, at its scope
+     none               value of --fg-3            no decision recorded
+
+   DECIDED OUTCOMES: accepted is green and declined red, and no decision
+   recorded stays the faintest neutral, so affirmative, negative and absent
+   records differ at a glance; the words still name each. A review outcome is
+   never an evidence role: a shared value is not a shared meaning, as Evidence
+   State's own reuse of Spectral values shows. A green outline says accepted
+   at this scope; a green evidence dot says supported by this evidence. An
+   accepted narrow scope is still a whole decision, a decline does not
+   disprove a statement, and green never authorizes production.
+
+   Labels stay review labels: Proposed (or Correction requested), Open
+   question, Accepted, Declined, No decision recorded. Proposed and Correction
+   requested share paint, not event identity: a candidate submitted and a
+   correction requested are different events, kept apart by their words and
+   by who made the request. A surface never relabels a review role by a
+   Spectral or Evidence name, and never relabels an Evidence or Spectral role
+   by a review name because a value is shared. Spectral's Proposed and
+   review's Proposed share a word and a value; where both apply to one item,
+   the keyed list carries them, one key each.
+
+   The proposed and open values are Spectral values, not the fixed emphasis
+   accents: --state-held is tealer than the emphasis cyan (#00BEFF), and
+   --state-proposed is a theme-calibrated magenta, not #FF00FF.
+
+   ---------------------------------------------------------------------------
+   FACET 2 // ANNOTATION
+   ---------------------------------------------------------------------------
+   MARK
+     meaning         an inert annotation word: one review, evidence or state
+                     role, stated literally. Never a control, never a
+                     heading, never the reason a unit is emphasized
+     population      span.doc-mark.doc-label with exactly one of
+                     data-review, data-evidence or data-state
+     owner           this module for the mark's geometry; surface-document.css
+                     for its text, the operative label role ("for labels and
+                     status"): a mark is status in the document's reading
+                     flow, so its words take the register's status role
+     reuses          .doc-label (mono, Caption step, light, wide tracking,
+                     uppercase, --fg-3); --radius-sm, the corner of the
+                     register's other inert accented marker, the emphasis chip
+     variation       by facet, in geometry as well as value, following Three
+                     Functions' channel allocation, so each axis reads in
+                     monochrome:
+       review        a 1px outline in the role value
+       evidence      a filled 10px dot (Three Functions: "evidence marker");
+                     not yet testable keeps its whole contract: a hollow
+                     dashed dot, a dashed rail and the visible label
+       state         a filled 10px square ("separate state marker")
+     corners         --radius-sm on all four corners, this design's choice:
+                     in this composition it keeps the mark from resembling the
+                     compact action. Corner treatment carries no interaction
+                     in DS, so the pill is not forbidden by DS; it is not the
+                     choice here
+     exclusions      words never take the role color; no fill, wash, bloom,
+                     shadow, hover or other interactive behavior; never the
+                     compact action's classes; never .surface-emphasis-chip,
+                     which names why a unit is emphasized and heads a panel; a
+                     mark carries one role, and a second fact takes a second
+                     mark
+     example         an outlined PROPOSED after the paragraph it proposes
+     counterexample  the paragraph itself recolored, railed or boxed in the
+                     proposal's color
+
+   ITEM
+     meaning         one fact and its qualifier, kept together: a mark and the
+                     metadata that qualifies it, or a basis key and its value
+     population      .doc-annotation-item inside a row or a table cell
+     reuses          a mark; .doc-meta for qualifiers and basis values;
+                     .doc-label for the basis key (a provenance name takes
+                     .doc-label and its value .doc-meta, as the output-artifact
+                     role map assigns)
+
+   ANNOTATION ROW
+     meaning         the items that apply to one scope: the section after its
+                     heading, the block it follows, or the table cell it sits in
+     population      .doc-annotations holding .doc-annotation-item children,
+                     in a fixed order: state, basis, evidence, review
+     variation       in a table cell the row is inline on the cell's first
+                     baseline. Each item opens on its own mark or its key, so
+                     items need no separator
+     exclusions      not a container: no rail, wash, border or panel. Placement
+                     sets scope; typography, boldness or capitals never do
+
+   ANNOTATION LIST
+     meaning         one item answering several questions at once, each on its
+                     own keyed line, in the row's order
+     population      dl.doc-annotation-list, dt.doc-label keys, dd values
+     exclusions      a key per question, a mark per role; a named check and
+                     its result are neutral metadata under a Check key, never
+                     an Evidence State or a review outcome
+
+   DECISION RECORD (display obligation)
+     A shown decision names what it concerns (object or version), who decided
+     (actor or role) and its scope, and any condition where it is material.
+     Consumers supply those values; the display reports an authority relation
+     and never creates one. A missing record is no decision.
+
+   PASSAGE MARK
+     meaning         the exact words inside a block whose judgment is pending
+     population      mark.doc-passage-mark with data-review proposed or open,
+                     inside document body text, naming through aria-describedby
+                     the annotation note that records it
+     reuses          the review value at a low dose, as a background
+     exclusions      in this composition the scope cue is the tint, never an
+                     underline, which a reader can take for the document's
+                     link underline. Never a text color, never a rail. A decided
+                     outcome takes no passage mark
+
+   ANNOTATION NOTE
+     meaning         the record a passage mark points to, set after the block
+                     and its row; it quotes the words it concerns
+     population      .doc-annotation-note on a .doc-hierarchy group (it belongs
+                     inside the level above); an evidence note whose role is
+                     not yet testable takes that role's dashed rail instead
+     exclusions      never inside a framing, synthesis or emphasis panel: a
+                     panel takes no inner rail, so its note follows the panel
+
+   COMPOSITION RULES
+     - A passage keeps its document role. Accepting a synthesis leaves it a
+       synthesis; challenging a quotation leaves it a quotation; a callout's
+       rail does not change with its review state.
+     - Annotations sit at their actual scope with the least added structure:
+       a row after a heading or block, an item in a cell, a passage mark plus
+       a note for words inside a block. No rail or panel is added to make scope.
+     - One edge, one meaning. Within this composition, review and evidence
+       never draw a rail on the content passage and never recolor a panel
+       perimeter. The composition's one annotation rail is Evidence State's
+       mandatory not-yet-testable dashed rail, drawn on an annotation note or
+       a mark, never on the content itself.
+
+   REGISTERED LITERALS
+     1px      the review outline width; the mark's vertical padding
+     10px     the dot and square marker size
+     50%      the dot's corner (a circle)
+     2px      the square marker's corner; the passage mark's corner and inline
+              padding; the not-yet-testable dashed rail and hollow-dot border
+     18%/26%  the passage-mark dose, light / dark
+
+   CHECKING. tools/role-conformance.js rule C12 checks this composition where
+   its classes appear: syntax (classes, attributes, vocabulary) and computed
+   presentation (the drawn outline, marker, rail and tint). It never judges
+   semantic assignment, whether an item's role is the right one; that stays
+   with the author and the reviewer. C12 compares a mark with its resolved
+   role token. It does not independently establish that a local token
+   rebinding is authorized: adopted role bindings remain governed by the
+   contract, and a local exception requires the applicable explicit
+   authorization.
+   ========================================================================= */
+
+/* ---- Facet 1: Review State ------------------------------------------- */
+
+:root {
+  --review-proposed: var(--state-proposed);  /* correspondence: a candidate */
+  --review-open:     var(--state-held);      /* correspondence: an open question */
+  --review-accepted: var(--state-earned);    /* a recorded decision to adopt */
+  --review-declined: var(--state-deflated);  /* a recorded decision not to adopt */
+  --review-none:     var(--fg-3);            /* no decision recorded */
+
+  /* The passage-mark dose, per theme, set as the emphasis dose is set. */
+  --review-passage-dose: 18%;
+}
+:root[data-theme="dark"],
+.theme-dark { --review-passage-dose: 26%; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --review-passage-dose: 26%; }
+}
+
+/* ---- Facet 2: Annotation --------------------------------------------- */
+
+/* The mark. Its words are .doc-label, which this module never restyles. */
+.doc-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 1px var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* Review: the outline. */
+.doc-mark[data-review="proposed"] { --review-mark-color: var(--review-proposed); }
+.doc-mark[data-review="open"]     { --review-mark-color: var(--review-open); }
+.doc-mark[data-review="accepted"] { --review-mark-color: var(--review-accepted); }
+.doc-mark[data-review="declined"] { --review-mark-color: var(--review-declined); }
+.doc-mark[data-review="none"]     { --review-mark-color: var(--review-none); }
+.doc-mark[data-review] { border-color: var(--review-mark-color, var(--fg-3)); }
+
+/* Evidence and state: a marker, no outline. */
+.doc-mark[data-evidence],
+.doc-mark[data-state] { padding-left: 0; border-radius: 0; }
+.doc-mark[data-evidence]::before,
+.doc-mark[data-state]::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
+  background: var(--review-mark-color, var(--fg-3));
+}
+.doc-mark[data-evidence]::before { border-radius: 50%; }
+.doc-mark[data-state]::before    { border-radius: 2px; }
+
+.doc-mark[data-evidence="supported"]           { --review-mark-color: var(--evidence-supported); }
+.doc-mark[data-evidence="partially-supported"] { --review-mark-color: var(--evidence-partially-supported); }
+.doc-mark[data-evidence="unresolved"]          { --review-mark-color: var(--evidence-unresolved); }
+.doc-mark[data-evidence="weakened"]            { --review-mark-color: var(--evidence-weakened); }
+.doc-mark[data-evidence="not-yet-testable"]    { --review-mark-color: var(--evidence-not-yet-testable); }
+/* Not yet testable keeps its whole contract: lavender-gray, a dashed rail,
+   a hollow marker and the visible label. */
+.doc-mark[data-evidence="not-yet-testable"] {
+  border-left: 2px dashed var(--evidence-not-yet-testable);
+  padding-left: var(--space-2);
+}
+.doc-mark[data-evidence="not-yet-testable"]::before {
+  background: transparent;
+  border: 2px dashed var(--evidence-not-yet-testable);
+}
+
+.doc-mark[data-state="earned"]     { --review-mark-color: var(--state-earned); }
+.doc-mark[data-state="structural"] { --review-mark-color: var(--state-structural); }
+.doc-mark[data-state="partial"]    { --review-mark-color: var(--state-partial); }
+.doc-mark[data-state="deflated"]   { --review-mark-color: var(--state-deflated); }
+.doc-mark[data-state="held"]       { --review-mark-color: var(--state-held); }
+.doc-mark[data-state="external"]   { --review-mark-color: var(--state-external); }
+.doc-mark[data-state="proposed"]   { --review-mark-color: var(--state-proposed); }
+.doc-mark[data-state="neutral"]    { --review-mark-color: var(--state-neutral); }
+
+/* The item: one fact and its qualifier, wrapping as a unit. */
+.doc-annotation-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+}
+
+/* The row: scope by placement. Each item opens on its mark or its key, so a
+   wrapped item never begins with a stray separator. */
+.doc-annotations {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-5);
+  margin: 0;
+}
+/* In a table cell the row shares the cell's first baseline. */
+:where(td, th) > .doc-annotations { display: inline-flex; vertical-align: baseline; }
+
+/* The list: one key per question. */
+.doc-annotation-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+}
+.doc-annotation-list > dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .doc-annotation-list { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-1); }
+  .doc-annotation-list > dd { margin-bottom: var(--space-2); }
+}
+
+/* The passage mark: the words whose judgment is pending. */
+mark.doc-passage-mark {
+  color: inherit;
+  background-color: color-mix(in srgb, var(--review-mark-color, var(--fg-3)) var(--review-passage-dose), transparent);
+  border-radius: 2px;
+  padding: 0 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+mark.doc-passage-mark[data-review="proposed"] { --review-mark-color: var(--review-proposed); }
+mark.doc-passage-mark[data-review="open"]     { --review-mark-color: var(--review-open); }
+
+/* The note: the record, after the block and its row. A note normally
+   composes .doc-hierarchy and draws that rail; an evidence note whose role
+   is not yet testable draws that role's dashed rail instead. */
+.doc-annotation-note[data-evidence="not-yet-testable"] {
+  border-left: 2px dashed var(--evidence-not-yet-testable);
+  padding-left: var(--space-4);
+}
+/* One rail per note: inside a not-yet-testable note the mark keeps its hollow
+   marker and its label, and the note's rail is the contract's dashed rail. */
+.doc-annotation-note[data-evidence="not-yet-testable"] .doc-mark[data-evidence="not-yet-testable"] {
+  border-left: 0;
+  padding-left: 0;
+}
