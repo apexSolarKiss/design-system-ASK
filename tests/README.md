@@ -401,6 +401,22 @@ runner's default 1440×900 and at 375×812 (`--width 375 --height 812 --mobile`)
 Revisit this account when the key gains another hidden population, when the whole-page run is
 offered as evidence on its own, or when the checker changes.
 
+## review-semantics-fixture.html
+
+The regression fixture for rule **C12** of `tools/role-conformance.js`: the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`). It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`.
+
+A conforming specimen must return no finding. After it come **39 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
+
+- **35 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a review mark with three pill corners, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined.
+- **4 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, and a passage mark described by two ids.
+
+A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in, which the two compatibility controls hold.
+
+```
+python3 -m http.server 8080
+node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
+```
+
 ## attention-edge-fixture.html
 
 Guards **the attention edge adopted by class** in `surface-action.css`:

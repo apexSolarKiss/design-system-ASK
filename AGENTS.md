@@ -892,7 +892,7 @@ Before changing this repo, read:
 - `README.md`
 - `CONSUMERS.md`
 - `SKILL.md` when the change affects generated interface guidance or agent-facing design behavior
-- the relevant source file(s): `colors_and_type.css`, `spectral-state.*`, `evidence-state.*`, `three-functions.*`, `patterns/*`, `preview/styleguide.html`, `assets/`, or `fonts/`
+- the relevant source file(s): `colors_and_type.css`, `spectral-state.*`, `evidence-state.*`, `review-semantics.*`, `three-functions.*`, `patterns/*`, `preview/styleguide.html`, `assets/`, or `fonts/`
 - the relevant `patterns/*/README.md` for any pattern change — artifact scaffold or surface pattern alike
 
 For ASK-control-surface work that touches shared foundations, consumers, or propagation, also read the operator-side consumer / propagation ledger:
@@ -902,7 +902,7 @@ Public `CONSUMERS.md` is landed-public-only. It is not the complete propagation 
 
 ## Repo-specific rules
 
-- **Propagation caution.** This repo is upstream of multiple public, operator-side, and private/firewalled consumers. A change to tokens, engines, `diagrams.css`, export scripts, Spectral State, Evidence State, Three Functions, fonts, logo assets, an artifact-scaffold contract, or a surface-pattern contract may require downstream re-sync. Either contract kind can create that obligation. Enumerate the affected consumer class in the change summary and flag the propagation obligation.
+- **Propagation caution.** This repo is upstream of multiple public, operator-side, and private/firewalled consumers. A change to tokens, engines, `diagrams.css`, export scripts, Spectral State, Evidence State, Review Semantics, Three Functions, fonts, logo assets, an artifact-scaffold contract, or a surface-pattern contract may require downstream re-sync. Either contract kind can create that obligation. Enumerate the affected consumer class in the change summary and flag the propagation obligation.
 - **Foundation discipline.** Tokens, typography, palette, role names, logo logic, artifact-scaffold contracts, and surface-pattern contracts are identity-bearing. Do not add, rename, remove, or reinterpret them without explicit ASK source-of-intent.
 - **Consumer ownership boundary.** `design-system-ASK` owns the shared source files, engines, CSS, export scripts, and canonical pattern contracts in both lifecycles. What the consumer owns differs:
   - **Artifact-scaffold consumers** own their source data, artifact generation, sealing, committed rasters/PDFs/HTMLs, render stamps, and frozen artifacts.

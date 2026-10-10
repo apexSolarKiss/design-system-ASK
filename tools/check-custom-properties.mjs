@@ -67,6 +67,7 @@ const DEPENDENCIES = {
   'three-functions.css':                                               [FOUNDATION, SELF],
   'spectral-state.css':                                                [FOUNDATION, SELF],
   'evidence-state.css':                                                [FOUNDATION, 'spectral-state.css', SELF],
+  'review-semantics.css':                                              [FOUNDATION, 'spectral-state.css', 'evidence-state.css', SELF],
   'patterns/surface-shell/surface-shell.css':                          [FOUNDATION, SELF],
   'patterns/diagram-interactive-spine/diagrams-interactive-spine.css': [FOUNDATION, 'spectral-state.css',
                                                                         'patterns/diagram-interactive-spine/diagrams-interactive-spine-engine.js'],

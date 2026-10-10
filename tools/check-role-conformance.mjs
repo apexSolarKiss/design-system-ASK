@@ -9,7 +9,8 @@
           [--scheme dark|light|both] [--width 1440] [--height 900] [--mobile]
           [--scope SELECTOR] [--profiles FILE.json] [--allow-vacuous]
      node tools/check-role-conformance.mjs --fixture URL [--scheme ...]
-          load tests/role-conformance-fixture.html from a served repo root and
+          load a role fixture (tests/role-conformance-fixture.html, or
+          tests/review-semantics-fixture.html for C12) from a served repo root and
           judge every case: its static reason codes from the page, its
           interaction reason codes from this runner
 

@@ -17,9 +17,9 @@ A static output artifact fails [design-system-ASK](../../README.md) inheritance 
 
 ## Color discipline fails
 
-- Any color outside the closed palette appears. The core set: the gradient stops (`#E2D3F0` / `#D4C6E1` light; `#201D26` / `#0A090C` dark), white (`#FFFFFF`, the wordmark pairing — not body text), and the default light-mode foreground `#6A637F` (the approved dark purple); `#201D26` doubles as the **opt-in high-contrast foreground** (not the default here — do not apply by font size, and never a rebind of the gradient-surface foreground ramp; registered uses only — see the next item). Plus surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`)
+- Any color outside the closed palette appears. The core set: the gradient stops (`#E2D3F0` / `#D4C6E1` light; `#201D26` / `#0A090C` dark), white (`#FFFFFF`, the wordmark pairing — not body text), and the default light-mode foreground `#6A637F` (the approved dark purple); `#201D26` doubles as the **opt-in high-contrast foreground** (not the default here — do not apply by font size, and never a rebind of the gradient-surface foreground ramp; registered uses only — see the next item). Plus surface (`#BFB3D4` / `#C9BCDE`) + two UI accents (`#8B79A2`, `#AE87C2`) + three emphasis accents (`#FF00FF`, `#AA40FF`, `#00BEFF`). An artifact that adopts the opt-in semantic-state modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css`, loaded by name, may show their role values only where those modules present their roles, each with its visible label: a state or evidence role on its element, or a Review Semantics mark. Its Tier 3 overlay and all other chrome stay in the core set
 - `--fg-high-contrast` is applied outside the registered-use list in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses** — the role is opt-in and gated: measured need, explicit ASK authorization, registration there
-- A semantic green / red / yellow status system appears
+- A semantic green / red / yellow status system appears, other than the sanctioned semantic-state primitive and its profiles (Spectral State, Evidence State, Review State), loaded by name and shown in those roles' own presentations with their visible labels
 - Invented hex values appear in the artifact's overlay CSS
 - A local `--fg-*` / `--line-*` rebind appears (foreground must be inherited from the foundation ramp, not re-declared at the artifact layer). The **only** sanctioned token override is the Class B line-intensity overlay (`--artifact-line` / `--artifact-line-soft`): white at higher alpha in light mode, foundation lines in dark — white is in-palette and the override is scoped to structural lines, not foreground.
 
@@ -29,7 +29,7 @@ A static output artifact fails [design-system-ASK](../../README.md) inheritance 
 - An external `<link>` / `@import` / live raw-URL stylesheet reference survives into the delivered artifact (the editable template links the local mirror; the *delivered* artifact must be sealed)
 - A relative font URL that resolves outside the artifact survives into the delivered artifact (fonts must be embedded at seal time)
 - An unreplaced template marker (`[placeholder]`, `0000000`, etc.) appears in the delivered artifact
-- A single-file artifact does not inline the document-register modules verbatim after the foundation, in the template's order — `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css` — or a multi-file package does not link them once from its bundle, in that order
+- A single-file artifact does not inline the document-register modules verbatim after the foundation, in the template's order — `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css` — or a multi-file package does not link them once from its bundle, in that order; or an artifact that adopts Review Semantics does not follow them with `spectral-state.css`, `evidence-state.css` and `review-semantics.css`, in that order
 
 ## Type discipline fails
 

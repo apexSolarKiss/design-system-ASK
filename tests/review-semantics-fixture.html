@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>design-system-ASK // review semantics conformance fixture</title>
+<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
+<!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/review-semantics-fixture.html
+     Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
+     The fixture for rule C12, in the owner fixture's format: each
+     [data-control] must return exactly the reason codes in data-expect, no more
+     and no fewer; #conforming must return none. A control with an empty
+     data-expect is a positive compatibility case: material outside the
+     annotation composition that C12 must leave alone. Loads the owner modules
+     in the contract's order, then tools/role-conformance.js. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../surface-document.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../evidence-state.css">
+<link rel="stylesheet" href="../review-semantics.css">
+<style>
+  body { margin: 0; padding: 48px 56px; background: var(--bg-gradient); color: var(--fg-1); font-family: var(--font-sans); }
+  [data-control] { padding: var(--space-3) 0; }
+  /* the controls' local defects */
+  [data-control="review mark repainted by a local rule"] .doc-mark { border-color: var(--ask-emphasis-cyan); }
+  [data-control="evidence mark drawn as an outline"] .doc-mark { border: 1px solid var(--evidence-supported); }
+  [data-control="not yet testable reduced to a gray dot"] .doc-mark { border-left: 0; }
+  [data-control="not yet testable reduced to a gray dot"] .doc-mark::before { border: 0; background: var(--evidence-not-yet-testable); }
+  [data-control="evidence marker in another role's color"] .doc-mark::before { background: var(--evidence-weakened); }
+  [data-control="passage mark drawn as an underline"] mark { text-decoration: underline dotted var(--review-proposed); }
+  [data-control="passage mark recolors its words"] mark { color: var(--state-proposed); }
+  [data-control="annotation row drawn with a scope rail"] .doc-annotations { border-left: 2px solid var(--ask-emphasis-violet); padding-left: var(--space-4); }
+  [data-control="evidence marker not displayed"] .doc-mark::before { display: none; }
+  [data-control="evidence mark that is not a flex box"] .doc-mark { display: inline; }
+  [data-control="review mark with no box"] .doc-mark { display: contents; }
+  [data-control="not-yet-testable note on the hierarchy rail"] .doc-annotation-note { border-left: 1px solid var(--line-2); padding-left: var(--space-4); }
+  [data-control="review role token made transparent"] { --review-accepted: transparent; }
+  [data-control="evidence role token made transparent"] { --evidence-supported: transparent; }
+  [data-control="evidence marker with 5% corners"] .doc-mark::before { border-radius: 5%; }
+  [data-control="state marker with 10% corners"] .doc-mark::before { border-radius: 10%; }
+  [data-control="passage dose off the registered values"] { --review-passage-dose: 2%; }
+  [data-control="passage dose token undefined"] { --review-passage-dose: initial; }
+  [data-control="not-yet-testable note drawn in currentColor, its value undefined"] { --evidence-not-yet-testable: initial; }
+  [data-control="not-yet-testable note drawn in currentColor, its value undefined"] .doc-annotation-note { border-left: 2px dashed currentColor; }
+  [data-control="annotation row drawn with a border box"] .doc-annotations { border: 1px solid var(--line-2); }
+  [data-control="state marker drawn round"] .doc-mark::before { border-radius: 50%; }
+  [data-control="review mark on pill corners"] .doc-mark { border-radius: var(--radius-pill); }
+</style>
+</head>
+<body>
+<main class="doc-flow">
+  <header class="doc-titled">
+    <h1 class="doc-title">C12 annotations</h1>
+    <p class="doc-body">Review Semantics C12 fixture. <span id="overall" class="doc-label">running</span></p>
+  </header>
+
+  <section id="conforming" class="doc-section">
+    <h2 class="doc-section-title">Conforming specimen</h2>
+    <div class="doc-group">
+      <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note">with two props</mark>, out of focus behind.</p>
+      <div class="doc-annotations">
+        <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
+        <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
+      </div>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note">
+        <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span><span class="doc-meta">owner, round 2</span></span></div>
+        <p class="doc-body">On “with two props”: three in seasonal sets.</p>
+      </div>
+    </div>
+    <dl class="doc-annotation-list">
+      <dt class="doc-label">State</dt><dd><span class="doc-mark doc-label" data-state="structural">Structural</span></dd>
+      <dt class="doc-label">Evidence</dt><dd><span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span></dd>
+      <dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-mark doc-label" data-review="declined">Declined</span><span class="doc-mark doc-label" data-review="none">No decision recorded</span></dd>
+      <dt class="doc-label">Evidence</dt><dd><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></dd>
+    </dl>
+    <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
+      <p class="surface-emphasis-chip surface-emphasis--magenta">question space</p>
+      <p class="doc-body">Do shaded streets stay cooler?</p>
+    </div>
+    <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
+      <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
+      <p class="doc-body">No readings exist yet.</p>
+    </div>
+    <blockquote class="doc-quote"><p>Look used, not styled.</p><footer>Owner</footer></blockquote>
+    <div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div>
+    <p class="doc-body surface-emphasis-rail">We read this as signs of use.</p>
+    <div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+  </section>
+
+  <section class="doc-section" id="controls">
+    <h2 class="doc-section-title">Controls</h2>
+
+    <div data-control="mark without the label role" data-expect="C12.role">
+      <div class="doc-group"><span class="doc-mark" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="mark carrying two facets" data-expect="C12.facet">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted" data-evidence="supported">Accepted</span></div>
+    </div>
+    <div data-control="review role outside the vocabulary" data-expect="C12.vocab">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="approved">Approved</span></div>
+    </div>
+    <div data-control="mark with no words" data-expect="C12.label">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="open"></span></div>
+    </div>
+    <div data-control="review mark repainted by a local rule" data-expect="C12.color">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div>
+    </div>
+    <div data-control="evidence mark drawn as an outline" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
+    </div>
+    <div data-control="state marker drawn round" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-state="structural">Structural</span></div>
+    </div>
+    <div data-control="review mark on pill corners" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="not yet testable reduced to a gray dot" data-expect="C12.nyt">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
+    </div>
+    <div data-control="evidence marker in another role's color" data-expect="C12.color">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span></div>
+    </div>
+    <div data-control="annotation row drawn as a panel" data-expect="C12.attach C12.rail">
+      <div class="doc-annotations surface-separate surface-material-panel surface-attach-free surface-elevation-flush"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="facet attribute on the annotation row" data-expect="C12.attach">
+      <div class="doc-annotations" data-review="proposed"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="passage mark drawn as an underline" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-u">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-u"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div></div>
+    </div>
+    <div data-control="passage mark recolors its words" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-c">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-c"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div></div>
+    </div>
+    <div data-control="passage mark with no note" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed">two props</mark>.</p>
+    </div>
+    <div data-control="note inside a framing panel" data-expect="C12.note">
+      <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
+        <p class="surface-emphasis-chip surface-emphasis--magenta">question space</p>
+        <p class="doc-body">Do shaded streets stay cooler?</p>
+        <div class="doc-hierarchy doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div></div>
+      </div>
+    </div>
+    <div data-control="note on no rail" data-expect="C12.note">
+      <div class="doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div><p class="doc-body">A note with no rail.</p></div>
+    </div>
+    <div data-control="passage mark naming a decided outcome" data-expect="C12.vocab">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="accepted" aria-describedby="fx-note-a">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-a"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></span></div></div>
+    </div>
+    <div data-control="annotation row drawn with a scope rail" data-expect="C12.rail">
+      <div class="doc-group"><p class="doc-body">A point the owner stated.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div></div>
+    </div>
+    <div data-control="not yet testable rail at width 0" data-expect="C12.nyt">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="not-yet-testable" style="border-left-width:0">Not yet testable</span></div>
+    </div>
+    <div data-control="evidence marker not displayed" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
+    </div>
+    <div data-control="review mark with three pill corners" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed" style="border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px">Proposed</span></div>
+    </div>
+    <div data-control="passage mark loses its tint" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-t" style="background-color:transparent">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-t"><p class="doc-body">On “two props”: a correction is requested.</p></div>
+    </div>
+    <div data-control="evidence mark that is not a flex box" data-expect="C12.geometry">
+      <p class="doc-body">Text <span class="doc-mark doc-label" data-evidence="supported">Supported</span> more.</p>
+    </div>
+    <div data-control="review mark with no box" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="not-yet-testable note on the hierarchy rail" data-expect="C12.note">
+      <div class="doc-hierarchy doc-group doc-annotation-note" data-evidence="not-yet-testable"><div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div><p class="doc-body">No readings exist yet.</p></div>
+    </div>
+    <div data-control="review role token made transparent" data-expect="C12.color">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div>
+    </div>
+    <div data-control="evidence role token made transparent" data-expect="C12.color">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
+    </div>
+    <div data-control="evidence marker with 5% corners" data-expect="C12.geometry">
+      <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
+    </div>
+    <div data-control="passage dose off the registered values" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-d">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-d"><p class="doc-body">On “two props”: a correction is requested.</p></div>
+    </div>
+    <div data-control="passage dose token undefined" data-expect="C12.passage">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-e">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-e"><p class="doc-body">On “two props”: a correction is requested.</p></div>
+    </div>
+    <div data-control="not-yet-testable note drawn in currentColor, its value undefined" data-expect="C12.note">
+      <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable"><p class="doc-body">No readings exist yet.</p></div>
+    </div>
+    <div data-control="mark wearing the emphasis chip class" data-expect="C1.color C12.attach">
+      <div class="doc-group"><span class="doc-mark doc-label surface-emphasis-chip" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="annotation row drawn with a border box" data-expect="C12.rail">
+      <div class="doc-group"><p class="doc-body">A point the owner stated.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div></div>
+    </div>
+    <div data-control="mark whose words are not rendered" data-expect="C12.label">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="open"><span style="display:none">Open question</span></span></div>
+    </div>
+    <div data-control="state marker with 10% corners" data-expect="">
+      <div class="doc-group"><span class="doc-mark doc-label" data-state="structural">Structural</span></div>
+    </div>
+    <div data-control="passage mark describedby two ids" data-expect="">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-two fx-extra">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-two"><p class="doc-body">On “two props”: is two the limit?</p></div>
+      <p class="doc-meta" id="fx-extra">Asked in round 2.</p>
+    </div>
+    <div data-control="harmless evidence metadata on document text" data-expect="">
+      <p class="doc-body" data-evidence="supported">An assessed property, with ordinary document typography and no repainted geometry.</p>
+    </div>
+    <div data-control="Evidence State not-yet-testable presentation outside the composition" data-expect="">
+      <div class="evidence-note node" data-evidence="not-yet-testable" style="border-left:2px dashed var(--evidence-not-yet-testable);padding-left:16px"><div class="doc-label"><span style="display:inline-block;width:10px;height:10px;border:2px dashed var(--evidence-not-yet-testable);border-radius:50%;box-sizing:border-box"></span> Not yet testable</div><p class="doc-body">The relevant season has not occurred; evidence cannot yet exist for that period.</p></div>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <table class="doc-table"><tbody id="verdict"></tbody></table>
+  </section>
+</main>
+<script src="../tools/role-conformance.js"></script>
+<script>
+  /* The owner fixture's judging, unchanged in method: exact reason codes per case. */
+  (function () {
+    var rows = document.getElementById('verdict');
+    var cases = [];
+    var sortJoin = function (list) { return Array.from(new Set(list)).sort().join(' '); };
+    var row = function (state, name, detail) {
+      var tr = document.createElement('tr');
+      [state, name, detail].forEach(function (t) { var td = document.createElement('td'); td.className = 'doc-body'; td.textContent = t; tr.appendChild(td); });
+      rows.appendChild(tr);
+    };
+    var judge = function (name, result, expect) {
+      var expected = sortJoin(expect.split(/\s+/).filter(Boolean));
+      var got = sortJoin(result.findings.map(function (f) { return f.reason; }));
+      var pass = got === expected;
+      cases.push({ case: name, expected: expected, expectedStatic: expected, staticGot: got, staticPass: pass, detailPass: true, detail: null, interactionJudged: false, findings: result.findings, profiles: result.profiles });
+      row(pass ? 'PASS' : 'FAIL', name, 'expected ' + (expected || 'none') + ' · got ' + (got || 'none'));
+    };
+    judge('conforming specimen', ASKRoleConformance.check({ scope: '#conforming', unmapped: false }), '');
+    document.querySelectorAll('[data-control]').forEach(function (el) {
+      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false }), el.dataset.expect);
+    });
+    var failed = cases.filter(function (c) { return !c.staticPass; }).length;
+    document.getElementById('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+    window.__roleFixture = { staticResult: failed ? 'FAIL' : 'PASS', cases: cases };
+  })();
+</script>
+</body>
+</html>
