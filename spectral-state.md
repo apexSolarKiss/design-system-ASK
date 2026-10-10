@@ -6,7 +6,7 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 
 **Profiles.** Sanctioned *profiles* may build on this primitive for adjacent semantic domains. The first is [`evidence-state.md`](evidence-state.md) (epistemic evidence-state), which reuses three of the roles below by reference and adds two evidence-specific roles. Spectral State's own eight-role architectural-element vocabulary is unchanged by any profile.
 
-> **Status: v1.1 — restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
+> **Status: v1.1 // restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
 
 ## The eight roles
 
@@ -27,9 +27,9 @@ The first four are the **health ramp** (ordered, achieved provenness); `held` / 
 
 A **12-hue neon wheel** is the palette *resource*: `hsl(H, S, L)`, `H = n×30°`. The wheel is a resource, not a mandate to invent twelve states — only the eight roles draw from it.
 
-- **Health ramp — the achieved-provenness axis.** One ordered axis, green "go" → red "no": `earned (120° green)` → `structural (60° yellow)` → `partial (30° orange)` → `deflated (0° red)`. Four stops, a clean stoplight-style gradient; the **green↔red anchors are firm**; all stops fall on the wheel's 30° steps.
-- **Orthogonal categories — not a health judgment.** `held (180° cyan)`, `external (270° violet)`, and `proposed (300° magenta)` sit off the ramp — "different axis, not good-vs-bad." `proposed` lives here because it is a *potentiality* (a candidate, not yet pressured), not a degree of achieved provenness.
-- **Neutral — the lavender identity field.** `--state-neutral` is the default (`var(--fg-1)`); a node takes a neon hue only to *say something*.
+- **Health ramp // the achieved-provenness axis.** One ordered axis, green "go" → red "no": `earned (120° green)` → `structural (60° yellow)` → `partial (30° orange)` → `deflated (0° red)`. Four stops, a clean stoplight-style gradient; the **green↔red anchors are firm**; all stops fall on the wheel's 30° steps.
+- **Orthogonal categories // not a health judgment.** `held (180° cyan)`, `external (270° violet)`, and `proposed (300° magenta)` sit off the ramp — "different axis, not good-vs-bad." `proposed` lives here because it is a *potentiality* (a candidate, not yet pressured), not a degree of achieved provenness.
+- **Neutral // the lavender identity field.** `--state-neutral` is the default (`var(--fg-1)`); a node takes a neon hue only to *say something*.
 
 ### Per-theme calibration
 

@@ -386,7 +386,7 @@
           back.type = 'button'; back.setAttribute('data-radial-back', origin);
           out.appendChild(back);
         }
-        var kindLine = h.kind !== undefined ? h.kind : (t.kind ? t.kind.id + ' \u2014 ' + t.kind.label : '');
+        var kindLine = h.kind !== undefined ? h.kind : (t.kind ? t.kind.id + ' // ' + t.kind.label : '');
         if (!empty(kindLine)) out.appendChild(el('div', 'radial-insp-h radial-insp-kind', kindLine));
         out.appendChild(el('div', 'radial-insp-title', h.title));
         var secs = cfg.sections(t, ctx);

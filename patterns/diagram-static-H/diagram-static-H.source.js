@@ -21,7 +21,7 @@
 window.TREE_DIAGRAM = {
   kind: 'root',
   label: '[project-root]',
-  note: '[short root context · what this repo is]',
+  note: '[short root context // what this repo is]',
   children: [
     {
       kind: 'section', label: 'first section',
@@ -35,7 +35,7 @@ window.TREE_DIAGRAM = {
         // content that was not there. Unlike a section note, a group note IS part of the
         // visual grammar and is authored across live packages, so it must RENDER. Keep
         // this case so the note stays visible and keeps sizing its own column.
-        { kind: 'group', label: 'group example', note: '[group note — must render, and must size its own column]', children: [
+        { kind: 'group', label: 'group example', note: '[group note // must render, and must size its own column]', children: [
           { label: '[child-a]' },
           { label: '[child-b]' },
           { label: '[child-c]', note: '[group child with note]' },

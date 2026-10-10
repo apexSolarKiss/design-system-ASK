@@ -19,7 +19,7 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.2 — semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that coloring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
+> **Status: v0.2 // semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that coloring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
 
 ## The three roles
 
@@ -65,7 +65,7 @@ The entries above the divider identify things that perform the legislative funct
 
 `executive` carries no emphasis hue. Its neutrality **is** the signal: execution fills the aperture but neither originates the norm nor closes the judgment. In light it is white (`#FFFFFF`); on the dark ink field pure white is too hot, so it resolves to lavender-ASK (`#D4C6E1`), the dark-mode neutral foreground value. `legislative` (magenta) and `judicial` (cyan) are the two hot points; the executive neutral reads by contrast between them.
 
-## Conceptual anchor — the Montesquieu spine
+## Conceptual anchor // the Montesquieu spine
 
 Three Functions renders the separation between **rule-making, execution, and judgment** as semantic role color — the classical separation of powers (Montesquieu) read onto a surface. *"Three Functions"* names the reusable vocabulary; *"the Montesquieu spine"* names its conceptual lineage. The lineage is what makes the mapping mean something — it is why `legislative`, `executive`, and `judicial` are the roles and why they are distinct — but the primitive is named for what it does, so it stays legible beside the literal `Spectral State` / `Evidence State` and portable to any surface that instantiates the same rule → execution → judgment separation.
 
@@ -152,19 +152,19 @@ evidence state  → evidence marker, rail, dash, or labeled annotation
 3. Keep labels at `--fg-1` — or at a foreground registered for that exact bounded use in [`README.md`](README.md) (*High-contrast foreground — registered uses*), within that registration's scope — and keep structural edges neutral. A registration never makes a label take the role hue. Color only the parts that perform a function; leave everything else on the neutral field.
 4. If the surface also carries state or evidence color, assign them to different channels (outline / marker / rail), never the same fill.
 
-## Worked example — bounded-generativity binding
+## Worked example // bounded-generativity binding
 
 For the bounded-generativity model, Three Functions v0.2 applies the upstream admissibility rule as follows. **The owner fixes which kinds of thing qualify for each function; each consumer owns which concrete element instantiates those kinds.** [`method-ASK`](https://github.com/apexSolarKiss/method-ASK) was the first to instantiate it. Landed state is recorded in [`CONSUMERS.md`](CONSUMERS.md), not here.
 
-- **legislative → the source-of-intent / normative-apex role as constitutive source, and the `grammar / brief` box as delegated apparatus** — the apex adopts or authorizes the governing standard; the `grammar / brief` carries it into operative scope, and its grant produces the aperture.
-- **executive → the bounded-realization chamber** — the apparatus carries a 30% executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
-- **judicial → the selection ring and the candidate it ratifies** — evaluation, selection, closure. The ratified candidate is judicial's closed output, no longer neutral chamber variance — which is why it, alone among the glyphs, takes a role fill.
+- **legislative → the source-of-intent / normative-apex role as constitutive source, and the `grammar / brief` box as delegated apparatus** // the apex adopts or authorizes the governing standard; the `grammar / brief` carries it into operative scope, and its grant produces the aperture.
+- **executive → the bounded-realization chamber** // the apparatus carries a 30% executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
+- **judicial → the selection ring and the candidate it ratifies** // evaluation, selection, closure. The ratified candidate is judicial's closed output, no longer neutral chamber variance — which is why it, alone among the glyphs, takes a role fill.
 
 Everything else stays **neutral**, and those exclusions are load-bearing:
 
-- **an actor envelope, where the figure draws the occupying actor separately from the role** — the actor is trans-functional, not exhausted by or reducible to the function of any role it occupies, so coloring its envelope with legislative magenta would collapse the actor into that function, while the source-of-intent role it occupies stays legislative;
-- **the aperture dimension and iris geometry** — coloring a *quantity* would make it look like role-bearing apparatus;
-- **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** — carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
+- **an actor envelope, where the figure draws the occupying actor separately from the role** // the actor is trans-functional, not exhausted by or reducible to the function of any role it occupies, so coloring its envelope with legislative magenta would collapse the actor into that function, while the source-of-intent role it occupies stays legislative;
+- **the aperture dimension and iris geometry** // coloring a *quantity* would make it look like role-bearing apparatus;
+- **the outer bounded-generativity frame, the dotted authorized-judgment path, artifact governance, and the governed artifact with its governance record** // carrying judicial cyan up into governance would imply *selection = governance*, and coloring the connecting arrows would suggest function propagates along the chain.
 
 Artifact governance stays downstream and outside the three-function palette — it is not a fourth color. The **classification rule** applied above is upstream. Its **concrete realization is consumer-local**: the consuming figure owns its domain labels, element identity, additional neutral structural elements, geometry and layout — but may not redefine the upstream admissibility rule.
 

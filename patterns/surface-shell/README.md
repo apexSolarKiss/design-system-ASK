@@ -466,7 +466,7 @@ the light mark disappears with that element when dark mode hides it, leaving the
 visible mark unnamed. Which wrapper carries it depends on whether the mark is
 also navigation, and the two forms are not interchangeable.
 
-**A — a non-interactive identity mark.** The wrapper is a `<div>` carrying
+**A // a non-interactive identity mark.** The wrapper is a `<div>` carrying
 `role="img"` and the name; every child is decorative:
 
 ```html
@@ -482,7 +482,7 @@ also navigation, and the two forms are not interchangeable.
 </div>
 ```
 
-**B — a mark that is also navigation.** The wrapper *is* the link. Do not put
+**B // a mark that is also navigation.** The wrapper *is* the link. Do not put
 `role="img"` on it, and do not nest a link inside a `role="img"` wrapper:
 
 ```html

@@ -21,12 +21,12 @@
 window.TREE_DIAGRAM = {
   kind: 'root',
   label: '[sequence title]',
-  note: '[short root context · what this sequence depicts]',
+  note: '[short root context // what this sequence depicts]',
   children: [
-    { label: '1 · [first step]', note: '[what this step does]', children: [
-      { label: '2 · [second step]', note: '[what this step does]', children: [
-        { label: '3 · [third step]', note: '[what this step does]', children: [
-          { label: '4 · [held step]', status: 'held', note: '[held: not yet authorized]' },
+    { label: '1 // [first step]', note: '[what this step does]', children: [
+      { label: '2 // [second step]', note: '[what this step does]', children: [
+        { label: '3 // [third step]', note: '[what this step does]', children: [
+          { label: '4 // [held step]', status: 'held', note: '[held: not yet authorized]' },
         ]},
       ]},
     ]},

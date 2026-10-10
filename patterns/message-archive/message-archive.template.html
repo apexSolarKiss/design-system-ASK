@@ -276,22 +276,22 @@ mark{background:var(--ma-p-a);color:var(--ma-ink);border-radius:3px}
     <!-- ATTACHMENT STATE 1 — EMBEDDED (bytes inlined as a data: URI under the embedded profile). -->
     <div class="ma-m ma-role-a" data-pid="[pid-a]" data-role="participant-a" data-channel="[channel-1]"
          data-s="[participant a] [message text lowercased]"
-    ><span class="ma-sndr">[Participant A]</span><span class="ma-tm">09:16</span> [Message text]<span class="ma-att" data-state="embedded">&#128206; [file-name] <span class="ma-st">&middot; embedded</span></span></div>
+    ><span class="ma-sndr">[Participant A]</span><span class="ma-tm">09:16</span> [Message text]<span class="ma-att" data-state="embedded">&#128206; [file-name] <span class="ma-st">// embedded</span></span></div>
 
     <!-- ATTACHMENT STATE 2 — REFERENCED by filename. -->
     <div class="ma-m ma-role-b" data-pid="[pid-b]" data-role="participant-b" data-channel="[channel-1]"
          data-s="[participant b] [message text lowercased]"
-    ><span class="ma-sndr">[Participant B]</span><span class="ma-tm">09:17</span> [Message text]<span class="ma-att" data-state="referenced">&#128206; [file-name] <span class="ma-st">&middot; referenced</span></span></div>
+    ><span class="ma-sndr">[Participant B]</span><span class="ma-tm">09:17</span> [Message text]<span class="ma-att" data-state="referenced">&#128206; [file-name] <span class="ma-st">// referenced</span></span></div>
 
     <!-- ATTACHMENT STATE 3 — OMITTED BY EXPORT (the source export carried no media). -->
     <div class="ma-m ma-default" data-pid="[pid-default]" data-role="participant-default" data-channel="[channel-1]"
          data-s="[participant default] image omitted"
-    ><span class="ma-sndr">[Participant default]</span><span class="ma-tm">09:18</span> <span class="ma-att" data-state="omitted-by-export">&#128206; image <span class="ma-st">&middot; omitted by export</span></span></div>
+    ><span class="ma-sndr">[Participant default]</span><span class="ma-tm">09:18</span> <span class="ma-att" data-state="omitted-by-export">&#128206; image <span class="ma-st">// omitted by export</span></span></div>
 
     <!-- ATTACHMENT STATE 4 — BYTES UNAVAILABLE (row exists; media never downloaded to the source device). -->
     <div class="ma-m ma-role-c" data-pid="[pid-c]" data-role="participant-c" data-channel="[channel-1]"
          data-s="[participant c] voice message bytes unavailable"
-    ><span class="ma-sndr">[Participant C]</span><span class="ma-tm">09:19</span> <span class="ma-att" data-state="bytes-unavailable">&#128206; [file-name] <span class="ma-st">&middot; bytes unavailable</span></span></div>
+    ><span class="ma-sndr">[Participant C]</span><span class="ma-tm">09:19</span> <span class="ma-att" data-state="bytes-unavailable">&#128206; [file-name] <span class="ma-st">// bytes unavailable</span></span></div>
 
     <!-- MERGED-CHANNEL FLAG — folded in from another source thread (note the differing data-channel).
          Optional REACTION chip; visually hidden text names the reaction type and actor. -->
