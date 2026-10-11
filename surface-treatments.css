@@ -179,13 +179,14 @@
      variation       the border color, set only by a governed meaning; the
                      edge dose per theme
      exclusions      no fill, wash, bloom, depth shadow, hover, press, focus
-                     or animation; never pill corners, which belong to the
-                     compact action and other operable objects; never a color
-                     chosen for contrast or decoration: a neutral label stays
-                     --fg-3, and a color arrives only with the emphasis chip
-                     or a review mark. Evidence dots, state squares and the
-                     not-yet-testable rail are not bordered labels, and the
-                     status badge (surface-shell) is an unbordered note
+                     or animation; this treatment takes --radius-sm (8px),
+                     not --radius-pill; corner shape alone assigns no
+                     interaction. Never a color chosen for contrast or
+                     decoration: a neutral label stays --fg-3, and a color
+                     arrives only with the emphasis chip or a review mark.
+                     Evidence dots, state squares and the not-yet-testable
+                     rail are not bordered labels, and the status badge
+                     (surface-shell) is an unbordered note
      example         a neutral DRAFT; a THESIS chip in the emphasis magenta; a
                      PROPOSED review mark in its role value — one box, three
                      meanings

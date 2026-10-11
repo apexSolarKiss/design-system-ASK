@@ -385,7 +385,7 @@ The **compact-action role** is the label on a small control — a chip, a route 
 
 ### Radii
 - xs 4 · sm 8 · **md 14** (default) · lg 22 · xl 32 · pill 999
-- Pills only on interactive elements. Square corners on hairlines and dividers.
+- Corner geometry alone assigns no interaction. Each role or composition owns its corner choice: compact actions use pill corners, the shared bordered label uses `--radius-sm` (8px), and the attachment axis is corner treatment only. Square corners on hairlines and dividers.
 
 ### Borders, shadows, transparency
 - **Hairlines** at `rgba(white, 0.45)` on light gradient and `rgba(lavender-ASK, 0.22)` on dark. Always 1px. No passage rail takes the hairline value: a quotation's rail is the emphasis violet, and a neutral outer rail on a set-apart passage is retired.
