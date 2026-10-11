@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>design-system-ASK // review semantics conformance fixture</title>
-<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
+<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, and for rule C13 where a review mark takes the shared bordered label: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/review-semantics-fixture.html
      Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
      The fixture for rule C12, in the owner fixture's format: each
@@ -14,9 +14,11 @@
      codes the runner returns once it has opened every disclosure; where it is
      absent the runner must return none. data-collapsed, where present, is how
      many annotation elements (marks, passage marks, notes, rows, items, lists
-     and a list's keys and values) the resting check must report collapsed. A
-     control that names no code is a positive case: conforming material, inside
-     the composition or outside it, that C12 must pass. Loads the owner modules
+     and a list's keys and values) and bordered labels the resting check must
+     report collapsed. A control that names no code is a positive case:
+     conforming material, inside the composition or outside it, that C12 and
+     C13 must pass. Every review mark carries .surface-bordered-label, the
+     shared box C13 judges, unless a control omits it. Loads the owner modules
      in the contract's order, then tools/role-conformance.js. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-panel.css">
@@ -53,6 +55,9 @@
   [data-control="annotation row drawn with a border box"] .doc-annotations { border: 1px solid var(--line-2); }
   [data-control="state marker drawn round"] .doc-mark::before { border-radius: 50%; }
   [data-control="review mark on pill corners"] .doc-mark { border-radius: var(--radius-pill); }
+  [data-control="review mark with a padding of its own"] .doc-mark { padding: 1px var(--space-2); }
+  [data-control="collapsed bordered label that loses its reinforcement once open"] details[open] .surface-bordered-label { box-shadow: none; }
+  [data-control="collapsed review mark that loses its reinforcement once open"] details[open] .doc-mark { box-shadow: none; }
   [data-control="collapsed evidence mark that is not a flex box"] .doc-mark { display: inline; }
   [data-control="collapsed not-yet-testable mark reduced to a gray dot"] .doc-mark { border-left: 0; }
   [data-control="collapsed not-yet-testable mark reduced to a gray dot"] .doc-mark::before { border: 0; background: var(--evidence-not-yet-testable); }
@@ -91,17 +96,17 @@
       <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note">with two props</mark>, out of focus behind.</p>
       <div class="doc-annotations">
         <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
-        <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
+        <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
       </div>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note">
-        <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span><span class="doc-meta">owner, round 2</span></span></div>
+        <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">owner, round 2</span></span></div>
         <p class="doc-body">On “with two props”: three in seasonal sets.</p>
       </div>
     </div>
     <dl class="doc-annotation-list">
       <dt class="doc-label">State</dt><dd><span class="doc-mark doc-label" data-state="structural">Structural</span></dd>
       <dt class="doc-label">Evidence</dt><dd><span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span></dd>
-      <dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-mark doc-label" data-review="declined">Declined</span><span class="doc-mark doc-label" data-review="none">No decision recorded</span></dd>
+      <dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-mark doc-label surface-bordered-label" data-review="none">No decision recorded</span></dd>
       <dt class="doc-label">Evidence</dt><dd><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></dd>
     </dl>
     <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
@@ -113,28 +118,28 @@
       <p class="doc-body">No readings exist yet.</p>
     </div>
     <blockquote class="doc-quote"><p>Look used, not styled.</p><footer>Owner</footer></blockquote>
-    <div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div>
+    <div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div>
     <p class="doc-body surface-emphasis-rail">We read this as signs of use.</p>
-    <div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    <div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
   </section>
 
   <section class="doc-section" id="controls">
     <h2 class="doc-section-title">Controls</h2>
 
     <div data-control="mark without the label role" data-expect="C12.role">
-      <div class="doc-group"><span class="doc-mark" data-review="proposed">Proposed</span></div>
+      <div class="doc-group"><span class="doc-mark surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="mark carrying two facets" data-expect="C12.facet">
       <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted" data-evidence="supported">Accepted</span></div>
     </div>
     <div data-control="review role outside the vocabulary" data-expect="C12.vocab">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="approved">Approved</span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="approved">Approved</span></div>
     </div>
     <div data-control="mark with no words" data-expect="C12.label">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="open"></span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="open"></span></div>
     </div>
-    <div data-control="review mark repainted by a local rule" data-expect="C12.color">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div>
+    <div data-control="review mark repainted by a local rule" data-expect="C12.color C13.edge">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div>
     </div>
     <div data-control="evidence mark drawn as an outline" data-expect="C12.geometry">
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
@@ -142,8 +147,8 @@
     <div data-control="state marker drawn round" data-expect="C12.geometry">
       <div class="doc-group"><span class="doc-mark doc-label" data-state="structural">Structural</span></div>
     </div>
-    <div data-control="review mark on pill corners" data-expect="C12.geometry">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+    <div data-control="review mark on pill corners" data-expect="C13.corner">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="not yet testable reduced to a gray dot" data-expect="C12.nyt">
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
@@ -152,18 +157,18 @@
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span></div>
     </div>
     <div data-control="annotation row drawn as a panel" data-expect="C12.attach C12.rail">
-      <div class="doc-annotations surface-separate surface-material-panel surface-attach-free surface-elevation-flush"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+      <div class="doc-annotations surface-separate surface-material-panel surface-attach-free surface-elevation-flush"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="facet attribute on the annotation row" data-expect="C12.attach">
-      <div class="doc-annotations" data-review="proposed"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+      <div class="doc-annotations" data-review="proposed"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="passage mark drawn as an underline" data-expect="C12.passage">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-u">two props</mark>.</p>
-      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-u"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div></div>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-u"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div>
     </div>
     <div data-control="passage mark recolors its words" data-expect="C12.passage">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-c">two props</mark>.</p>
-      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-c"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div></div>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-c"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div>
     </div>
     <div data-control="passage mark with no note" data-expect="C12.passage">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed">two props</mark>.</p>
@@ -172,15 +177,15 @@
       <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
         <p class="surface-emphasis-chip surface-emphasis--magenta">question space</p>
         <p class="doc-body">Do shaded streets stay cooler?</p>
-        <div class="doc-hierarchy doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div></div>
+        <div class="doc-hierarchy doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></div>
       </div>
     </div>
     <div data-control="note on no rail" data-expect="C12.note">
-      <div class="doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div><p class="doc-body">A note with no rail.</p></div>
+      <div class="doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div><p class="doc-body">A note with no rail.</p></div>
     </div>
     <div data-control="passage mark naming a decided outcome" data-expect="C12.vocab">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="accepted" aria-describedby="fx-note-a">two props</mark>.</p>
-      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-a"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></span></div></div>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-a"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></span></div></div>
     </div>
     <div data-control="annotation row drawn with a scope rail" data-expect="C12.rail">
       <div class="doc-group"><p class="doc-body">A point the owner stated.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div></div>
@@ -191,8 +196,8 @@
     <div data-control="evidence marker not displayed" data-expect="C12.geometry">
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
     </div>
-    <div data-control="review mark with three pill corners" data-expect="C12.geometry">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed" style="border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px">Proposed</span></div>
+    <div data-control="review mark with three pill corners" data-expect="C13.corner">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed" style="border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px">Proposed</span></div>
     </div>
     <div data-control="passage mark loses its tint" data-expect="C12.passage">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-t" style="background-color:transparent">two props</mark>.</p>
@@ -202,13 +207,13 @@
       <p class="doc-body">Text <span class="doc-mark doc-label" data-evidence="supported">Supported</span> more.</p>
     </div>
     <div data-control="review mark with no box" data-expect="C12.geometry">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="proposed">Proposed</span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="not-yet-testable note on the hierarchy rail" data-expect="C12.note">
       <div class="doc-hierarchy doc-group doc-annotation-note" data-evidence="not-yet-testable"><div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div><p class="doc-body">No readings exist yet.</p></div>
     </div>
     <div data-control="review role token made transparent" data-expect="C12.color">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div>
     </div>
     <div data-control="evidence role token made transparent" data-expect="C12.color">
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
@@ -228,13 +233,13 @@
       <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable"><p class="doc-body">No readings exist yet.</p></div>
     </div>
     <div data-control="mark wearing the emphasis chip class" data-expect="C1.color C12.attach">
-      <div class="doc-group"><span class="doc-mark doc-label surface-emphasis-chip" data-review="proposed">Proposed</span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label surface-emphasis-chip" data-review="proposed">Proposed</span></div>
     </div>
     <div data-control="annotation row drawn with a border box" data-expect="C12.rail">
       <div class="doc-group"><p class="doc-body">A point the owner stated.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div></div>
     </div>
     <div data-control="mark whose words are not rendered" data-expect="C12.label">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="open"><span style="display:none">Open question</span></span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="open"><span style="display:none">Open question</span></span></div>
     </div>
     <div data-control="state marker with 10% corners" data-expect="">
       <div class="doc-group"><span class="doc-mark doc-label" data-state="structural">Structural</span></div>
@@ -258,10 +263,10 @@
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-state="held">Held</span></span>
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></span>
-          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
         </div>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-dc">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">owner, round 2</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">owner, round 2</span></span></div>
           <p class="doc-body">On “with two props”: is two the limit?</p>
         </div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
@@ -270,9 +275,9 @@
         </div>
         <details class="doc-group" open>
           <summary><span class="doc-label">Earlier rounds</span></summary>
-          <dl class="doc-annotation-list"><dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label" data-review="declined">Declined</span></dd></dl>
+          <dl class="doc-annotation-list"><dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></dd></dl>
         </details>
-        <table class="doc-table"><tbody><tr><td class="doc-body">P-1 // the first position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">carried to round 3</span></span></span></td></tr></tbody></table>
+        <table class="doc-table"><tbody><tr><td class="doc-body">P-1 // the first position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">carried to round 3</span></span></span></td></tr></tbody></table>
       </details>
     </div>
     <div data-control="the same marks with their disclosure open" data-expect="" data-collapsed="0">
@@ -283,10 +288,10 @@
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-state="held">Held</span></span>
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></span>
-          <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span>
         </div>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-o">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">owner, round 2</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">owner, round 2</span></span></div>
           <p class="doc-body">On “with two props”: is two the limit?</p>
         </div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
@@ -295,46 +300,46 @@
         </div>
         <details class="doc-group" open>
           <summary><span class="doc-label">Earlier rounds</span></summary>
-          <dl class="doc-annotation-list"><dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label" data-review="declined">Declined</span></dd></dl>
+          <dl class="doc-annotation-list"><dt class="doc-label">Review</dt><dd><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></dd></dl>
         </details>
-        <table class="doc-table"><tbody><tr><td class="doc-body">P-1 // the first position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span><span class="doc-meta">carried to round 3</span></span></span></td></tr></tbody></table>
+        <table class="doc-table"><tbody><tr><td class="doc-body">P-1 // the first position</td><td class="doc-body"><span class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">carried to round 3</span></span></span></td></tr></tbody></table>
       </details>
     </div>
     <div data-control="mark in a closed disclosure's summary" data-expect="" data-collapsed="0">
-      <details class="doc-group"><summary><span class="doc-mark doc-label" data-review="proposed">Proposed</span></summary><p class="doc-body">The proposed wording follows.</p></details>
+      <details class="doc-group"><summary><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></summary><p class="doc-body">The proposed wording follows.</p></details>
     </div>
     <div data-control="collapsed mark with no words" data-expect="C12.label" data-collapsed="2">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open"></span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open"></span></div></details>
     </div>
     <div data-control="collapsed mark whose words are not rendered" data-expect="" data-expect-open="C12.label" data-collapsed="2">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open"><span style="display:none">Open question</span></span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open"><span style="display:none">Open question</span></span></div></details>
     </div>
     <div data-control="mark whose words are hidden" data-expect="C12.label">
-      <div class="doc-group"><span class="doc-mark doc-label" data-review="open"><span style="visibility:hidden">Open question</span></span></div>
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="open"><span style="visibility:hidden">Open question</span></span></div>
     </div>
     <div data-control="collapsed mark without the label role" data-expect="C12.role" data-collapsed="2">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark" data-review="proposed">Proposed</span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark surface-bordered-label" data-review="proposed">Proposed</span></div></details>
     </div>
     <div data-control="collapsed mark wearing the emphasis chip class" data-expect="C1.color C12.attach" data-collapsed="1">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-emphasis-chip" data-review="proposed">Proposed</span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-bordered-label surface-emphasis-chip" data-review="proposed">Proposed</span></div></details>
     </div>
-    <div data-control="collapsed review role outside the vocabulary" data-expect="C12.vocab" data-collapsed="1">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="approved">Approved</span></div></details>
+    <div data-control="collapsed review role outside the vocabulary" data-expect="C12.vocab" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="approved">Approved</span></div></details>
     </div>
     <div data-control="collapsed mark carrying two facets" data-expect="C12.facet" data-collapsed="1">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="accepted" data-evidence="supported">Accepted</span></div></details>
     </div>
     <div data-control="mark in a closed disclosure's summary whose words are hidden" data-expect="C12.label" data-collapsed="0">
-      <details class="doc-group"><summary><span class="doc-mark doc-label" data-review="proposed"><span style="display:none">Proposed</span></span></summary><p class="doc-body">The proposed wording follows.</p></details>
+      <details class="doc-group"><summary><span class="doc-mark doc-label surface-bordered-label" data-review="proposed"><span style="display:none">Proposed</span></span></summary><p class="doc-body">The proposed wording follows.</p></details>
     </div>
     <div data-control="mark a closed disclosure shows, its words hidden while closed" data-expect="C12.label" data-collapsed="0">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open"><span class="fx-words">Open question</span></span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open"><span class="fx-words">Open question</span></span></div></details>
     </div>
     <div data-control="collapsed mark replaced when its disclosure opens" data-expect="" data-expect-open="C12.label C12.rail" data-collapsed="2">
-      <details class="doc-group fx-swap"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div></details>
+      <details class="doc-group fx-swap"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></details>
     </div>
     <div data-control="collapsed mark whose disclosure the page closes again" data-expect="" data-expect-open="C12.label C12.rail" data-collapsed="2">
-      <details class="doc-group fx-reclose"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div></details>
+      <details class="doc-group fx-reclose"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></details>
     </div>
     <div data-control="collapsed passage mark with no note" data-expect="C12.passage" data-collapsed="1">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed">two props</mark>.</p></details>
@@ -345,24 +350,24 @@
     <div data-control="collapsed not-yet-testable mark reduced to a gray dot" data-expect="" data-expect-open="C12.nyt" data-collapsed="1">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div></details>
     </div>
-    <div data-control="collapsed review mark repainted by a local rule" data-expect="" data-expect-open="C12.color" data-collapsed="1">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div></details>
+    <div data-control="collapsed review mark repainted by a local rule" data-expect="" data-expect-open="C12.color C13.edge" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></details>
     </div>
-    <div data-control="collapsed review mark repainted once its disclosure opens" data-expect="" data-expect-open="C12.color" data-collapsed="1">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div></details>
+    <div data-control="collapsed review mark repainted once its disclosure opens" data-expect="" data-expect-open="C12.color C13.edge" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></details>
     </div>
     <div data-control="collapsed mark that renders no box once open" data-expect="" data-expect-open="C12.geometry C12.label" data-collapsed="2">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></details>
     </div>
     <div data-control="collapsed mark hidden by an animation as its disclosure opens" data-expect="" data-expect-open="C12.label" data-collapsed="2">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label" data-review="open">Open question</span></div></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></details>
     </div>
     <div class="fx-restyled-open" data-control="composition restyled once its disclosure opens" data-expect="" data-expect-open="C12.passage C12.rail C3.hierarchy" data-collapsed="5">
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q1">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q1">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
@@ -372,7 +377,7 @@
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q1o">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q1o">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
@@ -382,7 +387,7 @@
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q2">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q2">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
@@ -392,7 +397,7 @@
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q2o">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q2o">
-          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div>
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
@@ -401,7 +406,7 @@
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-rc">two props</mark>.</p>
-        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span></span></div><p class="doc-body">On “two props”: three in seasonal sets.</p></div>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span></span></div><p class="doc-body">On “two props”: three in seasonal sets.</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
           <p class="doc-body">No readings exist yet.</p>
@@ -461,7 +466,7 @@
       <details class="doc-group fx-swap-all">
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-sw">two props</mark>.</p>
-        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-sw"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-sw"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
           <p class="doc-body">No readings exist yet.</p>
@@ -472,12 +477,34 @@
       <details class="doc-group fx-reclose">
         <summary><span class="doc-label">Evidence</span></summary>
         <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-rc2">two props</mark>.</p>
-        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc2"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc2"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
           <p class="doc-body">No readings exist yet.</p>
         </div>
       </details>
+    </div>
+      <!-- The shared bordered label: a review mark carries it; no other mark does -->
+    <div data-control="review mark without the bordered label" data-expect="C12.base">
+      <div class="doc-group"><span class="doc-mark doc-label" data-review="accepted">Accepted</span></div>
+    </div>
+    <div data-control="evidence mark carrying the bordered label" data-expect="C12.attach">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-evidence="supported">Supported</span></div>
+    </div>
+    <div data-control="state mark carrying the bordered label" data-expect="C12.attach">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-state="deflated">Deflated</span></div>
+    </div>
+    <div data-control="review mark with a padding of its own" data-expect="C13.padding">
+      <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
+    </div>
+    <div data-control="collapsed emphasis chip and neutral label, judged once open" data-expect="" data-expect-open="" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">Framing</span></summary><div class="doc-group"><p class="surface-emphasis-chip surface-emphasis--magenta">thesis</p><p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> framing.</p></div></details>
+    </div>
+    <div data-control="collapsed bordered label that loses its reinforcement once open" data-expect="" data-expect-open="C13.edge" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Status</span></summary><p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label.</p></details>
+    </div>
+    <div data-control="collapsed review mark that loses its reinforcement once open" data-expect="" data-expect-open="C13.edge" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></details>
     </div>
   </section>
 

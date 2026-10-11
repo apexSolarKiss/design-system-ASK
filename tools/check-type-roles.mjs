@@ -132,7 +132,7 @@ const REGISTERED_SIZE = [
 const REGISTERED_TRACKING = [];
 
 /* R4 */
-const LABEL_CLASSES = ['caption', 'doc-label', 'doc-meta', 'surface-badge', 'surface-action', 'surface-emphasis-chip'];
+const LABEL_CLASSES = ['caption', 'doc-label', 'doc-meta', 'surface-badge', 'surface-action', 'surface-emphasis-chip', 'surface-bordered-label'];
 
 /* R5: every selector allowed to set mono in uppercase, with its role. The key
    pages' .sub and .arc-label are page-local names. */

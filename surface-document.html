@@ -475,6 +475,29 @@
           words are set in the primary text role rather than in the accent, so the reading layer stays
           in the document's own foreground and the accent stays a marker.</p>
       </div>
+
+      <!-- THE BORDERED LABEL — one box for every inert bordered label. Neutral here;
+           the chips above are its emphasis member, and Review Semantics' review mark
+           (review-semantics.html) is its review member. -->
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Bordered label</h3>
+        <p class="doc-body">A short inert word inside a thin border:
+          <span class="doc-label surface-bordered-label" id="bordered-label">draft</span>
+          is read, never operated. The chips above use the same box, as does a review mark where a document
+          adopts Review Semantics; only a governed meaning changes its color.</p>
+        <div class="doc-table-scroll" role="region" aria-label="Items by status">
+          <table class="doc-table" id="bordered-label-table">
+            <thead><tr><th class="doc-label">status</th><th class="doc-label">item</th><th class="doc-label">owner</th></tr></thead>
+            <tbody>
+              <tr><td class="doc-body"><span class="doc-label surface-bordered-label">draft</span></td><td class="doc-body">A label at the start of the first column keeps its whole edge.</td><td class="doc-body"><span class="doc-label surface-bordered-label">held</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="doc-meta">Apparent edge 2px in light and 1.5px in dark: the 1px border and a zero-blur
+          reinforcement of 1px and 0.5px, which paints without moving anything. Block padding 2px, inline
+          --space-2, the small corner, as wide as its words on one line. Its 1px inline margin keeps the
+          reinforcement inside its own box, so a scrolling table's side never cuts it.</p>
+      </div>
     </section>
 
     <!-- DEEP HEADINGS — ONE treatment for h4 and every deeper level. Depth is

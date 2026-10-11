@@ -40,8 +40,9 @@
    and on its ancestors, are finished, and each element is judged on what it
    presents open: a mark's words as rendered, its box and its outline or
    marker; a passage mark's color, borders and tint; a note's rail; a row,
-   item or list drawing no rail, border or wash; and its hierarchy rail, if it
-   has one. These findings are C12's and C3.hierarchy's, with the resting
+   item or list drawing no rail, border or wash; its hierarchy rail, if it
+   has one; and a bordered label's or an emphasis chip's box and edge. These
+   findings are C12's, C13's and C3.hierarchy's, with the resting
    check's reason codes, each marked state "open"; "collapsed" for an element
    whose disclosure is still closed, "removed" for one that left the page.
 
@@ -213,7 +214,7 @@ async function interactionPass(p, scope) {
     } else if (a === '#other' && first === null) first = '#other-start';
   }
   const judged = await p.evaluate(`${I}.judge(${JSON.stringify([...records.values()])})`);
-  /* then the held C12 elements, after every link-state judgment: finishing their animations
+  /* then the held C12 and C13 elements, after every link-state judgment: finishing their animations
      must not move a token the link states are judged against */
   await p.evaluate(`${I}.blur()`);
   await p.mouse(await p.evaluate(`${I}.neutral()`));

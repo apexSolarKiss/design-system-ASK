@@ -95,33 +95,39 @@
                      role, stated literally. Never a control, never a
                      heading, never the reason a unit is emphasized
      population      span.doc-mark.doc-label with exactly one of
-                     data-review, data-evidence or data-state
-     owner           this module for the mark's geometry; surface-document.css
-                     for its text, the operative label role ("for labels and
-                     status"): a mark is status in the document's reading
-                     flow, so its words take the register's status role
+                     data-review, data-evidence or data-state; a review mark
+                     also carries .surface-bordered-label
+     owner           surface-treatments.css for a review mark's box and edge:
+                     the shared bordered label, the same box as the emphasis
+                     chip. This module for the review mark's color and for the
+                     evidence and state marks' geometry. surface-document.css
+                     for every mark's text, the operative label role ("for
+                     labels and status"): a mark is status in the document's
+                     reading flow, so its words take the register's status
+                     role
      reuses          .doc-label (mono, Caption step, light, wide tracking,
-                     uppercase, --fg-3); --radius-sm, the corner of the
-                     register's other inert accented marker, the emphasis chip
+                     uppercase, --fg-3); for a review mark, the bordered
+                     label's box, edge and --radius-sm corner
      variation       by facet, in geometry as well as value, following Three
                      Functions' channel allocation, so each axis reads in
                      monochrome:
-       review        a 1px outline in the role value
+       review        the bordered label's outline in the role value
        evidence      a filled 10px dot (Three Functions: "evidence marker");
                      not yet testable keeps its whole contract: a hollow
                      dashed dot, a dashed rail and the visible label
        state         a filled 10px square ("separate state marker")
-     corners         --radius-sm on all four corners, this design's choice:
-                     in this composition it keeps the mark from resembling the
-                     compact action. Corner treatment carries no interaction
-                     in DS, so the pill is not forbidden by DS; it is not the
-                     choice here
+     corners         a review mark takes the bordered label's --radius-sm,
+                     which keeps an inert mark from resembling the compact
+                     action; an evidence or state mark draws no box
      exclusions      words never take the role color; no fill, wash, bloom,
-                     shadow, hover or other interactive behavior; never the
+                     depth shadow, hover or other interactive behavior (the
+                     review outline's zero-blur reinforcement is the bordered
+                     label's edge, not a shadow of this module); never the
                      compact action's classes; never .surface-emphasis-chip,
-                     which names why a unit is emphasized and heads a panel; a
-                     mark carries one role, and a second fact takes a second
-                     mark
+                     which names why a unit is emphasized and heads a panel;
+                     an evidence or state mark never carries
+                     .surface-bordered-label; a mark carries one role, and a
+                     second fact takes a second mark
      example         an outlined PROPOSED after the paragraph it proposes
      counterexample  the paragraph itself recolored, railed or boxed in the
                      proposal's color
@@ -194,7 +200,8 @@
        a mark, never on the content itself.
 
    REGISTERED LITERALS
-     1px      the review outline width; the mark's vertical padding
+     1px      the evidence and state marks' vertical padding and their
+              transparent border
      10px     the dot and square marker size
      50%      the dot's corner (a circle)
      2px      the square marker's corner; the passage mark's corner and inline
@@ -202,8 +209,10 @@
      18%/26%  the passage-mark dose, light / dark
 
    CHECKING. tools/role-conformance.js rule C12 checks this composition where
-   its classes appear: syntax (classes, attributes, vocabulary) and computed
-   presentation (the drawn outline, marker, rail and tint). It never judges
+   its classes appear: syntax (classes, attributes, vocabulary, a review
+   mark's bordered label) and computed presentation (the outline's color, the
+   marker, rail and tint). Rule C13 checks a review mark's box and edge as it
+   checks every bordered label. C12 never judges
    semantic assignment, whether an item's role is the right one; that stays
    with the author and the reviewer. C12 compares a mark with its resolved
    role token. It does not independently establish that a local token
@@ -233,28 +242,31 @@
 /* ---- Facet 2: Annotation --------------------------------------------- */
 
 /* The mark. Its words are .doc-label, which this module never restyles. */
-.doc-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 1px var(--space-2);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
-  vertical-align: baseline;
-}
 
-/* Review: the outline. */
+/* Review: the outline. Its box and edge are the bordered label's
+   (surface-treatments.css): a review mark carries .surface-bordered-label,
+   and this module supplies its color only. */
 .doc-mark[data-review="proposed"] { --review-mark-color: var(--review-proposed); }
 .doc-mark[data-review="open"]     { --review-mark-color: var(--review-open); }
 .doc-mark[data-review="accepted"] { --review-mark-color: var(--review-accepted); }
 .doc-mark[data-review="declined"] { --review-mark-color: var(--review-declined); }
 .doc-mark[data-review="none"]     { --review-mark-color: var(--review-none); }
-.doc-mark[data-review] { border-color: var(--review-mark-color, var(--fg-3)); }
+.doc-mark[data-review] { --surface-bordered-label-color: var(--review-mark-color, var(--fg-3)); }
 
-/* Evidence and state: a marker, no outline. */
+/* Evidence and state: a marker beside the words, no outline. An inline flex
+   box on the baseline, so the ::before marker is drawn as a box; its words
+   keep one line. */
 .doc-mark[data-evidence],
-.doc-mark[data-state] { padding-left: 0; border-radius: 0; }
+.doc-mark[data-state] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 1px var(--space-2) 1px 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
 .doc-mark[data-evidence]::before,
 .doc-mark[data-state]::before {
   content: "";

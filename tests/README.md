@@ -247,9 +247,13 @@ and a structured block on the magenta rail, a block inside an emphasis rail, an 
 callout on the magenta rail, a quoted code excerpt on the one violet rail, a callout
 inside a quotation drawing no second rail, a section framing panel and a section
 synthesis panel with their chips, a two-level table of contents, a declared dense table
-and an unmarked prose table, an entry title on an operable entry, and links in body,
-metadata, a quotation and a dense cell — which must return no finding at rest or in any
-link state. After it come **controls**: 101 negative controls, one per failure branch,
+and an unmarked prose table, an entry title on an operable entry, links in body,
+metadata, a quotation and a dense cell, and the bordered label without Review Semantics:
+a neutral label in text, an emphasis panel's chip, violet and cyan chips, a chip outside
+an accented surface, a scrolling table whose first and last columns hold a label and
+whose label of several words keeps its line beside a long cell, and a label set directly
+in a column composition — which must return no finding at rest or in any link state.
+After it come **controls**: 120 negative controls, one per failure branch,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
 9 positive controls — an unmarked prose table, a complete profile declaration, an
 emphasis rail off document text keeping a sanctioned violet accent, and six declared
@@ -355,6 +359,22 @@ C11.shape · C11.shape ·     a peer group outside a structured block · a struc
 C11.shape · C11.shape ·     block mixing groups with a loose line · a peer group
 C11.shape                   that does not open on its label · a peer group whose
                             label shows no text · loose text beside the groups
+C13.edge · C13.edge ·       a bordered label with no reinforcement · reinforced at
+C13.edge                    neither theme's dose · reinforced in another color
+C13.padding · C13.border ·  1px block padding · a 2px border · pill corners
+C13.corner
+C13.box · C13.box ·         kept on one line by a local rule · drawn as an inline
+C13.box · C13.box ·         flex box · stretched by its column (width auto) ·
+C13.box · C13.box ·         squeezed by its table column (width auto) · shrinkable
+C13.box                     in a flex row that does not wrap · sized by its content
+                            box · given no maximum width
+C13.fill                    a bordered label given a fill
+C13.corner · C13.padding    a page that redefines --radius-sm as a pill · one that
+                            shrinks --space-2: the check holds the owner's 8px, not
+                            the page's token
+C13.clearance               no inline margin, so a clipping box can cut its edge
+C13.color · C13.color       a neutral label given a color · an emphasis chip whose
+                            accent is not one of the three
 ```
 
 The page judges each case's **resting** codes itself and writes them to
@@ -404,18 +424,18 @@ offered as evidence on its own, or when the checker changes.
 
 ## review-semantics-fixture.html
 
-The regression fixture for rule **C12** of `tools/role-conformance.js`: the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`). It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`.
+The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`), and for rule **C13** where a review mark takes the shared bordered label. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, except where a control omits it.
 
-A conforming specimen must return no finding. After it come **73 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
+A conforming specimen must return no finding. After it come **80 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
 
-- **61 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a review mark with three pill corners, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined.
-- **12 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose tint is suppressed only while its disclosure is closed and the same passage open from the start, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, and rows without a mark in a closed disclosure.
+- **67 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.base`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined. The shared box fails with the bordered label's own reasons: a review mark without `.surface-bordered-label` (`C12.base`), an evidence and a state mark carrying it (`C12.attach`), a review mark on pill corners and one with three pill corners (`C13.corner`), one with a padding of its own (`C13.padding`), and a repainted outline, whose reinforcement keeps the role's color (`C12.color` and `C13.edge`).
+- **13 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose tint is suppressed only while its disclosure is closed and the same passage open from the start, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, rows without a mark in a closed disclosure, and an emphasis chip and a neutral bordered label in a closed disclosure, which C13 judges once open.
 
-**Disclosures.** Thirty-three controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them. The resting check judges its syntax, vocabulary and relationships, requires that a mark has words (`C12.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
+**Disclosures.** Thirty-six controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them. The resting check judges its syntax, vocabulary and relationships, requires that a mark has words (`C12.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
 
 - Labeled marks in a closed disclosure pass, nested and in a table cell included, and so do rows without a mark and a not-yet-testable note on its rail.
 - At rest, a collapsed mark with no words, one without the label role, one wearing the emphasis chip class, one carrying two facets, a review role outside the vocabulary and a passage mark with no note fail as they would outside a disclosure.
-- Once opened, a mark fails when its words are hidden inside it, when it is drawn without its flex box or reduced to a gray dot, when it is repainted, whether always or only once open, when it renders no box once open, and when an animation hides it as its disclosure opens.
+- Once opened, a mark fails when its words are hidden inside it, when it is drawn without its flex box or reduced to a gray dot, when it is repainted, whether always or only once open, when it renders no box once open, and when an animation hides it as its disclosure opens. A bordered label held there, a review mark or a neutral label, fails C13 once open when it loses its reinforcement.
 - A composition restyled only once its disclosure opens fails there:
   - a passage mark that loses its tint (`C12.passage`), its note that loses its hierarchy rail (`C3.hierarchy`) and the note's row that takes a rail (`C12.rail`), in one control, which fails the same way at rest when its disclosure is open from the start;
   - a not-yet-testable note that loses its rail (`C12.note`);
