@@ -84,7 +84,7 @@ data-party-mode="two-party"   author right · frosted other left · no legend ·
 data-party-mode="group"       full-fill participant roles · legend · sender labels
 ```
 
-**Participant → role mapping is manifest-owned and persistent.** It is never frequency-derived: a refresh must not recolor a person because their message count moved. Reassignment happens only under explicit operator intent.
+**Participant → role mapping is manifest-owned and persistent.** It is never frequency-derived: a refresh must not recolor a person because their message count moved. Reassignment happens only under explicit operator intent. One owner change alters a role's value without reassigning anyone: see *A successor to an `AA-compliant` archive*, under *One flavor* below.
 
 ## Participant color is identity, not state
 
@@ -113,43 +113,38 @@ drop participants
 
 This is a **bounded initial capacity, not a permanent claim** that message archives can never exceed seven participants. Overflow behaviour is deferred until a real archive creates that pressure, at which point it is ratified against an actual case rather than designed speculatively.
 
-## Two flavors
+## One flavor // `default-ASK`
 
-One template, selected by one attribute on the root element:
+The template carries one presentation, named by one attribute on the root element:
 
 ```text
-data-flavor="default-ASK"    the ASK-preferred visual default (template default)
-data-flavor="AA-compliant"   the accessibility-tuned alternative
+data-flavor="default-ASK"    the ASK-preferred visual default
 ```
 
-Both share one DOM, one geometry, one script, one theme mechanism, one attachment and reaction model, and one party-mode implementation. **Flavors differ only in pattern-local role variables.** Do not fork the template.
-
-| Role | `default-ASK` | `AA-compliant` |
-|---|---|---|
-| author // light | `var(--ask-ui-accent-1)` `#8b79a2` | `#7f6b99` |
-| participant c | `#c44fc4` | `#c95fc9` |
-| participant d | `#a56bd4` | `#a870d6` |
-
-Shared by both: author // dark `#6e5c86` · participant a `var(--ask-ui-accent-2)` `#ae87c2` · participant b `var(--ask-surface)` `#bfb3d4` · participant e `#569dbd` · participant ink `var(--fg-high-contrast)` `#201d26`.
+| Role | Value |
+|---|---|
+| author // light | `var(--ask-ui-accent-1)` `#8b79a2` |
+| author // dark | `#6e5c86` |
+| participant a | `var(--ask-ui-accent-2)` `#ae87c2` |
+| participant b | `var(--ask-surface)` `#bfb3d4` |
+| participant c | `#c44fc4` |
+| participant d | `#a56bd4` |
+| participant e | `#569dbd` |
+| participant ink | `var(--fg-high-contrast)` `#201d26` |
 
 `default-ASK` is the preferred treatment — **not** a defect, not a legacy state, not a version awaiting correction. Its lower-contrast metadata rendering is intentional and must not be pulled toward AA.
 
-`AA-compliant` additionally raises the information-bearing roles: inside a bubble, essential metadata inherits `currentColor` at full opacity, riding the bubble's own already-passing foreground; page-level chrome resolves to `#201d26` in light and `#d4c6e1` in dark. Hierarchy moves into size, weight, spacing and grouping — never into unreadably faint essential text.
+**The `AA-compliant` alternative is retired.** This version of the pattern no longer offers it: the template carries none of its values, and `AA-compliant` is not a supported `data-flavor` value. Do not set it, and do not record it for a new render from this version: the template would draw `default-ASK` under the `AA-compliant` name, and the hard-fail checklist fails an archive that does. Archives already sealed with `AA-compliant` keep their recorded version and bytes (see *Snapshot / retention doctrine*).
 
-### What `AA-compliant` claims, and what it does not
+**A successor to an `AA-compliant` archive.** Re-rendering does not change an archive's template version. A successor rendered from the version its manifest already records keeps that version's rules and values, `AA-compliant` included. An `AA-compliant` archive moves to `default-ASK` only when its consumer deliberately adopts this version: it re-copies the template from this version, records the new commit and template hash, and renders the successor from them. That successor keeps every participant's role and records `default-ASK` and each role's new bound value in its manifest. The author's light fill and participants c and d change value, and the archive's metadata, page chrome, title, controls and focus indicator take the `default-ASK` treatment. The change comes from this pattern's retirement of `AA-compliant`, not from the archive, so it is not a reassignment under the persistence rule. It permits nothing else: any other recoloring, and any frequency-derived remap, still fails, and a reassignment still needs explicit operator intent.
 
-It claims that the **canonical pattern's built-in visual roles, controls, default states, and supplied example content** meet the applicable AA thresholds in both themes.
-
-It does **not** claim that every downstream archive is compliant regardless of consumer-supplied content, Tier 3 overlays, custom media, or modification. **Final rendered archives require the consumer's own validation** after content and overlays are applied.
+The pattern makes **no contrast-compliance claim** beyond the accessibility items in its hard-fail checklist. An archive that needs one is validated by its consumer, on the final rendered archive with its content, media and Tier 3 overlay applied.
 
 ## Foreground is inherited // no global rebind
 
-The template adds no global `--fg-*` rebind. Every foreground is role-scoped and applied by class, so none can leak into inherited prose. `#201d26` reaches this pattern only as the foundation's **opt-in high-contrast role** (`--fg-high-contrast`), and it does so through two distinct limbs — not one:
+The template adds no global `--fg-*` rebind. Every foreground is role-scoped and applied by class, so none can leak into inherited prose. `#201d26` reaches this pattern only as the foundation's **opt-in high-contrast role** (`--fg-high-contrast`), as **participant ink** (`--ma-ink`): bubble text on the sanctioned colored fills, and the search-highlight text that rides those same fills. Page chrome, the archive title and the focus indicator stay on the ordinary foreground roles.
 
-- **participant ink** (`--ma-ink`) // bubble text on the sanctioned colored fills, and the search-highlight text that rides those same fills;
-- **AA-compliant page-level roles, light theme only** // `--ma-page-aa`, which carries essential page chrome and the archive title, and `--ma-focus`, the AA focus indicator, where the ordinary foreground roles do not clear the applicable threshold.
-
-In **dark**, `--ma-page-aa` and `--ma-focus` resolve to `var(--fg-1)`, the normal dark foreground role: the high-contrast role is a light-theme measure here, not a permanent substitution. Both limbs are registered together as one bounded pattern use in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**. The role does not become the default foreground anywhere.
+This is registered as one bounded pattern use in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**. The role does not become the default foreground anywhere.
 
 ## Source data is untrusted // escaping contract
 
@@ -169,23 +164,18 @@ A rendered archive **hard-fails** if source content can become executable markup
 
 Foundation tokens are consumed by reference and are not restated here. The values below are **pattern-local** — they exist only inside this pattern, are not foundation tokens, and authorize no use elsewhere. Nothing is hidden in the CSS.
 
-| Value | Role | Flavor |
-|---|---|---|
-| `#6e5c86` | author bubble fill, dark mode | both |
-| `#569dbd` | participant e fill | both |
-| `#c44fc4` | participant c fill | `default-ASK` |
-| `#a56bd4` | participant d fill | `default-ASK` |
-| `#7f6b99` | author bubble fill, light mode | `AA-compliant` |
-| `#c95fc9` | participant c fill | `AA-compliant` |
-| `#a870d6` | participant d fill | `AA-compliant` |
-| `#ffffff` | author bubble **foreground**, light mode | both |
-| `#f3ecfa` | author bubble **foreground**, dark mode | both |
-| `#e8def3` | frosted default-bubble **foreground**, dark mode | both |
-| `rgba(255,255,255,.62)` / `rgba(212,198,225,.10)` | frosted default-bubble fill, light / dark | both |
-| `rgba(255,255,255,.24)` / `rgba(212,198,225,.08)` | day-header + control chip fill, light / dark | both |
-| `rgba(212,198,225,.58)` / `rgba(16,14,20,.72)` | sticky-bar backdrop, light / dark | both |
-| `rgba(255,255,255,.55)` / `rgba(212,198,225,.14)` | AA control fill, light / dark | `AA-compliant` |
-| `rgba(32,29,38,.75)` / `rgba(212,198,225,.65)` | AA control boundary, light / dark | `AA-compliant` |
+| Value | Role |
+|---|---|
+| `#6e5c86` | author bubble fill, dark mode |
+| `#569dbd` | participant e fill |
+| `#c44fc4` | participant c fill |
+| `#a56bd4` | participant d fill |
+| `#ffffff` | author bubble **foreground**, light mode |
+| `#f3ecfa` | author bubble **foreground**, dark mode |
+| `#e8def3` | frosted default-bubble **foreground**, dark mode |
+| `rgba(255,255,255,.62)` / `rgba(212,198,225,.10)` | frosted default-bubble fill, light / dark |
+| `rgba(255,255,255,.24)` / `rgba(212,198,225,.08)` | day-header + control chip fill, light / dark |
+| `rgba(212,198,225,.58)` / `rgba(16,14,20,.72)` | sticky-bar backdrop, light / dark |
 
 The bubble **foregrounds** and translucent chrome fills are implementation-local surface values, not identity colors: they carry no participant meaning and were not part of the ratified identity ramp. They are recorded here so the template holds no undocumented color.
 
@@ -193,7 +183,7 @@ The bubble **foregrounds** and translucent chrome fills are implementation-local
 
 1. Copy `message-archive.template.html` into the consuming project and sync a local `_dsa-tokens/` mirror. For the **editable template** the mirror is a linked build input; for the **delivered archive** it is inlined and sealed away — see *Seal-time font handling* below, because inlining the token CSS alone does **not** seal the fonts.
 2. Emit the message markup from your normalized model. Preserve `data-pid`, `data-role`, `data-channel`, and `data-s`.
-3. Set `data-flavor` and `data-party-mode` on the root element.
+3. Keep `data-flavor="default-ASK"` and set `data-party-mode` on the root element.
 4. Replace every `[placeholder]`.
 5. Record the manifest — see `MANIFEST.md.example`.
 6. Run `hard-fail-checklist.md` before sealing.
@@ -243,7 +233,7 @@ Consumers supply their own Tier 3 identity, source-truth posture, content, and d
 
 ## What not to edit
 
-Do not fork the template, duplicate the message markup or script, add a flavor-specific geometry branch, rebind `--fg-*` globally, promote the pattern-local participant values into `colors_and_type.css`, or introduce a semantic state system on participant color.
+Do not fork the template, duplicate the message markup or script, add a second flavor or a flavor-specific branch, rebind `--fg-*` globally, promote the pattern-local participant values into `colors_and_type.css`, or introduce a semantic state system on participant color.
 
 ## Class A vs Class B
 

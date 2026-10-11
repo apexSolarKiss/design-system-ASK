@@ -24,7 +24,7 @@ const OUT = path.join(PATTERNS, '_preview');
 // panels overlaid the figure instead of shrinking it; the canonical FLOW Fit now tests the panels
 // against the marks actually drawn, so both FLOW previews show what a consumer receives.
 
-// canonical shell → { dir, out preview filename, previewFit?, flowMode?, flavor? }
+// canonical shell → { dir, out preview filename, previewFit?, flowMode? }
 const SHELLS = [
   { src: 'diagram-static-H/diagram-static-H.html',                 dir: 'diagram-static-H',           out: 'diagram-static-H.html' },
   { src: 'diagram-static-V/diagram-static-V.html',                 dir: 'diagram-static-V',           out: 'diagram-static-V.html' },
@@ -50,12 +50,9 @@ const SHELLS = [
   // rather than routed through `_dsa-tokens/`, the token and font mirror.
   { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html',
     rootRefs: ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css'] },
-  // Both message-archive previews render the SAME canonical template off ONE source; the generator
-  // sets data-flavor on the <html> tag so the gallery can show the two ratified flavors side by side
-  // without a second template, duplicated markup, or a flavor-specific geometry branch. Same pattern
-  // as the FLOW pair above: one canonical shell, two deterministic generated views.
-  { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html',  flavor: 'default-ASK' },
-  { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-AA-compliant.html', flavor: 'AA-compliant' },
+  // The message-archive preview renders the canonical template as it stands, in its one flavor,
+  // default-ASK. The retired AA-compliant preview is no longer generated; write mode removes it.
+  { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html' },
   // The surface-shell specimen. It carries no diagram engine and no data — the canonical markup IS the
   // pattern — but it is no longer script-free: the OPTIONAL navigation runtime rides along with it, and
   // `surface-shell.js` resolves through the ordinary bare pattern-local branch because it lives in the
@@ -213,13 +210,6 @@ function render(s) {
     if (s.flowMode === 'static') {
       html = replaceOnce(html, /(<div class="fp-hint">)[\s\S]*?(<\/div>)/, `$1${STATIC_FLOW_HINT}$2`, "flow-panel hint", s.out);
     }
-  }
-  // message-archive flavor selection. The attribute is matched INSIDE the <html> tag specifically —
-  // the template's header comment documents both flavor values, so a bare data-flavor="…" pattern
-  // would match more than once and (correctly) trip the fail-closed guard. Anchoring to the open tag
-  // keeps replaceOnce's precondition meaningful: exactly one live flavor seam per document.
-  if (s.flavor) {
-    html = replaceOnce(html, /(<html\b[^>]*\bdata-flavor=")[^"]*(")/i, `$1${s.flavor}$2`, "html data-flavor attribute", s.out);
   }
   return html;
 }

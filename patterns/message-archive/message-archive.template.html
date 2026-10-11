@@ -1,12 +1,11 @@
 <!doctype html>
-<!-- FLAVOR SEAM — data-flavor selects the participant ramp + metadata treatment.
-     data-flavor="default-ASK"   the ASK-preferred visual default (template default)
-     data-flavor="AA-compliant"  the accessibility-tuned alternative
+<!-- FLAVOR — data-flavor="default-ASK" names the one presentation this template carries, the
+     ASK-preferred visual default. It is the only supported value: the AA-compliant alternative
+     is retired, and this template no longer renders it.
      PARTY-MODE SEAM — data-party-mode selects two-party vs group presentation.
      data-party-mode="group"     full-fill participant roles + legend + sender labels
      data-party-mode="two-party" author right / frosted other left, no legend, no sender labels
-     There is ONE template, ONE DOM, ONE geometry, ONE script. Flavors differ only in the
-     pattern-local role variables below. Do not fork this file. -->
+     There is ONE template, ONE DOM, ONE geometry, ONE script. Do not fork this file. -->
 <html lang="en" data-flavor="default-ASK" data-party-mode="group">
 <head>
 <meta charset="utf-8">
@@ -32,20 +31,18 @@
 
    Theme follows the foundation mechanism exactly (data-theme wins over
    prefers-color-scheme). The participant ramp is theme-invariant; only the
-   author fill and the page-level AA foreground resolve per theme.
+   author fill resolves per theme.
    ====================================================================== */
 :root{
-  /* --- shared by both flavors ------------------------------------- */
+  /* --- participant ramp (default-ASK) ------------------------------ */
+  --ma-author-light:var(--ask-ui-accent-1);    /* foundation, by reference (#8B79A2) */
   --ma-author-dark:#6e5c86;                    /* pattern-local */
   --ma-p-a:var(--ask-ui-accent-2);             /* foundation, by reference (#AE87C2) */
   --ma-p-b:var(--ask-surface);                 /* foundation, by reference (#BFB3D4) */
-  --ma-p-e:#569dbd;                            /* pattern-local — softened cyan */
-  --ma-ink:var(--fg-high-contrast);            /* foundation opt-in high-contrast (#201D26) */
-
-  /* --- default-ASK (template default) ------------------------------ */
-  --ma-author-light:var(--ask-ui-accent-1);    /* foundation, by reference (#8B79A2) */
   --ma-p-c:#c44fc4;                            /* pattern-local — softened magenta */
   --ma-p-d:#a56bd4;                            /* pattern-local — softened violet */
+  --ma-p-e:#569dbd;                            /* pattern-local — softened cyan */
+  --ma-ink:var(--fg-high-contrast);            /* foundation opt-in high-contrast (#201D26) */
 
   /* default-ASK metadata treatment — the approved ASK-preferred rendering.
      Intentionally low-contrast. Do NOT pull these toward AA. */
@@ -53,11 +50,11 @@
   --ma-chrome-fg:var(--fg-2);
   --ma-chrome-faint:var(--fg-3);
 
-  /* geometry — identical across flavors and party modes */
+  /* geometry — identical across party modes */
   --ma-bubble-max:74%; --ma-bubble-pad:7px 12px; --ma-radius:16px; --ma-tail:5px;
   --ma-body:15px; --ma-meta:10px; --ma-gap:3px;
 
-  /* default-ASK keeps the foundation's intentionally faint boundary + glass roles. */
+  /* The foundation's intentionally faint boundary + glass roles. */
   --ma-ctrl-line:var(--line-1); --ma-ctrl-bg:var(--ma-card);
   --ma-rx-line:currentColor;    --ma-rx-bg:transparent;   /* chip edge rides the bubble's own fg */
   --ma-focus:var(--ma-chrome-fg);
@@ -66,28 +63,6 @@
   --ma-frosted-fg:var(--fg-1);
   --ma-card:rgba(255,255,255,.24);
   --ma-bar:rgba(212,198,225,.58);
-}
-
-/* --- AA-compliant: participant values + information-bearing roles ---- */
-:root[data-flavor="AA-compliant"]{
-  --ma-author-light:#7f6b99;
-  --ma-p-c:#c95fc9;
-  --ma-p-d:#a870d6;
-  /* Bubble-local information-bearing text inherits currentColor at full opacity.
-     Hierarchy moves to size, weight, spacing and grouping — never to faint text. */
-  --ma-op-sender:1; --ma-op-time:1; --ma-op-att:1; --ma-op-attstate:1; --ma-op-chan:1;
-  --ma-chrome-fg:var(--ma-page-aa);
-  --ma-chrome-faint:var(--ma-page-aa);
-  --ma-title-fg:var(--ma-page-aa);             /* the archive title is page-level essential text */
-  --ma-page-aa:var(--fg-high-contrast);        /* canonical opt-in high-contrast role — light */
-  /* AA non-text roles: control boundaries, chip edges and focus rings must clear 3:1.
-     The foundation hairline/glass roles are deliberately faint and do not; these are
-     pattern-local AA-scoped replacements, measured in the evidence matrix. */
-  --ma-ctrl-line:rgba(32,29,38,.75);
-  --ma-ctrl-bg:rgba(255,255,255,.55);
-  --ma-rx-line:currentColor;
-  --ma-rx-bg:transparent;   /* chip edge rides the bubble's own fg */
-  --ma-focus:var(--fg-high-contrast);
 }
 
 /* --- theme resolution (mirrors the foundation's own mechanism) -------- */
@@ -100,12 +75,6 @@
   --ma-card:rgba(212,198,225,.08);
   --ma-bar:rgba(16,14,20,.72);
 }
-:root[data-theme="dark"][data-flavor="AA-compliant"]{
-  --ma-page-aa:var(--fg-1);                   /* canonical dark foreground role (lavender-ASK) */
-  --ma-ctrl-line:rgba(212,198,225,.65); --ma-ctrl-bg:rgba(212,198,225,.14);
-  --ma-rx-line:currentColor;            --ma-rx-bg:transparent;
-  --ma-focus:var(--fg-1);
-}
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]):not([data-theme="dark"]){
     --ma-author:var(--ma-author-dark);
@@ -115,12 +84,6 @@
     --ma-card:rgba(212,198,225,.08);
     --ma-bar:rgba(16,14,20,.72);
   }
-  :root:not([data-theme="light"]):not([data-theme="dark"])[data-flavor="AA-compliant"]{
-    --ma-page-aa:var(--fg-1);
-    --ma-ctrl-line:rgba(212,198,225,.65); --ma-ctrl-bg:rgba(212,198,225,.14);
-    --ma-rx-line:currentColor;            --ma-rx-bg:transparent;
-    --ma-focus:var(--fg-1);
-  }
 }
 
 *{box-sizing:border-box}
@@ -129,7 +92,7 @@ body{font-weight:200;line-height:1.45;-webkit-font-smoothing:antialiased}
 
 /* --- header ---------------------------------------------------------- */
 .ma-top{max-width:880px;margin:0 auto;padding:40px 20px 4px;text-align:center}
-.ma-ttl{font-size:25px;font-weight:400;letter-spacing:-.02em;margin:0;color:var(--ma-title-fg,inherit)}
+.ma-ttl{font-size:25px;font-weight:400;letter-spacing:-.02em;margin:0}
 .ma-sub{color:var(--ma-chrome-fg);font-family:var(--font-mono);font-weight:300;font-size:12px;letter-spacing:.03em;margin-top:7px}
 .ma-lgnd{max-width:760px;margin:12px auto 0;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center}
 .ma-lg{font-family:var(--font-mono);font-weight:300;font-size:11px;color:var(--ma-chrome-fg);display:inline-flex;align-items:center;gap:6px}
@@ -243,7 +206,7 @@ mark{background:var(--ma-p-a);color:var(--ma-ink);border-radius:3px}
     <p>[What this timeline is, which source threads / channels it merges, and how it was assembled.]</p>
     <p class="ma-warn">[Media-fidelity profile in use, plus counts for every referenced / omitted-by-export /
       bytes-unavailable item, and any history held elsewhere. No attachment disappears silently.]</p>
-    <p>[Flavor in use: default-ASK or AA-compliant. Participant &rarr; role mapping is manifest-owned and persistent.]</p>
+    <p>[Flavor: default-ASK. Participant &rarr; role mapping is manifest-owned and persistent.]</p>
   </details>
 </header>
 
