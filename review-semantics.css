@@ -41,9 +41,10 @@
      evidence-state.css → review-semantics.css
 
    Offline; no CDN. Theme-aware through the foundation's [data-theme] +
-   prefers-color-scheme model: every color resolves through a token that
-   already flips; the passage-mark dose is the one value this file sets per
-   theme.
+   prefers-color-scheme model: every color resolves through a foundation or
+   Spectral token, and all but proposed flip with the theme; proposed takes
+   the fixed emphasis magenta, the same in both themes. The passage-mark dose
+   is the one value this file sets per theme.
 
    STATUS: v0.1 // first version. Opt-in. A consumer takes it through its own
    gates; no existing document is recolored by its arrival. Contract:
@@ -53,8 +54,9 @@
    FACET 1 // REVIEW STATE (profile)
    ---------------------------------------------------------------------------
    Review meaning       Value                      Relationship
-     proposed           value of --state-proposed  correspondence: a candidate,
-                                                   not yet decided
+     proposed           value of                   a candidate, not yet
+                        --ask-emphasis-magenta     decided; Spectral proposed's
+                                                   hue, not its value
      open               value of --state-held      correspondence: a named open
                                                    question; Evidence
                                                    unresolved shares the value
@@ -80,12 +82,17 @@
    by who made the request. A surface never relabels a review role by a
    Spectral or Evidence name, and never relabels an Evidence or Spectral role
    by a review name because a value is shared. Spectral's Proposed and
-   review's Proposed share a word and a value; where both apply to one item,
-   the keyed list carries them, one key each.
+   review's Proposed share a word and the magenta hue, not a value: Spectral's
+   is its theme-calibrated --state-proposed, review's the fixed emphasis
+   magenta. Where both apply to one item, the keyed list carries them, one key
+   each.
 
-   The proposed and open values are Spectral values, not the fixed emphasis
-   accents: --state-held is tealer than the emphasis cyan (#00BEFF), and
-   --state-proposed is a theme-calibrated magenta, not #FF00FF.
+   The proposed value is the emphasis magenta (#FF00FF in both themes), the
+   value a document's other magenta labels and rails already use, so a
+   proposal never sits beside a near-identical second pink. A proposal and a
+   thesis are told apart by their words, their place and their key, never by
+   a difference in pink. The open value stays a Spectral value, not the fixed
+   emphasis cyan: --state-held is tealer than #00BEFF.
 
    ---------------------------------------------------------------------------
    FACET 2 // ANNOTATION
@@ -224,7 +231,7 @@
 /* ---- Facet 1: Review State ------------------------------------------- */
 
 :root {
-  --review-proposed: var(--state-proposed);  /* correspondence: a candidate */
+  --review-proposed: var(--ask-emphasis-magenta);  /* a candidate: the emphasis magenta */
   --review-open:     var(--state-held);      /* correspondence: an open question */
   --review-accepted: var(--state-earned);    /* a recorded decision to adopt */
   --review-declined: var(--state-deflated);  /* a recorded decision not to adopt */

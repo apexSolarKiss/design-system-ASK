@@ -22,7 +22,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 | Review meaning | Words | Visual implementation | Relationship |
 | --- | --- | --- | --- |
-| `proposed` | Proposed, or Correction requested | value of `--state-proposed` | correspondence: a candidate, not yet decided |
+| `proposed` | Proposed, or Correction requested | value of `--ask-emphasis-magenta` | a candidate, not yet decided; Spectral `proposed`'s hue, not its value |
 | `open` | Open question | value of `--state-held` | correspondence: a named open question. Evidence `unresolved` shares the value |
 | `accepted` | Accepted | value of `--state-earned` | a recorded decision to adopt or permit, at its scope |
 | `declined` | Declined | value of `--state-deflated` | a recorded decision not to adopt or permit, at its scope |
@@ -36,7 +36,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 **Proposed and Correction requested share paint, not event identity.** A candidate submitted and a correction requested are different events, kept apart by their words and by who made the request. Correction requested is used only when someone has asked for existing words to change. Proposed alone never implies a defect.
 
-**The pending values are Spectral values, not the emphasis accents.** `--state-held` is tealer than the emphasis cyan (`#00BEFF`), and `--state-proposed` is a theme-calibrated magenta, not `#FF00FF`.
+**Proposed takes the emphasis magenta; Open question keeps a Spectral value.** Proposed is `#FF00FF` in both themes, the value a document's other magenta labels and rails already use, so a proposal never sits beside a near-identical second pink. A proposal and a thesis are told apart by their words, their place and their key, never by a difference in pink. Spectral's `proposed` keeps its own theme-calibrated magenta: the two Proposed roles share a word and a hue, not a value, and where both apply to one item the keyed list carries them, one key each. Open question stays `--state-held`, which is tealer than the emphasis cyan (`#00BEFF`).
 
 ## Annotation // the composition
 
