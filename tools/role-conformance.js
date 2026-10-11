@@ -16,13 +16,16 @@
                   invalid one exempts nothing.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped }. Each finding carries a rule (C0–C12) and a reason code, such
-   as C1.size or C4.underline, so a fixture can require the exact reason.
+   unmapped, collapsed }. Each finding carries a rule (C0–C12) and a reason
+   code, such as C1.size or C4.underline, so a fixture can require the exact
+   reason.
 
    check() reads the page at rest. The interaction states (C9) need real
    pointer and keyboard input, which a page cannot give itself: the headless
    runner drives them through ASKRoleConformance.interaction and adds its C9
-   findings to the same report.
+   findings to the same report. The runner also opens every disclosure in
+   scope and, after its link-state pass, judges there what each collapsed C12
+   element presents (see C12).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -65,7 +68,8 @@
                         other emphasis rail may take magenta, violet or cyan, the
                         accents surface-treatments sanctions. Every
                         .doc-hierarchy draws the 1px solid --line-2 hierarchy
-                        rail at the --space-4 inset
+                        rail at the --space-4 inset; that of a collapsed C12
+                        element is judged open (see C12)
      C4  contents       every .doc-toc-link, wherever it sits, carries
                         surface-text-link and renders that module's resting
                         underline; every anchor anywhere in a .doc-toc-list,
@@ -178,6 +182,22 @@
                         the hierarchy rail; no note sits inside a framing,
                         synthesis or emphasis panel (C12.note). A row, item or
                         list draws no rail, border or wash (C12.rail).
+                        An element of the composition, a list's keys and
+                        values included, that a closed disclosure keeps from
+                        being seen, anywhere but in its summary, is collapsed.
+                        At rest C12 still checks its syntax, vocabulary and
+                        relationships, including a mark's having words
+                        (C12.label), a passage mark's host and note, and a
+                        note's classes; it counts the element and lists it
+                        under collapsed. Once the runner has opened every
+                        disclosure in scope, it judges what the element
+                        presents, with the same reason codes: a mark's words
+                        as rendered, its box and its outline or marker; a
+                        passage mark's color, borders and tint; a note's rail;
+                        a row, item or list drawing no rail, border or wash;
+                        and the element's hierarchy rail, if it has one
+                        (C3.hierarchy). An element the page shows although its
+                        disclosure is closed is judged at rest.
                         Not checked here: rails or underlines outside the
                         composition, a content passage's own rail included,
                         and paint that computed borders, background and the
@@ -185,10 +205,14 @@
                         box-shadow, background-image, transforms, clip-path)
 
    STATUS
-     pass      no finding, and at least one governed element was checked
-     fail      one or more findings
-     vacuous   no governed element in scope: nothing was proven. A page that
-               has not adopted the register is not a passing page.
+     pass       no finding, and at least one governed element was checked
+     fail       one or more findings
+     vacuous    no governed element in scope: nothing was proven. A page that
+                has not adopted the register is not a passing page.
+     incomplete no finding, but C12 elements collapsed in closed disclosures
+                (listed under collapsed) await the runner's open-state
+                judgment, so nothing yet proves what they present.
+   Neither vacuous nor incomplete is a pass.
 
    UNMAPPED (informational). Text-bearing elements in scope that carry no
    governed role and sit inside no element that does, with their computed
@@ -200,6 +224,35 @@
      when the runner drives them.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
+   - check() alone does not judge what a collapsed C12 element presents: it
+     lists the element under collapsed and never reports pass. The runner
+     judges every element held this way, once it has opened every disclosure
+     in scope and judged the link states; each ends in a judgment or a
+     finding. One still collapsed then, because the runner did not open its
+     disclosure or the page closed it again, fails its own reason marked
+     state "collapsed": C12.label for a mark, C12.passage for a passage mark,
+     C12.note for a note, and C12.rail for a row, an item, a list or a list's
+     key or value. One that left the page as its disclosure opened fails it
+     marked "removed", since what it presents cannot be proven. A page that
+     changes a disclosure's content after that judgment is outside this
+     check, like any content a script inserts after the resting check.
+   - The runner opens a disclosure by setting open, so a summary's click
+     handler is not run, and it opens only the disclosures in scope: a run
+     scoped inside a closed disclosure leaves that disclosure closed, and
+     every element held there fails marked "collapsed". Only a <details> is
+     a disclosure here. Content hidden another way (hidden="until-found",
+     content-visibility outside a <details>, a shadow-DOM or slotted
+     disclosure), and content the page shows by checkVisibility's test
+     although a closed <details> clips it to nothing, keep their verdict at
+     rest.
+   - The open-state judgment covers what the C12 composition presents, the
+     hierarchy rail of its elements included. Every other rule judges content
+     in a closed disclosure at rest, the role metrics of a mark's or a list
+     key's words (C1, C8) among them: a page that restyles such content only
+     once a disclosure opens is not exercised there, one that restyles it
+     only while a disclosure is closed is judged on that styling, and an
+     element the page shows at rest and restyles later is judged as it
+     rests.
    - C12 compares a mark with its role token as it resolves at the mark. It
      does not independently establish that a local rebinding of that token is
      authorized: adopted role bindings stay governed by review-semantics.md,
@@ -472,6 +525,35 @@
     return out;
   }
 
+  /* A character that shows: neither space nor a format or separator character. */
+  const VISIBLE = /[^\s\p{Cf}\p{Z}]/u;
+  /* Whether the page shows an element: a box, outside skipped content, visible and not transparent. */
+  const seen = (el) => typeof el.checkVisibility !== 'function' || el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  /* A C12 element is collapsed when a closed disclosure keeps it from being seen: it
+     sits in a closed <details>, anywhere but in that disclosure's summary, at any
+     depth of nesting, and the page does not show it there. */
+  function collapsed(el) {
+    let inside = false;
+    for (let d = el.closest('details'); d && !inside; d = d.parentElement && d.parentElement.closest('details')) {
+      const summary = [...d.children].find((k) => k.localName === 'summary');
+      inside = !d.open && !(summary && summary.contains(el));
+    }
+    return inside && !seen(el);
+  }
+  /* The collapsed C12 elements resting checks held, each with its case container, its
+     kind and the judgments of what it presents, which interaction.collapsed() runs once
+     every disclosure in scope is open. */
+  const held = new Map();
+  /* The composition's elements, a list's keys and values included; per kind, its noun and the
+     reason and basis it fails with when it cannot be judged open. */
+  const COMPOSITION = '.doc-mark, mark.doc-passage-mark, .doc-annotation-note, .doc-annotation-item, .doc-annotations, .doc-annotation-list';
+  const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
+  const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
+    'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
+    'doc-annotation-item': ['an item', 'rail', 'computed'], 'doc-annotation-list': ['an annotation list', 'rail', 'computed'],
+    'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
+  const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
+
   function check(opts) {
     const o = opts || {};
     const scope = resolveScope(o.scope);
@@ -481,6 +563,20 @@
     let governed = 0;
     const add = (rule, reason, el, detail) => findings.push({ rule, reason: rule + '.' + reason, element: path(el), text: text(el), ...detail });
     const roleSel = MATRIX.map((m) => m.sel).join(', ');
+    /* C12 elements a closed disclosure keeps from being seen: their syntax is checked here,
+       and what they present is held, with its reason codes, for the open state. */
+    const collapsedHere = [];
+    const heldHere = new Map();
+    const hold = (el, judge) => {
+      if (!heldHere.has(el)) {
+        const control = el.closest('[data-control]');
+        const kind = kindOf(el);
+        heldHere.set(el, { container: control ? control.dataset.control : (el.closest('#conforming') ? 'conforming specimen' : null), kind, judges: [] });
+        counts[kind + ' collapsed'] = (counts[kind + ' collapsed'] || 0) + 1;
+        collapsedHere.push({ element: path(el), text: text(el), kind });
+      }
+      heldHere.get(el).judges.push(judge);
+    };
 
     /* C0 foundation: at the scope root and wherever a governed role renders */
     const tokens = {};
@@ -590,9 +686,15 @@
       }
     }
     for (const el of all('.doc-hierarchy')) {
-      const own = hierarchyRailOf(el);
-      if (own !== 'rail') add('C3', 'hierarchy', el, { message: own === 'none' ? 'a hierarchy level draws no rail'
-        : `the hierarchy rail is not 1px solid ${HIERARCHY_RAIL.color} at the ${HIERARCHY_RAIL.inset} inset (its ${own} differs)` });
+      const judge = (add) => {
+        const own = hierarchyRailOf(el);
+        if (own !== 'rail') add('C3', 'hierarchy', el, { message: own === 'none' ? 'a hierarchy level draws no rail'
+          : `the hierarchy rail is not 1px solid ${HIERARCHY_RAIL.color} at the ${HIERARCHY_RAIL.inset} inset (its ${own} differs)` });
+      };
+      /* The hierarchy rail of a C12 element, a note's in particular, is part of what the
+         composition presents: collapsed, it is judged open. */
+      if (el.matches(HELD_SEL) && collapsed(el)) hold(el, judge);
+      else judge(add);
     }
 
     /* C4 contents */
@@ -694,7 +796,6 @@
 
     /* C11 peer groups: declared structure, then the rhythm of the rendered lines */
     const GROUP_TOL = 0.5;
-    const VISIBLE = /[^\s\p{Cf}\p{Z}]/u;
     const shows = (node) => VISIBLE.test(node.textContent);
     const looseText = (el) => [...el.childNodes].some((n) => n.nodeType === 3 && shows(n));
     /* The group's rendered text lines, in order: the vertical center of each line that shows a visible character. */
@@ -769,7 +870,6 @@
       evidence: ['supported', 'partially-supported', 'unresolved', 'weakened', 'not-yet-testable'],
       state: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed', 'neutral'] };
     const FACETS = Object.keys(VOCAB);
-    const COMPOSITION = '.doc-mark, mark.doc-passage-mark, .doc-annotation-note, .doc-annotation-item, .doc-annotations, .doc-annotation-list';
     const NOTE_NYT = '.doc-annotation-note[data-evidence="not-yet-testable"]';
     const clear = (color) => /^transparent$|rgba\(\s*[\d.]+,\s*[\d.]+,\s*[\d.]+,\s*0\s*\)|\/\s*0(\.0+)?\s*\)$/.test(color);
     const drawn = (c, side) => c['border' + side + 'Style'] !== 'none' && c['border' + side + 'Style'] !== 'hidden' && px(c['border' + side + 'Width']) > 0 && !clear(c['border' + side + 'Color']);
@@ -792,12 +892,28 @@
       const f = facets[0];
       const v = m.getAttribute('data-' + f);
       if (!VOCAB[f].includes(v)) { syn('C12', 'vocab', m, { message: 'a ' + f + ' mark names a role outside its vocabulary', value: v }); continue; }
+      if (collapsed(m)) {
+        /* A closed disclosure keeps the mark from being seen: its words must exist now, and what it
+           presents is judged once the runner has opened the disclosure. */
+        const words = VISIBLE.test(m.textContent);
+        if (!words) syn('C12', 'label', m, { message: 'a mark states its role in words; color never carries it alone' });
+        hold(m, (sink) => present(m, f, v, sink, words, true));
+        continue;
+      }
+      present(m, f, v, add, true, false);
+    }
+    /* What a mark presents: its words as rendered (and, open, in a rendered box), its box, and its
+       outline or marker in its role's token. Judged at rest, or for a collapsed mark in its open
+       presentation, where a mark that renders no box would otherwise read its words from its text. */
+    function present(m, f, v, add, judgeWords, open) {
+      const syn = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'syntax', ...detail });
+      const cmp = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'computed', ...detail });
       const words = typeof m.innerText === 'string' ? m.innerText : m.textContent;
-      if (!VISIBLE.test(words)) syn('C12', 'label', m, { message: 'a mark states its role in rendered words; color never carries it alone' });
+      if (judgeWords && (!VISIBLE.test(words) || (open && !rendered(m)))) syn('C12', 'label', m, { message: 'a mark states its role in rendered words; color never carries it alone' });
       const c = getComputedStyle(m);
       const b = getComputedStyle(m, '::before');
       const want = probe(m, `border-left:1px solid var(--${f}-${v})`).border;
-      if (!boxed(m, c)) { cmp('C12', 'geometry', m, { message: 'a mark is a rendered inline-flex box: its outline and its marker draw only there', display: c.display }); continue; }
+      if (!boxed(m, c)) { cmp('C12', 'geometry', m, { message: 'a mark is a rendered inline-flex box: its outline and its marker draw only there', display: c.display }); return; }
       const box = m.getBoundingClientRect();
       if (f === 'review') {
         const sm = px(tokenAt(document.documentElement, '--radius-sm') || '0');
@@ -838,43 +954,61 @@
       const host = pm.parentElement && pm.parentElement.closest(BODY_ROLES + ', .doc-quote > p, .doc-table-cell');
       const ids = (pm.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
       const note = ids.map((id) => document.getElementById(id)).find((n) => n && n.classList.contains('doc-annotation-note'));
-      const dose = tokenAt(pm, '--review-passage-dose');
-      const c = getComputedStyle(pm);
-      const tint = probe(pm, `border-left:1px solid color-mix(in srgb, var(--review-${v}) var(--review-passage-dose, 0%), transparent)`).border;
       if (!host) syn('C12', 'passage', pm, { message: 'a passage mark sits inside body text' });
-      else if (c.color !== getComputedStyle(host).color) cmp('C12', 'passage', pm, { message: 'a passage mark keeps the text\'s color', expected: getComputedStyle(host).color, got: c.color });
-      if (c.textDecorationLine !== 'none') cmp('C12', 'passage', pm, { message: 'a passage mark draws no underline: in this composition the scope cue is the tint' });
-      if (drawn(c, 'Left') || drawn(c, 'Right') || drawn(c, 'Top') || drawn(c, 'Bottom')) cmp('C12', 'passage', pm, { message: 'a passage mark draws no rail or border' });
-      if (clear(c.backgroundColor) || c.backgroundColor !== tint) cmp('C12', 'passage', pm, { message: 'a passage mark shows its tint: its role\'s value at the passage dose', expected: tint, got: c.backgroundColor });
-      else if (!['18%', '26%'].includes(dose)) cmp('C12', 'passage', pm, { message: 'the passage dose is the registered 18% light or 26% dark', got: dose });
+      /* What the passage mark presents: its words in the text's color, no underline or border, and its tint. */
+      const judge = (add) => {
+        const cmp = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'computed', ...detail });
+        const dose = tokenAt(pm, '--review-passage-dose');
+        const c = getComputedStyle(pm);
+        const tint = probe(pm, `border-left:1px solid color-mix(in srgb, var(--review-${v}) var(--review-passage-dose, 0%), transparent)`).border;
+        if (host && c.color !== getComputedStyle(host).color) cmp('C12', 'passage', pm, { message: 'a passage mark keeps the text\'s color', expected: getComputedStyle(host).color, got: c.color });
+        if (c.textDecorationLine !== 'none') cmp('C12', 'passage', pm, { message: 'a passage mark draws no underline: in this composition the scope cue is the tint' });
+        if (drawn(c, 'Left') || drawn(c, 'Right') || drawn(c, 'Top') || drawn(c, 'Bottom')) cmp('C12', 'passage', pm, { message: 'a passage mark draws no rail or border' });
+        if (clear(c.backgroundColor) || c.backgroundColor !== tint) cmp('C12', 'passage', pm, { message: 'a passage mark shows its tint: its role\'s value at the passage dose', expected: tint, got: c.backgroundColor });
+        else if (!['18%', '26%'].includes(dose)) cmp('C12', 'passage', pm, { message: 'the passage dose is the registered 18% light or 26% dark', got: dose });
+      };
+      if (collapsed(pm)) hold(pm, judge);
+      else judge(add);
       if (!note) syn('C12', 'passage', pm, { message: 'a passage mark names its .doc-annotation-note through aria-describedby' });
     }
     for (const n of all('.doc-annotation-note')) {
       counts['doc-annotation-note'] = (counts['doc-annotation-note'] || 0) + 1;
-      const c = getComputedStyle(n);
-      const nytValue = probe(n, 'border-left:2px dashed var(--evidence-not-yet-testable, transparent)').border;
       if (n.matches(NOTE_NYT)) {
         /* Not yet testable's rail is checked first: the hierarchy rail never stands in for it. */
         if (n.matches('.doc-hierarchy')) syn('C12', 'note', n, { message: 'a not-yet-testable note takes that role\'s dashed rail, never the hierarchy rail' });
-        if (!(c.borderLeftStyle === 'dashed' && Math.abs(px(c.borderLeftWidth) - 2) <= TOL && c.borderLeftColor === nytValue && !clear(nytValue))) cmp('C12', 'note', n, { message: 'a not-yet-testable note draws that role\'s 2px dashed rail', style: c.borderLeftStyle, width: c.borderLeftWidth });
+        const judge = (add) => {
+          const c = getComputedStyle(n);
+          const nytValue = probe(n, 'border-left:2px dashed var(--evidence-not-yet-testable, transparent)').border;
+          if (!(c.borderLeftStyle === 'dashed' && Math.abs(px(c.borderLeftWidth) - 2) <= TOL && c.borderLeftColor === nytValue && !clear(nytValue))) add('C12', 'note', n, { basis: 'computed', message: 'a not-yet-testable note draws that role\'s 2px dashed rail', style: c.borderLeftStyle, width: c.borderLeftWidth });
+        };
+        if (collapsed(n)) hold(n, judge);
+        else judge(add);
       } else if (!n.matches('.doc-hierarchy')) cmp('C12', 'note', n, { message: 'a note composes the hierarchy rail, or is a not-yet-testable evidence note on that role\'s 2px dashed rail' });
       if (n.parentElement && n.parentElement.closest(PANEL)) syn('C12', 'note', n, { message: 'a note never sits inside a panel: it follows the panel' });
     }
     const inRows = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-list > dt, .doc-annotation-list > dd';
     for (const el of all(inRows)) {
-      const c = getComputedStyle(el);
-      if (['Top', 'Right', 'Bottom', 'Left'].some((s) => drawn(c, s)) || !clear(c.backgroundColor)) cmp('C12', 'rail', el, { message: 'a row, item or list draws no rail, border or wash: the composition\'s one rail is not yet testable\'s, on a note or a mark', border: c.borderLeftStyle + ' ' + c.borderLeftWidth, background: c.backgroundColor });
+      const judge = (add) => {
+        const c = getComputedStyle(el);
+        if (['Top', 'Right', 'Bottom', 'Left'].some((s) => drawn(c, s)) || !clear(c.backgroundColor)) add('C12', 'rail', el, { basis: 'computed', message: 'a row, item or list draws no rail, border or wash: the composition\'s one rail is not yet testable\'s, on a note or a mark', border: c.borderLeftStyle + ' ' + c.borderLeftWidth, background: c.backgroundColor });
+      };
+      if (collapsed(el)) hold(el, judge);
+      else judge(add);
     }
 
-    const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : 'pass';
-    return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, unmapped };
+    for (const [el, h] of heldHere) held.set(el, h);
+    const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
+    return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, unmapped, collapsed: collapsedHere };
   }
 
-  /* ---- C9: the interaction half, driven by the runner --------------------
-     The runner calls targets(), then for each testable link: point() and
+  /* ---- The interaction half, driven by the runner ------------------------
+     The runner calls prepare(), which opens every disclosure in scope. For
+     C9 it then calls targets(), then for each testable link: point() and
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
-     read() on each governed link that takes focus; then judge(records). */
+     read() on each governed link that takes focus; then judge(records).
+     Last, it calls collapsed(), which judges the C12 elements a resting
+     check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
   const rendered = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -889,6 +1023,31 @@
       for (const d of ds) if (d.hasAttribute('name')) { d.setAttribute(ATTR + '-name', d.getAttribute('name')); d.removeAttribute('name'); }
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
+    },
+    /* With every disclosure in scope open, judge what each C12 element a resting check held
+       presents, wherever it now sits, once the animations on it, inside it and on its ancestors
+       have finished: its findings carry state "open". An element still collapsed fails its held
+       reason marked "collapsed"; one no longer on the page fails it marked "removed". */
+    collapsed() {
+      for (const el of held.keys()) {
+        if (!el.isConnected) continue;
+        const anims = el.getAnimations({ subtree: true });
+        for (let a = el.parentElement; a; a = a.parentElement) anims.push(...a.getAnimations());
+        for (const x of anims) { try { x.finish(); } catch (e) { /* an infinite animation cannot finish */ } }
+      }
+      const findings = [];
+      let judged = 0;
+      for (const [el, h] of [...held]) {
+        held.delete(el);
+        judged++;
+        const sink = (state) => (rule, reason, e, detail) => findings.push({ rule, reason: rule + '.' + reason, element: path(e),
+          text: text(e), container: h.container, state, ...detail });
+        const [noun, reason, basis] = HELD_KIND[h.kind];
+        if (!el.isConnected) sink('removed')('C12', reason, el, { basis, message: noun + ' held for its open presentation left the page as its disclosure opened, so what it presents cannot be proven' });
+        else if (collapsed(el)) sink('collapsed')('C12', reason, el, { basis, message: noun + ' whose disclosure is closed when it is judged is not seen, so what it presents cannot be proven: the runner did not open that disclosure, or the page closed it again' });
+        else for (const judge of h.judges) judge(sink('open'));
+      }
+      return { judged, findings };
     },
     targets(opts) {
       const scope = resolveScope((opts || {}).scope);

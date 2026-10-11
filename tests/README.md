@@ -361,7 +361,8 @@ The page judges each case's **resting** codes itself and writes them to
 `window.__roleFixture` and `body[data-result]`; the C9 link-state codes need a real
 pointer and real Tab focus, so only the headless runner gives the full verdict. It merges
 each case's resting codes with the link-state codes it observes in that case and requires
-the union to equal the case's `data-expect` exactly.
+the union to equal the case's `data-expect` exactly, and the page's own resting verdict to
+pass.
 
 **Run it** from the repo root:
 
@@ -405,10 +406,25 @@ offered as evidence on its own, or when the checker changes.
 
 The regression fixture for rule **C12** of `tools/role-conformance.js`: the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`). It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`.
 
-A conforming specimen must return no finding. After it come **39 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
+A conforming specimen must return no finding. After it come **73 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
 
-- **35 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a review mark with three pill corners, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined.
-- **4 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, and a passage mark described by two ids.
+- **61 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a review mark with three pill corners, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined.
+- **12 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose tint is suppressed only while its disclosure is closed and the same passage open from the start, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, and rows without a mark in a closed disclosure.
+
+**Disclosures.** Thirty-three controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them. The resting check judges its syntax, vocabulary and relationships, requires that a mark has words (`C12.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
+
+- Labeled marks in a closed disclosure pass, nested and in a table cell included, and so do rows without a mark and a not-yet-testable note on its rail.
+- At rest, a collapsed mark with no words, one without the label role, one wearing the emphasis chip class, one carrying two facets, a review role outside the vocabulary and a passage mark with no note fail as they would outside a disclosure.
+- Once opened, a mark fails when its words are hidden inside it, when it is drawn without its flex box or reduced to a gray dot, when it is repainted, whether always or only once open, when it renders no box once open, and when an animation hides it as its disclosure opens.
+- A composition restyled only once its disclosure opens fails there:
+  - a passage mark that loses its tint (`C12.passage`), its note that loses its hierarchy rail (`C3.hierarchy`) and the note's row that takes a rail (`C12.rail`), in one control, which fails the same way at rest when its disclosure is open from the start;
+  - a not-yet-testable note that loses its rail (`C12.note`);
+  - a row and a list without a mark that take a rail, and an item, a list key and a list value that take a wash (`C12.rail`);
+  - a row on the hierarchy rail that loses it (`C3.hierarchy`).
+- A composition restyled only while its disclosure is closed passes, since what it presents open conforms: a passage whose tint is suppressed, and the same passage open from the start; and a composition whose passage mark, notes, rows, item, list, list key, list value and marks are each repainted or have their rails removed or added.
+- An element fails, too, when its disclosure is closed again before it is judged, or when it is replaced as its disclosure opens: what it presents cannot be proven. Two controls hold a row and its mark, and two hold a passage mark, its note, a not-yet-testable note and their rows, items and marks, so each kind fails with its own reason.
+- A mark in a closed disclosure's summary, or one the page shows although its disclosure is closed, is seen, so it is judged at rest; with its words hidden there, it fails.
+- Outside any disclosure, a visible mark whose words are hidden fails at rest.
 
 A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in, which the two compatibility controls hold.
 

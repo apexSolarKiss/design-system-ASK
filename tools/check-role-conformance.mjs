@@ -12,7 +12,10 @@
           load a role fixture (tests/role-conformance-fixture.html, or
           tests/review-semantics-fixture.html for C12) from a served repo root and
           judge every case: its static reason codes from the page, its
-          interaction reason codes from this runner
+          interaction reason codes from this runner. A case passes when the
+          page's own resting verdict passes and the union of both equals its
+          expected codes; where the page names the codes this runner must return
+          for a case (expectedRunner), they must match exactly
 
    --profiles names a JSON file holding an array of profile declarations, the
    consumer's own named roles (a count numeral, say):
@@ -31,7 +34,16 @@
    one without it that no resting check saw — a script added it — fails
    C9.class. The page runs under an emulated reduced-motion preference and
    running transitions are finished before each read, so the pass proves each
-   settled state, not how long it takes to arrive.
+   settled state, not how long it takes to arrive. Last, once the link states
+   are judged, with the pointer moved away and focus cleared, the animations
+   on each annotation element the resting check held as collapsed, inside it
+   and on its ancestors, are finished, and each element is judged on what it
+   presents open: a mark's words as rendered, its box and its outline or
+   marker; a passage mark's color, borders and tint; a note's rail; a row,
+   item or list drawing no rail, border or wash; and its hierarchy rail, if it
+   has one. These findings are C12's and C3.hierarchy's, with the resting
+   check's reason codes, each marked state "open"; "collapsed" for an element
+   whose disclosure is still closed, "removed" for one that left the page.
 
    Exit 0 pass · 1 finding, vacuous page, page error, failed navigation or
    fixture failure · 2 usage or browser error. A page with no governed element
@@ -200,12 +212,18 @@ async function interactionPass(p, scope) {
       if (want.has(a)) { records.get(a).focus = await p.evaluate(`${I}.read(${JSON.stringify(a)})`); want.delete(a); }
     } else if (a === '#other' && first === null) first = '#other-start';
   }
-  const findings = [...untested, ...await p.evaluate(`${I}.judge(${JSON.stringify([...records.values()])})`)];
+  const judged = await p.evaluate(`${I}.judge(${JSON.stringify([...records.values()])})`);
+  /* then the held C12 elements, after every link-state judgment: finishing their animations
+     must not move a token the link states are judged against */
+  await p.evaluate(`${I}.blur()`);
+  await p.mouse(await p.evaluate(`${I}.neutral()`));
+  const open = await p.evaluate(`${I}.collapsed()`);
+  const findings = [...untested, ...judged, ...open.findings];
   await p.evaluate(`${I}.cleanup()`);
   return {
     findings,
     summary: {
-      governed_links: targets.length, tested: testable.length, opened_details: opened, tab_presses: presses,
+      governed_links: targets.length, tested: testable.length, opened_details: opened, collapsed_judged: open.judged, tab_presses: presses,
       hovered: [...records.values()].filter((r) => r.hover).length, focused: [...records.values()].filter((r) => r.focus).length,
       not_rendered: targets.filter((t) => t.testable && !t.rendered).map((t) => t.element),
       not_tested_lacks_class: targets.filter((t) => !t.testable).map((t) => t.element),
@@ -235,8 +253,11 @@ try {
       for (const x of ip.findings) { const k = x.container || '(outside every case)'; if (!byCase.has(k)) byCase.set(k, new Set()); byCase.get(k).add(x.reason); }
       const cases = f.cases.map((c) => {
         const got = [...new Set([...(c.staticGot ? c.staticGot.split(' ').filter(Boolean) : []), ...(byCase.get(c.case) || [])])].sort().join(' ');
-        const pass = got === c.expected && c.detailPass !== false;
-        return { case: c.case, pass, expected: c.expected, got, detail: c.detail };
+        const runnerGot = [...(byCase.get(c.case) || [])].sort().join(' ');
+        const pass = got === c.expected && c.staticPass !== false && c.detailPass !== false
+          && (c.expectedRunner === undefined || runnerGot === c.expectedRunner);
+        return { case: c.case, pass, expected: c.expected, got, detail: c.detail, static_pass: c.staticPass !== false,
+          ...(c.expectedRunner === undefined ? {} : { expected_runner: c.expectedRunner, runner_got: runnerGot }) };
       });
       const stray = [...byCase.keys()].filter((k) => !f.cases.some((c) => c.case === k));
       const failed = cases.filter((c) => !c.pass).length + stray.length;
@@ -256,7 +277,7 @@ try {
       let status = findings.length ? 'fail' : r.governed === 0 ? 'vacuous' : 'pass';
       if (status === 'vacuous' && o.allowVacuous) status = 'vacuous-allowed';
       if (p.errors.length && status !== 'fail') status = 'page-error';
-      report.runs.push({ url, scheme, status, governed: r.governed, counts: r.counts, tokens: r.tokens, findings,
+      report.runs.push({ url, scheme, status, governed: r.governed, counts: r.counts, tokens: r.tokens, findings, collapsed: r.collapsed,
         interaction: ip.summary, interaction_records: ip.records, profiles: r.profiles, unmapped: r.unmapped, page_errors: p.errors });
       if (!(status === 'pass' || status === 'vacuous-allowed')) ok = false;
       await p.close();
