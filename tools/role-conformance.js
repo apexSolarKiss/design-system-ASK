@@ -1107,7 +1107,7 @@
       if (!sides.every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - LABEL_BOX.border) <= TOL && c['border' + s + 'Color'] === color)) {
         cmp('border', { message: 'a bordered label draws one 1px solid border, one color on all four sides', got: sides.map((s) => c['border' + s + 'Width'] + ' ' + c['border' + s + 'Style'] + ' ' + c['border' + s + 'Color']).join(' / ') });
       }
-      if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - LABEL_BOX.corner) > TOL)) cmp('corner', { message: 'a bordered label takes the owner\'s 8px corner (--radius-sm) on all four corners: pill corners belong to operable objects', got: corners(c) });
+      if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - LABEL_BOX.corner) > TOL)) cmp('corner', { message: 'a bordered label takes the owner\'s selected 8px corner (--radius-sm) on all four corners; corner shape alone assigns no interaction', got: corners(c) });
       if (!clear(c.backgroundColor) || (c.backgroundImage && c.backgroundImage !== 'none')) cmp('fill', { message: 'a bordered label has no fill: its meaning is its border and its words', background: c.backgroundColor, image: c.backgroundImage });
       const fg1 = probe(el, 'color:var(--fg-1)').color;
       const theme = fg1 === fg1Light ? 'light' : fg1 === fg1Dark ? 'dark' : null;
@@ -1117,7 +1117,7 @@
       else if (layers.length !== 1 || l.inset || l.lens.length !== 4 || l.lens.slice(0, 3).some((v) => Math.abs(v) > TOL) || Math.abs(l.lens[3] - LABEL_BOX.dose[theme]) > TOL || l.color !== color) {
         cmp('edge', { message: 'a bordered label\'s edge is its border plus one zero-blur reinforcement in the border\'s color: ' + LABEL_BOX.dose.light + 'px in light, ' + LABEL_BOX.dose.dark + 'px in dark', theme, got: c.boxShadow, border: color });
       }
-      if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin, so a clipping box never cuts its reinforcement', got: c.marginLeft + ' ' + c.marginRight });
+      if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin to reserve its reinforcement at the inline sides; block-axis clearance belongs to its host', got: c.marginLeft + ' ' + c.marginRight });
       if (!el.matches('.doc-mark[data-review]')) {
         const chip = el.matches('.surface-emphasis-chip');
         const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
