@@ -9,7 +9,7 @@ Run before sealing. Any item below fails the artifact.
 - Participant color encodes anything other than **which person** — urgency, evidence, status, approval, priority, or emphasis
 - A Spectral State or Evidence State hue is used **as a pattern role** — chrome, participant, or interaction — anywhere in the archive
 - Participant → role assignment is **frequency-derived**, so a refresh recolors a person
-- The author is recolored, moved off the right, or assigned a participant role
+- The author is recolored, moved off the right, or assigned a participant role. A successor to an `AA-compliant` archive that deliberately adopts this template version and so takes `default-ASK`'s author fill does not fail this item: that is an owner change, not a recoloring (pattern README, *A successor to an `AA-compliant` archive*)
 - A legend or sender labels appear in `data-party-mode="two-party"`
 - **`data-party-mode="two-party"` contains more than two distinct participant IDs**
 - **`data-party-mode="two-party"` contains any `participant-a` … `participant-e` message role** — two-party is author + one frosted counterpart, nothing else
@@ -29,11 +29,10 @@ Run before sealing. Any item below fails the artifact.
 
 ## Flavor fails
 
-- A second template, duplicated message markup, duplicated script, or a flavor-specific geometry branch exists
-- Flavor is selected by anything other than the root `data-flavor` attribute
+- A second template, duplicated message markup, duplicated script, a second flavor, or a flavor-specific branch exists
+- In a render from this version, the root `data-flavor` attribute, or the manifest's flavor, is anything other than `default-ASK` — `AA-compliant` is retired, and a render from this version that carries its name overstates what it is. An archive sealed earlier keeps its recorded version, and a successor rendered from the earlier version its manifest records is checked against that version's checklist
+- A successor to an `AA-compliant` archive is rendered from this version without recording the adopted version and each role's new bound value, or uses the adoption to recolor or remap anyone beyond the `default-ASK` values its existing roles take
 - `default-ASK` has been "improved" toward AA — its lower-contrast metadata treatment is intentional
-- `AA-compliant` ships without raising the information-bearing roles, so the name overstates the artifact
-- A flavor value differs from the ratified set
 - The pattern-local participant values have been added to `colors_and_type.css` as general-purpose tokens
 - A literal color value appears in the template that is not enumerated in the pattern README
 
@@ -43,7 +42,7 @@ Run before sealing. Any item below fails the artifact.
 - A global `--fg-*` / `--line-*` rebind appears (foreground must be inherited, not re-declared)
 - Invented hex values appear in the archive's overlay CSS
 - `#201d26` is applied as a general default foreground rather than through this pattern's registered high-contrast roles
-- `--fg-high-contrast` reaches a role outside the registered set: participant ink and search-highlight text on the sanctioned colored fills, plus — in the AA-compliant **light** theme only — `--ma-page-aa` page chrome / archive title and the `--ma-focus` indicator
+- `--fg-high-contrast` reaches a role outside the registered set: participant ink and search-highlight text on the sanctioned colored fills
 - A use of `--fg-high-contrast` appears that is not registered in [design-system-ASK](../../README.md), under **High-contrast foreground — registered uses**
 
 ## Attachment-honesty fails
@@ -89,7 +88,6 @@ Run before sealing. Any item below fails the artifact.
 - Two-party mode removes sender identity from the **accessibility tree** rather than only hiding it visually
 - The author's messages carry no sender identification at all, visible or assistive
 - The archive title is not a real heading element
-- A focus indicator or control boundary falls below 3:1 in the `AA-compliant` flavor
 - The **visible reaction glyph or label** falls below the applicable contrast threshold against its bubble fill — audit the rendered glyph, not only the chip container's computed color
 - The reaction uses a **forced emoji-presentation** sequence (e.g. `U+2764 U+FE0F`), which paints a fixed colour and ignores `currentColor`; use a text-presentation glyph (`U+2665 U+FE0E`) or a textual label
 
@@ -97,7 +95,7 @@ Run before sealing. Any item below fails the artifact.
 
 - A theme is hard-coded on `<html>` / `<body>` without explicit reason
 - The artifact does not honor `prefers-color-scheme`
-- The participant ramp changes between light and dark (it is theme-invariant; only the author fill and page-level AA foreground resolve per theme)
+- The participant ramp changes between light and dark (it is theme-invariant; only the author fill resolves per theme)
 
 ## Whitespace / markup fails
 
@@ -128,4 +126,4 @@ Run before sealing. Any item below fails the artifact.
 
 ## Accessibility scope note
 
-`AA-compliant` is validated for the pattern's **built-in roles and default states**. Consumer-supplied content, custom media, and Tier 3 overlays are **not** covered by that validation — the consumer validates the final rendered archive.
+The accessibility-semantics items above are hard fails for every archive. The pattern makes **no contrast-compliance claim** beyond them: an archive that claims one is validated by its consumer, on the final rendered archive with its content, custom media and Tier 3 overlay applied.

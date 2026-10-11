@@ -104,21 +104,23 @@ How this timeline was produced. Generic and wall-safe — no private paths, iden
 
 ## Presentation
 
-- Flavor: `default-ASK` | `AA-compliant`
+- Flavor: `default-ASK`
 - Party mode: `two-party` | `group`
 
 ## Participant → role mapping (PERSISTENT)
 
 This mapping is **manifest-owned and stable across refreshes**. It is never frequency-derived. A re-render must reuse these exact assignments so a person is not recolored; reassignment happens only under explicit operator intent.
 
+A successor that deliberately adopts a newer template version reuses these assignments and records each role's bound value under that version; a value the owner changed is not a reassignment. For a successor to an `AA-compliant` archive, see the pattern README, *A successor to an `AA-compliant` archive*. A re-render from the version already recorded keeps that version's values.
+
 | Stable sender id | Label | Archive role | Bound value |
 | --- | --- | --- | --- |
-| `[stable-id-author]` | `[label]` | `author` | author fill (light/dark per flavor) |
+| `[stable-id-author]` | `[label]` | `author` | `#8b79a2` light / `#6e5c86` dark |
 | `[stable-id-1]` | `[label]` | `participant-default` | frosted |
 | `[stable-id-2]` | `[label]` | `participant-a` | `#ae87c2` |
 | `[stable-id-3]` | `[label]` | `participant-b` | `#bfb3d4` |
-| `[stable-id-4]` | `[label]` | `participant-c` | per flavor |
-| `[stable-id-5]` | `[label]` | `participant-d` | per flavor |
+| `[stable-id-4]` | `[label]` | `participant-c` | `#c44fc4` |
+| `[stable-id-5]` | `[label]` | `participant-d` | `#a56bd4` |
 | `[stable-id-6]` | `[label]` | `participant-e` | `#569dbd` |
 
 **Supported capacity: seven distinct participants total, including the author.** More than seven requires a future owner-approved overflow contract before rendering — the render must fail closed rather than cycle colors, reuse a role for two people, collapse overflow into the frosted role, invent further roles, or drop participants. This is a bounded initial capacity, not a permanent maximum.
@@ -156,11 +158,11 @@ Tool identity, version and configuration are recorded once under **Renderer** ab
 
 ## Accessibility validation
 
-- Pattern built-in roles + default states: inherited from the selected flavor.
-- Consumer content / Tier 3 overlays / custom media: `[validated | not validated]` — the consumer validates the **final rendered archive**; the flavor's claim does not extend to supplied content.
+- Pattern claim: none beyond the hard-fail checklist's accessibility items — `default-ASK` makes no contrast-compliance claim.
+- Final rendered archive, with content, Tier 3 overlay and custom media: `[validated | not validated]` — any accessibility claim is the consumer's, validated on the **final rendered archive**.
 
 ## Audit / freeze note
 
 This archive is frozen at render time. Its client-side search and year navigation operate over fixed embedded content and fetch nothing. The **editable template** reads the pinned local token mirror; the **sealed HTML** inlines the token CSS and applies the declared font-sealing mode, reading no sibling stylesheet, no font sidecar, and no live upstream URL.
 
-To re-render against newer upstream tokens or a longer span, re-sync the mirror, record a new commit SHA, and regenerate — **reusing the participant → role mapping above**. The previous archive remains valid for audit at its recorded SHA. Regeneration produces a new artifact; supersession is history, not deletion.
+To re-render against newer upstream tokens or a longer span, re-sync the mirror, record a new commit SHA, and regenerate — **reusing the participant → role mapping above**. Taking a newer template version is a deliberate adoption: re-copy the template from that version and record its hash (for a successor to an `AA-compliant` archive, see the pattern README). The previous archive remains valid for audit at its recorded SHA. Regeneration produces a new artifact; supersession is history, not deletion.
