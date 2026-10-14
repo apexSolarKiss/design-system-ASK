@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // document table regression fixture</title>
-<meta name="description" content="Regression fixture for the document table composition in surface-document.css: it reaches only a table that adopts it, code in an operative label keeps its case, and surface-document-overflow.js reports a table's box as it reports a preformatted block.">
+<meta name="description" content="Regression fixture for the document table composition in surface-document.css: it reaches only a table that adopts it, code in an operative label keeps its case, the range lane moves no column, and surface-document-overflow.js reports a table's box as it reports a preformatted block.">
 <!-- Foundation, the text-link module, then the document register, in the module's
      load order (serve from the repo root:  python3 -m http.server 8080  →
      /tests/document-table-fixture.html). The overflow helper loads at the end. -->
@@ -12,6 +12,8 @@
   /* A consumer's own rule, loaded before the register at one class of
      specificity: it wins only while the composition's cell rules stay at zero. */
   .fx-override { padding-top: 3px; }
+  /* A consumer's margin shorthand on a range-lane box, for the space below it. */
+  .fx-lane-margin { margin: 0 0 3px; }
 </style>
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-text-link.css">
@@ -104,6 +106,30 @@
       <table class="doc-table doc-dense-table" id="comp-link">
         <thead><tr><th class="doc-label">first</th><th class="doc-label"><a class="surface-text-link" href="#box-link" id="head-link"><code class="doc-code">AA-compliant</code></a></th><th class="doc-label">last</th></tr></thead>
         <tbody><tr><td class="doc-table-cell">a value long enough to push the link past the box</td><td class="doc-table-cell">b</td><td class="doc-table-cell">another value long enough to follow it</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Range lane</h2>
+    <p class="doc-body">The same wide table in a box without the lane, in a range-lane box, and in a
+      range-lane box a consumer gives a margin shorthand: every header and cell sits at the same x.</p>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="no lane" id="lane-plain">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+        <tbody><tr><td class="doc-body">one</td><td class="doc-body">a sentence of detail that needs the measure</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll doc-table-scroll--range-lane fx-box" role="region" aria-label="range lane" id="lane-box">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+        <tbody><tr><td class="doc-body">one</td><td class="doc-body">a sentence of detail that needs the measure</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll doc-table-scroll--range-lane fx-box fx-lane-margin" role="region" aria-label="range lane, consumer margin" id="lane-margin">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label">detail</th></tr></thead>
+        <tbody><tr><td class="doc-body">one</td><td class="doc-body">a sentence of detail that needs the measure</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -220,6 +246,24 @@
     expect('scroll-into-view / hidden content remains to the right, so the fade is drawn', lbox.hasAttribute('data-overflow-end'), true);
     expect('scroll-into-view / the header link lies inside the box, clear of the fade', lr.left >= br.left - 0.5 && lr.right <= br.right - fadeWidth + 0.5, true);
     lbox.scrollLeft = 0;
+
+    /* Range lane: the box reaches the lane into the page's margin and pads it back, so every header
+       and cell sits where it does in a box without the lane, at rest and scrolled to the end. */
+    var lanePx = parseFloat(space3) + 2;
+    var cellXs = function (box) { return Array.prototype.map.call(box.querySelectorAll('th, td'), function (c) { return Math.round(c.getBoundingClientRect().left * 2) / 2; }).join(' '); };
+    var plainBox = $('lane-plain'), laneBox = $('lane-box'), marginBox = $('lane-margin');
+    expect('range lane / a box without the modifier takes no lane', cs(plainBox).marginLeft + ' ' + cs(plainBox).paddingLeft, '0px 0px');
+    expect('range lane / the box reaches the lane into the margin and pads it back', cs(laneBox).marginLeft + ' ' + cs(laneBox).paddingLeft, (-lanePx) + 'px ' + lanePx + 'px');
+    expect('range lane / the box\'s edge sits the lane outside the column', Math.round(plainBox.getBoundingClientRect().left - laneBox.getBoundingClientRect().left), lanePx);
+    expect('range lane / every header and cell sits where it does without the lane', cellXs(laneBox), cellXs(plainBox));
+    expect('range lane / a consumer\'s margin shorthand does not split the pair', cellXs(marginBox), cellXs(plainBox));
+    expect('range lane / the consumer keeps its block margin', cs(marginBox).marginBottom, '3px');
+    [plainBox, laneBox, marginBox].forEach(function (b) { b.scrollLeft = b.scrollWidth; });
+    await tick();
+    expect('range lane / the box scrolled to the end', laneBox.scrollLeft > 0 && plainBox.scrollLeft > 0, true);
+    expect('range lane / scrolled to the end, every header and cell sits where it does without the lane', cellXs(laneBox), cellXs(plainBox));
+    [plainBox, laneBox, marginBox].forEach(function (b) { b.scrollLeft = 0; });
+    await tick();
 
     /* Label case. */
     expect('label / the label itself is in capitals', cs($('label-host')).textTransform, 'uppercase');

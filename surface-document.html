@@ -498,6 +498,30 @@
           --space-2, the small corner, as wide as its words on one line. Its 1px inline margin keeps the
           reinforcement inside its own box, so a scrolling table's side never cuts it.</p>
       </div>
+
+      <!-- THE LABELED RANGE — a scope rail in the outer margin beside the run of
+           blocks one label governs. Neutral here; Review Semantics' annotation
+           range (review-semantics.html) is its review member. -->
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Labeled range</h3>
+        <div class="doc-group surface-labeled-range" id="labeled-range">
+          <span class="doc-label surface-bordered-label">draft</span>
+          <p class="doc-body">A run of blocks one label governs: the scope rail in the margin begins beside the label and ends after the last block.</p>
+          <p class="doc-body">This second paragraph is inside the same range; neither paragraph moves.</p>
+        </div>
+        <p class="doc-meta">A straight 2px stroke 12px outside the content edge, where no passage rail is drawn,
+          reaching 4px above its label and below its last block. Its host keeps that lane unclipped.</p>
+        <div class="doc-table-scroll doc-table-scroll--range-lane" role="region" aria-label="Statements under a label">
+          <table class="doc-table" id="labeled-range-table">
+            <thead><tr><th class="doc-label">statement</th><th class="doc-label">owner</th></tr></thead>
+            <tbody>
+              <tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in a table's first column.</div></div></td><td class="doc-body">the editor</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="doc-meta">A table with a range in its first column takes .doc-table-scroll--range-lane on its box,
+          which keeps the lane: the scope rail sits where it does in the flow, and no column moves.</p>
+      </div>
     </section>
 
     <!-- DEEP HEADINGS — ONE treatment for h4 and every deeper level. Depth is

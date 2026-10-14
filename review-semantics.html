@@ -25,7 +25,10 @@
   body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
          background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
   .page { box-sizing: border-box; max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
-  @media (max-width: 640px) { .page { padding: var(--space-6) var(--space-4); } }
+  /* At the narrowest width the side padding stays --space-5: a range's scope
+     rail hangs in that lane, outside the content edge. */
+  @media (max-width: 640px) { .page { padding: var(--space-6) var(--space-5); } }
+  .key-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
 </style>
 </head>
 <body>
@@ -97,7 +100,7 @@
       <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
     </dl>
     <div class="doc-prose">
-      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. The row that opens a range leads with its review item, the judgment its scope rail shows, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
     </div>
   </section>
 
@@ -112,7 +115,7 @@
       <p class="doc-body">A level inside a level, on the neutral hierarchy rail.</p>
     </div>
     <div class="doc-prose">
-      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A mark follows the content it concerns and never repaints it.</p>
+      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A mark follows the content it concerns, or opens a range over it, and never repaints it.</p>
     </div>
   </section>
 
@@ -129,6 +132,62 @@
           <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1 · carried unchanged</span></span>
         </div>
       </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Several blocks // a range, opened by its row</h3>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-proposed">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">rev 3 · editor, round 2 · both paragraphs</span></span>
+          <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">editor draft</span></span>
+        </div>
+        <p class="doc-body">A first paragraph the proposal changes.</p>
+        <p class="doc-body">A second paragraph inside the same proposal: the scope rail ends after it.</p>
+      </div>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-accepted">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1 · carried unchanged</span></span>
+        </div>
+        <p class="doc-body">A paragraph already accepted, its own range beside the proposal's.</p>
+      </div>
+      <p class="doc-meta">The scope rail sits outside the content edge, where no passage rail is drawn, and runs from the label to the range's last block; the text inside does not move. A single block whose row follows it needs no range.</p>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">A list, and a quotation with its reading // one range each</h3>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-list">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the owner · the whole list</span></span>
+        </div>
+        <ul class="key-list">
+          <li class="doc-body">A first item.</li>
+          <li class="doc-body">A second item.</li>
+          <li class="doc-body">A third item.</li>
+        </ul>
+      </div>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-quote">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 2 · the quotation and its reading</span></span>
+        </div>
+        <blockquote class="doc-quote">
+          <p>Represented voice, on its own violet rail.</p>
+          <footer>A source</footer>
+        </blockquote>
+        <p class="doc-body">The sentence that reads the quotation, inside the same range.</p>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Two statements in one cell // two ranges</h3>
+      <div class="doc-table-scroll doc-table-scroll--range-lane" role="region" aria-label="Statements and their decisions" tabindex="0">
+        <table class="doc-table">
+          <thead><tr><th class="doc-label" scope="col">Statements</th><th class="doc-label" scope="col">Position</th></tr></thead>
+          <tbody>
+            <tr><td class="doc-body"><div class="doc-annotation-range surface-labeled-range" id="range-cell-accepted"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">reviewer, round 1</span></span></div><div>A first statement, accepted.</div></div><div class="doc-annotation-range surface-labeled-range" id="range-cell-proposed"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2</span></span></div><div>A second statement, proposed.</div></div></td><td class="doc-body">P-4 // the fourth position</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="doc-meta">These ranges sit in the table's first column, so its box takes .doc-table-scroll--range-lane: the box keeps the lane, the scope rails sit where a range's in the flow does, and no column moves. In any later column a range hangs into the gutter of the column before it.</p>
     </div>
 
     <div class="doc-section">
@@ -263,7 +322,7 @@
         <a class="surface-action" href="#questions-title">compact action</a>
       </div>
       <div class="doc-prose">
-        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place after the content it concerns, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
+        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, after the content it concerns or at the head of a range outside the content edge, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
       </div>
     </div>
   </section>

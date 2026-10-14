@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>design-system-ASK // review semantics conformance fixture</title>
-<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, and for rule C13 where a review mark takes the shared bordered label: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
+<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, for rule C13 where a review mark takes the shared bordered label, and for rule C14 where an annotation range takes the shared labeled range, and for both where a neutral label or range is held in a closed disclosure: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/review-semantics-fixture.html
      Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
      The fixture for rule C12, in the owner fixture's format: each
@@ -13,11 +13,11 @@
      page's resting check returns. data-expect-open, where present, names the
      codes the runner returns once it has opened every disclosure; where it is
      absent the runner must return none. data-collapsed, where present, is how
-     many annotation elements (marks, passage marks, notes, rows, items, lists
-     and a list's keys and values) and bordered labels the resting check must
-     report collapsed. A control that names no code is a positive case:
-     conforming material, inside the composition or outside it, that C12 and
-     C13 must pass. Every review mark carries .surface-bordered-label, the
+     many annotation elements (marks, passage marks, notes, rows, items, lists,
+     a list's keys and values, and ranges), bordered labels and labeled ranges
+     the resting check must report collapsed. A control that names no code is a positive case:
+     conforming material, inside the composition or outside it, that C12, C13
+     and C14 must pass. Every review mark carries .surface-bordered-label, the
      shared box C13 judges, unless a control omits it. Loads the owner modules
      in the contract's order, then tools/role-conformance.js. -->
 <link rel="stylesheet" href="../colors_and_type.css">
@@ -81,6 +81,9 @@
   [data-control="rows without a mark that take a rail once open"] details[open] :is(.doc-annotations, .doc-annotation-list) { border-left: 2px solid var(--ask-emphasis-cyan); }
   [data-control="items, list keys and list values that take a wash once open"] details[open] :is(.doc-annotation-item, .doc-annotation-list > dt, .doc-annotation-list > dd) { background: var(--line-1); }
   [data-control="row on the hierarchy rail that loses it once open"] details[open] .doc-annotations.doc-hierarchy { border-left: 0; padding-left: 0; }
+  [data-control="annotation range rail in another role's color"] .doc-annotation-range::before { border-color: var(--review-accepted); }
+  [data-control="quotation inside a range repainted in the range's color"] .doc-quote { border-left-color: var(--review-declined); }
+  [data-control="collapsed annotation range drawn at the content edge once open"] details[open] .doc-annotation-range::before { left: 0; }
 </style>
 </head>
 <body>
@@ -121,6 +124,13 @@
     <div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div>
     <p class="doc-body surface-emphasis-rail">We read this as signs of use.</p>
     <div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
+    <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">rev 3 · both paragraphs</span></span><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div><p class="doc-body">A first paragraph the proposal changes.</p><p class="doc-body">A second, inside the same proposal.</p></div>
+    <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1</span></span></div><p class="doc-body">A paragraph already accepted, its own range beside the proposal's.</p></div>
+    <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">the whole list</span></span></div><ul><li class="doc-body">A first item.</li><li class="doc-body">A second item.</li></ul></div>
+    <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">the quotation and its reading</span></span></div><blockquote class="doc-quote"><p>Words presented as someone's.</p><footer>A source</footer></blockquote><p class="doc-body">The sentence that reads it.</p></div>
+    <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v3 · owner</span></span></div><div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group"><p class="surface-emphasis-chip surface-emphasis--magenta">synthesis</p><p class="doc-body">A whole synthesis inside one range.</p></div></div>
+    <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">position</th><th class="doc-label">statements</th></tr></thead><tbody><tr><td class="doc-body">P-4</td><td class="doc-body"><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><div>A first statement.</div></div><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><div>A second statement.</div></div></td></tr></tbody></table></div>
+    <div class="doc-table-scroll doc-table-scroll--range-lane"><table class="doc-table"><thead><tr><th class="doc-label">statements</th><th class="doc-label">position</th></tr></thead><tbody><tr><td class="doc-body"><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div><div>A first statement, in the first column.</div></div><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><div>A second statement.</div></div></td><td class="doc-body">P-4</td></tr></tbody></table></div>
   </section>
 
   <section class="doc-section" id="controls">
@@ -505,6 +515,66 @@
     </div>
     <div data-control="collapsed review mark that loses its reinforcement once open" data-expect="" data-expect-open="C13.edge" data-collapsed="1">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></details>
+    </div>
+    <div data-control="annotation range without the shared scope rail" data-expect="C12.base">
+      <div class="doc-group doc-annotation-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range opened by a paragraph" data-expect="C12.range C14.label">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><p class="doc-body">The paragraph it covers.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div></div>
+    </div>
+    <div data-control="annotation range whose row names no judgment" data-expect="C12.range C14.label">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range whose row opens on its basis" data-expect="C12.range">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range whose row names two judgments" data-expect="C12.range">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range holding a passage mark, its note after the range" data-expect="">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">Words with <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-range-note">one phrase</mark> pending.</p></div><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-range-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “one phrase”</span></span></div></div>
+    </div>
+    <div data-control="annotation range holding a second judgment" data-expect="C12.mixed">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div></div>
+    </div>
+    <div data-control="annotation range rail in another role's color" data-expect="C12.color">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range carrying data-review" data-expect="C12.attach">
+      <div class="doc-group doc-annotation-range surface-labeled-range" data-review="proposed"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <div data-control="annotation range that is itself a quotation" data-expect="C12.attach C14.box">
+      <blockquote class="doc-quote doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">round 1</span></span></div><p>Words presented as someone's.</p></blockquote>
+    </div>
+    <div data-control="quotation inside a range repainted in the range's color" data-expect="C3.color">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">round 1</span></span></div><blockquote class="doc-quote"><p>Words presented as someone's.</p><footer>A source</footer></blockquote></div>
+    </div>
+    <div data-control="annotation range inside a panel" data-expect="C14.host">
+      <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group"><p class="doc-body">A panel.</p><div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div></div>
+    </div>
+    <div data-control="annotation range nested in an annotation range" data-expect="C12.mixed C14.nest">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div></div>
+    </div>
+    <div data-control="annotation range in a table's first column without the range lane" data-expect="C14.clearance">
+      <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">statements</th><th class="doc-label">owner</th></tr></thead><tbody><tr><td class="doc-body"><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><div>A statement.</div></div></td><td class="doc-body">owner</td></tr></tbody></table></div>
+    </div>
+    <div data-control="annotation range in a closed disclosure" data-expect="" data-collapsed="4">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div></details>
+    </div>
+    <div data-control="collapsed annotation range drawn at the content edge once open" data-expect="" data-expect-open="C14.rail" data-collapsed="4">
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div></details>
+    </div>
+    <div data-control="neutral labeled range in a closed disclosure" data-expect="" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">Draft</span></summary><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></details>
+    </div>
+    <div data-control="collapsed neutral labeled range whose label is empty" data-expect="C14.label" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">Draft</span></summary><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label"></span><p class="doc-body">The paragraph it marks.</p></div></details>
+    </div>
+    <div data-control="collapsed neutral labeled range whose label is hidden once open" data-expect="" data-expect-open="C14.label" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">Draft</span></summary><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label" style="visibility: hidden">draft</span><p class="doc-body">The paragraph it marks.</p></div></details>
+    </div>
+    <div data-control="labeled range a review judgment opens, without the annotation class" data-expect="C12.base C14.label">
+      <div class="doc-group surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
     </div>
   </section>
 
