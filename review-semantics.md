@@ -13,7 +13,7 @@ Review State is **a sanctioned profile, not a separate palette and not a change 
 | What is this passage doing? | Document role | the document register (`surface-document.css`) | its rail, panel or text role, unchanged |
 | Where did it come from? | Basis | no color owner | a `Basis` key (`.doc-label`) and its value (`.doc-meta`) |
 | What does the evidence support? | Evidence State | [`evidence-state.md`](evidence-state.md) | a filled dot; for not yet testable, a hollow dashed dot and a dashed rail |
-| What judgment is asked or made, about what, by whom, at which scope? | Review State | this module | a 1px outline |
+| What judgment is asked or made, about what, by whom, at which scope? | Review State | this module | the shared bordered label's outline |
 | What condition is this architectural element in? | Spectral State | [`spectral-state.md`](spectral-state.md) | a filled square |
 
 The channels follow [`three-functions.md`](three-functions.md) §Coexistence: state takes the separate state marker, evidence the evidence marker, and review the outline. They are this composition's channels, **not compulsory replacements** for other presentations. An Evidence State or Spectral State presentation authored outside this composition, such as a diagram's node fill or a consumer's own evidence assignment, stays governed by its owner.
@@ -22,7 +22,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 | Review meaning | Words | Visual implementation | Relationship |
 | --- | --- | --- | --- |
-| `proposed` | Proposed, or Correction requested | value of `--state-proposed` | correspondence: a candidate, not yet decided |
+| `proposed` | Proposed, or Correction requested | value of `--ask-emphasis-magenta` | a candidate, not yet decided; Spectral `proposed`'s hue, not its value |
 | `open` | Open question | value of `--state-held` | correspondence: a named open question. Evidence `unresolved` shares the value |
 | `accepted` | Accepted | value of `--state-earned` | a recorded decision to adopt or permit, at its scope |
 | `declined` | Declined | value of `--state-deflated` | a recorded decision not to adopt or permit, at its scope |
@@ -36,11 +36,11 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 **Proposed and Correction requested share paint, not event identity.** A candidate submitted and a correction requested are different events, kept apart by their words and by who made the request. Correction requested is used only when someone has asked for existing words to change. Proposed alone never implies a defect.
 
-**The pending values are Spectral values, not the emphasis accents.** `--state-held` is tealer than the emphasis cyan (`#00BEFF`), and `--state-proposed` is a theme-calibrated magenta, not `#FF00FF`.
+**Proposed takes the emphasis magenta; Open question keeps a Spectral value.** Proposed is `#FF00FF` in both themes, the value a document's other magenta labels and rails already use, so a proposal never sits beside a near-identical second pink. A proposal and a thesis are told apart by their words, their place and their key, never by a difference in pink. Spectral's `proposed` keeps its own theme-calibrated magenta: the two Proposed roles share a word and a hue, not a value, and where both apply to one item the keyed list carries them, one key each. Open question stays `--state-held`, which is tealer than the emphasis cyan (`#00BEFF`).
 
 ## Annotation // the composition
 
-- **Mark** // an inert annotation word: one review, evidence or state role, stated literally. `span.doc-mark.doc-label` with exactly one of `data-review`, `data-evidence` or `data-state`. Its words are the register's label role, which this module never restyles; its color sits only on its geometry. Review draws a 1px outline with `--radius-sm` on all four corners; evidence draws a 10px round dot and state a 10px square, with no outline. A mark carries one role; a second fact takes a second mark.
+- **Mark** // an inert annotation word: one review, evidence or state role, stated literally. `span.doc-mark.doc-label` with exactly one of `data-review`, `data-evidence` or `data-state`. Its words are the register's label role, which this module never restyles; its color sits only on its geometry. A review mark also carries `.surface-bordered-label`: its box and edge are the shared bordered label's, from `surface-treatments.css` — the same box as the emphasis chip and a neutral label — and this module supplies its color only. Evidence draws a 10px round dot and state a 10px square, with no outline, and neither carries `.surface-bordered-label`. A mark carries one role; a second fact takes a second mark.
 - **Item** // one fact and its qualifier, kept together: a mark and the metadata that qualifies it (`.doc-meta`), or a basis key (`.doc-label`) and its value (`.doc-meta`). `.doc-annotation-item`, inside a row or a table cell. It wraps as a unit.
 - **Annotation row** // the items that apply to one scope: the section after its heading, the block it follows, or the table cell it sits in. `.doc-annotations`, its items in one fixed order: state, basis, evidence, review. Each item opens on its own mark or key, so items need no separator.
 - **Annotation list** // one item answering several questions at once, one keyed line per question, in the row's order. `dl.doc-annotation-list`, with `dt.doc-label` keys and `dd` values.
@@ -56,7 +56,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 5. **Panels take no inner note.** A framing, synthesis or emphasis panel keeps its whole contract; its note follows the panel.
 6. **Not yet testable keeps its whole contract** in this composition: lavender-gray, a dashed rail, a hollow marker and the visible label. Inside a not-yet-testable note, the note's rail is the one rail.
 7. **An ordinary question is a section, not a panel:** a heading plus an Open question mark. A proposed answer sits beside it, because a proposed answer is not an unanswered question.
-8. **A mark is not a chip and not a control.** It never takes `.surface-emphasis-chip`, which names why a unit is emphasized and heads a panel, nor the compact action's classes or any interactive behavior. The small corner is this design's choice: beside a compact action, it keeps an inert mark from looking like a control.
+8. **A mark is not a chip and not a control.** It never takes `.surface-emphasis-chip`, which names why a unit is emphasized and heads a panel, nor the compact action's classes or any interactive behavior. A review mark and the chip share one box, the bordered label, and differ in meaning, words and place. The bordered label's small corner keeps an inert mark from looking like a control beside a compact action.
 9. **Checks are neutral.** A named check and its result are plain metadata under a `Check` key, never a dot or an outline. A passed check approves nothing.
 
 ## The decision record
@@ -74,7 +74,7 @@ Every rule here applies to elements carrying this module's classes: `.doc-mark`,
 
 ## Checking
 
-`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary) and computed presentation (the drawn outline, marker, rail and tint). It never judges semantic assignment, that is, whether an item's role is the right one; that stays with the author and the reviewer.
+`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary, a review mark's bordered label) and computed presentation (the outline's color, the marker, rail and tint). Rule **C13** checks a review mark's box and edge as it checks every bordered label. Neither judges semantic assignment, that is, whether an item's role is the right one; that stays with the author and the reviewer.
 
 C12 compares a mark with its resolved role token. It does not independently establish that a local token rebinding is authorized. Adopted role bindings remain governed by this contract; a local exception requires the applicable explicit authorization.
 
@@ -86,7 +86,7 @@ C12 compares a mark with its resolved role token. It does not independently esta
 
 ## How to use it
 
-1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract:
+1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract, and `surface-treatments.css` is required: it draws a review mark's box:
 
    ```text
    colors_and_type.css → surface-panel.css → surface-text-link.css →
@@ -100,7 +100,7 @@ C12 compares a mark with its resolved role token. It does not independently esta
    <p class="doc-body">The frame keeps two props or fewer.</p>
    <div class="doc-annotations">
      <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
-     <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="accepted">Accepted</span><span class="doc-meta">v3 · owner · this copy</span></span>
+     <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v3 · owner · this copy</span></span>
    </div>
    ```
 
@@ -111,7 +111,7 @@ C12 compares a mark with its resolved role token. It does not independently esta
      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="n1">two props or fewer</mark>.</p>
      <div class="doc-hierarchy doc-group doc-annotation-note" id="n1">
        <div class="doc-annotations">
-         <span class="doc-annotation-item"><span class="doc-mark doc-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “two props or fewer”</span></span>
+         <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “two props or fewer”</span></span>
        </div>
      </div>
    </div>

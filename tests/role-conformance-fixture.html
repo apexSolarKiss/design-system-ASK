@@ -37,6 +37,27 @@
   [data-control="a consumer's pre padding breaks the rhythm"] pre { padding: 8px 0; }
   [data-control="a label set on a taller line"] .doc-pre-group:first-child > .doc-pre-part:first-child { line-height: 3; }
   [data-control="peer groups displayed as contents lose their line"] .doc-pre-group { display: contents; }
+  /* C13: consumer overrides of the bordered label the rendered check must catch. Each reaches only its own control. */
+  [data-control="bordered label with no reinforcement"] .surface-bordered-label { box-shadow: none; }
+  [data-control="bordered label reinforced off the registered dose"] .surface-bordered-label { --surface-bordered-label-reinforce: 0.25px; }
+  [data-control="bordered label reinforced in another color"] .surface-bordered-label { box-shadow: 0 0 0 var(--surface-bordered-label-reinforce) var(--ask-emphasis-cyan); }
+  [data-control="bordered label with 1px block padding"] .surface-bordered-label { padding-block: 1px; }
+  [data-control="bordered label with a 2px border"] .surface-bordered-label { border-width: 2px; }
+  [data-control="bordered label on pill corners"] .surface-bordered-label { border-radius: var(--radius-pill); }
+  [data-control="bordered label kept on one line by a local rule"] .surface-bordered-label { white-space: nowrap; }
+  [data-control="bordered label drawn as an inline flex box"] .surface-bordered-label { display: inline-flex; }
+  [data-control="bordered label with no inline margin"] .surface-bordered-label { margin: 0; }
+  [data-control="neutral bordered label given a color"] .surface-bordered-label { --surface-bordered-label-color: var(--ask-emphasis-cyan); }
+  [data-control="emphasis chip in a color outside the accents"] .surface-emphasis-chip { --surface-emphasis-accent: var(--fg-1); }
+  [data-control="bordered label stretched by its column"] .surface-bordered-label { width: auto; }
+  [data-control="bordered label given a fill"] .surface-bordered-label { background: var(--line-1); }
+  [data-control="bordered label under a redefined small corner"] { --radius-sm: 999px; }
+  [data-control="bordered label under a redefined inline step"] { --space-2: 2px; }
+  [data-control="bordered label a flex row may shrink"] .surface-bordered-label { flex-shrink: 1; }
+  [data-control="bordered label squeezed by its table column"] .surface-bordered-label { width: auto; }
+  [data-control="bordered label sized by its content box"] .surface-bordered-label { box-sizing: content-box; }
+  [data-control="bordered label with no maximum width"] .surface-bordered-label { max-width: none; }
+  .fx-row { display: flex; gap: var(--space-3); align-items: center; }
   /* A consumer override the rendered check must catch: it recolors the quotation rail. */
   .fx-override-quote { border-left-color: var(--line-1); }
 </style>
@@ -113,6 +134,25 @@ keeps the one violet rail</pre>
       <thead><tr><th>Position</th><th>What it holds</th></tr></thead>
       <tbody><tr><td class="doc-body">An ordinary prose table</td><td class="doc-body">carries no dense marker, so its cells stay prose and are not forced into mono.</td></tr></tbody>
     </table>
+    <p class="doc-body">A neutral <span class="doc-label surface-bordered-label">draft</span> label in running text, beside the words it marks.</p>
+    <div class="surface-separate surface-emphasis surface-emphasis--magenta surface-material-page surface-attach-free surface-elevation-flush doc-group">
+      <p class="surface-emphasis-chip">read this first</p>
+      <p class="doc-body">An emphasized unit: the chip takes the panel's accent.</p>
+    </div>
+    <p class="surface-emphasis-chip surface-emphasis--violet">assigned by role</p>
+    <p class="surface-emphasis-chip surface-emphasis--cyan">assigned by role</p>
+    <p class="surface-emphasis-chip">outside an accented surface</p>
+    <div class="doc-table-scroll">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">status</th><th class="doc-label">item</th><th class="doc-label">owner</th></tr></thead>
+        <tbody><tr><td class="doc-body"><span class="doc-label surface-bordered-label">draft</span></td><td class="doc-body">A label opens the first column and another ends the last.</td><td class="doc-body"><span class="doc-label surface-bordered-label">held</span></td></tr>
+          <tr><td class="doc-body"><span class="doc-label surface-bordered-label">awaiting owner review</span></td><td class="doc-body">A label of several words keeps its line, however much prose the next cell holds: its column is never squeezed below the label's own width, and the table scrolls in its box instead.</td><td class="doc-body"><span class="doc-label surface-bordered-label">held</span></td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-group">
+      <span class="doc-label surface-bordered-label">draft</span>
+      <p class="doc-body">A label set directly in a column composition keeps its own width; the column does not stretch it into a bar.</p>
+    </div>
   </section>
 
   <section class="doc-section" id="controls">
@@ -556,6 +596,69 @@ another</pre></div></div>
         <div class="doc-pre-group"><pre class="doc-pre-part">LABEL A</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
         <div class="doc-pre-group"><pre class="doc-pre-part">LABEL B</pre><div class="doc-hierarchy"><pre class="doc-pre-part">a line beneath it</pre></div></div>
       </div>
+    </div>
+
+    <!-- C13 bordered label: one box for every inert bordered label, here without Review Semantics -->
+    <div data-control="bordered label with no reinforcement" data-expect="C13.edge">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose edge is the bare 1px border.</p>
+    </div>
+    <div data-control="bordered label reinforced off the registered dose" data-expect="C13.edge">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label reinforced at neither theme's dose.</p>
+    </div>
+    <div data-control="bordered label reinforced in another color" data-expect="C13.edge">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose reinforcement leaves its border's color.</p>
+    </div>
+    <div data-control="bordered label with 1px block padding" data-expect="C13.padding">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label on the retired review-mark padding.</p>
+    </div>
+    <div data-control="bordered label with a 2px border" data-expect="C13.border">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose weight is a layout border.</p>
+    </div>
+    <div data-control="bordered label on pill corners" data-expect="C13.corner">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label shaped like a control.</p>
+    </div>
+    <div data-control="bordered label kept on one line by a local rule" data-expect="C13.box">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label that would overflow before it wraps.</p>
+    </div>
+    <div data-control="bordered label drawn as an inline flex box" data-expect="C13.box">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label on another box model.</p>
+    </div>
+    <div data-control="bordered label with no inline margin" data-expect="C13.clearance">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label a clipping box can cut.</p>
+    </div>
+    <div data-control="neutral bordered label given a color" data-expect="C13.color">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label colored for contrast alone.</p>
+    </div>
+    <div data-control="emphasis chip in a color outside the accents" data-expect="C13.color">
+      <div class="surface-separate surface-emphasis surface-material-page surface-attach-free surface-elevation-flush doc-group">
+        <p class="surface-emphasis-chip">read this first</p>
+        <p class="doc-body">An emphasized unit whose accent is not one of the three.</p>
+      </div>
+    </div>
+    <div data-control="bordered label stretched by its column" data-expect="C13.box">
+      <div class="doc-group"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">A label a column stretches into a full-width bar.</p></div>
+    </div>
+    <div data-control="bordered label given a fill" data-expect="C13.fill">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label washed like a badge.</p>
+    </div>
+    <div data-control="bordered label under a redefined small corner" data-expect="C13.corner">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose page turns the small corner into a pill.</p>
+    </div>
+    <div data-control="bordered label under a redefined inline step" data-expect="C13.padding">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose page shrinks the step its inline padding names.</p>
+    </div>
+    <div data-control="bordered label a flex row may shrink" data-expect="C13.box">
+      <div class="fx-row"><p class="doc-body">A long statement beside the label, in a row that does not wrap.</p><span class="doc-label surface-bordered-label">awaiting owner review</span></div>
+    </div>
+    <div data-control="bordered label squeezed by its table column" data-expect="C13.box">
+      <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">status</th><th class="doc-label">item</th></tr></thead>
+        <tbody><tr><td class="doc-body"><span class="doc-label surface-bordered-label">awaiting owner review</span></td><td class="doc-body">A long cell whose prose would squeeze the column holding the label down to the label's longest word.</td></tr></tbody></table></div>
+    </div>
+    <div data-control="bordered label sized by its content box" data-expect="C13.box">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label whose padding and border sit outside its maximum width.</p>
+    </div>
+    <div data-control="bordered label with no maximum width" data-expect="C13.box">
+      <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label that would overflow a container narrower than its words.</p>
     </div>
   </section>
 

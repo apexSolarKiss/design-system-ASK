@@ -1,6 +1,6 @@
 /* =========================================================================
    surface-treatments — separate surfaces composed from three axes; the
-   disclosure; content emphasis.
+   disclosure; content emphasis; the bordered label.
 
    An OPT-IN VISUAL RULE under Foundations. It owns PRESENTATION ONLY: no
    markup, no semantics, no template, and no generated preview. A consuming
@@ -144,7 +144,8 @@
      owner           this module
      reuses          --ask-emphasis-magenta, --ask-emphasis-violet,
                      --ask-emphasis-cyan; operative-label metrics for the chip;
-                     --fg-1 for the chip's words
+                     --fg-1 for the chip's words; the bordered label's box and
+                     edge for the chip
      variation       the accent (.surface-emphasis--magenta | --violet | --cyan)
                      supplied by the content's role; the dose per theme
      exclusions      no hover, press, focus or animation; the chip's words stay
@@ -155,6 +156,62 @@
                      perimeter and the chip border
      counterexample  a hard directional drop shadow with no visible border,
                      or chip words set in the accent
+
+   BORDERED LABEL
+     meaning         a short inert label inside a thin border: a word that is
+                     read, never operated. One box for every such label, so a
+                     label measures the same wherever it appears and only its
+                     meaning changes its color
+     population      .surface-bordered-label, neutral by default: a status
+                     word such as DRAFT. Two governed meanings take the same
+                     box: the emphasis chip, by selector grouping in this file,
+                     its border the emphasis accent; and Review Semantics'
+                     review mark, which carries the class, its border the
+                     review role's value
+     owner           this module: display, size, baseline, wrapping, padding,
+                     corners, the 1px layout border, the per-theme edge
+                     reinforcement, the clearance that keeps the reinforcement
+                     visible, and the neutral border. The words take the
+                     composing text role (.doc-label in a document, the chip's
+                     operative-label metrics); the border color comes from the
+                     composing meaning, through --surface-bordered-label-color
+     reuses          --fg-3 for the neutral border; --radius-sm; --space-2
+     variation       the border color, set only by a governed meaning; the
+                     edge dose per theme
+     exclusions      no fill, wash, bloom, depth shadow, hover, press, focus
+                     or animation; this treatment takes --radius-sm (8px),
+                     not --radius-pill; corner shape alone assigns no
+                     interaction. Never a color chosen for contrast or
+                     decoration: a neutral label stays --fg-3, and a color
+                     arrives only with the emphasis chip or a review mark.
+                     Evidence dots, state squares and the not-yet-testable
+                     rail are not bordered labels, and the status badge
+                     (surface-shell) is an unbordered note
+     example         a neutral DRAFT; a THESIS chip in the emphasis magenta; a
+                     PROPOSED review mark in its role value — one box, three
+                     meanings
+     counterexample  a review module or a consumer setting its own padding,
+                     edge width or corner for a label; a bordered label used as
+                     a button
+
+   THE BORDERED LABEL'S EDGE. An apparent 2px edge in light and 1.5px in
+   dark: the fixed 1px border plus a same-color, zero-blur reinforcement of
+   1px light and 0.5px dark. The reinforcement is paint, not layout, so the
+   box measures the same in both themes and nothing moves when the theme
+   changes. Because it paints outside the border, a clipping box (a
+   scrolling table, a scrolling block) would cut it where a label meets its
+   edge, and that side would fall back to the bare 1px border. The label
+   therefore keeps 1px of inline margin, the larger of the two doses, in
+   both themes: on its inline sides the reinforcement lands inside the
+   label's own margin box, so a label at the start of a table's first column
+   or the end of its last, scrolled fully into view, keeps its whole edge.
+   Above and below, the composing box keeps the clearance, as the document
+   table's cells do with their block padding; the label takes no block
+   margin, which would change the line it sits on. On a
+   surface with an accent of its own the chip's edge is heavier than the
+   panel's perimeter (2px against 1.5px in light, 1.5px against 1px in
+   dark); a compact label and a whole unit's perimeter work at different
+   scales, and neither is adjusted to match the other.
 
    THE EMPHASIS DOSE. The themes are deliberately not numerically equal,
    because equal numbers do not read as equal emphasis: light has an apparent
@@ -171,7 +228,12 @@
      22px 1px              the emphasis bloom's blur and spread
      -90deg                the closed disclosure indicator's rotation
      1                     the disclosure indicator's leading
-     2px                   the emphasis chip's block padding
+     2px                   the bordered label's block padding
+     1px, 0.5px            the bordered label's edge reinforcement, light and
+                           dark: an apparent 2px and 1.5px edge
+     1px                   the bordered label's inline margin, the larger dose
+     calc(100% - 2px)      the bordered label's widest box: its container less
+                           its two 1px margins
      2px                   the disclosure trigger's focus-outline width
 
    LIMITS
@@ -347,12 +409,53 @@
 .surface-emphasis--violet  { --surface-emphasis-accent: var(--ask-emphasis-violet); }
 .surface-emphasis--cyan    { --surface-emphasis-accent: var(--ask-emphasis-cyan); }
 
-/* The marker that names why a unit is emphasized. Two channels on purpose:
-   the accent arrives on the border, where it cannot drift from the perimeter
-   it belongs to, and the words are set in the primary text role. Outside an
-   accented surface the border falls back to the tertiary foreground. */
+/* ---- Bordered label --------------------------------------------------- */
+
+/* The edge dose, per theme, set as the emphasis dose is set. */
+:root                             { --surface-bordered-label-reinforce: 1px; }
+:root[data-theme="dark"],
+.theme-dark                       { --surface-bordered-label-reinforce: 0.5px; }
+:root[data-theme="light"]         { --surface-bordered-label-reinforce: 1px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --surface-bordered-label-reinforce: 0.5px; }
+}
+
+/* The box. One atomic inline box on the text baseline, as wide as its words
+   on one line: a flex or grid parent never stretches it, and neither a flex
+   row nor a table column squeezes it, so a line never breaks inside it while
+   it fits. Only a
+   label wider than its container wraps, inside its border, rather than
+   overflow. An inline-block, not a flex box: a label may hold inline
+   emphasis (strong, em), which a flex box would split into separate items
+   and close up. Neutral by default; a governed meaning sets
+   --surface-bordered-label-color and nothing else. The 1px inline margin
+   holds the reinforcement inside the label's own margin box (THE BORDERED
+   LABEL'S EDGE, above). */
+.surface-bordered-label,
 .surface-emphasis-chip {
   display: inline-block;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 2px);
+  flex-shrink: 0;
+  vertical-align: baseline;
+  white-space: normal;
+  margin: 0 1px;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--surface-bordered-label-color, var(--fg-3));
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 var(--surface-bordered-label-reinforce) var(--surface-bordered-label-color, var(--fg-3));
+}
+
+/* The marker that names why a unit is emphasized: the emphasis member of the
+   bordered label. Two channels on purpose: the accent arrives on the border,
+   where it cannot drift from the perimeter it belongs to, and the words are
+   set in the primary text role. Outside an accented surface the border falls
+   back to the tertiary foreground. Its box is the bordered label's. It keeps
+   its own placement at the start of the unit it names (align-self), so in a
+   flex row it sits at the row's start rather than on the row's baseline. */
+.surface-emphasis-chip {
+  --surface-bordered-label-color: var(--surface-emphasis-accent, var(--fg-3));
   align-self: flex-start;
   font-family: var(--font-mono);
   font-size: var(--fs-caption);
@@ -361,10 +464,6 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--fg-1);
-  border: 1px solid var(--surface-emphasis-accent, var(--fg-3));
-  border-radius: var(--radius-sm);
-  padding: 2px var(--space-2);
-  margin: 0;
 }
 
 /* Inline emphasis inside the trigger and the chip. Scoped, so strong and em

@@ -16,7 +16,7 @@
                   invalid one exempts nothing.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped, collapsed }. Each finding carries a rule (C0–C12) and a reason
+   unmapped, collapsed }. Each finding carries a rule (C0–C13) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -25,7 +25,7 @@
    runner drives them through ASKRoleConformance.interaction and adds its C9
    findings to the same report. The runner also opens every disclosure in
    scope and, after its link-state pass, judges there what each collapsed C12
-   element presents (see C12).
+   or C13 element presents (see C12 and C13).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -37,8 +37,9 @@
 
    RULES
      C0  foundation     the foundation tokens hold the owner's values where the
-                        check is scoped and wherever a governed role, rail or
-                        contents list renders, so neither a page nor a region
+                        check is scoped and wherever a governed role, rail,
+                        contents list or bordered label renders, so neither a
+                        page nor a region
                         holding governed text passes by redefining a token the
                         matrix resolves through. Sizes, weights, leadings,
                         tracking, the rail inset, both families and the three
@@ -152,15 +153,21 @@
                         role, so C1 holds its words (C12.role); it carries
                         exactly one of data-review, data-evidence or data-state
                         (C12.facet), a value in that facet's vocabulary
-                        (C12.vocab) and rendered words (C12.label). A facet
-                        attribute sits on a mark, a passage mark or a
-                        not-yet-testable note, never on the composition's rows,
-                        items, lists or other notes, and no composition class
-                        combines with a content role, a rail, a panel, a
-                        compact action or an emphasis chip (C12.attach).
-                        Computed: a mark is a rendered inline-flex box; a review
-                        mark draws a 1px solid outline on all four sides with
-                        all four corners at --radius-sm; an evidence or state
+                        (C12.vocab) and rendered words (C12.label). A review
+                        mark carries .surface-bordered-label, the shared box
+                        (C12.base). A facet attribute sits on a mark, a passage
+                        mark or a not-yet-testable note, never on the
+                        composition's rows, items, lists or other notes; no
+                        composition class combines with a content role, a rail,
+                        a panel, a compact action or an emphasis chip; and only
+                        a review mark is a bordered label, so an evidence or
+                        state mark, a passage mark, a note, a row, an item or a
+                        list never carries .surface-bordered-label (C12.attach).
+                        Computed: a mark is a rendered box, and an evidence or
+                        state mark an inline-flex one; a review mark's outline,
+                        where it is drawn, is its role token on all four sides
+                        (C12.color) — its box, width, corners and edge are the
+                        bordered label's, which C13 judges; an evidence or state
                         mark draws no outline and no rail, and its ::before
                         marker is generated, displayed as a box, visible and
                         10px square, every corner round (at least 5px) for
@@ -202,16 +209,52 @@
                         composition, a content passage's own rail included,
                         and paint that computed borders, background and the
                         marker's box do not show (border-image, outline,
-                        box-shadow, background-image, transforms, clip-path)
+                        background-image, transforms, clip-path, and
+                        box-shadow other than a review mark's edge, which C13
+                        judges)
+     C13 bordered label (surface-treatments) applies to every
+                        .surface-bordered-label and .surface-emphasis-chip in
+                        scope: a neutral label, the emphasis chip and a review
+                        mark share one box. An evidence or state mark carrying
+                        the class is C12.attach's, not judged here. On each
+                        rendered label: one inline-block box on the text
+                        baseline, or a block where a flex or grid parent
+                        blockifies it, border-box sized, as wide as its words
+                        on one line (width max-content) and never wider than
+                        its container less its margins (max-width
+                        calc(100% - 2px)), never shrunk by a flex row
+                        (flex-shrink 0), with white-space normal (C13.box);
+                        the registered 2px block padding and 8px inline, the
+                        owner's --space-2 (C13.padding); one 1px solid border,
+                        one color on all four sides (C13.border); 8px, the
+                        owner's --radius-sm, on all four corners (C13.corner);
+                        no fill: a transparent background and no background
+                        image (C13.fill); exactly one outset, zero-offset,
+                        zero-blur box-shadow in the border's color whose
+                        spread is the theme's dose, 1px in light and 0.5px in
+                        dark, the theme read from --fg-1 at the label
+                        (C13.edge); 1px of inline margin, so a clipping box
+                        never cuts the edge's inline sides (C13.clearance);
+                        and the color its meaning allows: a neutral label
+                        --fg-3, a chip an emphasis accent or --fg-3, never
+                        transparent (C13.color). A review mark's color,
+                        transparency included, is C12's. A label a closed
+                        disclosure keeps from being seen is judged by the
+                        runner once it is open, as C12's elements are, and one
+                        still collapsed then fails C13.box (a review mark that
+                        C12 holds too fails C12.label); one that renders no
+                        box, at rest or once open, draws nothing and is not
+                        judged. A rendered or held label counts as a governed
+                        element
 
    STATUS
      pass       no finding, and at least one governed element was checked
      fail       one or more findings
      vacuous    no governed element in scope: nothing was proven. A page that
                 has not adopted the register is not a passing page.
-     incomplete no finding, but C12 elements collapsed in closed disclosures
-                (listed under collapsed) await the runner's open-state
-                judgment, so nothing yet proves what they present.
+     incomplete no finding, but C12 or C13 elements collapsed in closed
+                disclosures (listed under collapsed) await the runner's
+                open-state judgment, so nothing yet proves what they present.
    Neither vacuous nor incomplete is a pass.
 
    UNMAPPED (informational). Text-bearing elements in scope that carry no
@@ -224,15 +267,16 @@
      when the runner drives them.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
-   - check() alone does not judge what a collapsed C12 element presents: it
-     lists the element under collapsed and never reports pass. The runner
+   - check() alone does not judge what a collapsed C12 or C13 element
+     presents: it lists the element under collapsed and never reports pass. The runner
      judges every element held this way, once it has opened every disclosure
      in scope and judged the link states; each ends in a judgment or a
      finding. One still collapsed then, because the runner did not open its
      disclosure or the page closed it again, fails its own reason marked
      state "collapsed": C12.label for a mark, C12.passage for a passage mark,
-     C12.note for a note, and C12.rail for a row, an item, a list or a list's
-     key or value. One that left the page as its disclosure opened fails it
+     C12.note for a note, C12.rail for a row, an item, a list or a list's
+     key or value, and C13.box for a bordered label or an emphasis chip. One
+     that left the page as its disclosure opened fails it
      marked "removed", since what it presents cannot be proven. A page that
      changes a disclosure's content after that judgment is outside this
      check, like any content a script inserts after the resting check.
@@ -253,6 +297,24 @@
      only while a disclosure is closed is judged on that styling, and an
      element the page shows at rest and restyles later is judged as it
      rests.
+   - C13 proves the computed box and edge. It does not measure what a
+     display paints: a reinforcement thinner than a device pixel draws as
+     partial coverage, which only a pixel measurement shows. It compares
+     padding and corners with the owner's literal values (8px), not with the
+     page's own --space-2 and --radius-sm, so a page that redefines either
+     token cannot move the expectation with the defect. It reads width and
+     max-width through computedStyleMap(); where a browser lacks it, those
+     two are not judged.
+   - C13 does not judge an outline, a border-image or pseudo-element paint on
+     a label; they would change its visible edge unseen.
+   - A held label counts as governed at rest, before the runner knows whether
+     it renders a box once open; one that does not is then not judged, so a
+     page whose only governed element is such a label is not reported
+     vacuous.
+   - C13 judges a label's color against the meanings this file knows: a
+     neutral label and the emphasis chip. A review mark's color is C12's. A
+     label another owner composes with a color of its own fails C13.color
+     until that owner is added here.
    - C12 compares a mark with its role token as it resolves at the mark. It
      does not independently establish that a local rebinding of that token is
      authorized: adopted role bindings stay governed by review-semantics.md,
@@ -357,6 +419,23 @@
   const DENSE = 'table.doc-dense-table';
   const PROFILE_FIELDS = ['name', 'selector', 'owner', 'reason', 'expected_count'];
   const TOL = 0.05;
+  /* A computed box-shadow as layers: { inset, lens (px, in order), color }. */
+  function shadows(v) {
+    if (!v || v === 'none') return [];
+    const out = [];
+    let depth = 0, cur = '';
+    for (const ch of v) {
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
+    }
+    if (cur.trim()) out.push(cur.trim());
+    return out.map((layer) => {
+      const fn = layer.match(/[a-z-]+\([^()]*(?:\([^()]*\)[^()]*)*\)/i);
+      const rest = fn ? layer.replace(fn[0], ' ') : layer;
+      return { inset: /\binset\b/.test(rest), lens: [...rest.matchAll(/(-?[\d.]+)px/g)].map((m) => parseFloat(m[1])), color: fn ? fn[0] : null };
+    });
+  }
 
   function resolveScope(scope) {
     if (!scope) return document;
@@ -547,10 +626,16 @@
   /* The composition's elements, a list's keys and values included; per kind, its noun and the
      reason and basis it fails with when it cannot be judged open. */
   const COMPOSITION = '.doc-mark, mark.doc-passage-mark, .doc-annotation-note, .doc-annotation-item, .doc-annotations, .doc-annotation-list';
+  /* C13: the bordered label (surface-treatments.css). The emphasis chip joins it there by selector
+     grouping; a review mark joins it by carrying the class. */
+  const BORDERED = '.surface-bordered-label, .surface-emphasis-chip';
+  /* The owner's values, as literals: padInline is --space-2 and corner --radius-sm in colors_and_type.css. */
+  const LABEL_BOX = { padBlock: 2, padInline: 8, border: 1, corner: 8, margin: 1, width: 'max-content', maxWidth: 'calc(100% - 2px)', dose: { light: 1, dark: 0.5 } };
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
     'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
     'doc-annotation-item': ['an item', 'rail', 'computed'], 'doc-annotation-list': ['an annotation list', 'rail', 'computed'],
+    'surface-emphasis-chip': ['an emphasis chip', 'box', 'computed', 'C13'], 'surface-bordered-label': ['a bordered label', 'box', 'computed', 'C13'],
     'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
   const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
 
@@ -567,10 +652,10 @@
        and what they present is held, with its reason codes, for the open state. */
     const collapsedHere = [];
     const heldHere = new Map();
-    const hold = (el, judge) => {
+    const hold = (el, judge, as) => {
       if (!heldHere.has(el)) {
         const control = el.closest('[data-control]');
-        const kind = kindOf(el);
+        const kind = as || kindOf(el);
         heldHere.set(el, { container: control ? control.dataset.control : (el.closest('#conforming') ? 'conforming specimen' : null), kind, judges: [] });
         counts[kind + ' collapsed'] = (counts[kind + ' collapsed'] || 0) + 1;
         collapsedHere.push({ element: path(el), text: text(el), kind });
@@ -583,7 +668,7 @@
     const tokenHost = hostOf(scope);
     for (const name of [...Object.keys(TOKENS), ...Object.keys(THEME_TOKENS)]) tokens[name] = tokenAt(tokenHost, name);
     const drift = new Map();
-    const contexts = [tokenHost, ...all(roleSel + ', ' + RAILED + ', .doc-hierarchy, .doc-toc-list, .doc-toc-link, .doc-table-cell, .doc-dense-table')];
+    const contexts = [tokenHost, ...all(roleSel + ', ' + RAILED + ', ' + BORDERED + ', .doc-hierarchy, .doc-toc-list, .doc-toc-link, .doc-table-cell, .doc-dense-table')];
     const wanted = [...Object.entries(TOKENS).map(([n, v]) => [n, [v]]), ...Object.entries(THEME_TOKENS)];
     for (const el of contexts) {
       const cs = getComputedStyle(el);
@@ -878,9 +963,10 @@
     /* A corner in px; a percentage resolves against the box's shorter side. */
     const radius = (r, w, h) => { const v = String(r).trim().split(/\s+/)[0]; return v.endsWith('%') ? parseFloat(v) / 100 * Math.min(w, h) : px(v); };
     const shown = (c) => c.display !== 'none' && c.visibility === 'visible' && parseFloat(c.opacity) > 0;
-    /* A mark draws its outline and its marker only as a rendered flex box: an
-       inline ::before is not blockified and draws nothing at any width. */
-    const boxed = (el, c) => el.getClientRects().length > 0 && /^(inline-)?flex$/.test(c.display);
+    /* A mark draws only as a rendered box. An evidence or state mark draws its marker only as a
+       flex box: an inline ::before is not blockified and draws nothing at any width. A review
+       mark's box is the bordered label's, whose display C13 judges. */
+    const boxed = (el, c, f) => el.getClientRects().length > 0 && (f === 'review' || /^(inline-)?flex$/.test(c.display));
     const PANEL = '.surface-separate.surface-material-panel, .surface-emphasis';
     const syn = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'syntax', ...detail });
     const cmp = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'computed', ...detail });
@@ -892,6 +978,7 @@
       const f = facets[0];
       const v = m.getAttribute('data-' + f);
       if (!VOCAB[f].includes(v)) { syn('C12', 'vocab', m, { message: 'a ' + f + ' mark names a role outside its vocabulary', value: v }); continue; }
+      if (f === 'review' && !m.classList.contains('surface-bordered-label')) syn('C12', 'base', m, { message: 'a review mark carries .surface-bordered-label: its box and edge are the shared bordered label\'s' });
       if (collapsed(m)) {
         /* A closed disclosure keeps the mark from being seen: its words must exist now, and what it
            presents is judged once the runner has opened the disclosure. */
@@ -913,14 +1000,12 @@
       const c = getComputedStyle(m);
       const b = getComputedStyle(m, '::before');
       const want = probe(m, `border-left:1px solid var(--${f}-${v})`).border;
-      if (!boxed(m, c)) { cmp('C12', 'geometry', m, { message: 'a mark is a rendered inline-flex box: its outline and its marker draw only there', display: c.display }); return; }
-      const box = m.getBoundingClientRect();
+      if (!boxed(m, c, f)) { cmp('C12', 'geometry', m, { message: f === 'review' ? 'a mark is a rendered box: its outline draws only there' : 'an ' + f + ' mark is a rendered inline-flex box: its marker draws only there', display: c.display }); return; }
       if (f === 'review') {
-        const sm = px(tokenAt(document.documentElement, '--radius-sm') || '0');
-        const outline = ['Top', 'Right', 'Bottom', 'Left'].every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - 1) <= TOL);
-        if (!outline) cmp('C12', 'geometry', m, { message: 'a review mark draws a 1px solid outline on all four sides' });
-        else if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - sm) > TOL)) cmp('C12', 'geometry', m, { message: 'a review mark takes --radius-sm on all four corners, this composition\'s choice', got: corners(c) });
-        else if (['Top', 'Right', 'Bottom', 'Left'].some((s) => c['border' + s + 'Color'] !== want || clear(c['border' + s + 'Color']))) cmp('C12', 'color', m, { message: 'a review mark\'s outline is its role token, and not transparent', expected: want, got: c.borderTopColor });
+        /* The outline's box, width, corners and edge are the bordered label's, judged by C13 (a mark
+           without the class fails C12.base above). Where an outline is drawn, its color is the role's. */
+        const outline = ['Top', 'Right', 'Bottom', 'Left'].every((s) => c['border' + s + 'Style'] === 'solid' && px(c['border' + s + 'Width']) > 0);
+        if (outline && ['Top', 'Right', 'Bottom', 'Left'].some((s) => c['border' + s + 'Color'] !== want || clear(c['border' + s + 'Color']))) cmp('C12', 'color', m, { message: 'a review mark\'s outline is its role token, and not transparent', expected: want, got: c.borderTopColor });
       } else {
         const nyt = f === 'evidence' && v === 'not-yet-testable';
         if (drawn(c, 'Top') || drawn(c, 'Right') || drawn(c, 'Bottom') || (!nyt && drawn(c, 'Left'))) cmp('C12', 'geometry', m, { message: 'an ' + f + ' mark draws no outline and no rail: its geometry is its marker' });
@@ -946,6 +1031,7 @@
     const CONTENT_ROLES = ROLE_CLASSES.filter((r) => r !== 'doc-label').map((r) => '.' + r).join(', ');
     for (const el of all(COMPOSITION)) {
       if (el.matches(RAILED + ', ' + PANEL + ', .surface-separate, .surface-action, .surface-emphasis-chip, ' + CONTENT_ROLES)) syn('C12', 'attach', el, { message: 'an annotation class never combines with a content role, a rail, a panel, a compact action or an emphasis chip' });
+      else if (el.matches('.surface-bordered-label') && !el.matches('.doc-mark[data-review]')) syn('C12', 'attach', el, { message: 'only a review mark is a bordered label: an evidence or state mark draws its marker, and no other element of the composition takes the box' });
     }
     for (const pm of all('mark.doc-passage-mark')) {
       counts['doc-passage-mark'] = (counts['doc-passage-mark'] || 0) + 1;
@@ -996,6 +1082,60 @@
       else judge(add);
     }
 
+    /* C13 the bordered label (surface-treatments.css): one box for every inert bordered label —
+       neutral, the emphasis chip and a review mark. Its color is the composing meaning's: C12 judges
+       a review mark's, and this rule a neutral label's and a chip's. */
+    const fg1Light = probe(tokenHost, 'color:' + THEME_TOKENS['--fg-1'][0]).color;
+    const fg1Dark = probe(tokenHost, 'color:' + THEME_TOKENS['--fg-1'][1]).color;
+    function bordered(el, add) {
+      const cmp = (reason, detail) => add('C13', reason, el, { basis: 'computed', ...detail });
+      const c = getComputedStyle(el);
+      const parent = el.parentElement ? getComputedStyle(el.parentElement).display : '';
+      const item = /(flex|grid)$/.test(parent);
+      const box = el.getBoundingClientRect();
+      const sized = typeof el.computedStyleMap === 'function' ? el.computedStyleMap() : null;
+      const width = sized ? String(sized.get('width')) : null, maxWidth = sized ? String(sized.get('max-width')).replace(/\s+/g, ' ') : null;
+      if (!(c.display === 'inline-block' || (item && c.display === 'block')) || (c.display === 'inline-block' && c.verticalAlign !== 'baseline') || c.whiteSpace !== 'normal' || c.boxSizing !== 'border-box' || c.flexShrink !== '0' ||
+          (sized && (width !== LABEL_BOX.width || maxWidth !== LABEL_BOX.maxWidth))) {
+        cmp('box', { message: 'a bordered label is one border-box inline-block on the text baseline (a block where a flex or grid parent blockifies it), as wide as its words on one line, never shrunk by a flex row and never wider than its container less its margins, wrapping only inside its border', display: c.display, verticalAlign: c.verticalAlign, whiteSpace: c.whiteSpace, boxSizing: c.boxSizing, flexShrink: c.flexShrink, width, maxWidth });
+      }
+      if ([c.paddingTop, c.paddingBottom].some((v) => Math.abs(px(v) - LABEL_BOX.padBlock) > TOL) || [c.paddingLeft, c.paddingRight].some((v) => Math.abs(px(v) - LABEL_BOX.padInline) > TOL)) {
+        cmp('padding', { message: 'a bordered label takes the registered 2px block padding and the owner\'s 8px (--space-2) inline', got: [c.paddingTop, c.paddingRight, c.paddingBottom, c.paddingLeft].join(' ') });
+      }
+      const sides = ['Top', 'Right', 'Bottom', 'Left'];
+      const color = c.borderTopColor;
+      if (!sides.every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - LABEL_BOX.border) <= TOL && c['border' + s + 'Color'] === color)) {
+        cmp('border', { message: 'a bordered label draws one 1px solid border, one color on all four sides', got: sides.map((s) => c['border' + s + 'Width'] + ' ' + c['border' + s + 'Style'] + ' ' + c['border' + s + 'Color']).join(' / ') });
+      }
+      if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - LABEL_BOX.corner) > TOL)) cmp('corner', { message: 'a bordered label takes the owner\'s selected 8px corner (--radius-sm) on all four corners; corner shape alone assigns no interaction', got: corners(c) });
+      if (!clear(c.backgroundColor) || (c.backgroundImage && c.backgroundImage !== 'none')) cmp('fill', { message: 'a bordered label has no fill: its meaning is its border and its words', background: c.backgroundColor, image: c.backgroundImage });
+      const fg1 = probe(el, 'color:var(--fg-1)').color;
+      const theme = fg1 === fg1Light ? 'light' : fg1 === fg1Dark ? 'dark' : null;
+      const layers = shadows(c.boxShadow);
+      const l = layers[0];
+      if (!theme) cmp('edge', { message: 'the theme at a bordered label cannot be read from --fg-1, so its edge dose cannot be judged', got: fg1 });
+      else if (layers.length !== 1 || l.inset || l.lens.length !== 4 || l.lens.slice(0, 3).some((v) => Math.abs(v) > TOL) || Math.abs(l.lens[3] - LABEL_BOX.dose[theme]) > TOL || l.color !== color) {
+        cmp('edge', { message: 'a bordered label\'s edge is its border plus one zero-blur reinforcement in the border\'s color: ' + LABEL_BOX.dose.light + 'px in light, ' + LABEL_BOX.dose.dark + 'px in dark', theme, got: c.boxShadow, border: color });
+      }
+      if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin to reserve its reinforcement at the inline sides; block-axis clearance belongs to its host', got: c.marginLeft + ' ' + c.marginRight });
+      if (!el.matches('.doc-mark[data-review]')) {
+        const chip = el.matches('.surface-emphasis-chip');
+        const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
+        if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
+          cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip or a review mark', got: color });
+        }
+      }
+    }
+    for (const el of all(BORDERED)) {
+      if (el.matches('.doc-mark[data-evidence], .doc-mark[data-state]')) continue;   /* C12.attach reports it */
+      counts['bordered-label'] = (counts['bordered-label'] || 0) + 1;
+      /* Held for its open presentation; one that renders no box once open draws nothing to judge. */
+      if (collapsed(el)) { hold(el, (sink) => { if (el.getClientRects().length) bordered(el, sink); }, heldHere.has(el) ? undefined : (el.classList.contains('surface-emphasis-chip') ? 'surface-emphasis-chip' : 'surface-bordered-label')); governed++; continue; }
+      if (!el.getClientRects().length) continue;   /* it renders no box: nothing is drawn to judge */
+      governed++;
+      bordered(el, add);
+    }
+
     for (const [el, h] of heldHere) held.set(el, h);
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
     return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, unmapped, collapsed: collapsedHere };
@@ -1007,8 +1147,8 @@
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
      read() on each governed link that takes focus; then judge(records).
-     Last, it calls collapsed(), which judges the C12 elements a resting
-     check held. */
+     Last, it calls collapsed(), which judges the C12 and C13 elements a
+     resting check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
   const rendered = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -1024,7 +1164,7 @@
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
     },
-    /* With every disclosure in scope open, judge what each C12 element a resting check held
+    /* With every disclosure in scope open, judge what each C12 or C13 element a resting check held
        presents, wherever it now sits, once the animations on it, inside it and on its ancestors
        have finished: its findings carry state "open". An element still collapsed fails its held
        reason marked "collapsed"; one no longer on the page fails it marked "removed". */
@@ -1042,9 +1182,9 @@
         judged++;
         const sink = (state) => (rule, reason, e, detail) => findings.push({ rule, reason: rule + '.' + reason, element: path(e),
           text: text(e), container: h.container, state, ...detail });
-        const [noun, reason, basis] = HELD_KIND[h.kind];
-        if (!el.isConnected) sink('removed')('C12', reason, el, { basis, message: noun + ' held for its open presentation left the page as its disclosure opened, so what it presents cannot be proven' });
-        else if (collapsed(el)) sink('collapsed')('C12', reason, el, { basis, message: noun + ' whose disclosure is closed when it is judged is not seen, so what it presents cannot be proven: the runner did not open that disclosure, or the page closed it again' });
+        const [noun, reason, basis, rule = 'C12'] = HELD_KIND[h.kind];
+        if (!el.isConnected) sink('removed')(rule, reason, el, { basis, message: noun + ' held for its open presentation left the page as its disclosure opened, so what it presents cannot be proven' });
+        else if (collapsed(el)) sink('collapsed')(rule, reason, el, { basis, message: noun + ' whose disclosure is closed when it is judged is not seen, so what it presents cannot be proven: the runner did not open that disclosure, or the page closed it again' });
         else for (const judge of h.judges) judge(sink('open'));
       }
       return { judged, findings };
@@ -1145,5 +1285,5 @@
     },
   };
 
-  global.ASKRoleConformance = { check, interaction, MATRIX, TOKENS, THEME_TOKENS, LINK_STATES, RAIL, RAIL_COLOR, HIERARCHY_RAIL };
+  global.ASKRoleConformance = { check, interaction, MATRIX, TOKENS, THEME_TOKENS, LINK_STATES, RAIL, RAIL_COLOR, HIERARCHY_RAIL, LABEL_BOX };
 })(typeof window !== 'undefined' ? window : globalThis);
