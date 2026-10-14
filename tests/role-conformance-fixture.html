@@ -52,6 +52,32 @@
   [data-control="bordered label stretched by its column"] .surface-bordered-label { width: auto; }
   [data-control="bordered label given a fill"] .surface-bordered-label { background: var(--line-1); }
   [data-control="bordered label under a redefined small corner"] { --radius-sm: 999px; }
+  [data-control="labeled range insetting what it holds"] .surface-labeled-range { padding-left: var(--space-4); }
+  [data-control="labeled range drawn as a passage rail on its own box"] .surface-labeled-range { border-left: 2px solid var(--fg-3); padding-left: var(--space-4); }
+  [data-control="labeled range drawn as a passage rail on its own box"] .surface-labeled-range::before { content: none; }
+  [data-control="labeled range with a wash"] .surface-labeled-range { background: var(--line-1); }
+  [data-control="labeled range rail at the content edge"] .surface-labeled-range::before { left: 0; }
+  [data-control="labeled range rail capped with feet"] .surface-labeled-range::before { width: var(--space-2); border: 2px solid var(--surface-labeled-range-color, var(--fg-3)); border-right: 0; }
+  [data-control="labeled range rail drawn 3px wide"] .surface-labeled-range::before { width: 3px; border-left-width: 3px; }
+  [data-control="labeled range rail on a dashed stroke"] .surface-labeled-range::before { border-left-style: dashed; }
+  [data-control="labeled range rail given a shadow"] .surface-labeled-range::before { box-shadow: 0 0 0 3px var(--fg-3); }
+  [data-control="labeled range rail cut by a clip path"] .surface-labeled-range::before { clip-path: inset(0 0 60% 0); }
+  [data-control="labeled range rail moved by translate"] .surface-labeled-range::before { translate: -10px 0; }
+  [data-control="labeled range rail moved by a margin"] .surface-labeled-range::before { margin-left: 10px; }
+  [data-control="labeled range with a static position"] .surface-labeled-range { position: static; }
+  [data-control="neutral labeled range given a color"] .surface-labeled-range { --surface-labeled-range-color: var(--ask-emphasis-cyan); }
+  [data-control="labeled range in a clipping box"] .fx-clip { overflow: hidden; }
+  [data-control="labeled range under a redefined lane step"] { --space-3: 4px; }
+  [data-control="labeled range with a transparent border"] .surface-labeled-range { border-left: 24px solid transparent; }
+  [data-control="labeled range moved by a position offset"] .surface-labeled-range { left: 30px; }
+  [data-control="labeled range moved by a transform"] .surface-labeled-range { transform: translateX(30px); }
+  [data-control="labeled range drawn as display contents"] .surface-labeled-range { display: contents; }
+  [data-control="labeled range rail made invisible"] .surface-labeled-range::before { opacity: 0; }
+  [data-control="labeled range rail cut short"] .surface-labeled-range::before { height: 6px; }
+  [data-control="labeled range whose last block keeps its margin"] .surface-labeled-range > :last-child { margin-bottom: var(--space-4); }
+  [data-control="labeled range at the page edge"] .fx-edge { position: absolute; left: 4px; width: 320px; }
+  [data-control="labeled range in a paint-contained box"] .fx-contain { contain: paint; }
+  [data-control="two labeled ranges with no buffer"] .surface-labeled-range + .surface-labeled-range { margin-top: 0; }
   [data-control="bordered label under a redefined inline step"] { --space-2: 2px; }
   [data-control="bordered label a flex row may shrink"] .surface-bordered-label { flex-shrink: 1; }
   [data-control="bordered label squeezed by its table column"] .surface-bordered-label { width: auto; }
@@ -152,6 +178,33 @@ keeps the one violet rail</pre>
     <div class="doc-group">
       <span class="doc-label surface-bordered-label">draft</span>
       <p class="doc-body">A label set directly in a column composition keeps its own width; the column does not stretch it into a bar.</p>
+    </div>
+    <div class="doc-group surface-labeled-range">
+      <span class="doc-label surface-bordered-label">draft</span>
+      <p class="doc-body">A neutral labeled range: its scope rail, in the margin, runs beside the two paragraphs its label marks.</p>
+      <p class="doc-body">The rail ends after the second paragraph, and neither paragraph moves.</p>
+    </div>
+    <div class="doc-group surface-labeled-range">
+      <span class="doc-label surface-bordered-label">held</span>
+      <p class="doc-body">A second range beside the first keeps the passage buffer between their rails.</p>
+    </div>
+    <div class="doc-table-scroll">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label">statements</th></tr></thead>
+        <tbody><tr><td class="doc-body">A row</td><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in a cell hangs into the gutter of the column before it.</div></div></td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll doc-table-scroll--range-lane">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">first</th><th class="doc-label">interior</th><th class="doc-label">last</th></tr></thead>
+        <tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in the first column, its rail in the lane the box keeps.</div></div></td><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in an interior column.</div></div></td><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in the last column.</div></div></td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll doc-table-scroll--range-lane">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label">statements</th></tr></thead>
+        <tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in a table's only column.</div></div></td></tr></tbody>
+      </table>
     </div>
   </section>
 
@@ -360,6 +413,12 @@ keeps the one violet rail</pre>
     </div>
     <div data-control="an emphasis rail off document text keeps a sanctioned violet accent" data-expect="">
       <div class="surface-emphasis-rail surface-emphasis--violet"><span>A treatment rail outside document roles, where violet is one of its three accents.</span></div>
+    </div>
+    <div data-control="a labeled range whose label holds its words in an inline child" data-expect="">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label"><strong>draft</strong></span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="a labeled range the page does not show presents no label to judge" data-expect="">
+      <div style="opacity: 0"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label" style="visibility: hidden">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
     </div>
     <div data-control="an ordinary prose table stays prose" data-expect="">
       <table><thead><tr><th>Reading</th><th>Consequence</th></tr></thead>
@@ -659,6 +718,123 @@ another</pre></div></div>
     </div>
     <div data-control="bordered label with no maximum width" data-expect="C13.box">
       <p class="doc-body">A <span class="doc-label surface-bordered-label">draft</span> label that would overflow a container narrower than its words.</p>
+    </div>
+    <div data-control="labeled range with no label" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range nested in a range" data-expect="C14.nest">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <div data-control="labeled range inside a list item" data-expect="C14.host">
+      <ul><li class="doc-body">An item <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></li></ul>
+    </div>
+    <div data-control="labeled range inside a quotation" data-expect="C14.host">
+      <blockquote class="doc-quote"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p>Words presented as someone's.</p></div><footer>A source</footer></blockquote>
+    </div>
+    <div data-control="labeled range inside a panel" data-expect="C14.host">
+      <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group"><p class="doc-body">A panel.</p><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <div data-control="labeled range insetting what it holds" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range drawn as a passage rail on its own box" data-expect="C14.box C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range with a wash" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail at the content edge" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail capped with feet" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail drawn 3px wide" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail on a dashed stroke" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail given a shadow" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail cut by a clip path" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail moved by translate" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail moved by a margin" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range with a static position" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="neutral labeled range given a color" data-expect="C14.color">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range in a clipping box" data-expect="C14.clearance">
+      <div class="fx-clip"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <div data-control="labeled range under a redefined lane step" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range in a table's first column without the range lane" data-expect="C14.clearance">
+      <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">statements</th><th class="doc-label">owner</th></tr></thead><tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in the first column.</div></div></td><td class="doc-body">owner</td></tr></tbody></table></div>
+    </div>
+    <div data-control="labeled range in a one-column table without the lane" data-expect="C14.clearance">
+      <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">statements</th></tr></thead><tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in a table's only column.</div></div></td></tr></tbody></table></div>
+    </div>
+    <div data-control="labeled range whose label is empty" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label"></span><p class="doc-body">The first statement under this label.</p><p class="doc-body">The second statement under this label.</p></div>
+    </div>
+    <div data-control="labeled range whose label is hidden" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label" style="visibility: hidden">draft</span><p class="doc-body">The first statement under this label.</p><p class="doc-body">The second statement under this label.</p></div>
+    </div>
+    <div data-control="labeled range whose label is at zero opacity" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label" style="opacity: 0">draft</span><p class="doc-body">The first statement under this label.</p><p class="doc-body">The second statement under this label.</p></div>
+    </div>
+    <div data-control="labeled range whose label's words are at zero opacity" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label"><span style="opacity: 0">draft</span></span><p class="doc-body">The first statement under this label.</p><p class="doc-body">The second statement under this label.</p></div>
+    </div>
+    <div data-control="labeled range whose label's words are transparent" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><span class="surface-bordered-label" style="color: transparent">draft</span><p class="doc-body">The first statement under this label.</p><p class="doc-body">The second statement under this label.</p></div>
+    </div>
+    <div data-control="labeled range opened by an emphasis chip" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><p class="surface-emphasis-chip">read this first</p><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range whose label is not its first child" data-expect="C14.label">
+      <div class="doc-group surface-labeled-range"><p class="doc-body">A paragraph first.</p><span class="doc-label surface-bordered-label">draft</span></div>
+    </div>
+    <div data-control="labeled range with a transparent border" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range moved by a position offset" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range moved by a transform" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range drawn as display contents" data-expect="C14.box">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail made invisible" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range rail cut short" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range whose last block keeps its margin" data-expect="C14.rail">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div>
+    </div>
+    <div data-control="labeled range at the page edge" data-expect="C14.clearance">
+      <div class="fx-edge"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <div data-control="labeled range in a paint-contained box" data-expect="C14.clearance">
+      <div class="fx-contain"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <div data-control="two labeled ranges with no buffer" data-expect="C14.buffer">
+      <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>
     </div>
   </section>
 

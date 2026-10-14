@@ -21,13 +21,14 @@
         request. It owns no evidence judgment, no authority and no workflow.
         Its module also carries the document marks for the other two state
         axes (facet 2).
-     2  ANNOTATION // the inert marks, items, rows, lists, passage marks and
-        notes that attach review, evidence, state and basis to the exact
-        content they concern, without repainting that content's role.
+     2  ANNOTATION // the inert marks, items, rows, lists, ranges, passage
+        marks and notes that attach review, evidence, state and basis to the
+        exact content they concern, without repainting that content's role.
 
    APPLICABILITY. Every rule here applies to elements carrying this module's
    classes: .doc-mark, mark.doc-passage-mark, .doc-annotation-note,
-   .doc-annotation-item, .doc-annotations and .doc-annotation-list. A
+   .doc-annotation-item, .doc-annotations, .doc-annotation-list and
+   .doc-annotation-range. A
    data-review, data-evidence or data-state attribute alone opts nothing in
    and paints nothing. Evidence State and Spectral State presentations
    authored outside this composition, such as a consumer's own evidence
@@ -135,7 +136,8 @@
                      an evidence or state mark never carries
                      .surface-bordered-label; a mark carries one role, and a
                      second fact takes a second mark
-     example         an outlined PROPOSED after the paragraph it proposes
+     example         an outlined PROPOSED after the paragraph it proposes, or
+                     at the head of the range it proposes
      counterexample  the paragraph itself recolored, railed or boxed in the
                      proposal's color
 
@@ -150,14 +152,53 @@
 
    ANNOTATION ROW
      meaning         the items that apply to one scope: the section after its
-                     heading, the block it follows, or the table cell it sits in
+                     heading, the block it follows, the range it opens, or the
+                     table cell it sits in
      population      .doc-annotations holding .doc-annotation-item children,
-                     in a fixed order: state, basis, evidence, review
+                     in a fixed order: state, basis, evidence, review. The row
+                     that opens a range leads with its review item, beside the
+                     top of the scope rail; its state, basis and evidence items
+                     follow in that order
      variation       in a table cell the row is inline on the cell's first
                      baseline. Each item opens on its own mark or its key, so
                      items need no separator
      exclusions      not a container: no rail, wash, border or panel. Placement
-                     sets scope; typography, boldness or capitals never do
+                     or a range sets scope; typography, boldness or capitals
+                     never do
+
+   ANNOTATION RANGE
+     meaning         the exact blocks one review judgment covers, where
+                     placement alone would leave its extent unclear: several
+                     blocks, a list, a quotation with the sentence that reads
+                     it, a panel, or one of several statements in a table cell
+     population      .doc-annotation-range.surface-labeled-range (usually also
+                     .doc-group, for the run's flow), its first child the
+                     annotation row that names its one review judgment, that
+                     judgment's item first, then the blocks it covers. In a
+                     document table it sits in a cell of any column; a table
+                     with a range in its first or only column keeps the lane
+                     through .doc-table-scroll--range-lane (surface-document.css)
+     owner           surface-treatments.css for the scope rail: the shared
+                     labeled range, drawn in the outer margin, its stroke,
+                     reach and lane. This module for its color, the review
+                     value of the judgment its row names
+     variation       the rail takes the review value: magenta for Proposed
+                     and Correction requested, green for Accepted, red for
+                     Declined, the open value for Open question, the faintest
+                     neutral for No decision recorded
+     exclusions      one judgment per range: a range holds no second review
+                     mark, so blocks judged otherwise are a sibling range of
+                     their own. Words inside it whose judgment is pending take
+                     a passage mark, a narrower record of their own, whose note
+                     follows the range. Never nested, never a content role,
+                     rail or panel itself, and never inside a list item, a
+                     railed passage, a separate surface or panel, a hierarchy
+                     level or an annotation note. The scope rail answers one
+                     question, which content the review judgment covers: the
+                     row's state, basis and evidence items apply to the range
+                     but never color it, and evidence and state never open a
+                     range. A single block whose row follows it needs no range,
+                     and a whole document takes none
 
    ANNOTATION LIST
      meaning         one item answering several questions at once, each on its
@@ -199,12 +240,15 @@
        rail does not change with its review state.
      - Annotations sit at their actual scope with the least added structure:
        a row after a heading or block, an item in a cell, a passage mark plus
-       a note for words inside a block. No rail or panel is added to make scope.
+       a note for words inside a block, and a range where a judgment covers
+       more than placement can bound. No rail or panel on the content is added
+       to make scope; a range's scope rail sits outside the content edge.
      - One edge, one meaning. Within this composition, review and evidence
        never draw a rail on the content passage and never recolor a panel
-       perimeter. The composition's one annotation rail is Evidence State's
-       mandatory not-yet-testable dashed rail, drawn on an annotation note or
-       a mark, never on the content itself.
+       perimeter. A range's scope rail, in the outer margin, answers only which
+       content a review judgment covers. The composition's one annotation rail
+       is Evidence State's mandatory not-yet-testable dashed rail, drawn on an
+       annotation note or a mark, never on the content itself.
 
    REGISTERED LITERALS
      1px      the evidence and state marks' vertical padding and their
@@ -217,13 +261,15 @@
 
    CHECKING. tools/role-conformance.js rule C12 checks this composition where
    its classes appear: syntax (classes, attributes, vocabulary, a review
-   mark's bordered label) and computed presentation (the outline's color, the
-   marker, rail and tint). Rule C13 checks a review mark's box and edge as it
-   checks every bordered label. C12 never judges
-   semantic assignment, whether an item's role is the right one; that stays
-   with the author and the reviewer. C12 compares a mark with its resolved
-   role token. It does not independently establish that a local token
-   rebinding is authorized: adopted role bindings remain governed by the
+   mark's bordered label, a range's row, the one judgment that leads it and
+   its shared class) and computed presentation (the outline's and the scope
+   rail's color, the marker, rail and tint). Rule C13 checks a review mark's
+   box and edge as it checks every bordered label, and rule C14 a range's
+   scope rail, lane, host and clearance as it checks every labeled range.
+   C12 never judges semantic assignment, whether an item's role is the right
+   one; that stays with the author and the reviewer. C12 compares a mark with
+   its resolved role token. It does not independently establish that a local
+   token rebinding is authorized: adopted role bindings remain governed by the
    contract, and a local exception requires the applicable explicit
    authorization.
    ========================================================================= */
@@ -320,8 +366,8 @@
   min-width: 0;
 }
 
-/* The row: scope by placement. Each item opens on its mark or its key, so a
-   wrapped item never begins with a stray separator. */
+/* The row: scope by placement, or by the range it opens. Each item opens on
+   its mark or its key, so a wrapped item never begins with a stray separator. */
 .doc-annotations {
   display: flex;
   flex-wrap: wrap;
@@ -331,6 +377,15 @@
 }
 /* In a table cell the row shares the cell's first baseline. */
 :where(td, th) > .doc-annotations { display: inline-flex; vertical-align: baseline; }
+
+/* The range: its scope rail is the shared labeled range's
+   (surface-treatments.css); it takes the review value of the one judgment its
+   opening row names. */
+.doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="proposed"]) { --surface-labeled-range-color: var(--review-proposed); }
+.doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="open"])     { --surface-labeled-range-color: var(--review-open); }
+.doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="accepted"]) { --surface-labeled-range-color: var(--review-accepted); }
+.doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="declined"]) { --surface-labeled-range-color: var(--review-declined); }
+.doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="none"])     { --surface-labeled-range-color: var(--review-none); }
 
 /* The list: one key per question. */
 .doc-annotation-list {

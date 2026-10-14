@@ -147,6 +147,12 @@ composition       the 32rem narrative measure and none on a dense table; --space
                   row a script appends to the table itself taking the cell rules
 scroll-into-view  a header link scrolled into view by its nearest edge lands inside its box and
                   clear of the fade, while hidden content remains to its right
+range lane        a box without .doc-table-scroll--range-lane takes no lane; a range-lane box
+                  reaches the lane (--space-3 and 2px) into the margin and pads it back, its
+                  edge that far outside the column, and every header and cell sits where it
+                  does in a box without the lane, at rest and scrolled to the end; a
+                  consumer's margin shorthand of one class does not split the pair and keeps
+                  its block margin
 label             the label in capitals; code in it, with the class and without, in its own
                   case; plain text in it, such as mW, in capitals
 overflow          a wide table box and a narrative table below its measure report the right
@@ -183,6 +189,9 @@ give the cell rule specificity                     the consumer-override case, a
                                                    zero-specificity rules it now outranks
 key the measure on the table marker alone          the marker-without-its-box measure case
 hide the composition's header row                  the header-row case
+drop the range-lane box's start margin             the lane-pair and box-edge cases, and the three
+                                                   cases that place the headers and cells
+put the range-lane rule at zero specificity        the consumer-margin case
 ```
 
 ## doc-actions-end-fixture.html
@@ -252,14 +261,18 @@ metadata, a quotation and a dense cell, and the bordered label without Review Se
 a neutral label in text, an emphasis panel's chip, violet and cyan chips, a chip outside
 an accented surface, a scrolling table whose first and last columns hold a label and
 whose label of several words keeps its line beside a long cell, and a label set directly
-in a column composition — which must return no finding at rest or in any link state.
-After it come **controls**: 120 negative controls, one per failure branch,
+in a column composition; and the labeled range without Review Semantics: two neutral
+ranges in a row, one in a table's second column, and, in tables whose box keeps the
+range lane, one in each of a first, an interior and a last column and one in a table's
+only column — which must return no finding at rest or in any link state.
+After it come **controls**: 159 negative controls, one per failure branch,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
-9 positive controls — an unmarked prose table, a complete profile declaration, an
-emphasis rail off document text keeping a sanctioned violet accent, and six declared
+11 positive controls — an unmarked prose table, a complete profile declaration, an
+emphasis rail off document text keeping a sanctioned violet accent, six declared
 peer-group blocks (two, five and ten groups, a question set out as three groups, a single
-lead label, and a group boundary that also records a blank line, which must not double) —
-which must return no finding:
+lead label, and a group boundary that also records a blank line, which must not double),
+a labeled range whose label holds its words in an inline child, and a labeled range the
+page does not show, whose hidden label is then not judged — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -375,6 +388,31 @@ C13.corner · C13.padding    a page that redefines --radius-sm as a pill · one 
 C13.clearance               no inline margin, so a clipping box can cut its edge
 C13.color · C13.color       a neutral label given a color · an emphasis chip whose
                             accent is not one of the three
+C14.label · C14.label ·     a labeled range with no label · opened by an emphasis
+C14.label · C14.label ·     chip · whose label is not its first child · whose label
+C14.label · C14.label ·     is empty · hidden · at zero opacity · whose label's words
+C14.label · C14.label ·     are at zero opacity · transparent, in a label with no
+C14.nest                    text role · a range nested in a range
+C14.host · C14.host ·       a labeled range inside a list item · inside a quotation ·
+C14.host                    inside a panel
+C14.box · C14.box ·         a labeled range insetting what it holds · drawn as a
+C14.box · C14.box ·         passage rail on its own box (with C14.rail) · given a
+C14.box · C14.box ·         wash · moved by a transparent border · by a position
+C14.box                     offset · by a transform · drawn as display: contents
+C14.rail · C14.rail ·       its scope rail at the content edge · capped with feet at
+C14.rail · C14.rail ·       both ends · drawn 3px wide · on a dashed stroke · given
+C14.rail · C14.rail ·       a shadow · cut by a clip path · moved by translate · by a
+C14.rail · C14.rail ·       margin · around a range with a static position · under a
+C14.rail · C14.rail ·       page that shrinks --space-3, where the check holds the
+C14.rail · C14.rail ·       owner's 14px lane, not the page's token · made invisible ·
+C14.rail                    cut short · past a last block that keeps its margin
+C14.clearance ·             a labeled range in a clipping box · in a paint-contained
+C14.clearance ·             box · at the page edge · in a table's first column and
+C14.clearance ·             in a table's only column, where a scrolling box without
+C14.clearance ·             the range lane cuts its lane
+C14.clearance
+C14.buffer                  two labeled ranges in a row with no buffer between them
+C14.color                   a neutral labeled range given a color
 ```
 
 The page judges each case's **resting** codes itself and writes them to
@@ -424,14 +462,14 @@ offered as evidence on its own, or when the checker changes.
 
 ## review-semantics-fixture.html
 
-The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`), and for rule **C13** where a review mark takes the shared bordered label. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, except where a control omits it.
+The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`), for rule **C13** where a review mark takes the shared bordered label, and for rule **C14** where an annotation range takes the shared labeled range, and for both where a neutral label or range is held in a closed disclosure. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, except where a control omits it.
 
-A conforming specimen must return no finding. After it come **80 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
+A conforming specimen must return no finding; it includes annotation ranges over two paragraphs and over one beside them, over a list, over a quotation with the sentence that reads it, over a synthesis panel, two in one table cell of a second column, and two in a table's first column, whose box keeps the range lane; each range's row leads with its judgment. After it come **100 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
 
-- **67 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.base`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined. The shared box fails with the bordered label's own reasons: a review mark without `.surface-bordered-label` (`C12.base`), an evidence and a state mark carrying it (`C12.attach`), a review mark on pill corners and one with three pill corners (`C13.corner`), one with a padding of its own (`C13.padding`), and a repainted outline, whose reinforcement keeps the role's color (`C12.color` and `C13.edge`).
-- **13 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose tint is suppressed only while its disclosure is closed and the same passage open from the start, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, rows without a mark in a closed disclosure, and an emphasis chip and a neutral bordered label in a closed disclosure, which C13 judges once open.
+- **84 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.base`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`, `.range`, `.mixed`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, a passage mark that loses its tint, role tokens made transparent, the passage dose left undefined, and a not-yet-testable note drawn in its text color while its value is undefined. The shared box fails with the bordered label's own reasons: a review mark without `.surface-bordered-label` (`C12.base`), an evidence and a state mark carrying it (`C12.attach`), a review mark on pill corners and one with three pill corners (`C13.corner`), one with a padding of its own (`C13.padding`), and a repainted outline, whose reinforcement keeps the role's color (`C12.color` and `C13.edge`). An annotation range fails with its own reasons: one without `.surface-labeled-range`, and a labeled range a review judgment opens without `.doc-annotation-range` (`C12.base`, the latter with `C14.label`); one opened by a paragraph and one whose row names no judgment (`C12.range`, each with `C14.label`); one whose row names two judgments, and one whose row opens on its basis rather than its judgment (`C12.range`); one holding a second judgment, or a nested range (`C12.mixed`, the latter with `C14.nest`); a scope rail in another role's color (`C12.color`); a range carrying `data-review`, and one that is itself a quotation (`C12.attach`, the latter with `C14.box`); a quotation inside a range repainted in the range's color (`C3.color`); a range inside a panel (`C14.host`); one in a table's first column without the range lane (`C14.clearance`); and a range in a closed disclosure drawn at the content edge once open (`C14.rail`, open only). A neutral labeled range in a closed disclosure fails `C14.label` when its label has no words, at rest, and when its label is hidden, once open.
+- **16 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose tint is suppressed only while its disclosure is closed and the same passage open from the start, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, rows without a mark in a closed disclosure, an emphasis chip and a neutral bordered label in a closed disclosure, which C13 judges once open, an annotation range in a closed disclosure, which C12 and C14 judge once open, a neutral labeled range in a closed disclosure, which C14 judges once open, and an annotation range holding a passage mark whose note follows the range: words judged otherwise keep their own, narrower record.
 
-**Disclosures.** Thirty-six controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them. The resting check judges its syntax, vocabulary and relationships, requires that a mark has words (`C12.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
+**Disclosures.** Forty-one controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them; so is a bordered label or a labeled range held there. The resting check judges its syntax, vocabulary and relationships, requires that a mark and a neutral range's label have words (`C12.label`, `C14.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
 
 - Labeled marks in a closed disclosure pass, nested and in a table cell included, and so do rows without a mark and a not-yet-testable note on its rail.
 - At rest, a collapsed mark with no words, one without the label role, one wearing the emphasis chip class, one carrying two facets, a review role outside the vocabulary and a passage mark with no note fail as they would outside a disclosure.
@@ -445,6 +483,7 @@ A conforming specimen must return no finding. After it come **80 controls**, eac
 - An element fails, too, when its disclosure is closed again before it is judged, or when it is replaced as its disclosure opens: what it presents cannot be proven. Two controls hold a row and its mark, and two hold a passage mark, its note, a not-yet-testable note and their rows, items and marks, so each kind fails with its own reason.
 - A mark in a closed disclosure's summary, or one the page shows although its disclosure is closed, is seen, so it is judged at rest; with its words hidden there, it fails.
 - Outside any disclosure, a visible mark whose words are hidden fails at rest.
+- A neutral labeled range in a closed disclosure passes. At rest, one whose label has no words fails `C14.label`; once opened, one whose label is hidden fails `C14.label`.
 
 A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in, which the two compatibility controls hold.
 

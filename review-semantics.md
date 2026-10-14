@@ -42,21 +42,22 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 - **Mark** // an inert annotation word: one review, evidence or state role, stated literally. `span.doc-mark.doc-label` with exactly one of `data-review`, `data-evidence` or `data-state`. Its words are the register's label role, which this module never restyles; its color sits only on its geometry. A review mark also carries `.surface-bordered-label`: its box and edge are the shared bordered label's, from `surface-treatments.css` — the same box as the emphasis chip and a neutral label — and this module supplies its color only. Evidence draws a 10px round dot and state a 10px square, with no outline, and neither carries `.surface-bordered-label`. A mark carries one role; a second fact takes a second mark.
 - **Item** // one fact and its qualifier, kept together: a mark and the metadata that qualifies it (`.doc-meta`), or a basis key (`.doc-label`) and its value (`.doc-meta`). `.doc-annotation-item`, inside a row or a table cell. It wraps as a unit.
-- **Annotation row** // the items that apply to one scope: the section after its heading, the block it follows, or the table cell it sits in. `.doc-annotations`, its items in one fixed order: state, basis, evidence, review. Each item opens on its own mark or key, so items need no separator.
+- **Annotation row** // the items that apply to one scope: the section after its heading, the block it follows, the range it opens, or the table cell it sits in. `.doc-annotations`, its items in one fixed order: state, basis, evidence, review. The row that opens a range leads with its review item, beside the top of the scope rail, and its state, basis and evidence items follow in that order. Each item opens on its own mark or key, so items need no separator.
 - **Annotation list** // one item answering several questions at once, one keyed line per question, in the row's order. `dl.doc-annotation-list`, with `dt.doc-label` keys and `dd` values.
+- **Annotation range** // the exact blocks one review judgment covers, where placement alone would leave its extent unclear: several blocks, a list, a quotation with the sentence that reads it, a panel, or one of several statements in a table cell. `.doc-annotation-range` with `.surface-labeled-range` (and usually `.doc-group`, for the run's flow). Its first child is the annotation row naming its one review judgment, which leads that row; the blocks it covers follow. Its scope rail is the shared labeled range's, from `surface-treatments.css`: one straight 2px stroke in the outer margin, outside the content edge, beginning beside the row and ending just past the last block it covers. This module supplies its color only, the review value of the judgment its row names. One judgment per range: a range holds no second review mark, so blocks judged otherwise are a sibling range of their own. Words inside a range whose judgment is pending take a passage mark, a narrower record of their own, and its note follows the range. A range is never nested, and never sits inside a list item, a railed passage, a separate surface or panel, a hierarchy level or an annotation note. The row's state, basis and evidence items apply to the range but never color its scope rail, and evidence and state never open a range.
 - **Passage mark** // the exact words inside a block whose judgment is pending, proposed or open. `mark.doc-passage-mark` with `data-review`, in body text, naming its note among its `aria-describedby` ids. It is a tint of the review value at the passage dose: 18% in light, 26% in dark. A decided outcome takes no passage mark.
 - **Annotation note** // the record a passage mark points to, set after the block and its row; it quotes the words it concerns. `.doc-annotation-note` on a `.doc-hierarchy` group. An evidence note whose role is not yet testable draws that role's dashed rail instead of the hierarchy rail.
 
 ## Composition rules
 
 1. **A passage keeps its document role.** Accepting a synthesis leaves it a synthesis; challenging a quotation leaves it a quotation; a callout's rail does not change with its review state, and a framing panel's perimeter never changes color.
-2. **Scope by placement, with the least structure.** A row after a heading or block, an item in a cell, a list for one item answering several questions, a passage mark and a note for words inside a block. No rail or panel is added to make scope; typography, boldness or capitals never set it.
-3. **One edge, one meaning.** Within this composition, review and evidence never draw a rail on the content passage. The composition's one annotation rail is Evidence State's mandatory not-yet-testable dashed rail, drawn on an annotation note or a mark.
+2. **Scope with the least structure that bounds it.** A row after a heading or block, an item in a cell, a list for one item answering several questions, a passage mark and a note for words inside a block. Where a judgment covers more than placement can bound, a range: several blocks, a list, a quotation with the sentence that reads it, a panel, or one of several statements in a cell. No rail or panel is added on the content to make scope, and typography, boldness or capitals never set it. Not every block needs a range: a single block whose row follows it needs none, and a whole document takes none.
+3. **One edge, one meaning.** Within this composition, review and evidence never draw a rail on the content passage. A range's scope rail sits in the outer margin, outside the content edge where every passage rail sits, and answers only one question: which content a review judgment covers. Evidence and state never draw a range. The composition's one annotation rail is Evidence State's mandatory not-yet-testable dashed rail, drawn on an annotation note or a mark.
 4. **The passage scope cue is the tint.** Beside the document's link underline, colored words that go nowhere can read as a link, so this composition marks words with a tint, never an underline, a text color or a rail. This is the composition's choice, not a general rule about underlines in documents.
 5. **Panels take no inner note.** A framing, synthesis or emphasis panel keeps its whole contract; its note follows the panel.
 6. **Not yet testable keeps its whole contract** in this composition: lavender-gray, a dashed rail, a hollow marker and the visible label. Inside a not-yet-testable note, the note's rail is the one rail.
 7. **An ordinary question is a section, not a panel:** a heading plus an Open question mark. A proposed answer sits beside it, because a proposed answer is not an unanswered question.
-8. **A mark is not a chip and not a control.** It never takes `.surface-emphasis-chip`, which names why a unit is emphasized and heads a panel, nor the compact action's classes or any interactive behavior. A review mark and the chip share one box, the bordered label, and differ in meaning, words and place. The bordered label's small corner keeps an inert mark from looking like a control beside a compact action.
+8. **A mark is not a chip and not a control.** It never takes `.surface-emphasis-chip`, which names why a unit is emphasized and heads a panel, nor the compact action's classes or any interactive behavior. A review mark and the chip share one box, the bordered label, and differ in meaning, words and place: a chip heads a panel inside its perimeter, and a mark follows the content it concerns or opens a range outside it. The bordered label's small corner keeps an inert mark from looking like a control beside a compact action.
 9. **Checks are neutral.** A named check and its result are plain metadata under a `Check` key, never a dot or an outline. A passed check approves nothing.
 
 ## The decision record
@@ -70,11 +71,11 @@ A shown decision is a whole record. It names what it concerns (object or version
 
 ## Applicability
 
-Every rule here applies to elements carrying this module's classes: `.doc-mark`, `mark.doc-passage-mark`, `.doc-annotation-note`, `.doc-annotation-item`, `.doc-annotations` and `.doc-annotation-list`. A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in and paints nothing. Those attribute names already exist outside this composition: Evidence State's own consumer example paints `.node[data-evidence]`, and the `message-archive` pattern uses `data-state` with a vocabulary of its own.
+Every rule here applies to elements carrying this module's classes: `.doc-mark`, `mark.doc-passage-mark`, `.doc-annotation-note`, `.doc-annotation-item`, `.doc-annotations`, `.doc-annotation-list` and `.doc-annotation-range`. A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in and paints nothing. Those attribute names already exist outside this composition: Evidence State's own consumer example paints `.node[data-evidence]`, and the `message-archive` pattern uses `data-state` with a vocabulary of its own.
 
 ## Checking
 
-`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary, a review mark's bordered label) and computed presentation (the outline's color, the marker, rail and tint). Rule **C13** checks a review mark's box and edge as it checks every bordered label. Neither judges semantic assignment, that is, whether an item's role is the right one; that stays with the author and the reviewer.
+`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary, a review mark's bordered label, a range's opening row, the one judgment that leads it and its shared class) and computed presentation (the outline's and the scope rail's color, the marker, rail and tint). Rule **C13** checks a review mark's box and edge as it checks every bordered label, and rule **C14** a range's scope rail, lane, host and clearance as it checks every labeled range. Neither judges semantic assignment, that is, whether an item's role is the right one; that stays with the author and the reviewer.
 
 C12 compares a mark with its resolved role token. It does not independently establish that a local token rebinding is authorized. Adopted role bindings remain governed by this contract; a local exception requires the applicable explicit authorization.
 
@@ -86,7 +87,7 @@ C12 compares a mark with its resolved role token. It does not independently esta
 
 ## How to use it
 
-1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract, and `surface-treatments.css` is required: it draws a review mark's box:
+1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract, and `surface-treatments.css` is required: it draws a review mark's box and a range's scope rail:
 
    ```text
    colors_and_type.css → surface-panel.css → surface-text-link.css →
@@ -117,7 +118,22 @@ C12 compares a mark with its resolved role token. It does not independently esta
    </div>
    ```
 
-4. Keep the labels visible, keep every shown decision's what, who and scope, and do not relabel a role by another axis's name.
+4. Where one judgment covers several blocks, open a range with its row:
+
+   ```html
+   <div class="doc-group doc-annotation-range surface-labeled-range">
+     <div class="doc-annotations">
+       <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">rev 3 · editor · both paragraphs</span></span>
+       <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">editor draft</span></span>
+     </div>
+     <p class="doc-body">The first paragraph it proposes.</p>
+     <p class="doc-body">The second.</p>
+   </div>
+   ```
+
+   The host keeps at least 14px of unclipped space left of the content edge for the scope rail; 24px of side padding is recommended at the narrowest page width. In a document table a range hangs into the gutter of the column before it; a table with a range in its first or only column takes `.doc-table-scroll--range-lane` on its box, which keeps the lane there without moving a column. The range's row leads with its review item, and the row's other items follow it. A list inside a range keeps its markers inside its own padding.
+
+5. Keep the labels visible, keep every shown decision's what, who and scope, and do not relabel a role by another axis's name.
 
 ## What is upstream vs consumer-local
 
