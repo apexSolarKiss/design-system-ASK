@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>design-system-ASK // review semantics conformance fixture</title>
-<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, for rule C13 where a review mark takes the shared bordered label, and for rule C14 where an annotation range takes the shared labeled range, and for both where a neutral label or range is held in a closed disclosure: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
+<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, for rule C13 where a review mark takes the shared bordered label, for rule C14 where an annotation range takes the shared labeled range, and for rule C15 where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/review-semantics-fixture.html
      Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
      The fixture for rule C12, in the owner fixture's format: each
@@ -14,11 +14,12 @@
      codes the runner returns once it has opened every disclosure; where it is
      absent the runner must return none. data-collapsed, where present, is how
      many annotation elements (marks, passage marks, notes, rows, items, lists,
-     a list's keys and values, and ranges), bordered labels and labeled ranges
-     the resting check must report collapsed. A control that names no code is a positive case:
-     conforming material, inside the composition or outside it, that C12, C13
-     and C14 must pass. Every review mark carries .surface-bordered-label, the
-     shared box C13 judges, unless a control omits it. Loads the owner modules
+     a list's keys and values, and ranges), bordered labels, labeled ranges and
+     scope underlines the resting check must report collapsed. A control that names no code is a positive case:
+     conforming material, inside the composition or outside it, that C12, C13,
+     C14 and C15 must pass. Every review mark carries .surface-bordered-label, the
+     shared box C13 judges, and every passage mark .surface-scope-underline,
+     the shared line C15 judges, unless a control omits it. Loads the owner modules
      in the contract's order, then tools/role-conformance.js. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-panel.css">
@@ -37,7 +38,12 @@
   [data-control="not yet testable reduced to a gray dot"] .doc-mark { border-left: 0; }
   [data-control="not yet testable reduced to a gray dot"] .doc-mark::before { border: 0; background: var(--evidence-not-yet-testable); }
   [data-control="evidence marker in another role's color"] .doc-mark::before { background: var(--evidence-weakened); }
-  [data-control="passage mark drawn as an underline"] mark { text-decoration: underline dotted var(--review-proposed); }
+  .fx-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+  [data-control="passage mark drawn as a dotted line"] mark { text-decoration-style: dotted; }
+  [data-control="passage line in another role's value"] mark { text-decoration-color: var(--review-accepted); }
+  [data-control="note in a list item at the old 4px attachment"] li > .doc-annotation-note { margin-top: var(--space-1); }
+  [data-control="note after a list item's own text at the old 4px attachment"] li > .doc-annotation-note { margin-top: var(--space-1); }
+  [data-control="collapsed scope underline drawn dotted once open"] details[open] .surface-scope-underline { text-decoration-style: dotted; }
   [data-control="passage mark recolors its words"] mark { color: var(--state-proposed); }
   [data-control="annotation row drawn with a scope rail"] .doc-annotations { border-left: 2px solid var(--ask-emphasis-violet); padding-left: var(--space-4); }
   [data-control="evidence marker not displayed"] .doc-mark::before { display: none; }
@@ -48,8 +54,6 @@
   [data-control="evidence role token made transparent"] { --evidence-supported: transparent; }
   [data-control="evidence marker with 5% corners"] .doc-mark::before { border-radius: 5%; }
   [data-control="state marker with 10% corners"] .doc-mark::before { border-radius: 10%; }
-  [data-control="passage dose off the registered values"] { --review-passage-dose: 2%; }
-  [data-control="passage dose token undefined"] { --review-passage-dose: initial; }
   [data-control="not-yet-testable note drawn in currentColor, its value undefined"] { --evidence-not-yet-testable: initial; }
   [data-control="not-yet-testable note drawn in currentColor, its value undefined"] .doc-annotation-note { border-left: 2px dashed currentColor; }
   [data-control="annotation row drawn with a border box"] .doc-annotations { border: 1px solid var(--line-2); }
@@ -68,11 +72,11 @@
   @keyframes fx-hide { to { visibility: hidden; } }
   [data-control="mark a closed disclosure shows, its words hidden while closed"] details::details-content { content-visibility: visible; }
   [data-control="mark a closed disclosure shows, its words hidden while closed"] details:not([open]) .fx-words { display: none; }
-  .fx-restyled-open details[open] mark.doc-passage-mark { background: transparent; }
+  .fx-restyled-open details[open] mark.doc-passage-mark { text-decoration-style: dotted; }
   .fx-restyled-open details[open] .doc-annotation-note { border-left: 0; }
   .fx-restyled-open details[open] .doc-annotations { border-left: 2px solid var(--ask-emphasis-cyan); }
-  .fx-tint-closed details:not([open]) mark.doc-passage-mark { background: transparent; }
-  [data-control="composition restyled only while its disclosure is closed"] details:not([open]) mark.doc-passage-mark { background: transparent; }
+  .fx-line-closed details:not([open]) mark.doc-passage-mark { text-decoration-line: none; }
+  [data-control="composition restyled only while its disclosure is closed"] details:not([open]) mark.doc-passage-mark { text-decoration-line: none; }
   [data-control="composition restyled only while its disclosure is closed"] details:not([open]) .doc-annotation-note { border-left: 0; }
   [data-control="composition restyled only while its disclosure is closed"] details:not([open]) :is(.doc-annotations, .doc-annotation-list) { border-left: 2px solid var(--ask-emphasis-cyan); }
   [data-control="composition restyled only while its disclosure is closed"] details:not([open]) .doc-mark { border-color: var(--ask-emphasis-cyan); }
@@ -101,7 +105,7 @@
           <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1 · this paragraph</span></span>
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
         </div>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note">with two props</mark>, out of focus behind.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note">with two props</mark>, out of focus behind.</p>
       </div>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note">
         <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">owner, round 2</span></span></div>
@@ -134,15 +138,17 @@
     <div class="doc-table-scroll doc-table-scroll--range-lane"><table class="doc-table"><thead><tr><th class="doc-label">statements</th><th class="doc-label">position</th></tr></thead><tbody><tr><td class="doc-body"><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div><div>A first statement, in the first column.</div></div><div class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><div>A second statement.</div></div></td><td class="doc-body">P-4</td></tr></tbody></table></div>
     <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner · the whole table</span></span></div><div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">frame</th><th class="doc-label">props</th></tr></thead><tbody><tr><td class="doc-body">F-1</td><td class="doc-body">two</td></tr><tr><td class="doc-body">F-2</td><td class="doc-body">one</td></tr></tbody></table></div></div>
     <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the owner · the question its heading poses</span></span></div><h3 class="doc-subsection-title">Should the square stay in the study?</h3></div>
-    <ul>
-      <li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · this item</span></span></div>A whole item, proposed.</li>
-      <li class="doc-body">An item whose <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-item-note">last words</mark> are pending.<div class="doc-hierarchy doc-group doc-annotation-note" id="fx-item-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">on “last words” · owner</span></span></div></div></li>
+    <ul class="fx-list">
+      <li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · this item</span></span></div><p class="doc-body">A whole item, proposed.</p></li>
+      <li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this item</span></span></div><p class="doc-body">The next whole item, accepted.</p></li>
+      <li class="doc-body">An item whose <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-item-note">last words</mark> are pending.<div class="doc-hierarchy doc-group doc-annotation-note" id="fx-item-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">on “last words” · owner</span></span></div></div></li>
+      <li><p class="doc-body">An item whose paragraph ends on <mark class="doc-passage-mark surface-scope-underline" data-review="declined" aria-describedby="fx-item-note-p">its last two lines, the words a decision declined</mark>.</p><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-item-note-p"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">on “its last two lines” · owner, round 1</span></span></div></div></li>
     </ul>
     <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">for each row marked in the table below, may it be reused? · owner</span></span></div>
     <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor · the reuse plan</span></span></div><div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">frame</th><th class="doc-label">reuse</th></tr></thead><tbody><tr><td class="doc-body">F-1</td><td class="doc-body">marked</td></tr><tr><td class="doc-body">F-2</td><td class="doc-body">not marked</td></tr></tbody></table></div></div>
     <div class="doc-group">
-      <p class="doc-body">Each frame keeps two props or fewer.</p>
-      <div class="doc-hierarchy doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">on “two props or fewer” · owner, round 2</span></span></div></div>
+      <p class="doc-body">Each frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="accepted" aria-describedby="fx-note-decided">two props or fewer</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-decided"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">on “two props or fewer” · owner, round 2</span></span></div></div>
     </div>
   </section>
 
@@ -185,16 +191,16 @@
     <div data-control="facet attribute on the annotation row" data-expect="C12.attach">
       <div class="doc-annotations" data-review="proposed"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
     </div>
-    <div data-control="passage mark drawn as an underline" data-expect="C12.passage">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-u">two props</mark>.</p>
+    <div data-control="passage mark drawn as a dotted line" data-expect="C15.line">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-u">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-u"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div>
     </div>
-    <div data-control="passage mark recolors its words" data-expect="C12.passage">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-c">two props</mark>.</p>
+    <div data-control="passage mark recolors its words" data-expect="C15.words">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-c">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-c"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div>
     </div>
     <div data-control="passage mark with no note" data-expect="C12.passage">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed">two props</mark>.</p>
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed">two props</mark>.</p>
     </div>
     <div data-control="note inside a framing panel" data-expect="C12.note">
       <div class="surface-separate surface-material-panel surface-attach-free surface-elevation-flush doc-group">
@@ -206,8 +212,8 @@
     <div data-control="note on no rail" data-expect="C12.note">
       <div class="doc-group doc-annotation-note"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div><p class="doc-body">A note with no rail.</p></div>
     </div>
-    <div data-control="passage mark naming a decided outcome" data-expect="C12.vocab">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="accepted" aria-describedby="fx-note-a">two props</mark>.</p>
+    <div data-control="passage mark naming a decided outcome" data-expect="">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="accepted" aria-describedby="fx-note-a">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-a"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></span></div></div>
     </div>
     <div data-control="annotation row drawn with a scope rail" data-expect="C12.rail">
@@ -222,8 +228,8 @@
     <div data-control="review mark with three pill corners" data-expect="C13.corner">
       <div class="doc-group"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed" style="border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px">Proposed</span></div>
     </div>
-    <div data-control="passage mark loses its tint" data-expect="C12.passage">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-t" style="background-color:transparent">two props</mark>.</p>
+    <div data-control="passage mark given a tint" data-expect="C15.words">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-t" style="background-color:color-mix(in srgb, var(--review-proposed) 18%, transparent)">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-t"><p class="doc-body">On “two props”: a correction is requested.</p></div>
     </div>
     <div data-control="evidence mark that is not a flex box" data-expect="C12.geometry">
@@ -244,12 +250,12 @@
     <div data-control="evidence marker with 5% corners" data-expect="C12.geometry">
       <div class="doc-group"><span class="doc-mark doc-label" data-evidence="supported">Supported</span></div>
     </div>
-    <div data-control="passage dose off the registered values" data-expect="C12.passage">
+    <div data-control="passage mark without the shared underline" data-expect="C12.base">
       <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-d">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-d"><p class="doc-body">On “two props”: a correction is requested.</p></div>
     </div>
-    <div data-control="passage dose token undefined" data-expect="C12.passage">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-e">two props</mark>.</p>
+    <div data-control="passage line in another role's value" data-expect="C12.color">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-e">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-e"><p class="doc-body">On “two props”: a correction is requested.</p></div>
     </div>
     <div data-control="not-yet-testable note drawn in currentColor, its value undefined" data-expect="C12.note">
@@ -268,7 +274,7 @@
       <div class="doc-group"><span class="doc-mark doc-label" data-state="structural">Structural</span></div>
     </div>
     <div data-control="passage mark describedby two ids" data-expect="">
-      <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-two fx-extra">two props</mark>.</p>
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-two fx-extra">two props</mark>.</p>
       <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-two"><p class="doc-body">On “two props”: is two the limit?</p></div>
       <p class="doc-meta" id="fx-extra">Asked in round 2.</p>
     </div>
@@ -281,7 +287,7 @@
     <div data-control="labeled marks in a closed disclosure" data-expect="" data-collapsed="23">
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-dc">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-dc">with two props</mark>.</p>
         <div class="doc-annotations">
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-state="held">Held</span></span>
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
@@ -306,7 +312,7 @@
     <div data-control="the same marks with their disclosure open" data-expect="" data-collapsed="0">
       <details class="doc-group" open>
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-o">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-o">with two props</mark>.</p>
         <div class="doc-annotations">
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-state="held">Held</span></span>
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
@@ -365,7 +371,7 @@
       <details class="doc-group fx-reclose"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></details>
     </div>
     <div data-control="collapsed passage mark with no note" data-expect="C12.passage" data-collapsed="1">
-      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed">two props</mark>.</p></details>
+      <details class="doc-group"><summary><span class="doc-label">Review</span></summary><p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed">two props</mark>.</p></details>
     </div>
     <div data-control="collapsed evidence mark that is not a flex box" data-expect="" data-expect-open="C12.geometry" data-collapsed="1">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><p class="doc-body">Text <span class="doc-mark doc-label" data-evidence="supported">Supported</span> more.</p></details>
@@ -385,40 +391,40 @@
     <div data-control="collapsed mark hidden by an animation as its disclosure opens" data-expect="" data-expect-open="C12.label" data-collapsed="2">
       <details class="doc-group"><summary><span class="doc-label">Review</span></summary><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></details>
     </div>
-    <div class="fx-restyled-open" data-control="composition restyled once its disclosure opens" data-expect="" data-expect-open="C12.passage C12.rail C3.hierarchy" data-collapsed="5">
+    <div class="fx-restyled-open" data-control="composition restyled once its disclosure opens" data-expect="" data-expect-open="C12.rail C15.line C3.hierarchy" data-collapsed="5">
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q1">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-q1">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q1">
           <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
     </div>
-    <div class="fx-restyled-open" data-control="the same restyled composition, its disclosure open from the start" data-expect="C12.passage C12.rail C3.hierarchy" data-collapsed="0">
+    <div class="fx-restyled-open" data-control="the same restyled composition, its disclosure open from the start" data-expect="C12.rail C15.line C3.hierarchy" data-collapsed="0">
       <details class="doc-group" open>
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q1o">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-q1o">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q1o">
           <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
     </div>
-    <div class="fx-tint-closed" data-control="passage tint suppressed only while its disclosure is closed" data-expect="" data-collapsed="5">
+    <div class="fx-line-closed" data-control="passage line suppressed only while its disclosure is closed" data-expect="" data-collapsed="5">
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q2">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-q2">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q2">
           <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
         </div>
       </details>
     </div>
-    <div class="fx-tint-closed" data-control="the same passage, its disclosure open from the start" data-expect="" data-collapsed="0">
+    <div class="fx-line-closed" data-control="the same passage, its disclosure open from the start" data-expect="" data-collapsed="0">
       <details class="doc-group" open>
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-q2o">with two props</mark>.</p>
+        <p class="doc-body">Each piece sits in the left third, <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-q2o">with two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-q2o">
           <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
           <p class="doc-body">Is two the limit?</p>
@@ -428,7 +434,7 @@
     <div data-control="composition restyled only while its disclosure is closed" data-expect="" data-collapsed="11">
       <details class="doc-group">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-note-rc">two props</mark>.</p>
+        <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-rc">two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span></span></div><p class="doc-body">On “two props”: three in seasonal sets.</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
@@ -488,7 +494,7 @@
     <div data-control="collapsed passage and notes replaced when their disclosure opens" data-expect="" data-expect-open="C12.label C12.note C12.passage C12.rail" data-collapsed="8">
       <details class="doc-group fx-swap-all">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-sw">two props</mark>.</p>
+        <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-sw">two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-sw"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
@@ -499,7 +505,7 @@
     <div data-control="collapsed passage and notes whose disclosure the page closes again" data-expect="" data-expect-open="C12.label C12.note C12.passage C12.rail" data-collapsed="8">
       <details class="doc-group fx-reclose">
         <summary><span class="doc-label">Evidence</span></summary>
-        <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="open" aria-describedby="fx-note-rc2">two props</mark>.</p>
+        <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-rc2">two props</mark>.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-rc2"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div><p class="doc-body">On “two props”: is two the limit?</p></div>
         <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
           <div class="doc-annotations"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></div>
@@ -538,6 +544,49 @@
     <div data-control="annotation range whose row names no judgment" data-expect="C12.range C14.label">
       <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
     </div>
+    <div data-control="scope underline in a closed disclosure" data-expect="" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Notes</span></summary><p class="doc-body">Words with <span class="surface-scope-underline">a neutral line</span>.</p></details>
+    </div>
+    <div data-control="collapsed scope underline drawn dotted once open" data-expect="" data-expect-open="C15.line" data-collapsed="1">
+      <details class="doc-group"><summary><span class="doc-label">Notes</span></summary><p class="doc-body">Words with <span class="surface-scope-underline">a neutral line</span>.</p></details>
+    </div>
+    <div data-control="passage mark naming no decision recorded" data-expect="C12.vocab">
+      <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="none" aria-describedby="fx-note-none">two props</mark>.</p>
+      <div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-none"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="none">No decision recorded</span></div></div>
+    </div>
+    <div data-control="note in a list item at the old 4px attachment" data-expect="C12.note">
+      <ul class="fx-list"><li><p class="doc-body">Proofs reach the studio <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-li4">before the end of each month</mark>.</p><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-li4"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div></li></ul>
+    </div>
+    <div data-control="note after a list item's own text at the old 4px attachment" data-expect="C12.note">
+      <ul class="fx-list"><li class="doc-body">Proofs reach the studio <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="fx-note-li4t">before the end of each month</mark>.<div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-li4t"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div></div></li></ul>
+    </div>
+    <div data-control="note after a paragraph with a larger margin in a list item" data-expect="">
+      <ul class="fx-list"><li><p class="doc-body" style="margin-bottom: var(--space-5)">Proofs reach the studio <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-note-li24">before the end of each month</mark>.</p><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-li24"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div></li></ul>
+    </div>
+    <div data-control="note in a list item that is itself a group" data-expect="">
+      <ul class="fx-list"><li class="doc-group"><p class="doc-body">Proofs reach the studio <mark class="doc-passage-mark surface-scope-underline" data-review="accepted" aria-describedby="fx-note-ligrp">before the end of each month</mark>.</p><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-note-ligrp"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div></div></li></ul>
+    </div>
+    <div data-control="review row trailing a list item's text" data-expect="">
+      <ul class="fx-list"><li class="doc-body">Reprints keep the original paper stock. <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor · this item</span></span></div></li></ul>
+    </div>
+    <div data-control="item host whose words come before its row" data-expect="C12.range">
+      <ul class="fx-list"><li class="doc-annotation-range surface-labeled-range">Reprints keep the original paper stock. <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor · this item</span></span></div></li></ul>
+    </div>
+    <div data-control="whole list item a review row leads, without the range classes" data-expect="C12.base">
+      <ul class="fx-list"><li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor · this item</span></span></div>A whole item, proposed.</li></ul>
+    </div>
+    <div data-control="item host in a list indented 40px that names its indentation" data-expect="">
+      <ul style="--surface-labeled-range-indent: 40px"><li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">owner · this item</span></span></div><p class="doc-body">A whole item, its rail in the lane.</p></li></ul>
+    </div>
+    <div data-control="item host in a list indented 40px that does not name it" data-expect="C14.rail">
+      <ul><li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">owner · this item</span></span></div><p class="doc-body">A whole item, its rail short of the lane.</p></li></ul>
+    </div>
+    <div data-control="item host holding a passage mark, its note after the list" data-expect="">
+      <div class="doc-group"><ul class="fx-list"><li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner · this item</span></span></div><p class="doc-body">Words with <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-host-note">one phrase</mark> still proposed.</p></li></ul><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-host-note"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div></div>
+    </div>
+    <div data-control="item host holding a note of its own" data-expect="C12.mixed">
+      <ul class="fx-list"><li class="doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner · this item</span></span></div><p class="doc-body">Words with <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-host-note-in">one phrase</mark> still proposed.</p><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-host-note-in"><div class="doc-annotations"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div></div></li></ul>
+    </div>
     <div data-control="annotation range whose row opens on its basis" data-expect="C12.range">
       <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
     </div>
@@ -545,7 +594,7 @@
       <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
     </div>
     <div data-control="annotation range holding a passage mark, its note after the range" data-expect="">
-      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">Words with <mark class="doc-passage-mark" data-review="proposed" aria-describedby="fx-range-note">one phrase</mark> pending.</p></div><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-range-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “one phrase”</span></span></div></div>
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">Words with <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="fx-range-note">one phrase</mark> pending.</p></div><div class="doc-hierarchy doc-group doc-annotation-note" id="fx-range-note"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “one phrase”</span></span></div></div>
     </div>
     <div data-control="annotation range holding a second judgment" data-expect="C12.mixed">
       <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div></div>

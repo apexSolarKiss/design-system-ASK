@@ -64,7 +64,7 @@
         <tbody>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></td><td class="doc-body">A candidate statement or change, awaiting a decision. It says nothing about whether the content is wrong or weakly supported.</td><td class="doc-body">The emphasis magenta, by reference: Spectral proposed's hue, not its value; a candidate on another axis</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span></td><td class="doc-body">The same role, used only when someone has asked for existing words to change. It shares paint with Proposed, not event identity.</td><td class="doc-body">As above</td></tr>
-          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></td><td class="doc-body">A named matter held until someone answers it.</td><td class="doc-body">Spectral held, by reference: an element deliberately held open, on another axis. Evidence unresolved shares the value.</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></td><td class="doc-body">A named matter held until someone answers it.</td><td class="doc-body">The emphasis cyan, by reference: bluer than Spectral held, an element deliberately held open on another axis. It shares a meaning with held and Evidence unresolved, a matter not yet settled, not their value.</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></td><td class="doc-body">A recorded decision to adopt or to permit, naming what, who and the scope. A narrow scope is a whole decision, not a partial one.</td><td class="doc-body">Spectral earned, by reference: green</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></td><td class="doc-body">A recorded decision not to adopt or not to permit, naming what, who and the scope. It does not say the statement is false.</td><td class="doc-body">Spectral deflated, by reference: red</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="none">No decision recorded</span></td><td class="doc-body">Shown only where the absence matters. It is not a refusal or an acceptance, and not a hold: a hold is an open question.</td><td class="doc-body">The faintest neutral</td></tr>
@@ -100,7 +100,7 @@
       <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
     </dl>
     <div class="doc-prose">
-      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, leads a whole list item or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, a whole list item's included, or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved both name something not yet settled: Open question takes the emphasis cyan and Unresolved keeps its own value, and their geometry and their words say which axis is speaking.</p>
     </div>
   </section>
 
@@ -115,7 +115,7 @@
       <p class="doc-body">A level inside a level, on the neutral hierarchy rail.</p>
     </div>
     <div class="doc-prose">
-      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A review mark opens a range over the content it concerns, leads the whole list item it judges, stands as a prompt naming its target before a range, or sits in the cell, note, list or document record that bounds it, and never repaints it.</p>
+      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A review mark opens a range over the content it concerns, a whole list item included, stands as a prompt naming its target before a range, or sits in the cell, note, list or document record that bounds it, and never repaints it.</p>
     </div>
   </section>
 
@@ -163,17 +163,24 @@
     </div>
 
     <div class="doc-section">
-      <h3 class="doc-subsection-title">List items // a row leading each whole item</h3>
+      <h3 class="doc-subsection-title">List items // each whole item its own range</h3>
       <ul class="key-list">
-        <li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · this item</span></span></div>Reprints keep the original paper stock.</li>
-        <li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this item</span></span></div>Each frame is printed once at full size.</li>
-        <li class="doc-body">Proofs reach the studio <mark class="doc-passage-mark" data-review="open" aria-describedby="key-note-item">before the end of each month</mark>.
+        <li class="doc-annotation-range surface-labeled-range" id="range-item-proposed"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · this item</span></span></div><p class="doc-body">Reprints keep the original paper stock.</p></li>
+        <li class="doc-annotation-range surface-labeled-range" id="range-item-accepted"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this item</span></span></div><p class="doc-body">Each frame is printed once at full size.</p></li>
+        <li class="doc-body">Proofs reach the studio <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="key-note-item">before the end of each month</mark>.
           <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-item">
             <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">on “before the end of each month” · awaiting the owner</span></span></div>
           </div>
         </li>
+        <li id="key-item-final-line">
+          <p class="doc-body">Each reprint is checked against the first proof, <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="key-note-final">under the same light, by the same person, before the run is approved for the catalog</mark>.</p>
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-final">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">on “under the same light, by the same person…” · editor, round 2</span></span></div>
+          </div>
+        </li>
+        <li class="doc-annotation-range surface-labeled-range" id="range-item-open"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the owner · this item</span></span></div><p class="doc-body">Damaged frames are reprinted from the original file.</p></li>
       </ul>
-      <p class="doc-meta">One judgment on a whole item that no range holds leads that item, inside its bullet: the marker and indentation bound it, and no range opens inside the item. Inside a range, an item carries no review mark of its own. A judgment on exact words in an item keeps its pending tint and note, or a decided phrase's quoted note, after the item's text.</p>
+      <p class="doc-meta">One judgment on a whole item that no range holds makes the item its range: its row leads inside the bullet, and its scope rail sits in the lane every range uses, outside the bullet, ending just inside the item, so judged items in a row keep the list's own spacing. Inside a range, an item carries no review mark of its own. A judgment on exact words in an item that is not itself a range keeps its underline and its note after the item's text, and the note keeps 12px above it, so the line under the last words clears its label.</p>
     </div>
 
     <div class="doc-section">
@@ -289,15 +296,28 @@
     <div class="doc-section">
       <h3 class="doc-subsection-title">Words inside a block // a passage mark and its note</h3>
       <div class="doc-group">
-        <p class="doc-body">The frame keeps <mark class="doc-passage-mark" data-review="proposed" aria-describedby="key-note-1">two props or fewer</mark>, and the <a class="surface-text-link" href="#questions-title">key</a> explains the marks.</p>
+        <p class="doc-body">The frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="key-note-1">two props or fewer</mark>, and the <a class="surface-text-link" href="#questions-title">key</a> explains the marks.</p>
         <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-1">
           <div class="doc-annotations">
             <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span><span class="doc-meta">on “two props or fewer” · owner, round 2</span></span>
           </div>
         </div>
       </div>
+      <div class="doc-group">
+        <p class="doc-body">Each print follows <mark class="doc-passage-mark surface-scope-underline" data-review="accepted" aria-describedby="key-note-2">the <a class="surface-text-link" href="#review-title">paper plan</a> agreed in round one</mark>, and <mark class="doc-passage-mark surface-scope-underline" data-review="declined" aria-describedby="key-note-3">a glossy stock</mark> is not used.</p>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-2">
+          <div class="doc-annotations">
+            <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">on “the paper plan agreed in round one” · owner, round 2 · this copy</span></span>
+          </div>
+        </div>
+        <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-3">
+          <div class="doc-annotations">
+            <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">on “a glossy stock” · owner, round 2</span></span>
+          </div>
+        </div>
+      </div>
       <div class="doc-prose">
-        <p class="doc-meta">Beside the document's link underline, colored words that go nowhere can read as a link. Within this composition the scope cue is therefore the tint; this is the composition's choice, not a general rule about underlines.</p>
+        <p class="doc-meta">The scope cue is one solid line under the words, in the full review value, pending or decided; the words keep their color. Beside the document's link underline it stays apart in weight, place and continuity: 2px against the link's 1px, lower than the link's line, unbroken through descenders and full strength at rest, with no hover or focus of its own. A link inside marked words keeps its own line and states above it. A decided line says which words the decision concerns, not that it holds more widely.</p>
       </div>
     </div>
 
@@ -396,7 +416,7 @@
         <a class="surface-action" href="#questions-title">compact action</a>
       </div>
       <div class="doc-prose">
-        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, leading the range it opens (whose scope rail sits outside the content edge), the whole list item it judges or a prompt before a range, or sitting in the cell, note, list or document record that bounds its scope, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
+        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, leading the range it opens, a whole list item included (whose scope rail sits outside the content edge), or a prompt before a range, or sitting in the cell, note, list or document record that bounds its scope, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
       </div>
     </div>
   </section>

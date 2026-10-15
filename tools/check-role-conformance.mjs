@@ -39,11 +39,12 @@
    on each annotation element the resting check held as collapsed, inside it
    and on its ancestors, are finished, and each element is judged on what it
    presents open: a mark's words as rendered, its box and its outline or
-   marker; a passage mark's color, borders and tint; a note's rail; a row,
+   marker; a passage mark's line color; a note's rail and attachment; a row,
    item or list drawing no rail, border or wash; its hierarchy rail, if it
-   has one; a bordered label's or an emphasis chip's box and edge; and a
-   labeled range's scope rail and, for a neutral range, its label. These
-   findings are C12's, C13's, C14's and C3.hierarchy's, with the resting
+   has one; a bordered label's or an emphasis chip's box and edge; a labeled
+   range's scope rail and, for a neutral range, its label; and a scope
+   underline's line and words. These findings
+   are C12's, C13's, C14's, C15's and C3.hierarchy's, with the resting
    check's reason codes, each marked state "open"; "collapsed" for an element
    whose disclosure is still closed, "removed" for one that left the page.
 
@@ -215,7 +216,7 @@ async function interactionPass(p, scope) {
     } else if (a === '#other' && first === null) first = '#other-start';
   }
   const judged = await p.evaluate(`${I}.judge(${JSON.stringify([...records.values()])})`);
-  /* then the held C12, C13 and C14 elements, after every link-state judgment: finishing their animations
+  /* then the held C12, C13, C14 and C15 elements, after every link-state judgment: finishing their animations
      must not move a token the link states are judged against */
   await p.evaluate(`${I}.blur()`);
   await p.mouse(await p.evaluate(`${I}.neutral()`));

@@ -43,9 +43,9 @@
 
    Offline; no CDN. Theme-aware through the foundation's [data-theme] +
    prefers-color-scheme model: every color resolves through a foundation or
-   Spectral token, and all but proposed flip with the theme; proposed takes
-   the fixed emphasis magenta, the same in both themes. The passage-mark dose
-   is the one value this file sets per theme.
+   Spectral token, and all but proposed and open flip with the theme;
+   proposed takes the fixed emphasis magenta and open the fixed emphasis cyan,
+   the same in both themes. This file sets no value per theme.
 
    STATUS: v0.1 // first version. Opt-in. A consumer takes it through its own
    gates; no existing document is recolored by its arrival. Contract:
@@ -58,9 +58,11 @@
      proposed           value of                   a candidate, not yet
                         --ask-emphasis-magenta     decided; Spectral proposed's
                                                    hue, not its value
-     open               value of --state-held      correspondence: a named open
-                                                   question; Evidence
-                                                   unresolved shares the value
+     open               value of                   a named open question, the
+                        --ask-emphasis-cyan        matter Spectral held and
+                                                   Evidence unresolved also
+                                                   name: their meaning, not
+                                                   their value
      accepted           value of --state-earned    a recorded decision to adopt
                                                    or permit, at its scope
      declined           value of --state-deflated  a recorded decision not to
@@ -92,8 +94,11 @@
    value a document's other magenta labels and rails already use, so a
    proposal never sits beside a near-identical second pink. A proposal and a
    thesis are told apart by their words, their place and their key, never by
-   a difference in pink. The open value stays a Spectral value, not the fixed
-   emphasis cyan: --state-held is tealer than #00BEFF.
+   a difference in pink. The open value is the emphasis cyan (#00BEFF in both
+   themes), by reference, as proposed takes the magenta: it reads bluer than
+   Spectral held, which is tealer, and apart from accepted's green. Spectral
+   held and Evidence unresolved keep their own values; an open question shares
+   their meaning, a matter not yet settled, not their value.
 
    ---------------------------------------------------------------------------
    FACET 2 // ANNOTATION
@@ -152,26 +157,26 @@
 
    ANNOTATION ROW
      meaning         the items that apply to one scope: the range it opens,
-                     the whole list item it leads, the target its record
-                     names as an explicit-target prompt immediately before
-                     the range that holds that content, the table cell it
-                     sits in, the note it heads, or the whole document, as
-                     the review record set under its title. A
-                     row that holds no review item may instead apply to the
-                     section after its heading or the block it follows
+                     a whole list item that is itself the range included, the
+                     target its record names as an explicit-target prompt
+                     immediately before the range that holds that content,
+                     the table cell it sits in, the note it heads, or the
+                     whole document, as the review record set under its
+                     title. A row that holds no review item may instead apply
+                     to the section after its heading or the block it follows
      population      .doc-annotations holding .doc-annotation-item children,
                      in a fixed order: state, basis, evidence, review. A row
-                     that opens a range, leads a list item or stands as a
-                     prompt leads with its review item, and its state, basis
-                     and evidence items follow in that order; the row that
-                     opens a range sits beside the top of the scope rail
+                     that opens a range or stands as a prompt leads with its
+                     review item, and its state, basis and evidence items
+                     follow in that order; the row that opens a range sits
+                     beside the top of the scope rail
      variation       in a table cell the row is inline on the cell's first
                      baseline. Each item opens on its own mark or its key, so
                      items need no separator
      exclusions      not a container: no rail, wash, border or panel. A review
                      item on whole blocks never trails them: it opens a range
-                     over them, leads the whole list item it judges, or, as a
-                     separate question about a range's content, stands as an
+                     over them, a whole list item it judges included, or, as
+                     a separate question about a range's content, stands as an
                      explicit-target prompt before that range. Typography,
                      boldness or capitals never set scope
 
@@ -185,24 +190,30 @@
      population      .doc-annotation-range.surface-labeled-range (usually also
                      .doc-group, for the run's flow), its first child the
                      annotation row that names its one review judgment, that
-                     judgment's item first, then the blocks it covers. In a
-                     document table it sits in a cell of any column; a table
-                     with a range in its first or only column keeps the lane
-                     through .doc-table-scroll--range-lane (surface-document.css)
+                     judgment's item first, then the blocks it covers. One
+                     whole list item that no range holds is itself the range,
+                     the shared labeled range's item host: the li takes both
+                     classes, its row first, then its words in a body block
+                     of their own. In a document table a range sits in a cell
+                     of any column; a table with a range in its first or only
+                     column keeps the lane through
+                     .doc-table-scroll--range-lane (surface-document.css)
      owner           surface-treatments.css for the scope rail: the shared
                      labeled range, drawn in the outer margin, its stroke,
-                     reach and lane. This module for its color, the review
-                     value of the judgment its row names
+                     reach and lane, an item host's included. This module for
+                     its color, the review value of the judgment its row names
      variation       the rail takes the review value: magenta for Proposed
-                     and Correction requested, green for Accepted, red for
-                     Declined, the open value for Open question, the faintest
-                     neutral for No decision recorded
+                     and Correction requested, cyan for Open question, green
+                     for Accepted, red for Declined, the faintest neutral for
+                     No decision recorded
      exclusions      one judgment per range: a range holds no second review
                      mark, so blocks judged otherwise are a sibling range of
-                     their own. Words inside it whose judgment is pending take
-                     a passage mark, a narrower record of their own, whose note
-                     follows the range. Never nested, never a content role,
-                     rail or panel itself, and never inside a list item, a
+                     their own. Words inside it judged on their own take a
+                     passage mark, a narrower record of their own, whose note
+                     follows the range; an item host can be followed inside
+                     its list only by another item, so that note follows the
+                     list. Never nested, never a content role, rail or panel
+                     itself, and never inside a list item, a
                      railed passage, a separate surface or panel, a hierarchy
                      level or an annotation note. The scope rail answers one
                      question, which content the review judgment covers: the
@@ -213,17 +224,17 @@
                      where the table's structure makes the association
                      unambiguous; a note quoting exact words; an annotation
                      list's lines on the item it names in a keyed line of its
-                     own; a row leading the whole list item it judges, when
-                     no range holds the item, whose marker and indentation
-                     bound it, while exact-word annotations and rows with no
-                     review item follow the item's text; an explicit-target
-                     prompt immediately before a range or before another
+                     own; an explicit-target prompt immediately before a
+                     range or before another
                      prompt to it, outside the range and outside a preceding
                      range or unrelated group, naming the content below as
                      its target, its question's scope and who decides; and a
                      whole document's record under its title, which takes
-                     none. Inside a range a list item carries no review mark
-                     of its own: a note on words judged in it follows the
+                     none. In a list item that is neither a range nor held by
+                     one, exact-word annotations and rows with no review item
+                     follow the item's text. Inside a range a list item
+                     carries no review mark of its own: a note on words
+                     judged in it follows the
                      range, a separate question about it is a prompt before
                      the range, and any other judgment on it is raised with
                      the owner. Which judgment the range carries and which
@@ -264,28 +275,45 @@
      and never creates one. A missing record is no decision.
 
    PASSAGE MARK
-     meaning         the exact words inside a block whose judgment is pending
-     population      mark.doc-passage-mark with data-review proposed or open,
-                     inside document body text, naming through aria-describedby
-                     the annotation note that records it
-     reuses          the review value at a low dose, as a background
-     exclusions      in this composition the scope cue is the tint, never an
-                     underline, which a reader can take for the document's
-                     link underline. Never a text color, never a rail. A decided
-                     outcome takes no passage mark
+     meaning         the exact words inside a block that one review judgment
+                     concerns, pending or decided
+     population      mark.doc-passage-mark.surface-scope-underline with
+                     data-review proposed, open, accepted or declined, inside
+                     document body text, naming through aria-describedby the
+                     annotation note that records it
+     owner           surface-treatments.css for the line: the shared scope
+                     underline, its weight, place and run through descenders.
+                     This module for its color, the review value of the
+                     judgment it records
+     exclusions      the words keep their color: no tint, text color, rail or
+                     border, and no hover, focus or other interactive
+                     behavior. The line stays apart from the document's link
+                     underline in weight, place and continuity, so inert
+                     colored words do not read as a link. A decided outcome
+                     keeps its passage mark: the line says which words the
+                     decision concerns, not that it holds more widely. No
+                     decision recorded marks no words
 
    ANNOTATION NOTE
      meaning         the record of a judgment on exact words inside a block,
                      set after the block or the range that holds it, and in a
-                     list item no range holds, after the item's text; it
-                     quotes the words it concerns. While the judgment is
-                     pending a passage mark tints the words and names the
-                     note; a decided outcome takes no tint, so its note
-                     follows the block directly and quotes enough of the words
-                     to name them once in it
+                     list item that is neither a range nor held by one, after
+                     the item's text; it quotes enough of the words to name
+                     them once in it. A passage mark underlines the words and
+                     names the note, pending or decided
      population      .doc-annotation-note on a .doc-hierarchy group (it belongs
                      inside the level above); an evidence note whose role is
                      not yet testable takes that role's dashed rail instead
+     variation       its attachment to the words above it. After a block or a
+                     range in the flow it takes the gap of the group it sits
+                     in, 12px in a .doc-group. Directly inside a block list
+                     item no gap precedes it, so it takes the same 12px
+                     (--space-3) as its own top margin, which collapses with a
+                     larger margin above it instead of adding to it: the line
+                     under the last words clears its label. A list item that
+                     is itself a register composition (.doc-group,
+                     .doc-labeled and the like) keeps that composition's gap,
+                     and the note takes no margin there
      exclusions      never inside a framing, synthesis or emphasis panel: a
                      panel takes no inner rail, so its note follows the panel
 
@@ -293,12 +321,13 @@
      - A passage keeps its document role. Accepting a synthesis leaves it a
        synthesis; challenging a quotation leaves it a quotation; a callout's
        rail does not change with its review state.
-     - Review scope is visible. Unless it leads a whole list item or stands as
-       a prompt, a review judgment on whole blocks in the flow opens a range,
-       a single paragraph included: a row placed after a block can be read as
-       introducing what follows it. One judgment on a whole list item no range
-       holds leads that item, inside it, review first. A separate question
-       about a range's content is an explicit-target prompt just before the
+     - Review scope is visible. Unless it stands as a prompt, a review
+       judgment on whole blocks in the flow opens a range, a single paragraph
+       included: a row placed after a block can be read as introducing what
+       follows it. One judgment on a whole list item no range holds makes
+       that item its range, its row first inside it, review first. A separate
+       question about a range's content is an explicit-target prompt just
+       before the
        range, outside it and outside a preceding range or unrelated group,
        naming its target, scope and decider; the range keeps its one judgment
        and the content is shown once. A cell item, a note quoting exact words,
@@ -320,23 +349,27 @@
               transparent border
      10px     the dot and square marker size
      50%      the dot's corner (a circle)
-     2px      the square marker's corner; the passage mark's corner and inline
-              padding; the not-yet-testable dashed rail and hollow-dot border
-     18%/26%  the passage-mark dose, light / dark
+     2px      the square marker's corner; the not-yet-testable dashed rail and
+              hollow-dot border
 
    CHECKING. tools/role-conformance.js rule C12 checks this composition where
    its classes appear: syntax (classes, attributes, vocabulary, a review
    mark's bordered label, a range's row, the one judgment that leads it and
-   its shared class) and computed presentation (the outline's and the scope
-   rail's color, the marker, rail and tint). Rule C13 checks a review mark's
-   box and edge as it checks every bordered label, and rule C14 a range's
-   scope rail, lane, host and clearance as it checks every labeled range.
+   its shared class, a passage mark's shared class) and computed
+   presentation (the outline's, the scope rail's and the passage line's
+   color, the marker, the rail and a note's attachment in a list item). Rule
+   C13 checks a review mark's box and edge as it checks every bordered label,
+   rule C14 a range's scope rail, lane, host, clearance and buffer as it
+   checks every labeled range, an item host's included, and rule C15 a
+   passage mark's line and unchanged words as it checks every scope
+   underline.
    C12 never judges semantic assignment, whether an item's role is the right
    one, or scope: a pass does not show that a range was opened wherever a
    judgment needed one or that it holds the right blocks. A review row left
    trailing a block or a list item's text passes, and so do a prompt
-   stranded after its target and a whole-item or prompt row that does not
-   open on its review item. Those stay with the author, a consumer's own
+   stranded after its target and a prompt row that does not open on its
+   review item; a decided judgment on exact words whose note no passage mark
+   names passes too. Those stay with the author, a consumer's own
    renderer tests and the reviewer. C12 compares a mark with its resolved
    role token. It does not independently establish that a local
    token rebinding is authorized: adopted role bindings remain governed by the
@@ -348,18 +381,10 @@
 
 :root {
   --review-proposed: var(--ask-emphasis-magenta);  /* a candidate: the emphasis magenta */
-  --review-open:     var(--state-held);      /* correspondence: an open question */
+  --review-open:     var(--ask-emphasis-cyan); /* a named open question: the emphasis cyan */
   --review-accepted: var(--state-earned);    /* a recorded decision to adopt */
   --review-declined: var(--state-deflated);  /* a recorded decision not to adopt */
   --review-none:     var(--fg-3);            /* no decision recorded */
-
-  /* The passage-mark dose, per theme, set as the emphasis dose is set. */
-  --review-passage-dose: 18%;
-}
-:root[data-theme="dark"],
-.theme-dark { --review-passage-dose: 26%; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --review-passage-dose: 26%; }
 }
 
 /* ---- Facet 2: Annotation --------------------------------------------- */
@@ -479,22 +504,30 @@
   .doc-annotation-list > dd { margin-bottom: var(--space-2); }
 }
 
-/* The passage mark: the words whose judgment is pending. */
+/* The passage mark: the words one judgment concerns, pending or decided. Its
+   line is the shared scope underline (surface-treatments.css), which the mark
+   carries as .surface-scope-underline; this module supplies its color only.
+   The words keep their color and take no fill. */
 mark.doc-passage-mark {
   color: inherit;
-  background-color: color-mix(in srgb, var(--review-mark-color, var(--fg-3)) var(--review-passage-dose), transparent);
-  border-radius: 2px;
-  padding: 0 2px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  background: none;
+  --surface-scope-underline-color: var(--review-mark-color, var(--fg-3));
 }
 mark.doc-passage-mark[data-review="proposed"] { --review-mark-color: var(--review-proposed); }
 mark.doc-passage-mark[data-review="open"]     { --review-mark-color: var(--review-open); }
+mark.doc-passage-mark[data-review="accepted"] { --review-mark-color: var(--review-accepted); }
+mark.doc-passage-mark[data-review="declined"] { --review-mark-color: var(--review-declined); }
 
 /* The note: the record, after the block or the range that holds it, and in
-   a list item no range holds, after the item's text. A note normally composes
-   .doc-hierarchy and draws that rail; an evidence note whose role is not
-   yet testable draws that role's dashed rail instead. */
+   a list item that is neither a range nor held by one, after the item's text.
+   A note normally composes .doc-hierarchy and draws that rail; an evidence
+   note whose role is not yet testable draws that role's dashed rail instead.
+   Directly inside a block list item no group gap precedes it, so it takes the
+   12px a .doc-group gives a note in the flow as its own top margin, which
+   collapses with a larger margin above it: the line under the item's last
+   words clears the note's label. A list item that is itself a register
+   composition keeps that composition's gap, so the margin never adds to it. */
+li:not(:where(.doc-flow, .doc-section, .doc-prose, .doc-titled, .doc-group, .doc-labeled, .doc-hierarchy)) > .doc-annotation-note { margin-top: var(--space-3); }
 .doc-annotation-note[data-evidence="not-yet-testable"] {
   border-left: 2px dashed var(--evidence-not-yet-testable);
   padding-left: var(--space-4);

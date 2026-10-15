@@ -16,7 +16,7 @@
                   invalid one exempts nothing.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped, collapsed }. Each finding carries a rule (C0–C14) and a reason
+   unmapped, collapsed }. Each finding carries a rule (C0–C15) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -25,7 +25,7 @@
    runner drives them through ASKRoleConformance.interaction and adds its C9
    findings to the same report. The runner also opens every disclosure in
    scope and, after its link-state pass, judges there what each collapsed C12,
-   C13 or C14 element presents (see C12, C13 and C14).
+   C13, C14 or C15 element presents (see C12 to C15).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -157,10 +157,14 @@
                         (C12.vocab) and rendered words (C12.label). A review
                         mark carries .surface-bordered-label, the shared box,
                         and an annotation range .surface-labeled-range, the
-                        shared scope rail, and a labeled range that a review
-                        judgment opens is an annotation range (C12.base). A
-                        range opens with an annotation row naming exactly one
-                        review judgment, whose item leads the row (C12.range),
+                        shared scope rail, and a passage mark
+                        .surface-scope-underline, the shared line; a labeled
+                        range that a review judgment opens is an annotation
+                        range, and so is a whole list item a review row leads
+                        before any of its words, unless a range holds it
+                        (C12.base). A range opens with an annotation row,
+                        before any of its words, naming exactly one review
+                        judgment, whose item leads the row (C12.range),
                         and holds no other review mark: blocks judged
                         otherwise are a sibling range, while words judged
                         otherwise keep their passage mark (C12.mixed). A facet attribute sits on a mark, a
@@ -191,17 +195,25 @@
                         (C12.color). A not-yet-testable mark keeps its hollow
                         2px dashed marker and, outside a not-yet-testable note,
                         its 2px dashed rail, in that role's value (C12.nyt). A
-                        passage mark names a pending judgment, proposed or open
-                        (C12.vocab), sits in body text, keeps the text's color,
-                        draws no underline and no border, shows its tint (the
-                        role's value at the passage dose, the registered 18%
-                        or 26%) and names, among its aria-describedby ids, the
-                        .doc-annotation-note that records it (C12.passage). A
-                        not-yet-testable note draws that role's 2px dashed rail
-                        and never takes .doc-hierarchy; any other note composes
-                        the hierarchy rail; no note sits inside a framing,
-                        synthesis or emphasis panel (C12.note). A row, item or
-                        list draws no rail, border or wash (C12.rail).
+                        passage mark names the judgment its words take,
+                        pending or decided: proposed, open, accepted or
+                        declined (C12.vocab); it sits in body text and names,
+                        among its aria-describedby ids, the
+                        .doc-annotation-note that records it (C12.passage);
+                        and its line is the role token of that judgment
+                        (C12.color) — the line's weight and place, and the
+                        words' unchanged color and box, are the scope
+                        underline's, which C15 judges. A not-yet-testable
+                        note draws that role's 2px dashed rail and never takes
+                        .doc-hierarchy; any other note composes the hierarchy
+                        rail; no note sits inside a framing, synthesis or
+                        emphasis panel; and a note directly inside a block
+                        list item keeps 12px (--space-3) above it, its own top
+                        margin after the item's text or the space from the
+                        block before it, while an item laid out as a flex or
+                        grid composition keeps its own gap (C12.note). A row,
+                        item or list draws no
+                        rail, border or wash (C12.rail).
                         An element of the composition, a list's keys and
                         values included, that a closed disclosure keeps from
                         being seen, anywhere but in its summary, is collapsed.
@@ -213,15 +225,17 @@
                         disclosure in scope, it judges what the element
                         presents, with the same reason codes: a mark's words
                         as rendered, its box and its outline or marker; a
-                        passage mark's color, borders and tint; a note's rail;
+                        passage mark's line color; a note's rail and
+                        attachment;
                         a row, item or list drawing no rail, border or wash; a
                         range's scope-rail color; and the element's hierarchy
                         rail, if it has one (C3.hierarchy). An element the
                         page shows although its
                         disclosure is closed is judged at rest.
-                        Not checked here: rails or underlines outside the
-                        composition, a content passage's own rail included,
-                        and paint that computed borders, background and the
+                        Not checked here: rails outside the composition, a
+                        content passage's own rail included; a passage mark's
+                        line weight and place, which C15 judges; and paint
+                        that computed borders, background and the
                         marker's box do not show (border-image, outline,
                         background-image, transforms, clip-path, and
                         box-shadow other than a review mark's edge, which C13
@@ -271,7 +285,9 @@
                         and inside no list item, railed passage, separate
                         surface or panel, hierarchy level or annotation note,
                         whose own edges or markers sit where its scope rail
-                        would (C14.host). Computed, on each range: it is a box,
+                        would, while an item host is itself one whole item of
+                        a list, its parent the ul or ol (C14.host). Computed,
+                        on each range: it is a box,
                         never display: contents, and its own box draws nothing
                         and moves nothing sideways: no border of any color, no
                         fill or background image, no inline margin, no padding,
@@ -287,14 +303,26 @@
                         (--space-1) beyond the range's top and bottom and as
                         tall as the range and both reaches, and the range's
                         first and last blocks meet its edges, so the rail ends
-                        just past them (C14.rail); the whole rail inside the
+                        just past them; an item host's rail sits 14px outside
+                        the left edge of its list, reached back across the
+                        list's indentation, its ends sit 2px inside the item,
+                        its last block meets the item's bottom and its first
+                        keeps no top margin, since the marker's line may hold
+                        it a little lower (C14.rail); the whole rail inside the
                         page and inside every clipping ancestor as this check
                         models it — a scrolling box by its scrollable extent, a
                         paint-contained box or one with content-visibility auto
                         or hidden by its padding box, a clip path only by its
                         border box (C14.clearance; see LIMITS); two ranges in a
                         row 24px (--space-5) apart, the passage buffer, the
-                        nearest rendered sibling counting (C14.buffer); for a
+                        nearest rendered sibling counting, and a list that
+                        opens or closes on an item host as far from a range or
+                        another such list beside it, the list standing alone
+                        or as the first or last child of one wrapping block,
+                        while item hosts of one list keep the list's own
+                        spacing, and a range beside this one rather than above
+                        it, in a neighboring cell or column, is not counted
+                        (C14.buffer); for a
                         neutral range, the tertiary foreground, never
                         transparent (C14.color); and, where the page shows a
                         neutral range, its label shown too: some of its words
@@ -309,13 +337,35 @@
                         annotation range C12 holds too fails C12.range); one
                         that renders no box draws nothing and is not judged. A
                         rendered or held range counts as a governed element
+     C15 scope underline (surface-treatments) applies to every
+                        .surface-scope-underline in scope: a neutral underline
+                        and Review Semantics' passage mark share one line.
+                        Syntax: it is inert, never a link, a control or a
+                        focusable or editable element, never composed onto one
+                        or set inside one (C15.attach).
+                        Computed, on each rendered underline: one solid
+                        underline and no other decoration line, 2px thick,
+                        0.36em below the baseline as the element's own font
+                        size resolves it, to within 0.5px, unbroken through
+                        descenders (skip-ink none), never transparent
+                        (C15.line); an inline element whose words keep their
+                        parent's color, with no fill or background image, no
+                        border and no padding, and never display: contents,
+                        which keeps the words and drops the line (C15.words);
+                        and, for a neutral
+                        underline, the tertiary foreground (C15.color). A
+                        passage mark's line color is C12's. An underline a
+                        closed disclosure keeps from being seen is judged by
+                        the runner once it is open, as C12's elements are; one
+                        still collapsed then fails C15.line. A rendered or
+                        held underline counts as a governed element
 
    STATUS
      pass       no finding, and at least one governed element was checked
      fail       one or more findings
      vacuous    no governed element in scope: nothing was proven. A page that
                 has not adopted the register is not a passing page.
-     incomplete no finding, but C12, C13 or C14 elements collapsed in closed
+     incomplete no finding, but C12 to C15 elements collapsed in closed
                 disclosures (listed under collapsed) await the runner's
                 open-state judgment, so nothing yet proves what they present.
    Neither vacuous nor incomplete is a pass.
@@ -330,7 +380,7 @@
      when the runner drives them.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
-   - check() alone does not judge what a collapsed C12, C13 or C14 element
+   - check() alone does not judge what a collapsed C12, C13, C14 or C15 element
      presents: it lists the element under collapsed and never reports pass. The runner
      judges every element held this way, once it has opened every disclosure
      in scope and judged the link states; each ends in a judgment or a
@@ -339,8 +389,8 @@
      state "collapsed": C12.label for a mark, C12.passage for a passage mark,
      C12.note for a note, C12.rail for a row, an item, a list or a list's
      key or value, C12.range for an annotation range, C13.box for a
-     bordered label or an emphasis chip, and C14.rail for a neutral
-     labeled range. One
+     bordered label or an emphasis chip, C14.rail for a neutral
+     labeled range, and C15.line for a neutral scope underline. One
      that left the page as its disclosure opened fails it
      marked "removed", since what it presents cannot be proven. A page that
      changes a disclosure's content after that judgment is outside this
@@ -355,8 +405,8 @@
      although a closed <details> clips it to nothing, keep their verdict at
      rest.
    - The open-state judgment covers what the C12 composition presents, the
-     hierarchy rail of its elements included, and the C13 labels and C14
-     ranges a closed disclosure holds. Every other rule judges content
+     hierarchy rail of its elements included, and the C13 labels, C14
+     ranges and C15 underlines a closed disclosure holds. Every other rule judges content
      in a closed disclosure at rest, the role metrics of a mark's or a list
      key's words (C1, C8) among them: a page that restyles such content only
      once a disclosure opens is not exercised there, one that restyles it
@@ -387,7 +437,15 @@
      range, another element over the lane, a list marker hanging into it) and
      does not measure the rail's pixels. It compares the stroke, offset, reach
      and buffer with the owner's literal values, not with the page's
-     --space-1, --space-3 and --space-5. Its clearance test covers the page
+     --space-1, --space-3 and --space-5, and an item host's lane with its
+     list's measured left edge, not with --surface-labeled-range-indent. The
+     buffer at a list's edge reaches one wrapping block, as the owner's rule
+     does, but over rendered children where the owner's selector counts every
+     element child: a trailing script or hidden item the selector stops at is
+     passed over here, so the check is the stricter. It counts only a range
+     stacked above, overlapping it horizontally; the owner's selector also
+     reaches a wrapper laid out beside its neighbor, a grid or flex column,
+     which such a host composes for itself. Its clearance test covers the page
      and clipping ancestors (scrolling, paint containment, content-visibility
      and clip paths). It approximates a clip path by its ancestor's border
      box, so an inset clip path that cuts the rail passes; it does not parse
@@ -408,7 +466,24 @@
    - C14 and C12 prove that a range is drawn and opened as the contract
      says, not that it covers the right content: which blocks a judgment
      covers stays with the author and the reviewer, as C12's semantic
-     assignment does.
+     assignment does. Likewise C15 and C12 prove a passage mark's line, not
+     that it underlines the right words, and C12 does not require a decided
+     judgment's note to be named by a passage mark.
+   - C15 proves the computed line: its style, thickness, offset against 0.36
+     of the element's computed font size, skip-ink and color, and that the
+     words keep their parent's color and their box. It does not measure the
+     painted line, how far it paints past the line box, or its distance from
+     a note or the next line, and a decoration a descendant draws, a link's
+     own line, is the descendant's. A keyword thickness or offset (auto,
+     from-font) fails, since no length can be compared. It does not judge a
+     cursor, an outline or a box-shadow on the words, which the contract
+     excludes, and it knows controls by element, role, tabindex and
+     contenteditable only.
+   - C12 judges a note's attachment in a block list item by computed boxes:
+     the note's own top margin after the item's text, or the box gap from the
+     block before it. It sets a minimum, so it does not detect a gap doubled
+     by a host's own layout, and it does not measure painted clearance from
+     the line under the words to the note's label.
    - C12 compares a mark with its role token as it resolves at the mark. It
      does not independently establish that a local rebinding of that token is
      authorized: adopted role bindings stay governed by review-semantics.md,
@@ -729,13 +804,20 @@
      values, as literals: offset is --space-3 plus the 2px stroke, reach --space-1 and the buffer
      between two ranges --space-5. */
   const LABELED = '.surface-labeled-range';
-  const RANGE_RAIL = { stroke: 2, offset: 14, reach: 4, buffer: 24 };
+  const RANGE_RAIL = { stroke: 2, offset: 14, reach: 4, buffer: 24, inset: 2 };
+  /* C15: the scope underline (surface-treatments.css). The owner's values, as literals: one solid
+     2px line 0.36em below the baseline, unbroken through descenders. NOTE_ATTACH is the 12px
+     (--space-3) a note keeps above it directly inside a block list item (review-semantics.css). */
+  const UNDERLINED = '.surface-scope-underline';
+  const SCOPE_LINE = { thickness: 2, offset: 0.36 };
+  const NOTE_ATTACH = 12;
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
     'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
     'doc-annotation-item': ['an item', 'rail', 'computed'], 'doc-annotation-list': ['an annotation list', 'rail', 'computed'],
     'doc-annotation-range': ['an annotation range', 'range', 'computed'], 'surface-labeled-range': ['a labeled range', 'rail', 'computed', 'C14'],
     'surface-emphasis-chip': ['an emphasis chip', 'box', 'computed', 'C13'], 'surface-bordered-label': ['a bordered label', 'box', 'computed', 'C13'],
+    'surface-scope-underline': ['a scope underline', 'line', 'computed', 'C15'],
     'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
   const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
 
@@ -768,7 +850,7 @@
     const tokenHost = hostOf(scope);
     for (const name of [...Object.keys(TOKENS), ...Object.keys(THEME_TOKENS)]) tokens[name] = tokenAt(tokenHost, name);
     const drift = new Map();
-    const contexts = [tokenHost, ...all(roleSel + ', ' + RAILED + ', ' + BORDERED + ', ' + LABELED + ', .doc-hierarchy, .doc-toc-list, .doc-toc-link, .doc-table-cell, .doc-dense-table')];
+    const contexts = [tokenHost, ...all(roleSel + ', ' + RAILED + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', .doc-hierarchy, .doc-toc-list, .doc-toc-link, .doc-table-cell, .doc-dense-table')];
     const wanted = [...Object.entries(TOKENS).map(([n, v]) => [n, [v]]), ...Object.entries(THEME_TOKENS)];
     for (const el of contexts) {
       const cs = getComputedStyle(el);
@@ -1136,22 +1218,21 @@
     for (const pm of all('mark.doc-passage-mark')) {
       counts['doc-passage-mark'] = (counts['doc-passage-mark'] || 0) + 1;
       const v = pm.getAttribute('data-review');
-      if (!['proposed', 'open'].includes(v || '')) { syn('C12', 'vocab', pm, { message: 'a passage mark names a pending judgment: proposed or open', value: v }); continue; }
+      if (!['proposed', 'open', 'accepted', 'declined'].includes(v || '')) { syn('C12', 'vocab', pm, { message: 'a passage mark names the judgment its words take, pending or decided: proposed, open, accepted or declined', value: v }); continue; }
+      const line = pm.classList.contains('surface-scope-underline');
+      if (!line) syn('C12', 'base', pm, { message: 'a passage mark carries .surface-scope-underline: its line is the shared scope underline\'s' });
       const host = pm.parentElement && pm.parentElement.closest(BODY_ROLES + ', .doc-quote > p, .doc-table-cell');
       const ids = (pm.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
       const note = ids.map((id) => document.getElementById(id)).find((n) => n && n.classList.contains('doc-annotation-note'));
       if (!host) syn('C12', 'passage', pm, { message: 'a passage mark sits inside body text' });
-      /* What the passage mark presents: its words in the text's color, no underline or border, and its tint. */
+      /* What the passage mark presents: its line in the value of the judgment it records. The line's
+         weight and place, and the words' unchanged color and box, are the scope underline's, which
+         C15 judges; a mark without the class fails C12.base above. */
       const judge = (add) => {
-        const cmp = (rule, reason, el, detail) => add(rule, reason, el, { basis: 'computed', ...detail });
-        const dose = tokenAt(pm, '--review-passage-dose');
-        const c = getComputedStyle(pm);
-        const tint = probe(pm, `border-left:1px solid color-mix(in srgb, var(--review-${v}) var(--review-passage-dose, 0%), transparent)`).border;
-        if (host && c.color !== getComputedStyle(host).color) cmp('C12', 'passage', pm, { message: 'a passage mark keeps the text\'s color', expected: getComputedStyle(host).color, got: c.color });
-        if (c.textDecorationLine !== 'none') cmp('C12', 'passage', pm, { message: 'a passage mark draws no underline: in this composition the scope cue is the tint' });
-        if (drawn(c, 'Left') || drawn(c, 'Right') || drawn(c, 'Top') || drawn(c, 'Bottom')) cmp('C12', 'passage', pm, { message: 'a passage mark draws no rail or border' });
-        if (clear(c.backgroundColor) || c.backgroundColor !== tint) cmp('C12', 'passage', pm, { message: 'a passage mark shows its tint: its role\'s value at the passage dose', expected: tint, got: c.backgroundColor });
-        else if (!['18%', '26%'].includes(dose)) cmp('C12', 'passage', pm, { message: 'the passage dose is the registered 18% light or 26% dark', got: dose });
+        if (!line) return;
+        const want = probe(pm, `border-left:1px solid var(--review-${v}, transparent)`).border;
+        const got = getComputedStyle(pm).textDecorationColor;
+        if (clear(want) || got !== want) add('C12', 'color', pm, { basis: 'computed', message: 'a passage mark\'s line takes the value of the judgment it records, and not transparent', expected: want, got });
       };
       if (collapsed(pm)) hold(pm, judge);
       else judge(add);
@@ -1171,6 +1252,22 @@
         else judge(add);
       } else if (!n.matches('.doc-hierarchy')) cmp('C12', 'note', n, { message: 'a note composes the hierarchy rail, or is a not-yet-testable evidence note on that role\'s 2px dashed rail' });
       if (n.parentElement && n.parentElement.closest(PANEL)) syn('C12', 'note', n, { message: 'a note never sits inside a panel: it follows the panel' });
+      /* Directly inside a block list item no group gap precedes a note, so it keeps the 12px
+         attachment: its own top margin after the item's text, or the space from the block before
+         it, which a collapsed margin shows, so the line under the item's last words clears its
+         label. An item laid out as a flex or grid composition keeps that composition's gap. */
+      if (n.parentElement && n.parentElement.matches('li')) {
+        const attach = (add) => {
+          if (!n.getClientRects().length || /(flex|grid)$/.test(getComputedStyle(n.parentElement).display)) return;
+          let before = n.previousSibling;
+          while (before && ((before.nodeType === 3 && !VISIBLE.test(before.data)) || (before.nodeType === 1 && !before.getClientRects().length) || (before.nodeType !== 1 && before.nodeType !== 3))) before = before.previousSibling;
+          const block = before && before.nodeType === 1 && !/^inline/.test(getComputedStyle(before).display);
+          const space = block ? n.getBoundingClientRect().top - before.getBoundingClientRect().bottom : px(getComputedStyle(n).marginTop);
+          if (space < NOTE_ATTACH - 0.5) add('C12', 'note', n, { basis: 'computed', message: 'a note directly inside a block list item keeps the ' + NOTE_ATTACH + 'px attachment above it (--space-3), so the line under the item\'s last words clears its label', space: +space.toFixed(2) });
+        };
+        if (collapsed(n)) hold(n, attach);
+        else attach(add);
+      }
     }
     const inRows = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-list > dt, .doc-annotation-list > dd';
     for (const el of all(inRows)) {
@@ -1188,6 +1285,17 @@
       const head = r.firstElementChild;
       if (head && (head.matches('.doc-mark[data-review]') || head.querySelector('.doc-mark[data-review]'))) syn('C12', 'base', r, { message: 'a labeled range a review judgment opens is an annotation range: it carries .doc-annotation-range, and its one judgment colors its scope rail' });
     }
+    /* The first child node that shows: an element, or text with a visible character. */
+    const leadNode = (el) => [...el.childNodes].find((k) => (k.nodeType === 1) || (k.nodeType === 3 && VISIBLE.test(k.data))) || null;
+    /* A whole list item that a review row leads, before any of its words, is that judgment's
+       range. A row after the item's words trails them, which this check does not judge; an item a
+       range holds is that range's (C12.mixed for an annotation range). */
+    for (const li of all('li:not(' + LABELED + '):not(.doc-annotation-range)')) {
+      const head = leadNode(li);
+      if (head && head.nodeType === 1 && head.matches('.doc-annotations') && head.querySelector('.doc-mark[data-review]') && !(li.parentElement && li.parentElement.closest(LABELED))) {
+        syn('C12', 'base', li, { message: 'a whole list item a review row leads is its range: the item carries .doc-annotation-range and .surface-labeled-range, and its one judgment colors its scope rail' });
+      }
+    }
     for (const r of all('.doc-annotation-range')) {
       counts['doc-annotation-range'] = (counts['doc-annotation-range'] || 0) + 1;
       if (!r.classList.contains('surface-labeled-range')) syn('C12', 'base', r, { message: 'an annotation range carries .surface-labeled-range: its scope rail is the shared labeled range\'s' });
@@ -1195,6 +1303,9 @@
       const opens = head && head.matches('.doc-annotations');
       const named = opens ? [...head.querySelectorAll('.doc-mark[data-review]')] : [];
       if (!opens || named.length !== 1) { syn('C12', 'range', r, { message: 'an annotation range opens with its annotation row, which names exactly one review judgment', opens: !!opens, judgments: named.length }); continue; }
+      /* No words come before the row: a range whose words lead and whose row follows them does not
+         open on its judgment. */
+      if (leadNode(r) !== head) syn('C12', 'range', r, { message: 'an annotation range opens with its annotation row: no words of the range come before it' });
       /* The row leads with that judgment, beside the top of the scope rail; its state, basis and
          evidence items follow. Ordinary rows keep their own order. */
       const lead = head.firstElementChild;
@@ -1313,6 +1424,26 @@
         add('C14', 'label', el, { basis: 'computed', message: 'a shown labeled range shows its label: its words render in an element that is seen and not transparent, so its scope rail never stands without them', display: c.display, visibility: c.visibility, opacity: c.opacity, color: c.color });
       }
     }
+    /* The labeled range that ends just before an element: a range beside it, or the item host a
+       list beside it closes on, that list standing alone or as the last child of one wrapper. */
+    const LISTS = 'ul, ol';
+    const prevShown = (x) => { let p = x.previousElementSibling; while (p && !renders(p)) p = p.previousElementSibling; return p; };
+    const lastShown = (x) => { const k = [...x.children].filter(renders); return k[k.length - 1] || null; };
+    const closingItem = (lst) => { const z = lst && lst.matches(LISTS) ? lastShown(lst) : null; return z && z.matches('li' + LABELED) ? z : null; };
+    function rangeBefore(x) {
+      const p = prevShown(x);
+      if (!p) return null;
+      if (p.matches(LABELED)) return p;
+      return closingItem(p) || closingItem(lastShown(p));
+    }
+    /* For a list that opens on an item host: what ends just before the list, or just before the one
+       block it opens. */
+    function listEdgeBefore(lst) {
+      if (!lst || !lst.parentElement) return null;
+      const direct = rangeBefore(lst);
+      if (direct || prevShown(lst)) return direct;
+      return rangeBefore(lst.parentElement);
+    }
     function ranged(el, add) {
       const cmp = (reason, detail) => add('C14', reason, el, { basis: 'computed', ...detail });
       const c = getComputedStyle(el);
@@ -1329,6 +1460,14 @@
       const r = el.getBoundingClientRect();
       const color = b.borderLeftColor;
       const at = (v, want) => Math.abs(px(v) - want) <= TOL;
+      /* An item host's rail reaches back across its list's indentation to the same lane, 14px
+         outside the left edge of its list, and ends 2px inside the item; any other range's rail sits
+         14px outside its own edge and reaches 4px beyond it. */
+      const item = el.matches('li');
+      const list = item ? el.parentElement : null;
+      const edge = list ? list.getBoundingClientRect().left + list.clientLeft : r.left;
+      const wantLeft = -(r.left - edge) - RANGE_RAIL.offset;
+      const wantEnd = item ? RANGE_RAIL.inset : -RANGE_RAIL.reach;
       /* One straight stroke with plain ends: a solid left edge at the stroke's width on a box as wide
          as it, and no edge on any other side, so no foot or cap closes either end. */
       const straight = b.borderLeftStyle === 'solid' && at(b.borderLeftWidth, RANGE_RAIL.stroke) && at(b.width, RANGE_RAIL.stroke) &&
@@ -1339,22 +1478,26 @@
         (b.outlineStyle === 'none' || px(b.outlineWidth) <= TOL) &&
         [b.boxShadow, b.backgroundImage, b.borderImageSource, b.filter, b.clipPath, b.maskImage, b.webkitMaskImage].every(none);
       /* The rail ends just past the first and last block: their outer margins sit outside the range. */
-      const kids = [...el.children].filter(renders);
+      const kids = [...el.childNodes].filter((k) => (k.nodeType === 1 && renders(k)) || (k.nodeType === 3 && VISIBLE.test(k.data)));
       const first = kids[0], last = kids[kids.length - 1];
-      /* Only a block-level child has outer margins to keep out; an inline first or last child sits on
-         its line box, which the range's own box already bounds. */
-      const block = (k) => !/^inline/.test(getComputedStyle(k).display);
-      const ends = !first || ((!block(first) || Math.abs(first.getBoundingClientRect().top - r.top) <= 0.5) &&
+      /* Only a block-level child has outer margins to keep out; an inline first or last child, or
+         text, sits on its line box, which the range's own box already bounds. */
+      const block = (k) => k.nodeType === 1 && !/^inline/.test(getComputedStyle(k).display);
+      /* An item host's marker sits on a line of its own font, which can hold its first block a few
+         pixels below the item's edge: there the first block keeps no top margin of its own. */
+      const ends = !first || ((!block(first) || (item ? Math.abs(px(getComputedStyle(first).marginTop)) <= TOL : Math.abs(first.getBoundingClientRect().top - r.top) <= 0.5)) &&
         (!block(last) || Math.abs(last.getBoundingClientRect().bottom - r.bottom) <= 0.5));
       if (!(b.content && b.content !== 'none' && b.content !== 'normal') || b.position !== 'absolute' || c.position === 'static' || b.display !== 'block' ||
           b.visibility !== 'visible' || parseFloat(b.opacity) < 1 || b.boxSizing !== 'border-box' ||
-          !straight || !plain || !at(b.left, -RANGE_RAIL.offset) || !at(b.top, -RANGE_RAIL.reach) || !at(b.bottom, -RANGE_RAIL.reach) ||
-          Math.abs(px(b.height) - (r.height + 2 * RANGE_RAIL.reach)) > 0.5 || !ends) {
-        cmp('rail', { message: 'a labeled range draws one visible scope rail in the outer lane: one straight ' + RANGE_RAIL.stroke + 'px solid stroke with plain ends that nothing else moves or paints, ' + RANGE_RAIL.offset + 'px outside the content edge, reaching ' + RANGE_RAIL.reach + 'px past its first and last block, which meet the range\'s edges', got: { content: b.content, position: b.position, host: c.position, display: b.display, visibility: b.visibility, opacity: b.opacity, transform: [b.transform, b.translate, b.rotate, b.scale].join(' / '), margin: b.marginLeft, sizing: b.boxSizing, border: ['Left', 'Top', 'Bottom', 'Right'].map((s) => b['border' + s + 'Width'] + ' ' + b['border' + s + 'Style']).join(' / '), paint: { outline: b.outlineWidth + ' ' + b.outlineStyle, shadow: b.boxShadow, image: b.backgroundImage, borderImage: b.borderImageSource, filter: b.filter, clip: b.clipPath, mask: b.maskImage || b.webkitMaskImage }, width: b.width, height: b.height, left: b.left, top: b.top, bottom: b.bottom, endsOnBlocks: ends } });
+          !straight || !plain || !(Math.abs(px(b.left) - wantLeft) <= 0.5) || !at(b.top, wantEnd) || !at(b.bottom, wantEnd) ||
+          Math.abs(px(b.height) - (r.height - 2 * wantEnd)) > 0.5 || !ends) {
+        cmp('rail', { message: item
+          ? 'an item host draws one visible scope rail in the outer lane: one straight ' + RANGE_RAIL.stroke + 'px solid stroke with plain ends that nothing else moves or paints, ' + RANGE_RAIL.offset + 'px outside the left edge of its list, reached back across the list\'s indentation (--surface-labeled-range-indent), its ends ' + RANGE_RAIL.inset + 'px inside the item, whose last block meets its bottom and whose first keeps no top margin'
+          : 'a labeled range draws one visible scope rail in the outer lane: one straight ' + RANGE_RAIL.stroke + 'px solid stroke with plain ends that nothing else moves or paints, ' + RANGE_RAIL.offset + 'px outside the content edge, reaching ' + RANGE_RAIL.reach + 'px past its first and last block, which meet the range\'s edges', expectedLeft: +wantLeft.toFixed(2), got: { content: b.content, position: b.position, host: c.position, display: b.display, visibility: b.visibility, opacity: b.opacity, transform: [b.transform, b.translate, b.rotate, b.scale].join(' / '), margin: b.marginLeft, sizing: b.boxSizing, border: ['Left', 'Top', 'Bottom', 'Right'].map((s) => b['border' + s + 'Width'] + ' ' + b['border' + s + 'Style']).join(' / '), paint: { outline: b.outlineWidth + ' ' + b.outlineStyle, shadow: b.boxShadow, image: b.backgroundImage, borderImage: b.borderImageSource, filter: b.filter, clip: b.clipPath, mask: b.maskImage || b.webkitMaskImage }, width: b.width, height: b.height, left: b.left, top: b.top, bottom: b.bottom, endsOnBlocks: ends } });
       }
       /* The rail's box, from the range's own box: its lane is clear when every clipping ancestor
          and the page hold it. */
-      const L = r.left - RANGE_RAIL.offset, T = r.top - RANGE_RAIL.reach, B = r.bottom + RANGE_RAIL.reach;
+      const L = edge - RANGE_RAIL.offset, T = r.top + wantEnd, B = r.bottom - wantEnd;
       let cut = null, scrolled = 0;
       for (let a = el.parentElement; a && !cut; a = a.parentElement) {
         const k = clipBox(a);
@@ -1364,11 +1507,19 @@
       }
       if (!cut && (L + scrolled + scrollX < -TOL || T + scrollY < -TOL)) cut = 'the page';
       if (cut) cmp('clearance', { message: 'a labeled range\'s scope rail needs ' + RANGE_RAIL.offset + 'px of unclipped space left of the content edge: here ' + cut + ' cuts it', railLeft: +(L + scrolled + scrollX).toFixed(2) });
-      /* Two ranges in a row keep the passage buffer between their boxes. */
-      let prev = el.previousElementSibling;
-      while (prev && !renders(prev)) prev = prev.previousElementSibling;
-      if (prev && prev.matches(LABELED) && r.top - prev.getBoundingClientRect().bottom < RANGE_RAIL.buffer - TOL) {
-        cmp('buffer', { message: 'two labeled ranges in a row keep the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) between them, so their rails never read as one', gap: +(r.top - prev.getBoundingClientRect().bottom).toFixed(2) });
+      /* Two ranges in a row keep the passage buffer between their boxes. Two item hosts of one list
+         keep the list's own spacing; a list that opens or closes on an item host keeps the buffer
+         from a range or another such list beside it, directly or as the first or last child of one
+         wrapping block. */
+      /* Only a range stacked above this one shares its lane: one beside it, in a neighboring table
+         cell or grid column, does not. */
+      const found = item ? (prevShown(el) ? null : listEdgeBefore(list)) : rangeBefore(el);
+      const fb = found && found.getBoundingClientRect();
+      const before = fb && Math.min(fb.right, r.right) - Math.max(fb.left, r.left) > 0 ? found : null;
+      if (before && r.top - before.getBoundingClientRect().bottom < RANGE_RAIL.buffer - TOL) {
+        cmp('buffer', { message: item || before.matches('li')
+          ? 'a list that opens or closes on an item host keeps the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) from a range or another such list beside it, so their rails never read as one'
+          : 'two labeled ranges in a row keep the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) between them, so their rails never read as one', gap: +(r.top - before.getBoundingClientRect().bottom).toFixed(2) });
       }
       if (!el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
         cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range', got: color });
@@ -1385,7 +1536,8 @@
       else if (!review && !VISIBLE.test(head.textContent)) s14('label', 'a labeled range\'s label names it in words: a label with none opens nothing');
       const parent = el.parentElement;
       if (parent && parent.closest(LABELED)) s14('nest', 'a labeled range never sits inside another');
-      if (parent && parent.closest(RANGE_HOSTS)) s14('host', 'a labeled range sits in the document flow or a table cell, never inside a list item, a railed passage, a separate surface or panel, a hierarchy level or a note, whose own edges or markers sit where its scope rail would');
+      if (parent && parent.closest(RANGE_HOSTS)) s14('host', 'a labeled range sits in the document flow or a table cell, or is one whole item of a list in the flow, never inside a list item, a railed passage, a separate surface or panel, a hierarchy level or a note, whose own edges or markers sit where its scope rail would');
+      else if (el.matches('li') && !(parent && parent.matches(LISTS))) s14('host', 'an item host is an item of a list: its parent is the ul or ol whose indentation its rail reaches across');
       const shown = getComputedStyle(el).display;
       if (shown === 'contents') { add('C14', 'box', el, { basis: 'computed', message: 'a labeled range is a box: drawn as display: contents it holds no box, and its scope rail lands against another element', display: shown }); continue; }
       if (collapsed(el)) { hold(el, (sink) => { if (renders(el)) { ranged(el, sink); opener(el, sink); } }, heldHere.has(el) ? undefined : 'surface-labeled-range'); governed++; continue; }
@@ -1393,6 +1545,42 @@
       governed++;
       ranged(el, add);
       opener(el, add);
+    }
+
+    /* C15 the scope underline (surface-treatments.css): one solid 2px line 0.36em below the
+       baseline, unbroken through descenders, under words that keep their color and their box. Its
+       color is the composing meaning's: C12 judges a passage mark's, and this rule a neutral
+       underline's. */
+    const CONTROLS = 'a, button, input, select, textarea, summary, label, [contenteditable]:not([contenteditable="false"]), [tabindex]:not([tabindex="-1"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action';
+    /* Drawn as display: contents, an underline keeps its words and loses its line. */
+    const contents = (el, add) => add('C15', 'words', el, { basis: 'computed', message: 'a scope underline is an inline run of words: drawn as display: contents it draws no line while its words still show', display: 'contents' });
+    function underlined(el, add) {
+      const cmp = (reason, detail) => add('C15', reason, el, { basis: 'computed', ...detail });
+      const c = getComputedStyle(el);
+      const lines = c.textDecorationLine.trim().split(/\s+/);
+      /* A keyword thickness or offset (auto, from-font) parses as no number and fails. */
+      if (lines.length !== 1 || lines[0] !== 'underline' || c.textDecorationStyle !== 'solid' || !(Math.abs(px(c.textDecorationThickness) - SCOPE_LINE.thickness) <= TOL) ||
+          !(Math.abs(px(c.textUnderlineOffset) - SCOPE_LINE.offset * px(c.fontSize)) <= 0.5) || c.textDecorationSkipInk !== 'none' || clear(c.textDecorationColor)) {
+        cmp('line', { message: 'a scope underline is one solid ' + SCOPE_LINE.thickness + 'px line ' + SCOPE_LINE.offset + 'em below the baseline, unbroken through descenders, and not transparent', got: { line: c.textDecorationLine, style: c.textDecorationStyle, thickness: c.textDecorationThickness, offset: c.textUnderlineOffset, skipInk: c.textDecorationSkipInk, color: c.textDecorationColor, fontSize: c.fontSize } });
+      }
+      const parent = el.parentElement ? getComputedStyle(el.parentElement).color : c.color;
+      const pads = [c.paddingTop, c.paddingRight, c.paddingBottom, c.paddingLeft];
+      if (c.display !== 'inline' || c.color !== parent || !clear(c.backgroundColor) || (c.backgroundImage && c.backgroundImage !== 'none') ||
+          ['Top', 'Right', 'Bottom', 'Left'].some((side) => drawn(c, side)) || pads.some((v) => Math.abs(px(v)) > TOL)) {
+        cmp('words', { message: 'a scope underline is an inline run of words that keep their color and their box: no text color, fill, border or padding of its own', display: c.display, color: c.color, expected: parent, background: c.backgroundColor, image: c.backgroundImage, padding: pads.join(' ') });
+      }
+      if (!el.matches('mark.doc-passage-mark') && probe(el, 'border-left:1px solid var(--fg-3)').border !== c.textDecorationColor) {
+        cmp('color', { message: 'a neutral scope underline is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' passage mark', got: c.textDecorationColor });
+      }
+    }
+    for (const el of all(UNDERLINED)) {
+      counts['scope-underline'] = (counts['scope-underline'] || 0) + 1;
+      if (el.matches(CONTROLS) || (el.parentElement && el.parentElement.closest(CONTROLS))) add('C15', 'attach', el, { basis: 'syntax', message: 'a scope underline is inert: never a link or a control, never composed onto one or set inside one; a link inside its words keeps its own line and states' });
+      if (collapsed(el)) { hold(el, (sink) => { if (getComputedStyle(el).display === 'contents') contents(el, sink); else if (renders(el)) underlined(el, sink); }, heldHere.has(el) ? undefined : 'surface-scope-underline'); governed++; continue; }
+      if (getComputedStyle(el).display === 'contents') { contents(el, add); governed++; continue; }
+      if (!renders(el)) continue;   /* it renders no box: nothing is drawn to judge */
+      governed++;
+      underlined(el, add);
     }
 
     for (const [el, h] of heldHere) held.set(el, h);
@@ -1406,8 +1594,8 @@
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
      read() on each governed link that takes focus; then judge(records).
-     Last, it calls collapsed(), which judges the C12, C13 and C14 elements a
-     resting check held. */
+     Last, it calls collapsed(), which judges the C12, C13, C14 and C15
+     elements a resting check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
   const rendered = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -1423,7 +1611,7 @@
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
     },
-    /* With every disclosure in scope open, judge what each C12 or C13 element a resting check held
+    /* With every disclosure in scope open, judge what each C12 to C15 element a resting check held
        presents, wherever it now sits, once the animations on it, inside it and on its ancestors
        have finished: its findings carry state "open". An element still collapsed fails its held
        reason marked "collapsed"; one no longer on the page fails it marked "removed". */
