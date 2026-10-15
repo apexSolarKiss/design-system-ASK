@@ -78,6 +78,7 @@
   [data-control="labeled range at the page edge"] .fx-edge { position: absolute; left: 4px; width: 320px; }
   [data-control="labeled range in a paint-contained box"] .fx-contain { contain: paint; }
   [data-control="two labeled ranges with no buffer"] .surface-labeled-range + .surface-labeled-range { margin-top: 0; }
+  .fx-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
   [data-control="bordered label under a redefined inline step"] { --space-2: 2px; }
   [data-control="bordered label a flex row may shrink"] .surface-bordered-label { flex-shrink: 1; }
   [data-control="bordered label squeezed by its table column"] .surface-bordered-label { width: auto; }
@@ -188,6 +189,12 @@ keeps the one violet rail</pre>
       <span class="doc-label surface-bordered-label">held</span>
       <p class="doc-body">A second range beside the first keeps the passage buffer between their rails.</p>
     </div>
+    <ul class="fx-list">
+      <li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">An item host: one whole item that is its own range, its rail in the lane outside the bullet, kept from the range before the list by the passage buffer.</p></li>
+      <li class="surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The next item, a range of its own: the list keeps its spacing, and the two rails stay apart.</p></li>
+      <li class="doc-body">An item with no label takes no rail.</li>
+    </ul>
+    <p class="doc-body">Words with <span class="surface-scope-underline">a neutral scope underline</span> keep their color, and <span class="surface-scope-underline">a phrase holding <a class="surface-text-link" href="#controls">a link</a> keeps the link's own line</span> above the scope line.</p>
     <div class="doc-table-scroll">
       <table class="doc-table">
         <thead><tr><th class="doc-label">item</th><th class="doc-label">statements</th></tr></thead>
@@ -832,6 +839,62 @@ another</pre></div></div>
     </div>
     <div data-control="labeled range in a paint-contained box" data-expect="C14.clearance">
       <div class="fx-contain"><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div></div>
+    </div>
+    <!-- C14 item hosts, and the buffer at a list's edge across one wrapper -->
+    <div data-control="wrapped list closing on an item host, then a list opening on one" data-expect="">
+      <div><div class="doc-group"><ul class="fx-list"><li class="doc-body">A wrapped list.</li><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">It closes on an item host.</p></li></ul></div><ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">A list opening on an item host keeps the buffer.</p></li></ul></div>
+    </div>
+    <div data-control="wrapped list closing on an item host, then a list opening on one, with no buffer" data-expect="C14.buffer">
+      <div><div class="doc-group"><ul class="fx-list"><li class="doc-body">A wrapped list.</li><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">It closes on an item host.</p></li></ul></div><ul class="fx-list" style="margin-top: 0"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">A list opening on an item host, its buffer removed.</p></li></ul></div>
+    </div>
+    <div data-control="range, then a wrapped list opening on an item host, with no buffer" data-expect="C14.buffer">
+      <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">A range.</p></div><div class="doc-group" style="margin-top: 0"><ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">A wrapped list opening on an item host, its buffer removed.</p></li></ul></div></div>
+    </div>
+    <div data-control="list closing on an item host, then a range, with no buffer" data-expect="C14.buffer">
+      <div><ul class="fx-list"><li class="doc-body">A list.</li><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">It closes on an item host.</p></li></ul><div class="doc-group surface-labeled-range" style="margin-top: 0"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">A range right after it, its buffer removed.</p></div></div>
+    </div>
+    <div data-control="item hosts in two neighboring table cells" data-expect="">
+      <div class="doc-table-scroll doc-table-scroll--range-lane"><table class="doc-table"><thead><tr><th class="doc-label">first</th><th class="doc-label">second</th></tr></thead><tbody><tr><td class="doc-body"><ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">An item host in the first cell.</p></li></ul></td><td class="doc-body"><ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">An item host in the cell beside it: no buffer is owed across a row.</p></li></ul></td></tr></tbody></table></div>
+    </div>
+    <div data-control="item host in a nested list" data-expect="C14.host">
+      <ul class="fx-list"><li class="doc-body">An item holding a list <ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">A nested item host.</p></li></ul></li></ul>
+    </div>
+    <div data-control="item host outside a list" data-expect="C14.host C14.rail">
+      <div><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">An item set outside any list.</p></li></div>
+    </div>
+    <div data-control="item host in a list indented otherwise, its indentation unnamed" data-expect="C14.rail">
+      <ul><li class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">A whole item in a list indented 40px.</p></li></ul>
+    </div>
+    <!-- C15 scope underline -->
+    <div data-control="scope underline 1px thick" data-expect="C15.line">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="text-decoration-thickness: 1px">a thin line</span>.</p>
+    </div>
+    <div data-control="scope underline at a link's offset" data-expect="C15.line">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="text-underline-offset: 0.22em">a raised line</span>.</p>
+    </div>
+    <div data-control="scope underline broken at descenders" data-expect="C15.line">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="text-decoration-skip-ink: auto">a gapped line, typography</span>.</p>
+    </div>
+    <div data-control="scope underline given a fill" data-expect="C15.words">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="background: var(--line-1)">a fill behind them</span>.</p>
+    </div>
+    <div data-control="scope underline recoloring its words" data-expect="C15.words">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="color: var(--ask-emphasis-magenta)">colored words</span>.</p>
+    </div>
+    <div data-control="scope underline drawn as a block" data-expect="C15.words">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="display: block">a block of words</span>.</p>
+    </div>
+    <div data-control="neutral scope underline given a color" data-expect="C15.color">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="--surface-scope-underline-color: var(--ask-emphasis-cyan)">a colored line</span>.</p>
+    </div>
+    <div data-control="scope underline drawn as display: contents" data-expect="C15.words">
+      <p class="doc-body">Words with <span class="surface-scope-underline" style="display: contents">words that keep no line</span>.</p>
+    </div>
+    <div data-control="scope underline made focusable" data-expect="C15.attach">
+      <p class="doc-body">Words with <span class="surface-scope-underline" tabindex="0">a focusable phrase</span>.</p>
+    </div>
+    <div data-control="scope underline set inside a link" data-expect="C15.attach">
+      <p class="doc-body">See <a class="surface-text-link" href="#controls">the <span class="surface-scope-underline">marked words</span></a>.</p>
     </div>
     <div data-control="two labeled ranges with no buffer" data-expect="C14.buffer">
       <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>
