@@ -100,7 +100,7 @@
       <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
     </dl>
     <div class="doc-prose">
-      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. The row that opens a range leads with its review item, the judgment its scope rail shows, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, leads a whole list item or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved share a value because both name something not yet settled; their geometry and their words still say which axis is speaking.</p>
     </div>
   </section>
 
@@ -115,7 +115,7 @@
       <p class="doc-body">A level inside a level, on the neutral hierarchy rail.</p>
     </div>
     <div class="doc-prose">
-      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A mark follows the content it concerns, or opens a range over it, and never repaints it.</p>
+      <p class="doc-body">None of these rails, nor the framing and synthesis panels, is a review or evidence state. A review mark opens a range over the content it concerns, leads the whole list item it judges, stands as a prompt naming its target before a range, or sits in the cell, note, list or document record that bounds it, and never repaints it.</p>
     </div>
   </section>
 
@@ -123,15 +123,76 @@
     <h2 class="doc-section-title" id="scope-title">The composition at its scopes</h2>
 
     <div class="doc-section">
-      <h3 class="doc-subsection-title">A block // an annotation row after it</h3>
+      <h3 class="doc-subsection-title">Paragraphs and their neighbors // one range per judgment</h3>
+      <p class="doc-body">Each frame holds the product and at most two props; this paragraph carries no judgment and takes no rail.</p>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-one-paragraph">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">rev 3 · editor, round 2 · this paragraph</span></span>
+        </div>
+        <p class="doc-body">Light and framing are separate choices: one frame may be lit for more than one season.</p>
+      </div>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-lead-in">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the owner · the lead-in and both items</span></span>
+        </div>
+        <p class="doc-body">Two choices are not yet made:</p>
+        <ul class="key-list">
+          <li class="doc-body">whether the catalog takes the square crop;</li>
+          <li class="doc-body">whether the winter set is reused.</li>
+        </ul>
+      </div>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-handling">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">rev 3 · editor, round 2 · this paragraph</span></span>
+        </div>
+        <p class="doc-body">Until both are answered, each frame records its crop as undecided.</p>
+      </div>
+      <p class="doc-body">The next section turns to color, and this paragraph takes no rail either.</p>
+      <p class="doc-meta">A review judgment on whole blocks opens a range, even over one paragraph: a row placed after a block can be read as introducing what follows it. Each label leads its scope, and its rail ends after the last block it covers, so each judgment reads apart from its neighbors.</p>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">A basis or evidence row // after its block, no range</h3>
       <div class="doc-group">
-        <p class="doc-body">A statement under review, as one block of document text.</p>
+        <p class="doc-body">A statement recorded with its basis and its evidence, and no review judgment.</p>
         <div class="doc-annotations">
           <span class="doc-annotation-item"><span class="doc-label">Basis</span><span class="doc-meta">owner-stated</span></span>
           <span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="supported">Supported</span><span class="doc-meta">9 of 14, counted</span></span>
-          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v2 · owner, round 1 · carried unchanged</span></span>
         </div>
       </div>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">List items // a row leading each whole item</h3>
+      <ul class="key-list">
+        <li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · this item</span></span></div>Reprints keep the original paper stock.</li>
+        <li class="doc-body"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this item</span></span></div>Each frame is printed once at full size.</li>
+        <li class="doc-body">Proofs reach the studio <mark class="doc-passage-mark" data-review="open" aria-describedby="key-note-item">before the end of each month</mark>.
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="key-note-item">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">on “before the end of each month” · awaiting the owner</span></span></div>
+          </div>
+        </li>
+      </ul>
+      <p class="doc-meta">One judgment on a whole item that no range holds leads that item, inside its bullet: the marker and indentation bound it, and no range opens inside the item. Inside a range, an item carries no review mark of its own. A judgment on exact words in an item keeps its pending tint and note, or a decided phrase's quoted note, after the item's text.</p>
+    </div>
+
+    <div class="doc-section">
+      <h3 class="doc-subsection-title">Two questions about one table // a prompt before its range</h3>
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">for each frame marked for reprint in the table below, may it be printed again? · owner</span></span></div>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-print-plan">
+        <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">editor, round 2 · the print plan</span></span></div>
+        <div class="doc-table-scroll" role="region" aria-label="The print plan" tabindex="0">
+          <table class="doc-table">
+            <thead><tr><th class="doc-label" scope="col">Frame</th><th class="doc-label" scope="col">Reprint</th><th class="doc-label" scope="col">Use</th></tr></thead>
+            <tbody>
+              <tr><td class="doc-body">F-1</td><td class="doc-body">marked</td><td class="doc-body">catalog cover</td></tr>
+              <tr><td class="doc-body">F-2</td><td class="doc-body">not marked</td><td class="doc-body">inside spread</td></tr>
+              <tr><td class="doc-body">F-3</td><td class="doc-body">marked</td><td class="doc-body">back page</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="doc-meta">The plan's Proposed judgment opens the range. The separate reprint question stands just before it, outside the rail and outside a preceding range or unrelated group, and its record names the table below as its target, the marked rows as its scope and the owner as its decider. The table is shown once, and neither judgment, nor any answer to it, settles the other.</p>
     </div>
 
     <div class="doc-section">
@@ -150,7 +211,7 @@
         </div>
         <p class="doc-body">A paragraph already accepted, its own range beside the proposal's.</p>
       </div>
-      <p class="doc-meta">The scope rail sits outside the content edge, where no passage rail is drawn, and runs from the label to the range's last block; the text inside does not move. A single block whose row follows it needs no range.</p>
+      <p class="doc-meta">The scope rail sits outside the content edge, where no passage rail is drawn, and runs from the label to the range's last block; the text inside does not move. A range of one paragraph is drawn the same way.</p>
     </div>
 
     <div class="doc-section">
@@ -193,8 +254,9 @@
     <div class="doc-section">
       <h3 class="doc-subsection-title">One item, several questions // an annotation list</h3>
       <div class="doc-group">
-        <p class="doc-body">A method component, version 0.3.</p>
         <dl class="doc-annotation-list" aria-label="Annotations for the method component">
+          <dt class="doc-label">Item</dt>
+          <dd><span class="doc-meta">a method component, version 0.3</span></dd>
           <dt class="doc-label">State</dt>
           <dd><span class="doc-mark doc-label" data-state="structural">Structural</span><span class="doc-meta">schema-proven; not yet run end to end</span></dd>
           <dt class="doc-label">Basis</dt>
@@ -250,12 +312,20 @@
     </div>
 
     <div class="doc-section">
-      <h3 class="doc-subsection-title">A question // a section with an Open question mark</h3>
+      <h3 class="doc-subsection-title">A question // a section with an Open question range</h3>
       <div class="doc-section">
-        <h4 class="doc-deep-title">Question 2 // Should the market square stay in the study?</h4>
-        <div class="doc-annotations">
-          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the reviewer</span></span>
-          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">suggested answer: leave it out this round</span></span>
+        <h4 class="doc-deep-title">Question 2 // The market square</h4>
+        <div class="doc-group doc-annotation-range surface-labeled-range" id="range-question">
+          <div class="doc-annotations">
+            <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">awaiting the reviewer</span></span>
+          </div>
+          <p class="doc-body">Should the market square stay in the study?</p>
+        </div>
+        <div class="doc-group doc-annotation-range surface-labeled-range" id="range-answer">
+          <div class="doc-annotations">
+            <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">reviewer, round 2 · a suggested answer</span></span>
+          </div>
+          <p class="doc-body">Leave it out this round, and keep its counts for the next.</p>
         </div>
       </div>
     </div>
@@ -286,16 +356,20 @@
 
     <div class="doc-section">
       <h3 class="doc-subsection-title">One callout, proposed and then accepted</h3>
-      <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
-      <div class="doc-annotations">
-        <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 2 · studio</span></span>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-callout-proposed">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 2 · studio</span></span>
+        </div>
+        <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
       </div>
-      <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
-      <div class="doc-annotations">
-        <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 3 · owner</span></span>
+      <div class="doc-group doc-annotation-range surface-labeled-range" id="range-callout-accepted">
+        <div class="doc-annotations">
+          <span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">round 3 · owner</span></span>
+        </div>
+        <p class="doc-body surface-emphasis-rail">Signs of use are welcome; damage is not.</p>
       </div>
       <div class="doc-prose">
-        <p class="doc-body">The rail is the callout's and does not change with the decision. The mark after it does.</p>
+        <p class="doc-body">The rail at the content edge is the callout's and does not change with the decision. The scope rail outside it, and the mark that leads it, do.</p>
       </div>
     </div>
 
@@ -322,7 +396,7 @@
         <a class="surface-action" href="#questions-title">compact action</a>
       </div>
       <div class="doc-prose">
-        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, after the content it concerns or at the head of a range outside the content edge, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
+        <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, leading the range it opens (whose scope rail sits outside the content edge), the whole list item it judges or a prompt before a range, or sitting in the cell, note, list or document record that bounds its scope, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
       </div>
     </div>
   </section>

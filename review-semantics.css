@@ -136,8 +136,8 @@
                      an evidence or state mark never carries
                      .surface-bordered-label; a mark carries one role, and a
                      second fact takes a second mark
-     example         an outlined PROPOSED after the paragraph it proposes, or
-                     at the head of the range it proposes
+     example         an outlined PROPOSED at the head of the range it
+                     proposes, a range of one paragraph included
      counterexample  the paragraph itself recolored, railed or boxed in the
                      proposal's color
 
@@ -151,26 +151,37 @@
                      role map assigns)
 
    ANNOTATION ROW
-     meaning         the items that apply to one scope: the section after its
-                     heading, the block it follows, the range it opens, or the
-                     table cell it sits in
+     meaning         the items that apply to one scope: the range it opens,
+                     the whole list item it leads, the target its record
+                     names as an explicit-target prompt immediately before
+                     the range that holds that content, the table cell it
+                     sits in, the note it heads, or the whole document, as
+                     the review record set under its title. A
+                     row that holds no review item may instead apply to the
+                     section after its heading or the block it follows
      population      .doc-annotations holding .doc-annotation-item children,
-                     in a fixed order: state, basis, evidence, review. The row
-                     that opens a range leads with its review item, beside the
-                     top of the scope rail; its state, basis and evidence items
-                     follow in that order
+                     in a fixed order: state, basis, evidence, review. A row
+                     that opens a range, leads a list item or stands as a
+                     prompt leads with its review item, and its state, basis
+                     and evidence items follow in that order; the row that
+                     opens a range sits beside the top of the scope rail
      variation       in a table cell the row is inline on the cell's first
                      baseline. Each item opens on its own mark or its key, so
                      items need no separator
-     exclusions      not a container: no rail, wash, border or panel. Placement
-                     or a range sets scope; typography, boldness or capitals
-                     never do
+     exclusions      not a container: no rail, wash, border or panel. A review
+                     item on whole blocks never trails them: it opens a range
+                     over them, leads the whole list item it judges, or, as a
+                     separate question about a range's content, stands as an
+                     explicit-target prompt before that range. Typography,
+                     boldness or capitals never set scope
 
    ANNOTATION RANGE
-     meaning         the exact blocks one review judgment covers, where
-                     placement alone would leave its extent unclear: several
-                     blocks, a list, a quotation with the sentence that reads
-                     it, a panel, or one of several statements in a table cell
+     meaning         the exact blocks one review judgment covers, shown so a
+                     reader sees where its scope begins and ends: one
+                     paragraph or several, a list with the lead-in that
+                     introduces it, a quotation with the sentence that reads
+                     it, a panel, a table, or one of several statements in a
+                     table cell
      population      .doc-annotation-range.surface-labeled-range (usually also
                      .doc-group, for the run's flow), its first child the
                      annotation row that names its one review judgment, that
@@ -197,8 +208,42 @@
                      question, which content the review judgment covers: the
                      row's state, basis and evidence items apply to the range
                      but never color it, and evidence and state never open a
-                     range. A single block whose row follows it needs no range,
-                     and a whole document takes none
+                     range. Other forms bound their own scope without one: an
+                     item alone in a table cell, for that cell or its row
+                     where the table's structure makes the association
+                     unambiguous; a note quoting exact words; an annotation
+                     list's lines on the item it names in a keyed line of its
+                     own; a row leading the whole list item it judges, when
+                     no range holds the item, whose marker and indentation
+                     bound it, while exact-word annotations and rows with no
+                     review item follow the item's text; an explicit-target
+                     prompt immediately before a range or before another
+                     prompt to it, outside the range and outside a preceding
+                     range or unrelated group, naming the content below as
+                     its target, its question's scope and who decides; and a
+                     whole document's record under its title, which takes
+                     none. Inside a range a list item carries no review mark
+                     of its own: a note on words judged in it follows the
+                     range, a separate question about it is a prompt before
+                     the range, and any other judgment on it is raised with
+                     the owner. Which judgment the range carries and which
+                     stands as a prompt is set by the records, never by
+                     which was made first or would stand first; neither
+                     judgment, nor any answer to it, settles or is inherited
+                     by the other, several prompts read in order with no
+                     precedence, and a bare label that names no target is no
+                     prompt. A key or legend sample that judges no
+                     content takes none. A cell holding several separately
+                     judged statements takes a range for each, and a judgment
+                     on a whole table opens a range over the table. A table
+                     whose cells carry judgments of their own cannot sit in a
+                     range: that case, like some of the blocks inside a list
+                     item, blocks inside a panel or a second judgment on one
+                     whole list item, is raised with the owner, not drawn by
+                     a local rule. So is a further judgment on whole blocks
+                     a range holds that fits neither the range nor a prompt,
+                     never placed after the range; a note on exact words
+                     inside a range still follows it
 
    ANNOTATION LIST
      meaning         one item answering several questions at once, each on its
@@ -206,7 +251,11 @@
      population      dl.doc-annotation-list, dt.doc-label keys, dd values
      exclusions      a key per question, a mark per role; a named check and
                      its result are neutral metadata under a Check key, never
-                     an Evidence State or a review outcome
+                     an Evidence State or a review outcome. Its review lines
+                     judge the item the list itself names, in a keyed line of
+                     its own, at the scope each states, never the blocks
+                     beside the list; a review judgment on blocks in the flow
+                     opens a range instead
 
    DECISION RECORD (display obligation)
      A shown decision names what it concerns (object or version), who decided
@@ -226,8 +275,14 @@
                      outcome takes no passage mark
 
    ANNOTATION NOTE
-     meaning         the record a passage mark points to, set after the block
-                     and its row; it quotes the words it concerns
+     meaning         the record of a judgment on exact words inside a block,
+                     set after the block or the range that holds it, and in a
+                     list item no range holds, after the item's text; it
+                     quotes the words it concerns. While the judgment is
+                     pending a passage mark tints the words and names the
+                     note; a decided outcome takes no tint, so its note
+                     follows the block directly and quotes enough of the words
+                     to name them once in it
      population      .doc-annotation-note on a .doc-hierarchy group (it belongs
                      inside the level above); an evidence note whose role is
                      not yet testable takes that role's dashed rail instead
@@ -238,11 +293,21 @@
      - A passage keeps its document role. Accepting a synthesis leaves it a
        synthesis; challenging a quotation leaves it a quotation; a callout's
        rail does not change with its review state.
-     - Annotations sit at their actual scope with the least added structure:
-       a row after a heading or block, an item in a cell, a passage mark plus
-       a note for words inside a block, and a range where a judgment covers
-       more than placement can bound. No rail or panel on the content is added
-       to make scope; a range's scope rail sits outside the content edge.
+     - Review scope is visible. Unless it leads a whole list item or stands as
+       a prompt, a review judgment on whole blocks in the flow opens a range,
+       a single paragraph included: a row placed after a block can be read as
+       introducing what follows it. One judgment on a whole list item no range
+       holds leads that item, inside it, review first. A separate question
+       about a range's content is an explicit-target prompt just before the
+       range, outside it and outside a preceding range or unrelated group,
+       naming its target, scope and decider; the range keeps its one judgment
+       and the content is shown once. A cell item, a note quoting exact words,
+       an annotation list's lines on the item it names and a whole document's
+       record bound their own scope. A row with only basis, evidence or state
+       items follows the heading or block it qualifies and opens no range. A
+       judgment no supported composition can show is raised with the owner,
+       not drawn by a local rule. No rail or panel on the content is added to
+       make scope; a range's scope rail sits outside the content edge.
      - One edge, one meaning. Within this composition, review and evidence
        never draw a rail on the content passage and never recolor a panel
        perimeter. A range's scope rail, in the outer margin, answers only which
@@ -267,8 +332,13 @@
    box and edge as it checks every bordered label, and rule C14 a range's
    scope rail, lane, host and clearance as it checks every labeled range.
    C12 never judges semantic assignment, whether an item's role is the right
-   one; that stays with the author and the reviewer. C12 compares a mark with
-   its resolved role token. It does not independently establish that a local
+   one, or scope: a pass does not show that a range was opened wherever a
+   judgment needed one or that it holds the right blocks. A review row left
+   trailing a block or a list item's text passes, and so do a prompt
+   stranded after its target and a whole-item or prompt row that does not
+   open on its review item. Those stay with the author, a consumer's own
+   renderer tests and the reviewer. C12 compares a mark with its resolved
+   role token. It does not independently establish that a local
    token rebinding is authorized: adopted role bindings remain governed by the
    contract, and a local exception requires the applicable explicit
    authorization.
@@ -366,8 +436,9 @@
   min-width: 0;
 }
 
-/* The row: scope by placement, or by the range it opens. Each item opens on
-   its mark or its key, so a wrapped item never begins with a stray separator. */
+/* The row: the range it opens, the cell or note it sits in, or, with no
+   review item, the heading or block it follows. Each item opens on its mark
+   or its key, so a wrapped item never begins with a stray separator. */
 .doc-annotations {
   display: flex;
   flex-wrap: wrap;
@@ -420,9 +491,10 @@ mark.doc-passage-mark {
 mark.doc-passage-mark[data-review="proposed"] { --review-mark-color: var(--review-proposed); }
 mark.doc-passage-mark[data-review="open"]     { --review-mark-color: var(--review-open); }
 
-/* The note: the record, after the block and its row. A note normally
-   composes .doc-hierarchy and draws that rail; an evidence note whose role
-   is not yet testable draws that role's dashed rail instead. */
+/* The note: the record, after the block or the range that holds it, and in
+   a list item no range holds, after the item's text. A note normally composes
+   .doc-hierarchy and draws that rail; an evidence note whose role is not
+   yet testable draws that role's dashed rail instead. */
 .doc-annotation-note[data-evidence="not-yet-testable"] {
   border-left: 2px dashed var(--evidence-not-yet-testable);
   padding-left: var(--space-4);
