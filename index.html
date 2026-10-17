@@ -14,8 +14,8 @@
      Navigation only. This is not a documentation surface: README.md
      remains the repo's prose, preview/styleguide.html the canonical
      token-review surface, patterns/index.html the owner pattern
-     gallery, and read/ (built site only) the rendered documents. Do not grow this file into a third description of the
-     design system.
+     gallery, and read/ (built site only) the rendered documents. Do not
+     grow this file into a third description of the design system.
      The page chrome is the canonical surface-shell pattern, consumed by
      same-repo reference from patterns/surface-shell/ — not a local copy.
      The shell ships an identity SLOT, not a mark: this surface fills it
@@ -25,10 +25,11 @@
      script (that control is the style guide's alone). Interaction
      follows the README's hover/press/focus contract. Links are relative
      so this shell works from the public deployment and by double-click
-     from a clean clone; the clean routes (/styleguide/, /patterns/, /read/)
-     are supplied by vercel.json for external linking. The documents exist only
-     in the built site, so each of their three entrances (panel, footer and
-     navigation panel) sits in a build-only <template data-read-build>.
+     from a clean clone; the clean routes (/styleguide/, /patterns/) and the
+     /read redirect are supplied by vercel.json for external linking. The
+     documents exist only in the built site, so each of their three entrances
+     (route panel, footer and navigation panel) sits in a build-only
+     <template data-read-build>.
      ============================================================ -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-panel.css">
