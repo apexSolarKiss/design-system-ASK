@@ -1,0 +1,100 @@
+{
+  "repo": "apexSolarKiss/design-system-ASK",
+  "branch": "main",
+  "site": ".",
+  "read": "read",
+  "identity": {
+    "name": "design-system-ASK",
+    "index_description": "design-system-ASK documents, rendered from the repository's Markdown.",
+    "index_lede": "design-system-ASK's README, public consumer registry, semantic primitives and pattern contracts, rendered from the repository's Markdown when the site is built. GitHub remains the source of record; every page links its source and its raw file.",
+    "documents_title": "documents",
+    "records_intro": "Maintainer records, rendered from their Markdown.",
+    "source_note": "the front door links it",
+    "source_card": "Read-only, line-numbered: one source file.",
+    "front_link": {"label": "pattern previews", "href": "patterns/index.html"}
+  },
+  "chrome": {
+    "stylesheets": ["colors_and_type.css", "surface-panel.css", "surface-action.css", "surface-text-link.css",
+                    "surface-document.css", "surface-treatments.css", "patterns/surface-shell/surface-shell.css"],
+    "scripts": ["patterns/surface-shell/surface-shell.js", "surface-document-overflow.js"],
+    "logo_light": "assets/logo-ASK-white.png",
+    "logo_dark": "assets/logo-ASK-lavender-ASK.png"
+  },
+  "front_doors": ["index.html", "patterns/index.html", "preview/styleguide.html"],
+  "home_page": "index.html",
+  "site_exclude": ["vercel.json", "_site/"],
+  "documents": [
+    {"path": "README.md", "label": "README"},
+    {"path": "CONSUMERS.md", "label": "consumers"},
+    {"path": "spectral-state.md", "label": "Spectral State"},
+    {"path": "evidence-state.md", "label": "Evidence State"},
+    {"path": "review-semantics.md", "label": "Review Semantics"},
+    {"path": "three-functions.md", "label": "Three Functions"}
+  ],
+  "collections": [
+    {"dir": "patterns", "output_dir": "patterns", "title": "patterns", "kind": "pattern",
+     "intro": "Each pattern's contract. The pattern previews show them rendered.",
+     "entries": [
+       {"path": "patterns/surface-shell/README.md", "label": "surface-shell", "output": "surface-shell.html"},
+       {"path": "patterns/diagram-static-H/README.md", "label": "diagram-static-H", "output": "diagram-static-H.html"},
+       {"path": "patterns/diagram-static-V/README.md", "label": "diagram-static-V", "output": "diagram-static-V.html"},
+       {"path": "patterns/diagram-static-SEQ/README.md", "label": "diagram-static-SEQ", "output": "diagram-static-SEQ.html"},
+       {"path": "patterns/diagram-static-FLOW/README.md", "label": "diagram-static-FLOW", "output": "diagram-static-FLOW.html"},
+       {"path": "patterns/diagram-interactive-spine/README.md", "label": "diagram-interactive-spine", "output": "diagram-interactive-spine.html"},
+       {"path": "patterns/diagram-interactive-radial/README.md", "label": "diagram-interactive-radial", "output": "diagram-interactive-radial.html"},
+       {"path": "patterns/_diagram-shared/README.md", "label": "shared diagram support", "output": "diagram-shared.html"},
+       {"path": "patterns/output-artifact/README.md", "label": "output-artifact", "output": "output-artifact.html"},
+       {"path": "patterns/output-artifact/hard-fail-checklist.md", "label": "output-artifact hard-fail checklist", "output": "output-artifact-hard-fail-checklist.html"},
+       {"path": "patterns/message-archive/README.md", "label": "message-archive", "output": "message-archive.html"},
+       {"path": "patterns/message-archive/hard-fail-checklist.md", "label": "message-archive hard-fail checklist", "output": "message-archive-hard-fail-checklist.html"}
+     ]}
+  ],
+  "records": [
+    {"path": "tests/README.md", "label": "tests README", "output": "tests-README.html"},
+    {"path": "tools/read/README.md", "label": "site build README", "output": "site-build-README.html"}
+  ],
+  "redirects": [],
+  "held": [
+    {"path": "AGENTS.md", "reason": "the repository's workflow rules for executors, not reading material for this site"},
+    {"path": "CLAUDE.md", "reason": "a runtime adapter that imports AGENTS.md"},
+    {"path": "SKILL.md", "reason": "an agent skill manifest whose front matter stands where a document's title would"}
+  ],
+  "passages": {
+    "README.md": [
+      {"starts": "Minimal design foundations for the ASK", "role": "callout"}
+    ],
+    "spectral-state.md": [
+      {"starts": "Status:", "role": "callout"}
+    ],
+    "evidence-state.md": [
+      {"starts": "Status:", "role": "callout"}
+    ],
+    "review-semantics.md": [
+      {"starts": "Status:", "role": "callout"}
+    ],
+    "three-functions.md": [
+      {"starts": "Status:", "role": "callout"}
+    ],
+    "patterns/diagram-static-FLOW/README.md": [
+      {"starts": "Provenance.", "role": "callout"}
+    ],
+    "patterns/diagram-static-SEQ/README.md": [
+      {"starts": "Provenance.", "role": "callout"}
+    ],
+    "patterns/diagram-static-V/README.md": [
+      {"starts": "diagram-static-V is the static vertical pattern.", "role": "callout"}
+    ],
+    "patterns/surface-shell/README.md": [
+      {"starts": "This supersedes an earlier rule.", "role": "callout"},
+      {"starts": "data-nav-root-* is legacy runtime compatibility", "role": "callout"}
+    ]
+  },
+  "blocks": {},
+  "source_views": [],
+  "carriers": {
+    "owner": "apexSolarKiss/design-system-ASK",
+    "pin": "same-repo",
+    "vendored": [],
+    "reused": []
+  }
+}
