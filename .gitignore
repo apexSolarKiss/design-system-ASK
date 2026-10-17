@@ -12,3 +12,6 @@
 # Temp / OS
 *.log
 Thumbs.db
+
+# site build output (tools/read/vercel-build.sh)
+/_site/

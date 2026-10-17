@@ -128,6 +128,15 @@
       <span class="name surface-panel-title">pattern previews</span>
       <span class="what surface-panel-support">Owner-facing gallery of diagram patterns, Class B artifact templates, the surface-shell page pattern, and the semantic foundations.</span>
     </a>
+    <!-- Build-only: the documents route exists only in the built site, so a
+         clone keeps it inert inside <template data-read-build>, and the site
+         build (tools/read/) removes the template tags so it renders. -->
+    <template data-read-build>
+    <a class="route surface-panel" href="read/index.html">
+      <span class="name surface-panel-title">documents</span>
+      <span class="what surface-panel-support">The README, the consumer registry, the semantic primitives and the pattern contracts, rendered from this repository. Each page links GitHub and its raw file.</span>
+    </a>
+    </template>
     <a class="route surface-panel" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">
       <span class="name surface-panel-title">repository</span>
       <span class="what surface-panel-support">github.com/apexSolarKiss/design-system-ASK</span>
