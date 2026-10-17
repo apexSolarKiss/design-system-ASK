@@ -1,6 +1,6 @@
 # tools/read
 
-`read_gen.py` builds the site. The site is the repository root: it copies the repository as authored, except `vercel.json`, `_site/` and hidden files and directories, and adds the pages it generates under `read/`: one reading page per declared document, pattern contract and record, and a documents index.
+`read_gen.py` builds the site. The site is the repository root: it copies the repository as authored, except `vercel.json`, `_site/`, hidden files, and hidden and symlinked directories, and adds the pages it generates under `read/`: one reading page per declared document, pattern contract and record, and a documents index.
 
 The site root keeps the authored `index.html`, which `declared.json` names as the home page, and every generated page's breadcrumb links it.
 
@@ -12,7 +12,7 @@ GitHub stays the source of record. Every reading page links its file on GitHub a
 
 ## Provenance
 
-`read_gen.py`, `vercel-build.sh` and `requirements.txt` are adapted from [`apexSolarKiss/method-ASK`](https://github.com/apexSolarKiss/method-ASK) at `5e3a332164b2973d9eea2337ddeed825ae56ad4d` (`tools/read/`). The renderer, the gates and the page markup are method-ASK's. What differed by repository is declared in `declared.json` instead of written into the code: the repository's name and index copy, the stylesheet, script and wordmark paths, the site directory, the home page, the front doors, the document collections and their output names, and default holds. Three behaviours were added: a link to a directory inside the site with no `index.html` of its own, or to a Markdown file in the site that is not rendered, opens on GitHub rather than as a raw file or a missing listing; hidden files are not copied into the site; and a word too long for its line breaks rather than widen the page at narrow widths. `requirements.txt` is method-ASK's, unchanged.
+`read_gen.py`, `vercel-build.sh` and `requirements.txt` are adapted from [`apexSolarKiss/method-ASK`](https://github.com/apexSolarKiss/method-ASK) at `5e3a332164b2973d9eea2337ddeed825ae56ad4d` (`tools/read/`). The renderer, the gates and the page markup are method-ASK's. What differed by repository is declared in `declared.json` instead of written into the code: the repository's name and index copy, the stylesheet, script and wordmark paths, the site directory, the home page, the front doors, the document collections and their output names, default holds, and directory exclusions (`site_exclude` entries ending in `/`), inside which the build's output and report may land. Five behaviors were added: a link to a directory inside the site with no `index.html` of its own, to a Markdown file in the site that is not rendered, or to a hidden file opens on GitHub rather than as a raw file, a missing listing or a file the site does not serve; hidden files are not copied into the site; an authored home page is link-checked like a generated one; a word too long for its line breaks rather than widen the page at narrow widths; and the build's output may sit inside the site only within a directory the declaration excludes, matched case-exactly even before that directory exists, where method-ASK's refused any output inside the site. `requirements.txt` is method-ASK's, unchanged. The same `read_gen.py` runs on every PRG-023 site, so it reads declaration keys a site may not use — `home_page`, `held_under`, `collections` or a repository-root `site` — and a key absent from `declared.json` has no effect.
 
 ## The front doors
 
@@ -31,7 +31,7 @@ Apart from the mapped `href` values and those template tags, each composed copy 
 2. installs the exact renderer pin into a temporary virtual environment, by hash, from wheels only;
 3. runs `read_gen.py build --out _site` at the repository root.
 
-A failed gate fails the build, so a broken document is never deployed. `vercel.json` also carries the site's headers, redirects and rewrites; the build changes none of them, and `/styleguide/` and `/patterns/` resolve as before.
+A failed gate fails the build, so a broken document is never deployed. `vercel.json` also carries the site's headers, redirects and rewrites; the build changes none of them, and `/styleguide/` and `/patterns/` resolve as before. It also redirects `/read` to `/read/`, so the documents index, served from a directory, keeps its relative links.
 
 ## Setup
 
@@ -54,7 +54,7 @@ From the repository root:
 <venv>/bin/python tools/read/read_gen.py links --site _site
 ```
 
-- **build** writes the composed site to `--out`. That directory must not exist yet, or must be empty. It may not be the repository, sit inside the repository or `.git` (except `_site/`, which the declaration excludes from the site), or contain the repository. These are judged by where `--out` physically lands: every symlink in the path, and any `..` after one, is followed first, and when the check fails nothing is staged. Serve `_site/` and open `/read/index.html` to read the result. `--report <file>` writes the pages, link classes, headings and the front-door mapping after a successful build. It may not land inside the repository or `.git`, and it may not be `--out`, lie inside it or contain it, judged the same way. That holds whether `--out` exists yet or not: when it does not, the build creates its missing directories for the comparison, so the volume itself decides which spellings name the same directory, and removes them again before anything is staged.
+- **build** writes the composed site to `--out`. That directory must not exist yet, or must be empty. It may not be the repository, sit inside the repository or `.git` (except `_site/`, which the declaration excludes from the site), or contain the repository. These are judged by where `--out` physically lands: every symlink in the path, and any `..` after one, is followed first, and when the check fails nothing is staged. Serve `_site/` and open `/read/index.html` to read the result. `--report <file>` writes the pages, link classes, headings and the front-door mapping after a successful build. It may not land inside the repository or `.git` (except `_site/`, which the declaration excludes from the site), and it may not be `--out`, lie inside it or contain it, judged the same way. That holds whether `--out` exists yet or not: when it does not, the build creates its missing directories for the comparison, so the volume itself decides which spellings name the same directory, and removes them again before anything is staged.
 - **check** runs the same build into a temporary directory, prints the digest and removes the directory.
 - **links** runs the link check alone over a composed site.
 
@@ -101,16 +101,16 @@ Only then does the staging tree become `--out`.
 
 `declared.json` lists:
 
-- `identity` — the repository's name in the breadcrumb and page titles, the documents index's copy, and the front link the pages' footers and navigation name (the pattern previews);
-- `chrome` — the stylesheets and scripts every generated page loads, in order, and the wordmark pair: the owner files themselves, at their own paths;
-- `documents`, the `patterns` collection and `records` — what is rendered: the README, `CONSUMERS.md`, the four semantic primitives, each pattern's contract and hard-fail checklist, and the tests README. A pattern's page sits under `read/patterns/`, under the output name its entry declares;
+- `identity` // the repository's name in the breadcrumb and page titles, the documents index's copy, and the front link the pages' footers and navigation name (the pattern previews);
+- `chrome` // the stylesheets and scripts every generated page loads, in order, and the wordmark pair: the owner files themselves, at their own paths;
+- `documents`, the `patterns` collection and `records` — what is rendered: the README, `CONSUMERS.md`, the four semantic primitives, each pattern's contract and hard-fail checklist, the tests README, and this build's own README. A pattern's page sits under `read/patterns/`, under the output name its entry declares;
 - `redirects` and `held` — what is not rendered, each with its target or reason;
-- `source_views` — empty: no front door links a source file;
-- `site_exclude` — what the repository root holds that is not site: `vercel.json`, and `_site/`, where the build writes;
-- `front_doors` — the authored pages the build composes: `index.html` and `patterns/index.html`;
-- `home_page` — the authored `index.html`, which the build serves as the home page;
-- `passages` — the role of each blockquote: the README's foundation statement and each status or provenance note are callouts;
-- `blocks` — the shape of each structured preformatted block.
+- `source_views` // empty: no front door links a source file;
+- `site_exclude` // what the repository root holds that is not site: `vercel.json`, and `_site/`, where the build writes;
+- `front_doors` // the authored pages the build composes: `index.html` and `patterns/index.html`;
+- `home_page` // the authored `index.html`, which the build serves as the home page;
+- `passages` // the role of each blockquote: the README's foundation statement and each status or provenance note are callouts;
+- `blocks` // the shape of each structured preformatted block.
 
 **Passages.** A blockquote carries no signal of whose words it holds, so each one is declared by the words it starts with, which must start exactly one blockquote in its document:
 
@@ -123,8 +123,8 @@ Only then does the staging tree become `--out`.
 
 **Blocks.** Every fenced block is a plain `.doc-pre`, its text as written, unless `blocks` declares it a grouped diagram. Such a block is declared by the start of its first line, which must start exactly one block in its document, and by its shape:
 
-- **`groups-rail`** — peer groups between blank lines. The unindented lines open each group, and the indented lines beneath them sit one hierarchy rail in, with their shared indentation removed. Any further indentation stays as written.
-- **`groups-aligned`** — peer groups between blank lines, each opening on its first line. The lines after it keep every space, because their indentation aligns columns rather than marking a level.
+- **`groups-rail`** // peer groups between blank lines. The unindented lines open each group, and the indented lines beneath them sit one hierarchy rail in, with their shared indentation removed. Any further indentation stays as written.
+- **`groups-aligned`** // peer groups between blank lines, each opening on its first line. The lines after it keep every space, because their indentation aligns columns rather than marking a level.
 
 Successive groups sit one line apart. A shape is never inferred from blank lines or capitals: an undeclared block stays plain.
 
@@ -137,6 +137,7 @@ Successive groups sit one line apart. A shape is never inferred from blank lines
 | a Markdown file in the site that is not rendered | the file on GitHub at `main`; its raw route stays served |
 | another file in the site (a figure, a raster, a source file) | a relative link to that file |
 | a directory in the site with no `index.html` | the directory on GitHub at `main` |
+| a hidden file, or a file the declaration excludes from the site | the file on GitHub at `main` |
 | a repository file or directory outside the site that is not rendered | the file or directory on GitHub at `main` |
 | an external URL | unchanged |
 
@@ -144,4 +145,4 @@ Emitted paths are percent-encoded. Heading ids follow GitHub's slugs. Headings m
 
 ## Carriers
 
-The reading pages load the owner's own files by same-repo reference — `colors_and_type.css`, `surface-panel.css`, `surface-action.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css`, `surface-document-overflow.js`, `patterns/surface-shell/` and the wordmark pair under `assets/` — so there is no vendored copy, no pin and no declared hash: `carriers` is empty. An owner change reaches the pages at the next deployment.
+The reading pages load the owner's own files by same-repo reference — `colors_and_type.css`, `surface-panel.css`, `surface-action.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css`, `surface-document-overflow.js`, `patterns/surface-shell/` and the wordmark pair under `assets/` — so there is no vendored copy, no pin and no declared hash: `carriers` declares no vendored or reused file. An owner change reaches the pages at the next deployment.

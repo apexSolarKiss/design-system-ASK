@@ -64,16 +64,16 @@
       {"starts": "Minimal design foundations for the ASK", "role": "callout"}
     ],
     "spectral-state.md": [
-      {"starts": "Status: v1.1", "role": "callout"}
+      {"starts": "Status:", "role": "callout"}
     ],
     "evidence-state.md": [
-      {"starts": "Status: v0.1", "role": "callout"}
+      {"starts": "Status:", "role": "callout"}
     ],
     "review-semantics.md": [
-      {"starts": "Status: v0.1", "role": "callout"}
+      {"starts": "Status:", "role": "callout"}
     ],
     "three-functions.md": [
-      {"starts": "Status: v0.2", "role": "callout"}
+      {"starts": "Status:", "role": "callout"}
     ],
     "patterns/diagram-static-FLOW/README.md": [
       {"starts": "Provenance.", "role": "callout"}
