@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // public surfaces</title>
-<meta name="description" content="design-system-ASK. Minimal design foundations for the ASK visual identity. Style guide and pattern previews.">
+<meta name="description" content="design-system-ASK. Minimal design foundations for the ASK visual identity. Style guide, pattern previews and documents.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -13,8 +13,8 @@
      PUBLIC NAVIGATION SHELL — design-system-ASK/index.html
      Navigation only. This is not a documentation surface: README.md
      remains the repo's prose, preview/styleguide.html the canonical
-     token-review surface, and patterns/index.html the owner pattern
-     gallery. Do not grow this file into a third description of the
+     token-review surface, patterns/index.html the owner pattern
+     gallery, and read/ (built site only) the rendered documents. Do not grow this file into a third description of the
      design system.
      The page chrome is the canonical surface-shell pattern, consumed by
      same-repo reference from patterns/surface-shell/ — not a local copy.
@@ -25,8 +25,10 @@
      script (that control is the style guide's alone). Interaction
      follows the README's hover/press/focus contract. Links are relative
      so this shell works from the public deployment and by double-click
-     from a clean clone; the clean routes (/styleguide/, /patterns/) are
-     supplied by vercel.json for external linking.
+     from a clean clone; the clean routes (/styleguide/, /patterns/, /read/)
+     are supplied by vercel.json for external linking. The documents exist only
+     in the built site, so each of their three entrances (panel, footer and
+     navigation panel) sits in a build-only <template data-read-build>.
      ============================================================ -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-panel.css">
@@ -150,12 +152,15 @@
 
   </main>
 
-  <!-- Terminal destinations, as compact actions. They remain anchors: two of
-       these leave the surface and one leaves the origin entirely, and a button
+  <!-- Terminal destinations, as compact actions. They remain anchors: the local
+       ones leave the surface and one leaves the origin entirely, and a button
        would keep the look while losing the destination. -->
   <footer class="surface-footer">
     <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
     <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
+    <template data-read-build>
+    <a class="surface-action surface-action--secondary" href="read/index.html">documents</a>
+    </template>
     <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
   </footer>
 
@@ -175,6 +180,9 @@
         <ul>
           <li><a href="preview/styleguide.html">style guide</a></li>
           <li><a href="patterns/index.html">pattern previews</a></li>
+          <template data-read-build>
+          <li><a href="read/index.html">documents</a></li>
+          </template>
         </ul>
       </li>
     </ul>

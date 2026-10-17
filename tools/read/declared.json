@@ -20,7 +20,7 @@
     "logo_light": "assets/logo-ASK-white.png",
     "logo_dark": "assets/logo-ASK-lavender-ASK.png"
   },
-  "front_doors": ["index.html", "patterns/index.html"],
+  "front_doors": ["index.html", "patterns/index.html", "preview/styleguide.html"],
   "home_page": "index.html",
   "site_exclude": ["vercel.json", "_site/"],
   "documents": [
