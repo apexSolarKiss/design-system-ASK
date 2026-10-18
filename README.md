@@ -127,6 +127,12 @@ On a live UI surface, the mark goes on the gradient. The fixed `#D4C6E1` lavende
 
 `logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so one vector file can be used for both mode pairings when its container sets the correct wordmark color. The two PNGs are raster pairings/fallbacks.
 
+### Social previews // one shared card
+
+ASK's project front doors and practice gateways use one shared social-preview image. The ASK site's `og-image.png` is the source asset; each site serves a byte-identical copy from its own origin. Matching the visual treatment alone is not sufficient. Project-specific images, added project labels, recoloring and alternate compositions are not used. The common-image direction changes only on explicit ASK instruction.
+
+Titles, descriptions, site names and canonical URLs remain specific to each page. This requirement covers the ASK, method-ASK, control-surface, design-system-ASK, asset-pipeline-ASK and urban-observatory front doors, their document and diagram entry indexes where present, the design-system style-guide and pattern-gallery entrances, and ASK's practice gateways. It does not replace content-specific images on child pages outside that scope, assign ASK branding to another consumer, or make the card an automatic consequence of consuming Tier 1 + Tier 2.
+
 ### Browser icons // compact square exported assets
 
 The prohibition above is about **UI surfaces**. The **browser icon** is not one: like the standalone exported deliverable, it is a fixed asset, and it carries the wordmark on the flat `#D4C6E1` field by design — fitted to a square. It is the *compact square application of the exported-asset treatment*, not a third wordmark treatment and not a new logo.
