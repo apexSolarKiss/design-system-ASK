@@ -20,6 +20,9 @@
     "logo_light": "assets/logo-ASK-white.png",
     "logo_dark": "assets/logo-ASK-lavender-ASK.png"
   },
+  "link_preview": {"origin": "https://design-system.a-s-k.studio", "site_name": "design-system-ASK",
+                   "image": "og-image.png", "image_alt": "ASK wordmark on lavender background",
+                   "addresses": {"preview/styleguide.html": "styleguide/"}},
   "front_doors": ["index.html", "patterns/index.html", "preview/styleguide.html"],
   "home_page": "index.html",
   "site_exclude": ["vercel.json", "_site/"],
