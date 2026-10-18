@@ -123,11 +123,11 @@ Advisor, executor, and generator conduct is governed by `AGENTS.md` §Accessibil
 - **Light mode** // `#FFFFFF` wordmark on the light gradient (the wordmark's brand pairing — **not** the `#6A637F` light-mode text).
 - **Dark mode** // `#D4C6E1` (lavender-ASK) wordmark on the dark gradient (here it coincides with the `#D4C6E1` dark-mode text).
 
-In any UI surface — page, card, preview, component — the mark goes on the gradient. The fixed `#D4C6E1` lavender-ASK field is **only** for the standalone exported asset (the JPG/vector deliverable). It is not a UI background. Do not place the wordmark on a flat lavender-ASK block anywhere in the system.
+On a live UI surface, the mark goes on the gradient. The fixed `#D4C6E1` lavender-ASK field belongs to standalone exported assets, including social-preview images, and to the browser-icon application below. It is baked into the asset, not used as a live UI background. Do not place the wordmark on a flat lavender-ASK UI block.
 
 `logo-ASK.svg` is the primary reference: it paints with `fill: currentColor`, so one vector file can be used for both mode pairings when its container sets the correct wordmark color. The two PNGs are raster pairings/fallbacks.
 
-### Browser icons // the one other exported-asset instance
+### Browser icons // compact square exported assets
 
 The prohibition above is about **UI surfaces**. The **browser icon** is not one: like the standalone exported deliverable, it is a fixed asset, and it carries the wordmark on the flat `#D4C6E1` field by design — fitted to a square. It is the *compact square application of the exported-asset treatment*, not a third wordmark treatment and not a new logo.
 
