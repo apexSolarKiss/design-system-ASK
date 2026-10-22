@@ -7,7 +7,10 @@
    The engine, glyph carrier and source are classic scripts; they are loaded here as a page loads them,
    into one global, so the code tested is the code shipped.
 
-   P  probes: every specimen spec validates, and its derived structure is the one the page describes
+   P  probes: every specimen spec validates, and its derived structure is the one the page describes.
+      P6 holds every shipped perimeter cycle to one clockwise slot per step, listed in reading order,
+      and P7 holds R-S-P to rock, paper, scissors' own winners: reversing a cycle keeps every degree
+      count and symmetry order, so the degree and symmetry checks, P2 and P3, cannot catch it (X12 to X14)
    V  validation: every malformed spec or option checked here is a named error, and validate() never
       throws. V1 and V2 guard exact membership: a relation type or an endpoint that names a property
       every object inherits (constructor, toString, __proto__ …) is unknown, never one that exists. V7
@@ -26,7 +29,8 @@
       same bytes twice
    E  the specimen's game reading (example content, not the contract): the dominance and equilibria
       its prose states
-   X  negative controls: each check fails for its intended reason on a mutated copy */
+   X  negative controls: each check fails for its intended reason on a mutated copy of the engine,
+      the exporter or a relation source */
 import vm from 'node:vm';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -87,13 +91,23 @@ for (const id of ['triangle.A-S-K', 'triangle.template', 'triangle.R-P-S'])
   check(`P2 ${id}: each node one out, one in; threefold`, shape(byId[id]) === '1100 1100 1100' && P.symmetry(byId[id]).order === 3, shape(byId[id]));
 for (const id of ['square.L-E-O-V', 'square.template'])
   check(`P3 ${id}: each node one out, one in, one neutral; fourfold`, shape(byId[id]) === '1110 1110 1110 1110' && P.symmetry(byId[id]).order === 4, shape(byId[id]));
-check('P4 the original square: L and E beat two, O and V one; no symmetry',
-  shape(byId['square.L-E-O-V.original']) === '2100 2100 1200 1200' && P.symmetry(byId['square.L-E-O-V.original']).order === 1);
-check('P5 the neutral-opposites square keeps the original perimeter', ['l>v', 'v>o', 'o>e', 'e>l'].every((p) => {
+check('P4 the all-directed square: O and V beat two, L and E one; no symmetry',
+  shape(byId['square.L-E-O-V.original']) === '1200 1200 2100 2100' && P.symmetry(byId['square.L-E-O-V.original']).order === 1);
+check('P5 the neutral-opposites square and the all-directed square share the clockwise perimeter', ['l>e', 'e>o', 'o>v', 'v>l'].every((p) => {
   const [a, b] = p.split('>');
   return byId['square.L-E-O-V'].relations.some((r) => r.from === a && r.to === b && r.type === 'directed')
     && byId['square.L-E-O-V.original'].relations.some((r) => r.from === a && r.to === b && r.type === 'directed');
 }));
+/* the perimeter cycle, listed first: relation k runs from slot k to slot k + 1, one clockwise step */
+const clockwise = (s) => { const n = s.nodes.length, at = (k) => s.nodes[k % n].id;
+  return s.relations.length >= n && s.relations.slice(0, n).every((r, k) => r.type === 'directed' && r.from === at(k) && r.to === at(k + 1)); };
+const firstCycle = (s) => s.relations.slice(0, s.nodes.length).map((r) => `${r.from}>${r.to}`).join(' ');
+for (const s of SPECS) check(`P6 ${s.id}: its perimeter cycle steps one slot clockwise, listed in reading order`, clockwise(s), firstCycle(s));
+/* R at the top, then S and P clockwise, and the game's own winners by label */
+const rps = (s) => { const lab = Object.fromEntries(s.nodes.map((n) => [n.id, n.label]));
+  return `${s.nodes.map((n) => n.label).join('')} ${s.relations.filter((r) => r.type === 'directed').map((r) => `${lab[r.from]}>${lab[r.to]}`).sort().join(' ')}`; };
+check('P7 R-S-P: R at the top, then S and P clockwise; rock beats scissors, scissors beats paper, paper beats rock',
+  rps(byId['triangle.R-P-S']) === 'RSP P>R R>S S>P', rps(byId['triangle.R-P-S']));
 
 // ------------------------------------------------------------------ V validation
 
@@ -223,7 +237,7 @@ const pageWith = (...htmls) => {
   const host = () => ({ nodeType: 1, ownerDocument: doc, set innerHTML(v) { ids.push(...idsIn(v)); }, querySelector: () => ({}) });
   return { ids, host };
 };
-check('R1 relabeling moves no connector: A-S-K, R-P-S and the triangle template draw the same lines',
+check('R1 relabeling moves no connector: A-S-K, R-S-P and the triangle template draw the same lines',
   geometry(svgOf(byId['triangle.A-S-K'])) === geometry(svgOf(byId['triangle.R-P-S'])) && geometry(svgOf(byId['triangle.A-S-K'])) === geometry(svgOf(byId['triangle.template'])));
 {
   const relabeled = clone(byId['square.L-E-O-V']); relabeled.nodes.forEach((n, i) => { n.label = 'WXYZ'[i]; });
@@ -279,7 +293,8 @@ check('R4 rendering is deterministic', SPECS.every((s) => svgOf(s, { keyed: true
   check('R12 a page plate takes only the foundation roles', vars === '--bg-from,--bg-to,--fg-1,--font-sans,--fw-extralight,--fw-regular' && !/#[0-9A-Fa-f]{3,6}\b/.test(inherit), vars);
   const fixed = svgOf(base, { theme: { name: 'light', fieldFrom: '#D4C6E1', fieldTo: '#E2D3F0', ink: '#6A637F', fontFamily: 'Inter', labelWeight: 200, keyWeight: 400 } });
   check('R13 a standalone plate carries resolved values and no var()', !/var\(/.test(fixed) && /stop-color="#D4C6E1"/.test(fixed) && /fill:#6A637F/.test(fixed));
-  check('R14 the description is derived from the relations', /<desc>Three equal nodes \(A, S, K\)\. A beats K; K beats S; S beats A\.<\/desc>/.test(inherit));
+  check('R14 the description is derived from the relations, in their listed order', /<desc>Three equal nodes \(A, S, K\)\. A beats S; S beats K; K beats A\.<\/desc>/.test(inherit)
+    && P.describe(byId['square.L-E-O-V.original']) === 'Four equal nodes (L, E, O, V). L beats E; E beats O; O beats V; V beats L; O beats L; V beats E.');
 }
 
 // ------------------------------------------------------------------ F fonts, tokens and export
@@ -323,7 +338,7 @@ const { readThemes } = await import(pathToFileURL(path.join(DIR, 'export-peer.mj
   check('F11 the dark rule is found anywhere in its selector list, and its last declaration needs no semicolon',
     t2.dark.fieldFrom === '#aaa' && t2.dark.ink === '#ccc' && t2.light.ink === '#333' && t2.dark.labelWeight === 200);
 }
-/* a relation source of two specs with different content: A-S-K renamed Triad.ASK, and R-P-S as `second` */
+/* a relation source of two specs with different content: A-S-K renamed Triad.ASK, and R-S-P as `second` */
 const casePair = (second) => `module.exports = ${JSON.stringify([{ ...byId['triangle.A-S-K'], id: 'Triad.ASK' }, { ...byId['triangle.R-P-S'], id: second }])};`;
 {
   const run = (args) => spawnSync(process.execPath, args, { encoding: 'utf8', timeout: 60000 });
@@ -384,14 +399,14 @@ const dominated = (M) => {
 };
 {
   const O = P.matrix(byId['square.L-E-O-V.original']), N = P.matrix(byId['square.L-E-O-V']);
-  check('E1 in the original square L weakly dominates V, and nothing else is dominated', dominated(O).join() === '3<0', dominated(O).join());
-  check('E2 against an opponent who always plays O, V wins just as L does', O[3][2] === 1 && O[0][2] === 1);
+  check('E1 in the all-directed square V weakly dominates L, and nothing else is dominated', dominated(O).join() === '0<3', dominated(O).join());
+  check('E2 against an opponent who always plays E, L wins just as V does', O[0][1] === 1 && O[3][1] === 1);
   const third = F(1n, 3n);
-  check('E3 the original square: L, E and O equally, V never, is an equilibrium', isEquilibrium(O, [third, third, third, F(0n)]));
+  check('E3 the all-directed square: E, O and V equally, L never, is an equilibrium', isEquilibrium(O, [F(0n), third, third, third]));
   check('E4 the neutral-opposites square: nothing is dominated', dominated(N).length === 0);
   check('E5 the neutral-opposites square: (a, 1/2 - a, a, 1/2 - a) is an equilibrium for a = 0, 1/8, 1/4, 3/8, 1/2',
     [0n, 1n, 2n, 3n, 4n].every((k) => { const a = F(k, 8n), b = add(F(1n, 2n), F(-k, 8n)); return isEquilibrium(N, [a, b, a, b]); }));
-  check('E6 control: the uniform mix is not an equilibrium of the original square', !isEquilibrium(O, [F(1n, 4n), F(1n, 4n), F(1n, 4n), F(1n, 4n)]));
+  check('E6 control: the uniform mix is not an equilibrium of the all-directed square', !isEquilibrium(O, [F(1n, 4n), F(1n, 4n), F(1n, 4n), F(1n, 4n)]));
 }
 
 // ------------------------------------------------------------------ X negative controls
@@ -429,6 +444,25 @@ const dominated = (M) => {
     shallow.validate(base, nanDx).ok && /x="NaN"/.test(shallow.render(base, { glyphs: nanDx })) && !P.validate(base, nanDx).ok);
   const unscoped = mutate("var s = '#' + id + ' ';", "var s = '';");
   check('X6 R7 bites: unscoped rules are detected', !unscoped.render(base, { glyphs: G, idPrefix: 'peer-1' }).match(/<style>([\s\S]*?)<\/style>/)[1].split('}').filter(Boolean).every((r) => r.startsWith('#peer-1 ')));
+}
+{
+  /* each regular spec with every relation reversed: the counterclockwise cycle P6 exists to catch */
+  const reversed = (s) => ({ ...clone(s), relations: s.relations.map((r) => ({ ...r, from: r.to, to: r.from })) });
+  const regular = { 'triangle.A-S-K': ['1100 1100 1100', 3], 'triangle.template': ['1100 1100 1100', 3], 'triangle.R-P-S': ['1100 1100 1100', 3],
+    'square.L-E-O-V': ['1110 1110 1110 1110', 4], 'square.template': ['1110 1110 1110 1110', 4] };
+  const kept = Object.entries(regular).every(([id, [sh, order]]) => shape(reversed(byId[id])) === sh && P.symmetry(reversed(byId[id])).order === order);
+  check('X12 P6 bites: reversed, every regular spec keeps the degree counts and symmetry P2 and P3 check, and fails P6',
+    kept && Object.keys(regular).every((id) => !clockwise(reversed(byId[id]))));
+  /* R-P-S left in its former places with its arrows turned clockwise: rock now beats paper */
+  const turned = { ...clone(byId['triangle.R-P-S']), nodes: ['r', 'p', 's'].map((id) => ({ id, label: id.toUpperCase() })),
+    relations: [['r', 'p'], ['p', 's'], ['s', 'r']].map(([from, to]) => ({ from, to, type: 'directed' })) };
+  check('X13 P7 bites: R-P-S left in place with its arrows turned clockwise passes P2 and P6, and fails P7',
+    shape(turned) === '1100 1100 1100' && P.symmetry(turned).order === 3 && clockwise(turned) && rps(turned) !== 'RSP P>R R>S S>P', rps(turned));
+  /* R, S and P in their places with the game's winners reversed: P7's node order holds, its winners do not */
+  const losers = { ...clone(byId['triangle.R-P-S']), nodes: ['r', 's', 'p'].map((id) => ({ id, label: id.toUpperCase() })),
+    relations: [['r', 'p'], ['p', 's'], ['s', 'r']].map(([from, to]) => ({ from, to, type: 'directed' })) };
+  check('X14 P7 bites on its winners alone: R, S, P in place with rock beating paper keeps the node order and fails P7',
+    P.validate(losers, G).ok && rps(losers).startsWith('RSP ') && rps(losers) !== 'RSP P>R R>S S>P', rps(losers));
 }
 {
   /* the exporter without its letter-case check, run beside copies of the carriers it loads */

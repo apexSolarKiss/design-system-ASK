@@ -7,8 +7,10 @@
    Replacing a label moves nothing; the geometry belongs to the preset.
 
    A-S-K and L-E-O-V are ASK's instances, read as a game (directed: beats; neutral: ties). The templates
-   carry numbered slots and no reading. The original square and R-P-S are the specimen's comparison and
-   relabeling examples. */
+   carry numbered slots and no reading. The all-directed square and R-S-P are the specimen's comparison
+   and relabeling examples. Every directed cycle here runs clockwise, the order the labels read, and its
+   relations are listed in that order: a convention of these sources, not a rule of the engine, which
+   draws whichever direction a spec declares. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.PEER_DIAGRAMS = factory();
@@ -23,43 +25,43 @@
 
     {
       id: 'triangle.A-S-K', preset: 'triangle', role: 'instance',
-      title: 'A-S-K // A beats K, K beats S, S beats A',
+      title: 'A-S-K // A beats S, S beats K, K beats A',
       nodes: [{ id: 'a', label: 'A' }, { id: 's', label: 'S' }, { id: 'k', label: 'K' }],
       relations: [
-        { from: 'a', to: 'k', type: 'directed' },
-        { from: 'k', to: 's', type: 'directed' },
-        { from: 's', to: 'a', type: 'directed' },
+        { from: 'a', to: 's', type: 'directed' },
+        { from: 's', to: 'k', type: 'directed' },
+        { from: 'k', to: 'a', type: 'directed' },
       ],
       meaning: GAME,
     },
     {
       id: 'square.L-E-O-V', preset: 'square', role: 'instance',
-      title: 'L-E-O-V // L beats V, V beats O, O beats E, E beats L; opposites tie',
+      title: 'L-E-O-V // L beats E, E beats O, O beats V, V beats L; opposites tie',
       nodes: [{ id: 'l', label: 'L' }, { id: 'e', label: 'E' }, { id: 'o', label: 'O' }, { id: 'v', label: 'V' }],
       relations: [
-        { from: 'l', to: 'v', type: 'directed' },
-        { from: 'v', to: 'o', type: 'directed' },
-        { from: 'o', to: 'e', type: 'directed' },
-        { from: 'e', to: 'l', type: 'directed' },
+        { from: 'l', to: 'e', type: 'directed' },
+        { from: 'e', to: 'o', type: 'directed' },
+        { from: 'o', to: 'v', type: 'directed' },
+        { from: 'v', to: 'l', type: 'directed' },
         { from: 'l', to: 'o', type: 'neutral' },
         { from: 'e', to: 'v', type: 'neutral' },
       ],
       meaning: GAME,
     },
 
-    // ---- comparison: the original square, with decisive diagonals
+    // ---- comparison: the all-directed square, with decisive diagonals
 
     {
       id: 'square.L-E-O-V.original', preset: 'square', role: 'comparison',
-      title: 'L-E-O-V, the original square // decisive diagonals: L beats O, E beats V',
+      title: 'L-E-O-V, the all-directed square // decisive diagonals: O beats L, V beats E',
       nodes: [{ id: 'l', label: 'L' }, { id: 'e', label: 'E' }, { id: 'o', label: 'O' }, { id: 'v', label: 'V' }],
       relations: [
-        { from: 'l', to: 'v', type: 'directed' },
-        { from: 'v', to: 'o', type: 'directed' },
-        { from: 'o', to: 'e', type: 'directed' },
-        { from: 'e', to: 'l', type: 'directed' },
-        { from: 'l', to: 'o', type: 'directed' },
-        { from: 'e', to: 'v', type: 'directed' },
+        { from: 'l', to: 'e', type: 'directed' },
+        { from: 'e', to: 'o', type: 'directed' },
+        { from: 'o', to: 'v', type: 'directed' },
+        { from: 'v', to: 'l', type: 'directed' },
+        { from: 'o', to: 'l', type: 'directed' },
+        { from: 'v', to: 'e', type: 'directed' },
       ],
       meaning: GAME,
     },
@@ -71,9 +73,9 @@
       title: 'Triangle template // three equal slots, one directed cycle',
       nodes: [{ id: 'n1', label: '1' }, { id: 'n2', label: '2' }, { id: 'n3', label: '3' }],
       relations: [
-        { from: 'n1', to: 'n3', type: 'directed' },
-        { from: 'n3', to: 'n2', type: 'directed' },
-        { from: 'n2', to: 'n1', type: 'directed' },
+        { from: 'n1', to: 'n2', type: 'directed' },
+        { from: 'n2', to: 'n3', type: 'directed' },
+        { from: 'n3', to: 'n1', type: 'directed' },
       ],
       meaning: SLOTS,
     },
@@ -82,22 +84,22 @@
       title: 'Square template // four equal slots, a directed perimeter cycle, neutral opposites',
       nodes: [{ id: 'n1', label: '1' }, { id: 'n2', label: '2' }, { id: 'n3', label: '3' }, { id: 'n4', label: '4' }],
       relations: [
-        { from: 'n1', to: 'n4', type: 'directed' },
-        { from: 'n4', to: 'n3', type: 'directed' },
-        { from: 'n3', to: 'n2', type: 'directed' },
-        { from: 'n2', to: 'n1', type: 'directed' },
+        { from: 'n1', to: 'n2', type: 'directed' },
+        { from: 'n2', to: 'n3', type: 'directed' },
+        { from: 'n3', to: 'n4', type: 'directed' },
+        { from: 'n4', to: 'n1', type: 'directed' },
         { from: 'n1', to: 'n3', type: 'neutral' },
         { from: 'n2', to: 'n4', type: 'neutral' },
       ],
       meaning: SLOTS,
     },
 
-    // ---- relabeling: the original game on the same triangle
+    // ---- relabeling: rock, paper, scissors on the same triangle, in its clockwise order R, S, P
 
     {
       id: 'triangle.R-P-S', preset: 'triangle', role: 'relabel',
-      title: 'R-P-S // rock beats scissors, scissors beats paper, paper beats rock',
-      nodes: [{ id: 'r', label: 'R' }, { id: 'p', label: 'P' }, { id: 's', label: 'S' }],
+      title: 'R-S-P // rock beats scissors, scissors beats paper, paper beats rock',
+      nodes: [{ id: 'r', label: 'R' }, { id: 's', label: 'S' }, { id: 'p', label: 'P' }],
       relations: [
         { from: 'r', to: 's', type: 'directed' },
         { from: 's', to: 'p', type: 'directed' },

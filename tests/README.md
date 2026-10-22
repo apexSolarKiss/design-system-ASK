@@ -654,7 +654,10 @@ node tests/peer-contract.test.mjs
 ```text
 P  every specimen spec validates, and its derived structure is the one the page describes:
    each triangle node one outgoing and one incoming relation, threefold; each neutral-opposites
-   node one of each and one neutral, fourfold; the original square uneven, with no symmetry
+   node one of each and one neutral, fourfold; the all-directed square uneven, with no
+   symmetry. Every shipped perimeter cycle steps one slot clockwise, the order the labels read,
+   and is listed in that order (P6), and R-S-P keeps rock, paper, scissors' own winners (P7):
+   a reversed cycle keeps every degree count and symmetry order, so P2 and P3 cannot see it
 V  every malformed spec or render option checked is its named error, and validate() never
    throws, even on a spec whose fields cannot be read (V9). V1 and V2 guard exact membership:
    a relation type or an endpoint that names a property every object inherits (constructor,
@@ -684,18 +687,22 @@ F  both font carriers match the canonical fonts/InterVariable.woff2, the embedde
    naming both and their files, while ids that differ in more than letter case keep their own
    names, case and all (F14); it runs through a symlinked path (F13), writes the same bytes
    twice, and gives every exported file ids no other file shares (F10)
-E  the specimen's game reading, which is example content and not the contract: L weakly
-   dominates V in the original square, (1/3, 1/3, 1/3, 0) is an equilibrium there, and every
-   (a, 1/2 - a, a, 1/2 - a) is one in the neutral-opposites square, in exact fractions
-X  negative controls on mutated copies of the engine and the exporter: a membership test by
-   property lookup (X1) and a plain-object id map (X2) let inherited names through, a removed
-   completeness check lets an omitted pair through (X3), a moved vertex changes the geometry
-   (X4), a different font hash fails the drift check (X5), unscoped style rules are detected
-   (X6), an engine that skips holes validates a missing node (X7), one without the XML check
-   validates a control character (X8), a mount that checks only the plate and title ids
-   repeats the field id (X9), a carrier check of shape alone validates a NaN offset and draws
-   it (X10), and an exporter without the letter-case check exits 0 on two spec ids that differ
-   only in letter case, reporting eight files whose names are four when case is ignored (X11)
+E  the specimen's game reading, which is example content and not the contract: V weakly
+   dominates L in the all-directed square, (0, 1/3, 1/3, 1/3) is an equilibrium there, and
+   every (a, 1/2 - a, a, 1/2 - a) is one in the neutral-opposites square, in exact fractions
+X  negative controls on mutated copies of the engine, the exporter and the relation sources: a
+   membership test by property lookup (X1) and a plain-object id map (X2) let inherited names
+   through, a removed completeness check lets an omitted pair through (X3), a moved vertex
+   changes the geometry (X4), a different font hash fails the drift check (X5), unscoped style
+   rules are detected (X6), an engine that skips holes validates a missing node (X7), one
+   without the XML check validates a control character (X8), a mount that checks only the plate
+   and title ids repeats the field id (X9), a carrier check of shape alone validates a NaN
+   offset and draws it (X10), an exporter without the letter-case check exits 0 on two spec ids
+   that differ only in letter case, reporting eight files whose names are four when case is
+   ignored (X11), every regular spec reversed keeps the counts and symmetry P2 and P3 check but
+   fails P6 (X12), R-P-S left in its former places with its arrows turned clockwise passes P6
+   but fails P7, since rock would then beat paper (X13), and R, S and P in place with the
+   game's winners reversed keep P7's node order but fail its winners (X14)
 ```
 
 **Determinism is within one runtime.** The engine rounds every coordinate to two decimals, so the
