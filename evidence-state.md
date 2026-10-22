@@ -29,7 +29,7 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
 
 ## Wheel logic (inherited)
 
-Evidence State draws on the same neon wheel as Spectral State. The three reused values sit on it (`earned` 120°, `partial` 30°, `held` 180°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
+Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values sit on it (`earned` 120°, `partial` 30°, `held` 180°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
 
 The Spectral State health ramp is **unchanged**:
 
@@ -45,7 +45,7 @@ Evidence State derivation
 ## Tiers
 
 - **Tier 1 (identity-free):** the `--evidence-*` role names — a stable vocabulary other ASK-family surfaces can reuse.
-- **Tier 2 (ASK design language):** the two new per-theme values (`weakened` brown, `not-yet-testable` lavender-gray); the three reused values inherit Spectral State's Tier 2 by reference.
+- **Tier 2 (ASK design language):** the two new per-theme values (`weakened` brown, `not-yet-testable` lavender-gray); the three reused values inherit [Spectral State](spectral-state.md)'s Tier 2 by reference.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it

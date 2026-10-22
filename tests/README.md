@@ -449,7 +449,7 @@ python3 -m http.server 8080
 node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
 ```
 
-**The document-register key**, `surface-document.html`, takes the same check in two parts. Its
+**The document-register key**, [`surface-document.html`](../surface-document.html), takes the same check in two parts. Its
 records-and-inspector section selects a record at load and hides the other records' views, as a
 consuming surface may. A link in a hidden view renders no box, so its states can be proven only in
 a run where its view is shown:
@@ -481,7 +481,7 @@ offered as evidence on its own, or when the checker changes.
 
 ## review-semantics-fixture.html
 
-The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, `review-semantics.md`), for rule **C13** where a review mark takes the shared bordered label, for rule **C14** where an annotation range takes the shared labeled range, a whole list item included, and for rule **C15** where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, and every passage mark `.surface-scope-underline`, except where a control omits it.
+The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, [`review-semantics.md`](../review-semantics.md)), for rule **C13** where a review mark takes the shared bordered label, for rule **C14** where an annotation range takes the shared labeled range, a whole list item included, and for rule **C15** where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, and every passage mark `.surface-scope-underline`, except where a control omits it.
 
 A conforming specimen must return no finding; it includes annotation ranges over one paragraph whose passage mark's note follows the range, over two paragraphs and over one beside them, over a quotation alone, over a callout, which keeps its own rail, over a list with the lead-in that introduces it, over a quotation with the sentence that reads it, over a synthesis panel, over a whole table, and over a heading that alone poses a question, two in one table cell of a second column, and two in a table's first column, whose box keeps the range lane; an annotation list naming its item; a decided judgment on exact words, its words under an Accepted passage mark that names the note quoting them; two whole list items in a row, each its own range, beside an item whose pending words keep their passage mark and note after the item's text, and an item whose paragraph ends on declined words, its note keeping its 12px attachment below them; and an explicit-target prompt standing just before a range over a table. Each range's row leads with its judgment, and no review row trails the block it judges. A pass reports no finding in what the checker reads, within the limits `tools/role-conformance.js` states. It does not establish that a range was opened wherever a judgment needed one, that a range holds the right blocks or that a passage mark underlines the right words: a review row left trailing a block or a list item's text passes, and so do a prompt stranded after its target, a prompt row that does not open on its review item, and a decided judgment's note that no passage mark names, so scope and placement stay with the author, a consumer's renderer tests and the reviewer. Two disclosure controls below keep a review row after a paragraph; they test disclosure behavior, not composition. After it come **114 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
 
@@ -590,7 +590,7 @@ case above.
 ## radial-contract.test.mjs
 
 Guards the **data contract, layout grammar and label solver** of the
-`diagram-interactive-radial` surface pattern, on the owner files themselves. It loads the
+[`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md) surface pattern, on the owner files themselves. It loads the
 three DOM-free modules into one global exactly as a page does, so the code tested is the code
 shipped. Scripted, not by eye:
 
@@ -642,7 +642,7 @@ coordinate that is not a finite number, and the other allocation.
 
 ## peer-contract.test.mjs
 
-Guards the **relation contract, rendering and export** of the `diagram-static-peer` pattern, on
+Guards the **relation contract, rendering and export** of the [`diagram-static-peer`](../patterns/diagram-static-peer/README.md) pattern, on
 the owner files themselves. It loads the engine, the glyph carrier and the specimen's relation
 sources into one global exactly as a page does, and runs the exporter as a consumer would.
 Scripted, not by eye:
@@ -712,7 +712,7 @@ browser: the PNG route and the rendering in Chrome are checked outside it.
 
 ## radial-fixture.html + radial-behavior.mjs
 
-The **browser behavior harness** of `diagram-interactive-radial`. `radial-behavior.mjs` serves
+The **browser behavior harness** of [`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md). `radial-behavior.mjs` serves
 this repository read-only on 127.0.0.1, opens `radial-fixture.html` (three hosts, the owner files
 and the specimen generator; no consumer code and no stub) in headless Chrome, and drives it
 with real mouse, wheel, touch and key input over the DevTools Protocol. Two per-shape sweeps
@@ -759,7 +759,7 @@ says nothing about legibility; these numbers are what the overview actually show
 
 ## spine-fixture.html + spine-error-fixture.html + spine-behavior.mjs
 
-The **browser behavior harness** of `diagram-interactive-spine`. `spine-behavior.mjs` serves this
+The **browser behavior harness** of [`diagram-interactive-spine`](../patterns/diagram-interactive-spine/README.md). `spine-behavior.mjs` serves this
 repository read-only on 127.0.0.1, opens `spine-fixture.html` (the canonical shell's canvas structure
 and stylesheets, loading the owner files by reference in the shell's order, without the exporter;
 no consumer code and no stub) in headless Chrome, and drives it with real mouse, wheel and touch
@@ -838,7 +838,7 @@ Headless touch emulation is **not** iPhone or Safari evidence; the pattern's dev
 
 ## radial-stack-fixture.html + radial-stack.mjs
 
-The **full-stack harness** of `diagram-interactive-radial`: every optional module (inspector,
+The **full-stack harness** of [`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md): every optional module (inspector,
 facets, legend, chrome, export, theme) on the synthetic composition, in two hosts, and once on the
 reference specimen, which the fixture loads only when a check asks for it. Keys that peel layers
 arrive as trusted DevTools input; the other checks drive the modules' own controls in the page.

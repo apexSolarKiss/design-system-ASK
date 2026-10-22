@@ -2,14 +2,14 @@
 
 A reusable static-artifact scaffold for diagrams whose natural topology is an **ordered, top-to-bottom sequence of steps joined by arrows** — pipelines, workflows, lifecycles, doctrine chains, and similar ASK-family process diagrams that inherit the [design-system-ASK](../../README.md) visual language. **`diagram-static-SEQ`** is the **sequence** Class A static pattern: succession, not hierarchy.
 
-This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. It sits alongside `patterns/diagram-static-H/` (horizontal left→right cascade), `patterns/diagram-static-V/` (vertical centered spine), and `patterns/diagram-static-FLOW/` (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back). H / V / SEQ share the existing tree/sequence data grammar and export contract. FLOW is a distinct convergence-flow grammar (one shared source model, two render modes), but shares the same visual contract, PNG export discipline, and inheritance-by-reference posture.
+This is a **Class A static** diagram scaffold (system / architecture diagram templates), distinct from the **Class B** project-output artifact pattern. It sits alongside [`patterns/diagram-static-H/`](../diagram-static-H/README.md) (horizontal left→right cascade), [`patterns/diagram-static-V/`](../diagram-static-V/README.md) (vertical centered spine), and [`patterns/diagram-static-FLOW/`](../diagram-static-FLOW/README.md) (convergence flow — many sources converging into a resolved spec, realized, evaluated, governed, fed back). H / V / SEQ share the existing tree/sequence data grammar and export contract. FLOW is a distinct convergence-flow grammar (one shared source model, two render modes), but shares the same visual contract, PNG export discipline, and inheritance-by-reference posture.
 
-> **Provenance.** Graduated from an asset-pipeline-ASK reference implementation (handoff `2026-06-11_asset-pipeline-ASK_to_design-system-ASK_sequence-scaffold-handoff`). This copy is canonical; the AP scratch original is a reference, not a source of truth. Consumers — AP included — vendor this copy by reference.
+> **Provenance.** Graduated from an [asset-pipeline-ASK](https://github.com/apexSolarKiss/asset-pipeline-ASK) reference implementation (handoff `2026-06-11_asset-pipeline-ASK_to_design-system-ASK_sequence-scaffold-handoff`). This copy is canonical; the AP scratch original is a reference, not a source of truth. Consumers — AP included — vendor this copy by reference.
 
 ## When to use this vs `diagram-static-H` / `diagram-static-V`
 
-- **`diagram-static-H`** // horizontal *tree*: parent→child hierarchy expanding left → right.
-- **`diagram-static-V`** // vertical *tree*: parent→child hierarchy as a centered top→down spine.
+- **[`diagram-static-H`](../diagram-static-H/README.md)** // horizontal *tree*: parent→child hierarchy expanding left → right.
+- **[`diagram-static-V`](../diagram-static-V/README.md)** // vertical *tree*: parent→child hierarchy as a centered top→down spine.
 - **`diagram-static-SEQ`** (this pattern) // vertical *sequence*: ordered steps joined by **arrows**, left-aligned. The relation between boxes is **succession** (step 2 follows step 1), not hierarchy (step 2 is not a child of step 1).
 
 The trees render relationship; the sequence renders direction. A numbered process forced into a tree scaffold reads as a hierarchy it isn't — that is exactly the misfit this pattern exists to remove. Pick the one whose geometry matches the diagram; do not fork one to fake the other.
@@ -64,7 +64,7 @@ The engine is `diagrams-static-V-engine.js` with exactly three geometry changes:
 
 Everything else — public contract (`window.DIAGRAMS.render(TREE)`), data grammar (`{ kind, label, note?, tag?, status?, children? }`, with `status: 'earned'|'held'|'legacy'` honored on step boxes and connectors), CSS classes, PNG export, font-load gate, pan/zoom — is identical to the siblings.
 
-The engine **flattens the node tree depth-first into a linear run**, so the same `*.source.js` data renders as a centered spine in `diagram-static-V` or as a sequence here. Branching input warns to console and falls back to depth-first order — trees belong to the H / V scaffolds.
+The engine **flattens the node tree depth-first into a linear run**, so the same `*.source.js` data renders as a centered spine in [`diagram-static-V`](../diagram-static-V/README.md) or as a sequence here. Branching input warns to console and falls back to depth-first order — trees belong to the H / V scaffolds.
 
 ## Responsive chrome
 
@@ -149,4 +149,4 @@ The consuming project supplies its own Tier 3 identity, its own source-truth pos
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates), alongside `patterns/diagram-static-H/`, `patterns/diagram-static-V/`, and `patterns/diagram-static-FLOW/`, plus the interactive `patterns/diagram-interactive-spine/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates), alongside [`patterns/diagram-static-H/`](../diagram-static-H/README.md), [`patterns/diagram-static-V/`](../diagram-static-V/README.md), and [`patterns/diagram-static-FLOW/`](../diagram-static-FLOW/README.md), plus the interactive [`patterns/diagram-interactive-spine/`](../diagram-interactive-spine/README.md). Class B (project-output artifact templates) is a separate pattern at [`patterns/output-artifact/`](../output-artifact/README.md). The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.

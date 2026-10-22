@@ -2,9 +2,9 @@
 
 A semantic **function-color system**: a small, identity-free vocabulary of three role colors — `legislative`, `executive`, `judicial` — that marks which invariant structural **function** an element performs. Defined in [`three-functions.css`](three-functions.css); rendered visual key in [`three-functions.html`](three-functions.html).
 
-It is a **specialized, opt-in foundation primitive** — for surfaces that encode a separation of functions in an apparatus (e.g. a method diagram whose parts author a rule, realize candidates under it, and select and close against it). It is **not** general UI color, and the static diagram scaffolds (`patterns/diagram-static-H/` / `-V/` / `-SEQ/` / `-FLOW/`) do **not** use it.
+It is a **specialized, opt-in foundation primitive** — for surfaces that encode a separation of functions in an apparatus (e.g. a method diagram whose parts author a rule, realize candidates under it, and select and close against it). It is **not** general UI color, and the static diagram scaffolds ([`patterns/diagram-static-H/`](patterns/diagram-static-H/README.md) / [`-V/`](patterns/diagram-static-V/README.md) / [`-SEQ/`](patterns/diagram-static-SEQ/README.md) / [`-FLOW/`](patterns/diagram-static-FLOW/README.md)) do **not** use it.
 
-**Sibling to Spectral State, not a profile under it.** Spectral State (and its Evidence State profile) encodes the *state* of an element — the condition it is in. Three Functions encodes the *function* an element performs — an invariant structural role, not a state. Modeling it as a Spectral State profile would reproduce the category error the architecture exists to prevent: function is a different axis from state.
+**Sibling to Spectral State, not a profile under it.** [Spectral State](spectral-state.md) (and its [Evidence State](evidence-state.md) profile) encodes the *state* of an element — the condition it is in. Three Functions encodes the *function* an element performs — an invariant structural role, not a state. Modeling it as a Spectral State profile would reproduce the category error the architecture exists to prevent: function is a different axis from state.
 
 ```text
 semantic color
@@ -118,7 +118,7 @@ Three semantic axes may appear on one surface; they may not compete for one visu
 function role   ≠   element state   ≠   evidence state
 ```
 
-**Reused hue does not create semantic identity.** `--function-legislative` and `--state-proposed` are both magenta; `--function-judicial` and `--state-held` are both named cyan. That is a shared hue *name*, **not** a shared token or resolved value — the function roles bind independently to the fixed emphasis accents, while `--state-*` are per-theme `hsl()` values, so they render differently (the magenta pair shares the 300° hue at different saturation/lightness; the two "cyans" are in fact different hues). These are **not** aliases: color proximity never turns different labels into the same meaning — the same discipline Evidence State applies to its *exact* reused values. Visible labels stay mandatory.
+**Reused hue does not create semantic identity.** `--function-legislative` and `--state-proposed` are both magenta; `--function-judicial` and `--state-held` are both named cyan. That is a shared hue *name*, **not** a shared token or resolved value — the function roles bind independently to the fixed emphasis accents, while `--state-*` are per-theme `hsl()` values, so they render differently (the magenta pair shares the 300° hue at different saturation/lightness; the two "cyans" are in fact different hues). These are **not** aliases: color proximity never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) applies to its *exact* reused values. Visible labels stay mandatory.
 
 Channel contract when more than one system is present on an element:
 

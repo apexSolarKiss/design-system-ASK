@@ -18,9 +18,9 @@ GitHub stays the source of record. Every reading page links its file on GitHub a
 
 Three authored pages are composed on their way into the site, and no other authored file changes.
 
-- **`patterns/index.html`** links each pattern's README and each semantic primitive's Markdown. Opened from a clone it opens those raw files; in the composed site each of those links opens the file's reading page. A query or `#fragment` on the link is kept.
-- **`index.html`** gains a documents route, and documents joins its footer and its navigation panel. Each entrance sits in a `<template data-read-build>` element, whose content is inert, so a clone shows no dead link; the build removes the template tags, each with its line where it stands alone on one, so the entrances render.
-- **`patterns/index.html`** and **`preview/styleguide.html`** gain the same documents entrance in their footers and navigation panels, in the same build-only elements.
+- **[`patterns/index.html`](../../patterns/index.html)** links each pattern's README and each semantic primitive's Markdown. Opened from a clone it opens those raw files; in the composed site each of those links opens the file's reading page. A query or `#fragment` on the link is kept.
+- **[`index.html`](../../index.html)** gains a documents route, and documents joins its footer and its navigation panel. Each entrance sits in a `<template data-read-build>` element, whose content is inert, so a clone shows no dead link; the build removes the template tags, each with its line where it stands alone on one, so the entrances render.
+- **`patterns/index.html`** and **[`preview/styleguide.html`](../../preview/styleguide.html)** gain the same documents entrance in their footers and navigation panels, in the same build-only elements.
 
 Apart from the mapped `href` values and those template tags, each composed copy is the authored bytes.
 

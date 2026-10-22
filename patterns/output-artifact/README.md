@@ -2,7 +2,7 @@
 
 A reusable static-artifact scaffold for downstream project-output artifacts — review packets, reports, dashboards, and similar human-readable deliverables that inherit the [design-system-ASK](../../README.md) visual language.
 
-This is a **Class B** scaffold (project-output artifact templates), distinct from the **Class A** diagram patterns (the static `diagram-static-H` / `-V` / `-SEQ` / `-FLOW` and the interactive `diagram-interactive-spine`).
+This is a **Class B** scaffold (project-output artifact templates), distinct from the **Class A** diagram patterns (the static [`diagram-static-H`](../diagram-static-H/README.md) / [`-V`](../diagram-static-V/README.md) / [`-SEQ`](../diagram-static-SEQ/README.md) / [`-FLOW`](../diagram-static-FLOW/README.md) and the interactive [`diagram-interactive-spine`](../diagram-interactive-spine/README.md)).
 
 ## What this pattern is
 
@@ -11,7 +11,7 @@ A small consumption pattern. Four files:
 - `README.md` // this file
 - `static-output-artifact.html` // the template (`output-artifact v3`), on the document register
 - `MANIFEST.md.example` // the per-artifact provenance record (records the upstream SHA + per-file sha256)
-- `hard-fail-checklist.md` // the fails-inheritance test list
+- [`hard-fail-checklist.md`](hard-fail-checklist.md) // the fails-inheritance test list
 
 The pattern is **not** a component library, a generator, a build pipeline, an npm package, or a project-specific template. It is a starting point for downstream artifacts that consume design-system-ASK foundations. The *renderer* that seals an artifact for delivery (see "Sealed output") is the **consuming project's** tooling and is not shipped here.
 
@@ -44,7 +44,7 @@ The register's other compositions — an authorial callout, a section framing, a
 
 Adoption is per table and stays the consuming project's decision. A table that must not scroll sideways, that stacks its rows or that needs a print treatment the adaptation does not give it does not adopt the composition. Without both markers it keeps the template's own table geometry: full width, rules in the Class B line intensity, and cells that wrap a long token rather than widen the page. Stacked rows, or any other table geometry, are the consuming project's to supply.
 
-Run the register's rendered check on a delivered artifact — `node tools/check-role-conformance.mjs --url <artifact>`, from a design-system-ASK checkout at the commit the artifact's `MANIFEST.md` records. It proves that every element carrying a role computes to that role, and it reports a page with no governed text as vacuous. It does not fail text that carries no role: it lists that text as `unmapped`, and the hard-fail checklist requires that list to be empty.
+Run the register's rendered check on a delivered artifact — `node tools/check-role-conformance.mjs --url <artifact>`, from a design-system-ASK checkout at the commit the artifact's `MANIFEST.md` records. It proves that every element carrying a role computes to that role, and it reports a page with no governed text as vacuous. It does not fail text that carries no role: it lists that text as `unmapped`, and the [hard-fail checklist](hard-fail-checklist.md) requires that list to be empty.
 
 ## Foreground is inherited // no local rebind
 
@@ -62,7 +62,7 @@ This mirrors how **Class A diagrams** scope color: a class-targeted `--diagram-*
 | **B** — output artifacts | the document register's role classes | foundation `--fg-*`, through the register's roles, plus a class-scoped `--artifact-line*` overlay for the artifact's own structural lines |
 | **B** — message archive | bubble elements, via role classes | **role-scoped foregrounds.** `--fg-high-contrast` reaches participant ink and search-highlight text on the sanctioned colored fills. The author / frosted role foregrounds sit elsewhere. No global `--fg-*` rebind. Registered in [design-system-ASK](../../README.md) under **High-contrast foreground — registered uses** |
 
-The two document-and-diagram classes bind **text** to the foundation `--fg-*` ramp; they differ only in how color reaches the element — Class B through the document register's role classes, Class A through class-targeted diagram roles that alias the foundation (SVG elements need class-targeted fills, and the diagram speaks in diagram roles). Each keeps a single scoped overlay for **structural lines only** (`--diagram-line*` / `--artifact-line*`), never for foreground — so neither forks the foreground from the foundation. The Class B **`message-archive`** is the one implemented case where bubble text does **not** read `--fg-*`: its bubble foregrounds are role-scoped per participant fill (identity, not state), and its participant ink takes the opt-in high-contrast role. That is one registered bounded use — see [design-system-ASK](../../README.md) **High-contrast foreground — registered uses**. It still adds no global rebind: every role color is applied by class to the archive's own elements, so inherited prose is untouched.
+The two document-and-diagram classes bind **text** to the foundation `--fg-*` ramp; they differ only in how color reaches the element — Class B through the document register's role classes, Class A through class-targeted diagram roles that alias the foundation (SVG elements need class-targeted fills, and the diagram speaks in diagram roles). Each keeps a single scoped overlay for **structural lines only** (`--diagram-line*` / `--artifact-line*`), never for foreground — so neither forks the foreground from the foundation. The Class B **[`message-archive`](../message-archive/README.md)** is the one implemented case where bubble text does **not** read `--fg-*`: its bubble foregrounds are role-scoped per participant fill (identity, not state), and its participant ink takes the opt-in high-contrast role. That is one registered bounded use — see [design-system-ASK](../../README.md) **High-contrast foreground — registered uses**. It still adds no global rebind: every role color is applied by class to the archive's own elements, so inherited prose is untouched.
 
 ## How to use it
 
@@ -70,14 +70,14 @@ The two document-and-diagram classes bind **text** to the foundation `--fg-*` ra
 2. Sync `colors_and_type.css`, fonts, and any required assets from design-system-ASK into a local mirror (e.g. `./_dsa-tokens/`), pinned to a known upstream commit SHA. Vendor the four document-register modules — `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css` — beside the template, from the same commit. They are visual modules, not part of the token mirror. (For a **single-file** artifact the mirror and the modules are only build inputs you inline and seal away; only a **multi-file package** keeps them linked — see *Single file vs shared mirror* below.)
 3. Edit `static-output-artifact.html`: replace placeholder content (title, sections, meta, footer references) with your artifact's actual content. Replace the sample list, quotation, tables, code block and disclosure, keeping each element's register role and each adopted table's composition markers, and name each table's box — do not restyle a role, add type declarations, or add table geometry over the composition. Do not edit the token references, the line overlay, or the theme behavior.
 4. Add any project-specific chrome (banners, status rails, review-status strips, branding) in the **Tier 3 overlay slot** — see below.
-5. Fill out a `MANIFEST.md` from `MANIFEST.md.example`: record the upstream commit SHA, per-file sha256 (the token mirror and the register modules), your consuming project, artifact path, template version, and render timestamp.
+5. Fill out a `MANIFEST.md` from [`MANIFEST.md.example`](MANIFEST.md.example): record the upstream commit SHA, per-file sha256 (the token mirror and the register modules), your consuming project, artifact path, template version, and render timestamp.
 6. Render, seal, and freeze (see "Sealed output"). The rendered artifact is auditable against the recorded SHA.
 
 ## Sealed output (contract, not tooling)
 
 A delivered output artifact must be **self-contained**: it must open with full styling from any location (local file, email attachment, copied folder) with **no network and no sidecar**. Review artifacts have to survive delivery without a stylesheet or font going missing.
 
-This is a **contract** the consuming project's renderer meets — typically by inlining the token CSS and embedding fonts at render time, then inlining the four register modules verbatim after it, in the order the template loads them: `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css`. None of the four loads a resource or imports a stylesheet. A review document that adopts Review Semantics inlines `spectral-state.css`, `evidence-state.css` and `review-semantics.css` after them, in that order; none of the three loads a resource either. The renderer is consumer-owned and is **not** part of this pattern (no generator / build pipeline lives in design-system-ASK). The template here links the local mirror (`./_dsa-tokens/colors_and_type.css`) as the editable starting point; sealing happens in the consumer's render step. The hard-fail checklist enforces the self-contained requirement on the delivered artifact.
+This is a **contract** the consuming project's renderer meets — typically by inlining the token CSS and embedding fonts at render time, then inlining the four register modules verbatim after it, in the order the template loads them: `surface-panel.css`, `surface-text-link.css`, `surface-document.css`, `surface-treatments.css`. None of the four loads a resource or imports a stylesheet. A review document that adopts Review Semantics inlines `spectral-state.css`, `evidence-state.css` and `review-semantics.css` after them, in that order; none of the three loads a resource either. The renderer is consumer-owned and is **not** part of this pattern (no generator / build pipeline lives in design-system-ASK). The template here links the local mirror (`./_dsa-tokens/colors_and_type.css`) as the editable starting point; sealing happens in the consumer's render step. The [hard-fail checklist](hard-fail-checklist.md) enforces the self-contained requirement on the delivered artifact.
 
 ## Single file vs shared mirror
 
@@ -143,4 +143,4 @@ design-system-ASK supplies the foundations (Tier 1 + Tier 2). The consuming proj
 
 ## Class A vs Class B
 
-This is Class B (project-output artifact templates). Class A (system / architecture diagram templates) are separate patterns — the static `diagram-static-H` / `-V` / `-SEQ` / `-FLOW` and the interactive `diagram-interactive-spine`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes and — per the table above — bind color differently because they apply it differently.
+This is Class B (project-output artifact templates). Class A (system / architecture diagram templates) are separate patterns — the static [`diagram-static-H`](../diagram-static-H/README.md) / [`-V`](../diagram-static-V/README.md) / [`-SEQ`](../diagram-static-SEQ/README.md) / [`-FLOW`](../diagram-static-FLOW/README.md) and the interactive [`diagram-interactive-spine`](../diagram-interactive-spine/README.md). The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes and — per the table above — bind color differently because they apply it differently.

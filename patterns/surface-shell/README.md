@@ -17,7 +17,7 @@ foundations and the Tier-2 design language — role tokens, typography, spacing,
 palette discipline, motion, and the interaction grammar — and it hard-codes no
 consuming surface's **Tier-3** identity. Tier-3-neutral is not ASK-neutral: a
 consumer adopting this pattern is adopting the ASK design language, and supplies
-only its own Tier 3. `design-system-ASK`'s own pages are its first consumers,
+only its own Tier 3. [`design-system-ASK`](../../README.md)'s own pages are its first consumers,
 not its required identity.
 
 "Its own" means locally supplied by the consumer's source of intent — not
@@ -545,7 +545,7 @@ from the markup.
 ### The status note
 
 `.surface-badge` is a **note, not a control.** It is inert on every surface that
-uses it, so it carries no button geometry — the repo README puts pills on
+uses it, so it carries no button geometry — [the repo README](../../README.md#radii) puts pills on
 interactive elements only, and a bordered capsule around inert text offers an
 affordance the element cannot honor. The shell opens the row with a decorative
 `///` instead, which marks it as an aside without implying it can be pressed.
@@ -569,7 +569,7 @@ string is the author's own separator. The shell prefixes; it never rewrites.
 
 The control inside `.surface-head-aside` belongs to the consuming surface — its
 behavior, its styling, and its script. The shell positions the slot and stops
-there. design-system-ASK's own style guide is the reference case: it places a
+there. design-system-ASK's own [style guide](../../preview/styleguide.html) is the reference case: it places a
 theme selector in the slot and owns that control entirely, in
 `styleguide-theme-control.js` and its own page CSS. That control is **not** part
 of this pattern and is not vendored with it.
@@ -996,7 +996,7 @@ together or has a stated reason not to.
   accessible name are the consuming project's Tier 3.
 - **Tokens.** The shell composes existing `var()` roles and introduces no token
   and no palette color. The one literal value is the focus glow's translucent
-  white, which the repo README's focus contract specifies verbatim and for which
+  white, which [the repo README](../../README.md#hover-press-focus)'s focus contract specifies verbatim and for which
   no token exists. Any other raw color value, or a font stack, in
   `surface-shell.css` is a defect.
 - **Theme selection.** The shell responds to the resolved mode; it never sets one.
