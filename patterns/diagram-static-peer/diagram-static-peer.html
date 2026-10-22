@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peer relations // diagram-static-peer</title>
+<meta name="description" content="Equal peers on a triangle or a square, joined by declared directed and neutral relations. A-S-K and L-E-O-V are the instances; the letters and the meaning of each relation belong to the instance.">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference at generation time">
+<!-- design-system-ASK foundations — local mirror.
+     DOWNSTREAM: adjust the paths if your mirrors live elsewhere. -->
+<link rel="stylesheet" href="./_dsa-tokens/colors_and_type.css">
+<!-- The document register, from the consumer's surface-module mirror, in this order. -->
+<link rel="stylesheet" href="./_dsa-surface/surface-text-link.css">
+<link rel="stylesheet" href="./_dsa-surface/surface-document.css">
+<link rel="stylesheet" href="diagrams-static-peer.css">
+</head>
+<body>
+
+<main class="peer-page doc-flow">
+
+  <!-- DOWNSTREAM: replace the title, lede and every section's words with your own, including each
+       figure's data-columns, which names its relation table's columns in the instance's words. -->
+  <header class="doc-titled">
+    <h1 class="doc-title">Peer relations</h1>
+    <p class="doc-lede">Equal peers on a triangle or a square, joined by declared relations. The letters, and what each relation means, belong to the instance.</p>
+  </header>
+
+  <!-- The page follows the system theme. Its two mode selectors change what the plates draw. -->
+  <div class="peer-modes" role="group" aria-label="Display">
+    <button type="button" class="peer-mode" data-mode="view">view: <span data-mode-value aria-live="polite" aria-atomic="true">art plate</span></button>
+    <button type="button" class="peer-mode" data-mode="arrowheads">arrowheads: <span data-mode-value aria-live="polite" aria-atomic="true">at target</span></button>
+  </div>
+
+  <section class="doc-section" id="instances">
+    <h2 class="doc-section-title">Instances</h2>
+    <p class="doc-body">A beats K, K beats S, S beats A. The square keeps a directed perimeter and makes the two opposite pairs neutral, so every letter beats one, loses to one and ties the letter across from it.</p>
+    <div class="peer-grid">
+      <figure class="peer-figure" data-spec="triangle.A-S-K" data-columns="Beats|Loses to">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Instance // triangle</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+        <div class="doc-table-scroll peer-keyed-only" role="region" aria-label="A-S-K relations" hidden></div>
+      </figure>
+      <figure class="peer-figure" data-spec="square.L-E-O-V" data-columns="Beats|Loses to|Ties">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Instance // square, neutral opposites</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+        <div class="doc-table-scroll peer-keyed-only" role="region" aria-label="L-E-O-V relations" hidden></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="doc-section" id="square">
+    <h2 class="doc-section-title">The square // neutral opposites beside the original</h2>
+    <p class="doc-body">The original square declares all six pairs as directed. Each letter meets three others, and three directed relations cannot split evenly into outgoing and incoming: L and E beat two letters, O and V one. The neutral-opposites square keeps the four perimeter directions and makes the two diagonals neutral. A quarter-turn then carries the relation pattern onto itself, and every letter has the same standing.</p>
+    <p class="doc-body">Read as a game, with +1 for a win, &minus;1 for a loss and 0 for a tie, the original square's unique equilibrium plays L, E and O equally and V never. L weakly dominates V: replacing V with L never worsens the result, though against an opponent who always plays O, V wins just as L does. In the neutral-opposites square every mix (a, &frac12; &minus; a, a, &frac12; &minus; a) in L, E, O, V order, for 0 &le; a &le; &frac12;, is an equilibrium: all four equally at a = &frac14;, or an equal mix of one opposite pair at either end. Every letter has the same standing, without all four being required in play.</p>
+    <div class="peer-grid">
+      <figure class="peer-figure" data-spec="square.L-E-O-V.original" data-columns="Beats|Loses to">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Comparison // the original square</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+        <div class="doc-table-scroll" role="region" aria-label="Original square relations"></div>
+      </figure>
+      <figure class="peer-figure" data-spec="square.L-E-O-V" data-columns="Beats|Loses to|Ties">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Primary // neutral opposites</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+        <div class="doc-table-scroll" role="region" aria-label="Neutral-opposites square relations"></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="doc-section" id="templates">
+    <h2 class="doc-section-title">Templates</h2>
+    <p class="doc-body">Each template is a relation source with numbered slots, listed clockwise from the top of the triangle or the upper left of the square. Both instances are these templates with their labels replaced. R-P-S shows the triangle carrying the original game.</p>
+    <div class="peer-grid peer-grid--three">
+      <figure class="peer-figure" data-spec="triangle.template">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Template // triangle</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+      </figure>
+      <figure class="peer-figure" data-spec="square.template">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Template // square</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+      </figure>
+      <figure class="peer-figure" data-spec="triangle.R-P-S">
+        <div class="peer-host"></div>
+        <figcaption class="doc-labeled">
+          <span class="doc-label">Relabeling // R-P-S</span>
+          <span class="doc-meta" data-relations></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="doc-section" id="checks">
+    <h2 class="doc-section-title">Checks // computed from the relations</h2>
+    <p class="doc-body">The engine derives every row from the declared relations when the page loads. An unspecified pair is declared as open, and it is never a neutral one.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Relation checks">
+      <table class="doc-table doc-dense-table">
+        <thead><tr><th class="doc-label" scope="col">Spec</th><th class="doc-label" scope="col">Valid</th><th class="doc-label" scope="col">Pairs</th>
+          <th class="doc-label" scope="col">Each node // out, in, neutral</th><th class="doc-label" scope="col">Rotational symmetry</th></tr></thead>
+        <tbody data-checks></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section" id="use">
+    <h2 class="doc-section-title">Use</h2>
+    <p class="doc-body">Replace <code class="doc-code">diagram-static-peer.source.js</code> with your own relation sources and this page's words with your own. <code class="doc-code">export-peer.mjs</code> writes each plate as a standalone SVG in both themes, as an art plate and with its key, and as a PNG on request. The <a class="surface-text-link" href="README.md">README</a> carries the contract.</p>
+  </section>
+
+</main>
+
+<script src="diagram-static-peer.source.js"></script>
+<!-- DS-owned and generated: the measured centering of each label, and the key's advance widths. -->
+<script src="diagrams-static-peer-glyphs.js"></script>
+<!-- DS-owned engine. Re-vendor byte-identical; do not hand-edit. -->
+<script src="diagrams-static-peer-engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var PEER = window.DIAGRAM_PEER, GLYPHS = window.DIAGRAM_PEER_GLYPHS, SPECS = window.PEER_DIAGRAMS;
+  var byId = {};
+  SPECS.forEach(function (s) { byId[s.id] = s; });
+  // Each selector cycles its own values; nothing is stored, so the page opens at the canonical view.
+  var MODES = { view: ['plate', 'keyed'], arrowheads: ['target', 'midpoint'] };
+  var WORDS = { plate: 'art plate', keyed: 'with key', target: 'at target', midpoint: 'at midpoint' };
+  var state = { view: 'plate', arrowheads: 'target' };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function relations(spec) {
+    var lab = {}, m = spec.meaning || {};
+    spec.nodes.forEach(function (n) { lab[n.id] = n.label; });
+    var d = spec.relations.filter(function (r) { return r.type === 'directed'; })
+      .map(function (r) { return lab[r.from] + ' ' + (m.verb || 'to') + ' ' + lab[r.to]; });
+    var n = spec.relations.filter(function (r) { return r.type === 'neutral'; })
+      .map(function (r) { return lab[r.from] + ' with ' + lab[r.to]; });
+    return d.join(' · ') + (n.length ? ' // neutral: ' + n.join(' · ') : '');
+  }
+
+  // The page names its own columns (data-columns): out, in, then neutral where the plate has it.
+  function signatureTable(spec, columns) {
+    var table = el('table', 'doc-table doc-dense-table'), head = el('tr');
+    ['Letter'].concat(columns).forEach(function (c) { var th = el('th', 'doc-label', c); th.scope = 'col'; head.appendChild(th); });
+    table.appendChild(el('thead')).appendChild(head);
+    var body = table.appendChild(el('tbody'));
+    PEER.signatures(spec).forEach(function (s) {
+      var tr = body.appendChild(el('tr'));
+      [s.label, s.out, s.in, s.neutral].slice(0, columns.length + 1).forEach(function (v) {
+        tr.appendChild(el('td', 'doc-table-cell', Array.isArray(v) ? (v.join(' · ') || 'none') : v));
+      });
+    });
+    return table;
+  }
+
+  function draw() {
+    document.querySelectorAll('.peer-figure').forEach(function (fig) {
+      var spec = byId[fig.getAttribute('data-spec')];
+      PEER.mount(fig.querySelector('.peer-host'), spec, {
+        glyphs: GLYPHS, keyed: state.view === 'keyed', arrowheads: state.arrowheads,
+      });
+      fig.querySelector('[data-relations]').textContent = relations(spec);
+      var box = fig.querySelector('.doc-table-scroll');
+      if (box) {
+        if (!box.firstChild) box.appendChild(signatureTable(spec, fig.getAttribute('data-columns').split('|')));
+        if (box.classList.contains('peer-keyed-only')) box.hidden = state.view !== 'keyed';
+      }
+    });
+    document.querySelectorAll('[data-mode]').forEach(function (b) {
+      b.querySelector('[data-mode-value]').textContent = WORDS[state[b.getAttribute('data-mode')]];
+    });
+  }
+
+  function checks() {
+    var body = document.querySelector('[data-checks]');
+    SPECS.forEach(function (spec) {
+      var v = PEER.validate(spec, GLYPHS), tr = body.appendChild(el('tr'));
+      var cells = [spec.id, v.ok ? 'yes' : 'no: ' + v.errors.map(function (e) { return e.code; }).join(', ')];
+      if (v.ok) {
+        var sig = PEER.signatures(spec), n = spec.nodes.length, all = n * (n - 1) / 2;
+        var open = spec.relations.filter(function (r) { return r.type === 'unspecified'; }).length;
+        var counts = sig.map(function (s) { return s.label + ' ' + s.out.length + ', ' + s.in.length + ', ' + s.neutral.length; });
+        var same = sig.every(function (s) { return s.out.length === sig[0].out.length && s.in.length === sig[0].in.length && s.neutral.length === sig[0].neutral.length; });
+        var sym = PEER.symmetry(spec);
+        cells.push(spec.relations.length + ' of ' + all + ' declared' + (open ? ', ' + open + ' unspecified' : ''),
+          same ? 'every node ' + counts[0].slice(2) : counts.join(' · '),
+          sym.order > 1 ? sym.order + '-fold' : 'none');
+      } else cells.push('', '', '');
+      cells.forEach(function (c) { tr.appendChild(el('td', 'doc-table-cell', c)); });
+    });
+  }
+
+  document.querySelectorAll('[data-mode]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-mode'), values = MODES[k];
+      state[k] = values[(values.indexOf(state[k]) + 1) % values.length];
+      draw();
+    });
+  });
+  checks();
+  draw();
+})();
+</script>
+
+</body>
+</html>

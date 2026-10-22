@@ -36,6 +36,9 @@ const SHELLS = [
   // hard-codes a light theme, so it is not the gallery's illustration of static mode.
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-static.html',      flowMode: 'static' },
   { src: 'diagram-static-FLOW/diagram-static-FLOW.interactive.html', dir: 'diagram-static-FLOW',      out: 'diagram-static-FLOW-interactive.html' },
+  // The peer specimen draws its plates from the canonical source and engine, and follows the system
+  // theme; its register modules resolve through the `_dsa-surface/` branch like the other shells'.
+  { src: 'diagram-static-peer/diagram-static-peer.html',           dir: 'diagram-static-peer',        out: 'diagram-static-peer.html' },
   // The spine preview takes the canonical Fit unchanged: it shows what a consumer receives.
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
   // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured

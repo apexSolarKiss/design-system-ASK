@@ -1,7 +1,7 @@
 # `patterns/_diagram-shared/`
 
 Canonical source plane for support code that more than one diagram engine consumes: text
-layout for the static engines, and pointer input for every engine. Files here are
+layout and pointer input, each for the target set its row below declares. Files here are
 **authored once and mirrored out** by
 [`tools/sync-diagram-shared.mjs`](../../tools/sync-diagram-shared.mjs).
 
@@ -11,17 +11,18 @@ layout for the static engines, and pointer input for every engine. Files here ar
 target set**, and that declaration — not this folder's name — decides which patterns
 consume it. A future member may serve a different set, or one pattern only.
 
-This matters because the owner's Class A static family is **four** patterns —
-`diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ` **and `diagram-static-FLOW`** —
-and FLOW carries a different grammar. A member that governs three of them must say so, or
-a later maintainer reads FLOW's absence as partial vendoring and "completes" it.
+This matters because the owner's Class A static family is **five** patterns —
+`diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ`, **`diagram-static-FLOW`** and
+**`diagram-static-peer`** — and FLOW and peer each carry a different grammar. A member that
+governs only some of them must say so, or a later maintainer reads an absence as partial
+vendoring and "completes" it.
 
 ## Current members
 
 | Member | Target set | Excluded |
 | --- | --- | --- |
-| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-interactive-spine` · `diagram-interactive-radial` |
-| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` · `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` · `diagram-static-FLOW` | — |
+| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-static-peer` · `diagram-interactive-spine` · `diagram-interactive-radial` |
+| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` · `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` · `diagram-static-FLOW` | `diagram-static-peer` |
 
 ## Canonical and mirrors
 
