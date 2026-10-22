@@ -2,7 +2,7 @@
 
 A reusable static-artifact scaffold for **peer relations**: three or four equal peers on a regular polygon, joined by declared relations, that inherits the [design-system-ASK](../../README.md) visual language. It has two presets, which fix placement only: a **triangle** of three positions and a **square** of four. Each ships a template: the triangle's joins its three peers in a clockwise directed cycle, and the square's joins four by a clockwise directed perimeter with its opposite pairs neutral.
 
-This is a **Class A static** diagram scaffold, distinct from the **Class B** project-output artifact patterns. Its static siblings — `patterns/diagram-static-H/`, `-V/`, `-SEQ/` and `-FLOW/` — arrange hierarchy, succession and convergence, and share the `window.DIAGRAMS.render` interface and one PNG exporter. This pattern arranges peers. It has its own relation grammar, engine and exporter, and takes none of their chrome, fit, pointer or text-layout carriers: a fixed plate of three or four letters has no canvas to pan and no label to wrap. The surface pattern `patterns/diagram-interactive-radial/` arranges a containment hierarchy on a live page; this one arranges equals on a sealed plate.
+This is a **Class A static** diagram scaffold, distinct from the **Class B** project-output artifact patterns. Its static siblings — [`patterns/diagram-static-H/`](../diagram-static-H/README.md), [`-V/`](../diagram-static-V/README.md), [`-SEQ/`](../diagram-static-SEQ/README.md) and [`-FLOW/`](../diagram-static-FLOW/README.md) — arrange hierarchy, succession and convergence, and share the `window.DIAGRAMS.render` interface and one PNG exporter. This pattern arranges peers. It has its own relation grammar, engine and exporter, and takes none of their chrome, fit, pointer or text-layout carriers: a fixed plate of three or four letters has no canvas to pan and no label to wrap. The surface pattern [`patterns/diagram-interactive-radial/`](../diagram-interactive-radial/README.md) arranges a containment hierarchy on a live page; this one arranges equals on a sealed plate.
 
 ## What this pattern is
 
@@ -77,7 +77,7 @@ Each plate is `role="img"`, named by its `<title>` and described by a `<desc>` d
 
 ## The specimen
 
-`diagram-static-peer.html` draws every spec in the source. It follows the system's light or dark setting and has **no theme selector**. Its two mode selectors are quiet pills that report their state, the style guide's selector grammar:
+`diagram-static-peer.html` draws every spec in the source. It follows the system's light or dark setting and has **no theme selector**. Its two mode selectors are quiet pills that report their state, the [style guide](../../preview/styleguide.html)'s selector grammar:
 
 - **view** // `art plate` or `with key`. With the key, the instances also show their relation tables.
 - **arrowheads** // `at target` (default) or `at midpoint`, for comparison.
@@ -145,4 +145,4 @@ design-system-ASK supplies the foundations and the pattern. What the peers are, 
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates) — the **peer** grammar. Its static siblings `patterns/diagram-static-H/`, `-V/`, `-SEQ/` and `-FLOW/` share the `window.DIAGRAMS.render` interface; the interactive `patterns/diagram-interactive-spine/` is a separate Class A pattern. Class B (project-output artifact templates) is `patterns/output-artifact/` and `patterns/message-archive/`. The classes stay distinct. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates) — the **peer** grammar. Its static siblings [`patterns/diagram-static-H/`](../diagram-static-H/README.md), [`-V/`](../diagram-static-V/README.md), [`-SEQ/`](../diagram-static-SEQ/README.md) and [`-FLOW/`](../diagram-static-FLOW/README.md) share the `window.DIAGRAMS.render` interface; the interactive [`patterns/diagram-interactive-spine/`](../diagram-interactive-spine/README.md) is a separate Class A pattern. Class B (project-output artifact templates) is [`patterns/output-artifact/`](../output-artifact/README.md) and [`patterns/message-archive/`](../message-archive/README.md). The classes stay distinct. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.

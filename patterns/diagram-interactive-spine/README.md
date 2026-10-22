@@ -1,6 +1,6 @@
 # Pattern // diagram-interactive-spine
 
-A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static members `diagram-static-H` (horizontal cascade), `diagram-static-V` (vertical centered spine), `diagram-static-SEQ` (ordered arrowed sequence), and `diagram-static-FLOW` (convergence flow).
+A reusable scaffold for an **interactive information-architecture state surface** — a navigable, stateful spine of architectural layers, seams, and open questions, each node **colored by its state**. It is the **interactive** member of the Class A diagram family, alongside the static members [`diagram-static-H`](../diagram-static-H/README.md) (horizontal cascade), [`diagram-static-V`](../diagram-static-V/README.md) (vertical centered spine), [`diagram-static-SEQ`](../diagram-static-SEQ/README.md) (ordered arrowed sequence), and [`diagram-static-FLOW`](../diagram-static-FLOW/README.md) (convergence flow).
 
 `diagram-interactive-spine` is **Class A // interactive**. It is *not* `diagram-static-V-interactive`: static-vs-interactive is the artifact-class distinction, encoded in the name.
 
@@ -39,7 +39,7 @@ It is **not** a component library, a generator, a build pipeline, or a project-s
 
 ## It consumes Spectral State (unlike the static scaffolds)
 
-The static diagram scaffolds are **structural** and assert no state — they do not load `spectral-state.css`. This interactive surface is **state-bearing**: each node is colored by one of the eight **Spectral State** roles (`--state-*`), set via a single `--st` custom property per node. So it loads, in order: `colors_and_type.css` → `spectral-state.css` → `diagrams-interactive-spine.css`, then the surface modules for the compact triggers (`surface-panel.css` → `surface-treatments.css`). **Color encodes state only.**
+The static diagram scaffolds are **structural** and assert no state — they do not load `spectral-state.css`. This interactive surface is **state-bearing**: each node is colored by one of the eight [**Spectral State**](../../spectral-state.md) roles (`--state-*`), set via a single `--st` custom property per node. So it loads, in order: `colors_and_type.css` → `spectral-state.css` → `diagrams-interactive-spine.css`, then the surface modules for the compact triggers (`surface-panel.css` → `surface-treatments.css`). **Color encodes state only.**
 
 ## Data grammar
 
@@ -52,7 +52,7 @@ window.IA_STATE_SPINE = {
 ```
 
 - **`group`** // `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state).
-- **`state`** // exactly one of the eight Spectral State roles. Drives node color.
+- **`state`** // exactly one of the eight [Spectral State](../../spectral-state.md) roles. Drives node color.
 - **`modes`** // ids of the mode nodes a node intersects; selection draws the relationships and isolates the set.
 - **`evidence` / `qualifier` / `pointer`** // inspector metadata (never encoded in hue). `pointer` is the authoritative repo source for that node.
 
@@ -141,8 +141,8 @@ design-system-ASK supplies Tier 1 + Tier 2 (and the Spectral State primitive). T
 
 ## Class A static vs interactive · Class B
 
-- **Class A // static:** `diagram-static-H`, `diagram-static-V`, `diagram-static-SEQ`, `diagram-static-FLOW` (structural; state-free).
+- **Class A // static:** [`diagram-static-H`](../diagram-static-H/README.md), [`diagram-static-V`](../diagram-static-V/README.md), [`diagram-static-SEQ`](../diagram-static-SEQ/README.md), [`diagram-static-FLOW`](../diagram-static-FLOW/README.md) (structural; state-free).
 - **Class A // interactive:** `diagram-interactive-spine` (this pattern; state-bearing; consumes Spectral State).
-- **Class B:** `patterns/output-artifact/` (project-output artifacts).
+- **Class B:** [`patterns/output-artifact/`](../output-artifact/README.md) (project-output artifacts).
 
 The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2; they serve different artifact classes.

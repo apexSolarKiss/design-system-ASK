@@ -1,14 +1,14 @@
 # Pattern // diagram-static-FLOW
 
-A reusable **Class A static** scaffold for diagrams whose natural topology is a **convergence flow** — many normative sources converging into one resolved specification, which is then realized, evaluated, governed, and fed back. It is the **fourth** Class A sibling alongside `patterns/diagram-static-H/`, `patterns/diagram-static-V/`, and `patterns/diagram-static-SEQ/`. FLOW carries its own **convergence-flow data grammar** (one shared source model, two render modes) — distinct from the tree/sequence grammar the other three share — but inherits the same visual contract, PNG export, and inheritance-by-reference discipline.
+A reusable **Class A static** scaffold for diagrams whose natural topology is a **convergence flow** — many normative sources converging into one resolved specification, which is then realized, evaluated, governed, and fed back. It is the **fourth** Class A sibling alongside [`patterns/diagram-static-H/`](../diagram-static-H/README.md), [`patterns/diagram-static-V/`](../diagram-static-V/README.md), and [`patterns/diagram-static-SEQ/`](../diagram-static-SEQ/README.md). FLOW carries its own **convergence-flow data grammar** (one shared source model, two render modes) — distinct from the tree/sequence grammar the other three share — but inherits the same visual contract, PNG export, and inheritance-by-reference discipline.
 
-> **Provenance.** Graduated from an asset-pipeline-ASK reference implementation (handoff `2026-06-20_asset-pipeline-ASK_to_design-system-ASK_flow-scaffold-handoff`). This copy is canonical; the upstream reference is a reference, not a source of truth. Consumers vendor this copy by reference.
+> **Provenance.** Graduated from an [asset-pipeline-ASK](https://github.com/apexSolarKiss/asset-pipeline-ASK) reference implementation (handoff `2026-06-20_asset-pipeline-ASK_to_design-system-ASK_flow-scaffold-handoff`). This copy is canonical; the upstream reference is a reference, not a source of truth. Consumers vendor this copy by reference.
 
 ## When to use this vs `diagram-static-H` / `-V` / `-SEQ`
 
-- **`diagram-static-H`** // horizontal *tree*: parent→child hierarchy expanding left → right.
-- **`diagram-static-V`** // vertical *tree*: parent→child hierarchy as a centered top→down spine.
-- **`diagram-static-SEQ`** // vertical *sequence*: ordered steps joined by arrows; the relation is succession, not hierarchy.
+- **[`diagram-static-H`](../diagram-static-H/README.md)** // horizontal *tree*: parent→child hierarchy expanding left → right.
+- **[`diagram-static-V`](../diagram-static-V/README.md)** // vertical *tree*: parent→child hierarchy as a centered top→down spine.
+- **[`diagram-static-SEQ`](../diagram-static-SEQ/README.md)** // vertical *sequence*: ordered steps joined by arrows; the relation is succession, not hierarchy.
 - **`diagram-static-FLOW`** (this pattern) // a *convergence flow*: a field of many normative sources **converging** into one resolved specification, a process spine with **parallel realization** that fans out and reconverges, a secondary **evaluation bus** re-entering a later node, and a **return loop** that closes the flow back to its own input lane.
 
 The trees render hierarchy; the sequence renders direction; the flow renders a topology none of the others express — convergence, parallel realization, an evaluation bus, and a return loop in one figure. Pick the one whose geometry matches the diagram; do not fork one to fake another.
@@ -110,7 +110,7 @@ The diagram bounds are the **engine-authored SVG `width` / `height` / `viewBox`*
 
 **`PNG page` is the same whatever the live layout.** The exporter reads the subtitle and stamp wherever they sit — in the header, or in About while the chrome is compact — and reads the caption without the block that holds them there, so the page and its filename do not depend on the viewport or on which panel is open. The exported caption keeps every line; it is no longer cut at three. The caption and the legend share the page width: side by side at their natural widths where both fit, as before; otherwise the caption wraps to the width left beside the legend; and where that would leave the caption too narrow, it takes the full width and the legend drops below it, right-aligned. A landscape figure keeps its placement unless one of its drawn marks would come within the exporter's panel gutter; then it is fitted below the panels. `PNG diagram` is unchanged.
 
-This pattern's `export-png.js` carries **two corrections** versus the `-H` / `-V` / `-SEQ` baseline, both now folded into the shared canonical exporter:
+This pattern's `export-png.js` carries **two corrections** versus the [`-H`](../diagram-static-H/README.md) / [`-V`](../diagram-static-V/README.md) / [`-SEQ`](../diagram-static-SEQ/README.md) baseline, both now folded into the shared canonical exporter:
 
 - a **viewBox-origin offset** for centered / negative-origin content, so a diagram whose geometry extends left of the origin is not clipped;
 - a **landscape near-full-height fit**, so a wide convergence-flow figure fills the export frame rather than floating small — unless one of its drawn marks would come within the exporter's panel gutter of the caption or the legend, when it fits below the panel band instead.
@@ -156,4 +156,4 @@ The consuming project supplies its own Tier 3 identity, its own source-truth pos
 
 ## Class A vs Class B
 
-This is Class A (system / architecture diagram templates), alongside `patterns/diagram-static-H/`, `patterns/diagram-static-V/`, and `patterns/diagram-static-SEQ/`. Class B (project-output artifact templates) is a separate pattern at `patterns/output-artifact/`. The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.
+This is Class A (system / architecture diagram templates), alongside [`patterns/diagram-static-H/`](../diagram-static-H/README.md), [`patterns/diagram-static-V/`](../diagram-static-V/README.md), and [`patterns/diagram-static-SEQ/`](../diagram-static-SEQ/README.md). Class B (project-output artifact templates) is a separate pattern at [`patterns/output-artifact/`](../output-artifact/README.md). The classes stay distinct; do not fuse. All inherit Tier 1 + Tier 2 from design-system-ASK, but they serve different artifact classes.

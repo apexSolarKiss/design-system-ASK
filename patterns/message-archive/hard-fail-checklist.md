@@ -9,7 +9,7 @@ Run before sealing. Any item below fails the artifact.
 - Participant color encodes anything other than **which person** — urgency, evidence, status, approval, priority, or emphasis
 - A Spectral State or Evidence State hue is used **as a pattern role** — chrome, participant, or interaction — anywhere in the archive
 - Participant → role assignment is **frequency-derived**, so a refresh recolors a person
-- The author is recolored, moved off the right, or assigned a participant role. A successor to an `AA-compliant` archive that deliberately adopts this template version and so takes `default-ASK`'s author fill does not fail this item: that is an owner change, not a recoloring (pattern README, *A successor to an `AA-compliant` archive*)
+- The author is recolored, moved off the right, or assigned a participant role. A successor to an `AA-compliant` archive that deliberately adopts this template version and so takes `default-ASK`'s author fill does not fail this item: that is an owner change, not a recoloring ([pattern README](README.md), *A successor to an `AA-compliant` archive*)
 - A legend or sender labels appear in `data-party-mode="two-party"`
 - **`data-party-mode="two-party"` contains more than two distinct participant IDs**
 - **`data-party-mode="two-party"` contains any `participant-a` … `participant-e` message role** — two-party is author + one frosted counterpart, nothing else
@@ -34,7 +34,7 @@ Run before sealing. Any item below fails the artifact.
 - A successor to an `AA-compliant` archive is rendered from this version without recording the adopted version and each role's new bound value, or uses the adoption to recolor or remap anyone beyond the `default-ASK` values its existing roles take
 - `default-ASK` has been "improved" toward AA — its lower-contrast metadata treatment is intentional
 - The pattern-local participant values have been added to `colors_and_type.css` as general-purpose tokens
-- A literal color value appears in the template that is not enumerated in the pattern README
+- A literal color value appears in the template that is not enumerated in [the pattern README](README.md#every-locally-declared-color-value-this-template-uses)
 
 ## Color discipline fails
 

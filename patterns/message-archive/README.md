@@ -8,11 +8,11 @@ A reusable scaffold for a conversation archive: one self-contained `.html` per a
 
 One delivered file per archive **timeline**. A timeline may consume one **or more** source threads or channels and merge them chronologically, preserving channel, source, and fidelity provenance per message. The source threads are *provenance inputs*, not separate output files — "thread" is not a synonym for the delivered object.
 
-It is a **consumption pattern, not a generator**. `design-system-ASK` owns the presentation and semantic-role contract; each consumer owns source extraction, identity resolution, chronology, deduplication, media acquisition, rendering, and sealing. No source adapter, chat-database code, or extraction logic belongs in this repo.
+It is a **consumption pattern, not a generator**. [`design-system-ASK`](../../README.md) owns the presentation and semantic-role contract; each consumer owns source extraction, identity resolution, chronology, deduplication, media acquisition, rendering, and sealing. No source adapter, chat-database code, or extraction logic belongs in this repo.
 
 ## Sealed and interactive are not in tension
 
-The archive carries client-side search and year navigation and still freezes for audit. Interaction here **navigates fixed content; it never fetches it.** The delivered file has no network dependency, no sidecar, and no live upstream link — the same freeze-for-audit posture as the static Class B `output-artifact`, with an offline reading affordance on top. This is a Class B artifact, not a new class.
+The archive carries client-side search and year navigation and still freezes for audit. Interaction here **navigates fixed content; it never fetches it.** The delivered file has no network dependency, no sidecar, and no live upstream link — the same freeze-for-audit posture as the static Class B [`output-artifact`](../output-artifact/README.md), with an offline reading affordance on top. This is a Class B artifact, not a new class.
 
 ## Normalized archive contract
 
@@ -134,7 +134,7 @@ data-flavor="default-ASK"    the ASK-preferred visual default
 
 `default-ASK` is the preferred treatment — **not** a defect, not a legacy state, not a version awaiting correction. Its lower-contrast metadata rendering is intentional and must not be pulled toward AA.
 
-**The `AA-compliant` alternative is retired.** This version of the pattern no longer offers it: the template carries none of its values, and `AA-compliant` is not a supported `data-flavor` value. Do not set it, and do not record it for a new render from this version: the template would draw `default-ASK` under the `AA-compliant` name, and the hard-fail checklist fails an archive that does. Archives already sealed with `AA-compliant` keep their recorded version and bytes (see *Snapshot / retention doctrine*).
+**The `AA-compliant` alternative is retired.** This version of the pattern no longer offers it: the template carries none of its values, and `AA-compliant` is not a supported `data-flavor` value. Do not set it, and do not record it for a new render from this version: the template would draw `default-ASK` under the `AA-compliant` name, and the [hard-fail checklist](hard-fail-checklist.md) fails an archive that does. Archives already sealed with `AA-compliant` keep their recorded version and bytes (see *Snapshot / retention doctrine*).
 
 **A successor to an `AA-compliant` archive.** Re-rendering does not change an archive's template version. A successor rendered from the version its manifest already records keeps that version's rules and values, `AA-compliant` included. An `AA-compliant` archive moves to `default-ASK` only when its consumer deliberately adopts this version: it re-copies the template from this version, records the new commit and template hash, and renders the successor from them. That successor keeps every participant's role and records `default-ASK` and each role's new bound value in its manifest. The author's light fill and participants c and d change value, and the archive's metadata, page chrome, title, controls and focus indicator take the `default-ASK` treatment. The change comes from this pattern's retirement of `AA-compliant`, not from the archive, so it is not a reassignment under the persistence rule. It permits nothing else: any other recoloring, and any frequency-derived remap, still fails, and a reassignment still needs explicit operator intent.
 
@@ -185,8 +185,8 @@ The bubble **foregrounds** and translucent chrome fills are implementation-local
 2. Emit the message markup from your normalized model. Preserve `data-pid`, `data-role`, `data-channel`, and `data-s`.
 3. Keep `data-flavor="default-ASK"` and set `data-party-mode` on the root element.
 4. Replace every `[placeholder]`.
-5. Record the manifest — see `MANIFEST.md.example`.
-6. Run `hard-fail-checklist.md` before sealing.
+5. Record the manifest — see [`MANIFEST.md.example`](MANIFEST.md.example).
+6. Run [`hard-fail-checklist.md`](hard-fail-checklist.md) before sealing.
 
 **Whitespace contract:** `.ma-m` carries `white-space: pre-wrap` so message text keeps its own line breaks. A generator must emit the opening tag and the first child with **nothing between them** — any newline or indentation there is rendered as literal leading whitespace inside the bubble.
 
@@ -237,4 +237,4 @@ Do not fork the template, duplicate the message markup or script, add a second f
 
 ## Class A vs Class B
 
-This is Class B (project-output artifacts). Class A is the system / architecture diagram family. The classes stay distinct; do not fuse. Both inherit Tier 1 + Tier 2, but they bind color differently because they apply it differently. Class A represents system / architecture structures; the **static** Class A patterns are explicitly structural and **state-free**, while some Class A surfaces opt into a semantic *state* or *function* role (Spectral State, Evidence State, Three Functions). This pattern uses color for **participant identity** — a third axis, and pattern-local.
+This is Class B (project-output artifacts). Class A is the system / architecture diagram family. The classes stay distinct; do not fuse. Both inherit Tier 1 + Tier 2, but they bind color differently because they apply it differently. Class A represents system / architecture structures; the **static** Class A patterns are explicitly structural and **state-free**, while some Class A surfaces opt into a semantic *state* or *function* role ([Spectral State](../../spectral-state.md), [Evidence State](../../evidence-state.md), [Three Functions](../../three-functions.md)). This pattern uses color for **participant identity** — a third axis, and pattern-local.
