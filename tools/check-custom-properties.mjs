@@ -80,6 +80,7 @@ const DEPENDENCIES = {
   'patterns/diagram-static-V/diagrams.css':                            [FOUNDATION, SELF],
   'patterns/diagram-static-SEQ/diagrams.css':                          [FOUNDATION, SELF],
   'patterns/diagram-static-FLOW/diagrams.css':                         [FOUNDATION, SELF],
+  'patterns/diagram-static-peer/diagrams-static-peer.css':             [FOUNDATION],
 };
 
 /* Link mapping for templates written from a consumer's layout. A link that

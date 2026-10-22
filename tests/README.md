@@ -640,6 +640,69 @@ just past it, a leaf moved to another container, two siblings declared in the ot
 wrong root count or root parent, a missing node, a dropped fan radius, a changed bound, a
 coordinate that is not a finite number, and the other allocation.
 
+## peer-contract.test.mjs
+
+Guards the **relation contract, rendering and export** of the `diagram-static-peer` pattern, on
+the owner files themselves. It loads the engine, the glyph carrier and the specimen's relation
+sources into one global exactly as a page does, and runs the exporter as a consumer would.
+Scripted, not by eye:
+
+```
+node tests/peer-contract.test.mjs
+```
+
+```text
+P  every specimen spec validates, and its derived structure is the one the page describes:
+   each triangle node one outgoing and one incoming relation, threefold; each neutral-opposites
+   node one of each and one neutral, fourfold; the original square uneven, with no symmetry
+V  every malformed spec or render option checked is its named error, and validate() never
+   throws, even on a spec whose fields cannot be read (V9). V1 and V2 guard exact membership:
+   a relation type or an endpoint that names a property every object inherits (constructor,
+   toString, __proto__, hasOwnProperty, valueOf) is unknown, never one that exists; V3 shows
+   such names work as node ids. V7 reads every array index, so a hole is a missing entry. V8
+   keeps a character XML forbids out of a title, the metadata and the font CSS, markup and CSS
+   punctuation out of a theme value, and a label weight the carrier did not measure out of a
+   standalone file. V10 and V11 refuse a glyph carrier whose letter offsets or measured weight
+   are not finite numbers or are missing, or whose advances are missing, negative or not
+   finite numbers, as GLYPHS_MALFORMED to validate() and to render(), with the page's theme
+   and a resolved one
+C  completeness: an omitted pair is PAIR_UNDECLARED and renders nothing; an 'unspecified'
+   pair validates, is null in the matrix, draws nothing and is never reported as neutral
+R  relabeling and renaming node ids move nothing; rendering is deterministic; every element
+   id and id reference belongs to the plate's prefix, every style rule is scoped to it, and
+   default prefixes never collide (R15); a plate carries exactly three ids, the plate, its
+   title and its field (R16), and mount takes a prefix none of whose three ids the page
+   already carries, beside a plate rendered with a prefix of its own such as peer_1_field
+   (R17); the key lists drawn types only; arrowheads default to
+   the target; a page plate takes only the foundation roles and a standalone one only resolved
+   values
+F  both font carriers match the canonical fonts/InterVariable.woff2, the embedded subset is
+   the recorded one, and the license text travels. The exporter resolves the canonical tokens,
+   and fails, rather than guess or hang, on a token file without --fg-1, with no dark rule,
+   truncated, or with an unclosed comment (F6, F11). It refuses, before writing anything, an
+   invalid spec or a repeated spec id (F12) and two spec ids that differ only in letter case,
+   naming both and their files, while ids that differ in more than letter case keep their own
+   names, case and all (F14); it runs through a symlinked path (F13), writes the same bytes
+   twice, and gives every exported file ids no other file shares (F10)
+E  the specimen's game reading, which is example content and not the contract: L weakly
+   dominates V in the original square, (1/3, 1/3, 1/3, 0) is an equilibrium there, and every
+   (a, 1/2 - a, a, 1/2 - a) is one in the neutral-opposites square, in exact fractions
+X  negative controls on mutated copies of the engine and the exporter: a membership test by
+   property lookup (X1) and a plain-object id map (X2) let inherited names through, a removed
+   completeness check lets an omitted pair through (X3), a moved vertex changes the geometry
+   (X4), a different font hash fails the drift check (X5), unscoped style rules are detected
+   (X6), an engine that skips holes validates a missing node (X7), one without the XML check
+   validates a control character (X8), a mount that checks only the plate and title ids
+   repeats the field id (X9), a carrier check of shape alone validates a NaN offset and draws
+   it (X10), and an exporter without the letter-case check exits 0 on two spec ids that differ
+   only in letter case, reporting eight files whose names are four when case is ignored (X11)
+```
+
+**Determinism is within one runtime.** The engine rounds every coordinate to two decimals, so the
+last-bit differences `Math.cos` and `Math.sin` may show between engines rarely reach the output,
+but a byte comparison across runtimes is not claimed. The test renders no PNG and opens no
+browser: the PNG route and the rendering in Chrome are checked outside it.
+
 ## radial-fixture.html + radial-behavior.mjs
 
 The **browser behavior harness** of `diagram-interactive-radial`. `radial-behavior.mjs` serves

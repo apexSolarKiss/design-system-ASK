@@ -1,0 +1,92 @@
+/* diagrams-static-peer.css — the specimen page's own geometry and its two mode selectors.
+
+   design-system-ASK Class A static scaffold `diagram-static-peer`. DS-owned: re-vendor byte-identical.
+   Loads after colors_and_type.css, surface-text-link.css and surface-document.css.
+
+   TEXT IS THE DOCUMENT REGISTER'S. Every title, paragraph, label, metadata value and table cell on the
+   page carries its register role and takes that role's style; this file sets no type metric and no
+   foreground on text. It owns the column, the figure grid, the plate's frame and the two mode
+   selectors. The plates draw their own letters, connectors and key in SVG (the engine), and follow the
+   page's theme through the foundation roles: the page has no theme selector.
+
+   THE MODE SELECTORS. Each is a quiet pill that reports its state, as the style guide's theme selector
+   does: "view: art plate" or "view: with key", "arrowheads: at target" or "arrowheads: at midpoint".
+   A mode selector is not a compact action, so it takes surface-action.css's contract nowhere: hover
+   drops opacity with no color shift, press is scale(0.97) at --dur-1, and focus is the README's white
+   glow, never the browser default. */
+
+.peer-page {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-9);
+}
+
+.peer-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.peer-mode {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-normal);
+  text-transform: none;
+  color: var(--fg-2);
+  background: var(--surface-glass);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.peer-mode:hover { opacity: 0.92; }
+.peer-mode:active { transform: scale(0.97); }
+.peer-mode:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+@media (prefers-reduced-motion: reduce) {
+  .peer-mode { transition: none; }
+  .peer-mode:active { transform: none; }
+}
+
+/* Figures: two to a row, three for the templates; one to a row at phone width. */
+.peer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-7) var(--space-6);
+}
+.peer-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) {
+  .peer-grid--three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .peer-page { padding: var(--space-6) var(--space-4) var(--space-8); }
+  .peer-grid, .peer-grid--three { grid-template-columns: 1fr; }
+}
+
+.peer-figure {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* The plate keeps its own field; a hairline frames it on the page. */
+.peer-host svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-xs);
+  outline: 1px solid var(--line-2);
+}
+
+/* The keyed view's tables. The register's compositions set display, so a hidden one needs this guard. */
+.peer-keyed-only[hidden] { display: none; }

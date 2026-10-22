@@ -43,6 +43,7 @@
        {"path": "patterns/diagram-static-V/README.md", "label": "diagram-static-V", "output": "diagram-static-V.html"},
        {"path": "patterns/diagram-static-SEQ/README.md", "label": "diagram-static-SEQ", "output": "diagram-static-SEQ.html"},
        {"path": "patterns/diagram-static-FLOW/README.md", "label": "diagram-static-FLOW", "output": "diagram-static-FLOW.html"},
+       {"path": "patterns/diagram-static-peer/README.md", "label": "diagram-static-peer", "output": "diagram-static-peer.html"},
        {"path": "patterns/diagram-interactive-spine/README.md", "label": "diagram-interactive-spine", "output": "diagram-interactive-spine.html"},
        {"path": "patterns/diagram-interactive-radial/README.md", "label": "diagram-interactive-radial", "output": "diagram-interactive-radial.html"},
        {"path": "patterns/_diagram-shared/README.md", "label": "shared diagram support", "output": "diagram-shared.html"},
