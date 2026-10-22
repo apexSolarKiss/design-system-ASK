@@ -33,7 +33,7 @@
 
   <section class="doc-section" id="instances">
     <h2 class="doc-section-title">Instances</h2>
-    <p class="doc-body">A beats K, K beats S, S beats A. The square keeps a directed perimeter and makes the two opposite pairs neutral, so every letter beats one, loses to one and ties the letter across from it.</p>
+    <p class="doc-body">A beats S, S beats K, K beats A: the arrows run clockwise, the order the letters read. The square keeps a directed perimeter and makes the two opposite pairs neutral, so every letter beats one, loses to one and ties the letter across from it.</p>
     <div class="peer-grid">
       <figure class="peer-figure" data-spec="triangle.A-S-K" data-columns="Beats|Loses to">
         <div class="peer-host"></div>
@@ -55,17 +55,17 @@
   </section>
 
   <section class="doc-section" id="square">
-    <h2 class="doc-section-title">The square // neutral opposites beside the original</h2>
-    <p class="doc-body">The original square declares all six pairs as directed. Each letter meets three others, and three directed relations cannot split evenly into outgoing and incoming: L and E beat two letters, O and V one. The neutral-opposites square keeps the four perimeter directions and makes the two diagonals neutral. A quarter-turn then carries the relation pattern onto itself, and every letter has the same standing.</p>
-    <p class="doc-body">Read as a game, with +1 for a win, &minus;1 for a loss and 0 for a tie, the original square's unique equilibrium plays L, E and O equally and V never. L weakly dominates V: replacing V with L never worsens the result, though against an opponent who always plays O, V wins just as L does. In the neutral-opposites square every mix (a, &frac12; &minus; a, a, &frac12; &minus; a) in L, E, O, V order, for 0 &le; a &le; &frac12;, is an equilibrium: all four equally at a = &frac14;, or an equal mix of one opposite pair at either end. Every letter has the same standing, without all four being required in play.</p>
+    <h2 class="doc-section-title">The square // neutral opposites beside the all-directed square</h2>
+    <p class="doc-body">The all-directed square declares all six pairs as directed. Each letter meets three others, and three directed relations cannot split evenly into outgoing and incoming: O and V beat two letters, L and E one. The neutral-opposites square keeps the four perimeter directions and makes the two diagonals neutral. A quarter-turn then carries the relation pattern onto itself, and every letter has the same standing.</p>
+    <p class="doc-body">Read as a game, with +1 for a win, &minus;1 for a loss and 0 for a tie, the all-directed square's unique equilibrium plays E, O and V equally and L never. V weakly dominates L: replacing L with V never worsens the result, though against an opponent who always plays E, L wins just as V does. In the neutral-opposites square every mix (a, &frac12; &minus; a, a, &frac12; &minus; a) in L, E, O, V order, for 0 &le; a &le; &frac12;, is an equilibrium: all four equally at a = &frac14;, or an equal mix of one opposite pair at either end. Every letter has the same standing, without all four being required in play.</p>
     <div class="peer-grid">
       <figure class="peer-figure" data-spec="square.L-E-O-V.original" data-columns="Beats|Loses to">
         <div class="peer-host"></div>
         <figcaption class="doc-labeled">
-          <span class="doc-label">Comparison // the original square</span>
+          <span class="doc-label">Comparison // the all-directed square</span>
           <span class="doc-meta" data-relations></span>
         </figcaption>
-        <div class="doc-table-scroll" role="region" aria-label="Original square relations"></div>
+        <div class="doc-table-scroll" role="region" aria-label="All-directed square relations"></div>
       </figure>
       <figure class="peer-figure" data-spec="square.L-E-O-V" data-columns="Beats|Loses to|Ties">
         <div class="peer-host"></div>
@@ -80,7 +80,7 @@
 
   <section class="doc-section" id="templates">
     <h2 class="doc-section-title">Templates</h2>
-    <p class="doc-body">Each template is a relation source with numbered slots, listed clockwise from the top of the triangle or the upper left of the square. Both instances are these templates with their labels replaced. R-P-S shows the triangle carrying the original game.</p>
+    <p class="doc-body">Each template is a relation source with numbered slots, listed clockwise from the top of the triangle or the upper left of the square. Both instances are these templates with their labels replaced. R-S-P shows the triangle carrying rock, paper, scissors, with R at the top and the arrows clockwise.</p>
     <div class="peer-grid peer-grid--three">
       <figure class="peer-figure" data-spec="triangle.template">
         <div class="peer-host"></div>
@@ -99,7 +99,7 @@
       <figure class="peer-figure" data-spec="triangle.R-P-S">
         <div class="peer-host"></div>
         <figcaption class="doc-labeled">
-          <span class="doc-label">Relabeling // R-P-S</span>
+          <span class="doc-label">Relabeling // R-S-P</span>
           <span class="doc-meta" data-relations></span>
         </figcaption>
       </figure>
