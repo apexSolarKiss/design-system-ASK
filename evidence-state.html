@@ -5,16 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evidence State // profile key</title>
 <meta name="description" content="Visual key for the Evidence State profile under the Spectral State family. Reads evidence-state.css live.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- Visual key for the Evidence State profile (evidence-state.css + evidence-state.md).
      Reads the foundation + Spectral State + this profile live; theme-aware (light default ·
-     dark via prefers-color-scheme / [data-theme="dark"]). Open directly. -->
+     dark via prefers-color-scheme / [data-theme="dark"]), inside the site's
+     surface-shell chrome. Open directly. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="spectral-state.css">
 <link rel="stylesheet" href="evidence-state.css">
 <link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-action.css">
+<link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
-  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-attachment: fixed;
-         color: var(--fg-1); font-family: var(--font-sans); font-weight: 200; padding: 48px 56px; }
+  /* The foundation binds the ground, ink and face; the shell supplies the inset. */
+  body { min-height: 100vh; }
   .sub { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
          color: var(--fg-2); margin-top: var(--space-1); margin-bottom: 36px; }
   /* auto-fit rather than a fixed column count. `minmax(0, 1fr)` let a column
@@ -41,7 +47,24 @@
 </style>
 </head>
 <body>
-  <h1 class="doc-title">Evidence State</h1>
+<div class="surface">
+  <header class="surface-head">
+    <div class="surface-head-main">
+      <a class="surface-mark" href="index.html" aria-label="design-system-ASK home">
+        <img class="surface-mark-light" src="assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+        <img class="surface-mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+      </a>
+      <nav class="surface-breadcrumb" aria-label="Breadcrumb">
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss/design">design</a> <span class="sep" aria-hidden="true">//</span> <a href="index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="patterns/index.html">pattern previews</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">Evidence State</span></h1>
+      </nav>
+      <p class="surface-lede">Visual key for the Evidence State profile under the Spectral State family. Reads evidence-state.css live.</p>
+    </div>
+  </header>
+
+  <hr class="surface-rule">
+
+  <main class="surface-payload">
+  <h2 class="doc-title">Evidence State</h2>
   <div class="sub">v0.1 // profile under the Spectral State family · Spectral State unchanged</div>
 
   <div class="grid">
@@ -76,5 +99,32 @@
     <div class="row" style="border-left:3px solid var(--evidence-weakened)"><span class="d" style="background:var(--evidence-weakened)"></span><span class="lbl">Assumption B</span><span class="st">WEAKENED</span></div>
     <div class="row" style="border-left:3px dashed var(--evidence-not-yet-testable)"><span class="d hollow"></span><span class="lbl">Assumption C</span><span class="st">NOT YET TESTABLE</span></div>
   </div>
+  </main>
+
+  <footer class="surface-footer">
+    <a class="surface-action surface-action--secondary" href="index.html">design-system-ASK</a>
+    <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
+    <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+  </footer>
+
+  <!-- The breadcrumb names the path; the panel derives it. The gallery links
+       the keys, so they sit under it; the local list is the five keys, this
+       one marked current — no ancestor is repeated. -->
+  <template class="surface-nav-source">
+    <ul class="surface-nav-local">
+      <li><a href="spectral-state.html">Spectral State</a></li>
+      <li data-surface-nav-current></li>
+      <li><a href="review-semantics.html">Review Semantics</a></li>
+      <li><a href="three-functions.html">Three Functions</a></li>
+      <li><a href="surface-document.html">Document register and surface treatments</a></li>
+    </ul>
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    </p>
+  </template>
+
+</div>
+<script src="patterns/surface-shell/surface-shell.js"></script>
 </body>
 </html>

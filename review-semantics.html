@@ -5,11 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Review Semantics // key</title>
 <meta name="description" content="Visual key for Review Semantics: the Review State profile under the Spectral State family and the document annotation composition. Reads review-semantics.css live.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- Visual key for Review Semantics (review-semantics.css + review-semantics.md).
      Reads the foundation, the compact-action module, the four register modules, the
      two state modules and this module live, in the contract's load order; theme-aware
-     (light default · dark via prefers-color-scheme / [data-theme="dark"]). Open
-     directly. The content is schematic. -->
+     (light default · dark via prefers-color-scheme / [data-theme="dark"]), inside
+     the site's surface-shell chrome, which loads after them. Open directly. The
+     content is schematic. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="surface-panel.css">
@@ -19,24 +23,45 @@
 <link rel="stylesheet" href="spectral-state.css">
 <link rel="stylesheet" href="evidence-state.css">
 <link rel="stylesheet" href="review-semantics.css">
+<link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
-  /* Page ground. Not background-attachment: fixed — on a page taller than the
-     viewport a fixed gradient covers only the first screen. */
-  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
-         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
-  .page { box-sizing: border-box; max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
-  /* At the narrowest width the side padding stays --space-5: a range's scope
-     rail hangs in that lane, outside the content edge. */
-  @media (max-width: 640px) { .page { padding: var(--space-6) var(--space-5); } }
+  /* The foundation binds the ground, ink and face; the shell supplies the inset. */
+  body { min-height: 100vh; }
+  /* The key's reading measure, inside the shell's: the content width its
+     940px padded column gave. A range's scope rail hangs in the shell's side
+     inset, outside the content edge. */
+  .key-measure { max-width: calc(940px - 2 * var(--space-6)); }
+  /* Fragment clearance, as the reading pages give it: in the shell's desktop
+     mode a fragment target clears the seated mark, using the shell's resting
+     depth. A margin on the target, not padding on the root, so the browser's
+     scroll restoration on a reload is left alone. */
+  :root[data-surface-nav-mode="desktop"] [id] { scroll-margin-top: calc(var(--surface-nav-top-depth) + var(--space-5)); }
   .key-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
 </style>
 </head>
 <body>
-<main class="page doc-flow">
+<div class="surface">
+  <header class="surface-head">
+    <div class="surface-head-main">
+      <a class="surface-mark" href="index.html" aria-label="design-system-ASK home">
+        <img class="surface-mark-light" src="assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+        <img class="surface-mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+      </a>
+      <nav class="surface-breadcrumb" aria-label="Breadcrumb">
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss/design">design</a> <span class="sep" aria-hidden="true">//</span> <a href="index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="patterns/index.html">pattern previews</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">Review Semantics</span></h1>
+      </nav>
+      <p class="surface-lede">Visual key for Review Semantics: the Review State profile under the Spectral State family and the document annotation composition. Reads review-semantics.css live.</p>
+    </div>
+  </header>
+
+  <hr class="surface-rule">
+
+  <main class="surface-payload">
+<div class="key-measure doc-flow">
 
   <header class="doc-titled">
     <p class="doc-label">v0.1 // profile under the Spectral State family · opt-in document composition</p>
-    <h1 class="doc-title">Review Semantics</h1>
+    <h2 class="doc-title">Review Semantics</h2>
     <p class="doc-lede">One review vocabulary, composed with the document register, Evidence State and Spectral State. Each of five questions keeps its own answer: what a passage is doing, where it came from, what the evidence supports, what judgment is asked or made, and what condition an architectural element is in.</p>
   </header>
 
@@ -424,7 +449,34 @@
   <footer class="doc-titled">
     <p class="doc-meta">Schematic content. Reads the foundation, the register modules, Spectral State, Evidence State and review-semantics.css live.</p>
   </footer>
-</main>
+</div>
+  </main>
+
+  <footer class="surface-footer">
+    <a class="surface-action surface-action--secondary" href="index.html">design-system-ASK</a>
+    <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
+    <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+  </footer>
+
+  <!-- The breadcrumb names the path; the panel derives it. The gallery links
+       the keys, so they sit under it; the local list is the five keys, this
+       one marked current — no ancestor is repeated. -->
+  <template class="surface-nav-source">
+    <ul class="surface-nav-local">
+      <li><a href="spectral-state.html">Spectral State</a></li>
+      <li><a href="evidence-state.html">Evidence State</a></li>
+      <li data-surface-nav-current></li>
+      <li><a href="three-functions.html">Three Functions</a></li>
+      <li><a href="surface-document.html">Document register and surface treatments</a></li>
+    </ul>
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    </p>
+  </template>
+
+</div>
 <script src="surface-document-overflow.js"></script>
+<script src="patterns/surface-shell/surface-shell.js"></script>
 </body>
 </html>
