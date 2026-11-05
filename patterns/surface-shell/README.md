@@ -964,6 +964,21 @@ underline stays visible beneath it — these rows are blocks and do not fragment
 so the breadcrumb's fragment-native focus anatomy would be the wrong one to copy.
 The current row is a `span`, carries no underline, and has no hover state.
 
+**A destination on the current page closes the panel before it is followed.** A
+row or utility may name a section of the page it is on by its fragment
+(`href="#section"`, or the page's own address with one). Followed while the
+panel is open, its scroll would be undone by the page's scroll lock, and the
+panel would still cover the page. So the runtime closes the panel first and
+follows the fragment once the lock is released: the hash, the history entry and
+the landing, under the page's `scroll-padding` and the target's `scroll-margin`,
+are the browser's own. Chosen from the keyboard, focus then moves to the
+destination, as after a skip link, so the next Tab continues from that section.
+Chosen by pointer or touch, the runtime moves no focus itself, because a
+programmatic focus on page content would wear a keyboard ring in iOS Safari;
+focus is left to the browser's fragment navigation.
+A modified press, a link with another target, a destination on another page
+and a bare `#`, which names no section, are left to the browser.
+
 ### What a declining surface gets
 
 Nothing. That is the test, and it is worth running: no `surface-shell.js`, no
