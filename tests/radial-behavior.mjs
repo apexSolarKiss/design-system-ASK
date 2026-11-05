@@ -1142,7 +1142,7 @@ async function run() {
         await cp.close();
       }
 
-      /* C20: the two shells themselves, as the gallery serves them: the reference specimen and the
+      /* C20: the two shells themselves, opened directly as generated: the reference specimen and the
          synthetic composition, each with the complete module stack */
       for (const [label, file] of [['the reference shell', 'diagram-interactive-radial.html'], ['the synthetic shell', 'diagram-interactive-radial.neutral.html']]) {
         const sh = await open(b, `${base}/patterns/_preview/${file}`, { width: 1600, height: 1000, ready: false });

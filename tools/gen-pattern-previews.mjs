@@ -6,12 +6,24 @@
 // no local `_dsa-tokens/` mirror. The previews consume the canonical pattern
 // files BY REFERENCE (`../<pattern-dir>/…`) and the DS-repo-root tokens/fonts
 // (`../../…`); they never copy them. This generator IS the parity mechanism:
-// re-run it and `git diff --exit-code patterns/_preview/` — any drift means a
-// canonical template changed and the preview must be regenerated.
+// `--check` compares both generated sets with what it would write — any drift
+// means a canonical template or the host markup below changed and the set must
+// be regenerated; after regenerating, `git diff --exit-code patterns/_preview/
+// patterns/view/` shows what changed.
 //
 // It changes NO canonical consumer template and adds NO downstream obligation.
 //
-// Usage: node tools/gen-pattern-previews.mjs   (run from the repo root)
+// It also writes one HOST page per preview, patterns/view/<name>.html: the site's surface-shell chrome
+// (mark, breadcrumb, navigation, footer) around a frame that loads the specimen above, unchanged. The
+// gallery's pattern cards link the hosts; a host links its specimen as its standalone action. The host
+// chrome is authored HERE, in renderHost: it consumes surface-shell for the host's own chrome, so a
+// shell contract change is made in renderHost, regenerated, checked and verified like the gallery page.
+// HOST_SPECS below declares, per preview, why it needs a frame of its own and how the frame is sized:
+// 'viewport' for a specimen that owns its window (a fixed-viewport diagram, a sticky-header document,
+// the self-chromed shell specimen), 'flow' for a document that scrolls with the page, which the host
+// grows to the document's height when the frame is same-origin.
+//
+// Usage: node tools/gen-pattern-previews.mjs [--check]   (run from the repo root)
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +31,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const PATTERNS = path.join(ROOT, 'patterns');
 const OUT = path.join(PATTERNS, '_preview');
+const VIEW = path.join(PATTERNS, 'view');
 
 // No shell declares preview fit tuning. The FLOW previews once declared every panel available, so
 // panels overlaid the figure instead of shrinking it; the canonical FLOW Fit now tests the panels
@@ -217,32 +230,369 @@ function render(s) {
   return html;
 }
 
+// ---- Host pages (patterns/view/) -------------------------------------------------------------------
+// A host is the ordinary site page a preview is inspected in. It composes the surface-shell pattern the
+// way the gallery does — same mark, breadcrumb grammar, footer family and navigation runtime — and puts
+// the specimen in a frame, so the specimen keeps its own document: its window, fixed layout, landmarks,
+// theme hooks and global ids. The host writes nothing into that document; in a flow stage it touches only
+// the specimen's address and scroll restoration, as the host script's notes below say. It reads a
+// same-origin flow specimen's layout to size the frame, passes its own query and fragment through at load
+// (#light, #dark, ?theme=, #node=, ?export=), so a host link opens the specimen the way a direct specimen
+// link does, and sends a link that leaves the specimen's document to the whole tab, as it goes when the
+// specimen stands alone. A flow specimen does not scroll inside its frame, so the host scrolls its own
+// window to the element a fragment names, clear of the shell's band, as a document of its own would.
+
+// Why each preview takes a frame rather than direct composition, and how the frame is sized. Every
+// preview must be declared; the transform refuses to emit a host without a reason.
+const FIXED_APP = 'a fixed-viewport application: its shell is position: fixed over a body that does not scroll, so it needs a window of its own';
+const HOST_SPECS = {
+  'diagram-static-H.html':                   { stage: 'viewport', why: FIXED_APP },
+  'diagram-static-V.html':                   { stage: 'viewport', why: FIXED_APP },
+  'diagram-static-SEQ.html':                 { stage: 'viewport', why: FIXED_APP },
+  'diagram-static-FLOW-static.html':         { stage: 'viewport', why: FIXED_APP, note: 'static view' },
+  'diagram-static-FLOW-interactive.html':    { stage: 'viewport', why: FIXED_APP, note: 'interactive view' },
+  'diagram-static-peer.html':                { stage: 'flow', why: 'a complete document with its own main landmark, h1 and page script' },
+  'diagram-interactive-spine.html':          { stage: 'viewport', why: FIXED_APP },
+  'diagram-interactive-radial.html':         { stage: 'viewport', why: FIXED_APP, note: 'Consciousness + free will, the captured research reference' },
+  'diagram-interactive-radial.neutral.html': { stage: 'viewport', why: FIXED_APP, note: 'Vellmark parks, the synthetic composition' },
+  'output-artifact.html':                    { stage: 'flow', why: 'a sealed-use document scaffold with its own root theme rules, main landmark and h1' },
+  'message-archive-default-ASK.html':        { stage: 'viewport', why: 'a document whose sticky search bar and day headings scroll inside its own window' },
+  'surface-shell.html':                      { stage: 'viewport', why: 'the shell specimen itself: a second surface-shell whose runtime binds the first .surface in its own document' },
+};
+
+const HOST_MARKER = (out, why) => `<!-- ============================================================
+     OWNER PREVIEW HOST — design-system-ASK/patterns/view/${out}
+     GENERATED by tools/gen-pattern-previews.mjs. The site's surface-shell
+     chrome around a frame that loads ../_preview/${out}, unchanged.
+     Framed because the specimen is ${why}.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (node tools/gen-pattern-previews.mjs --check).
+     ============================================================ -->`;
+
+// The stage clears the shell's own furniture: in desktop mode the seated mark's band at the top, on a
+// phone the seat's reserve at the bottom, so a stage scrolled to its edge fits the window. A flow stage
+// starts at the same height and the script below grows it to the document once the frame is readable.
+// The scroll padding is the reading pages' fragment clearance; the script places a flow specimen's
+// fragment target at it, and the browser honors it when it carries the specimen's own fragment scroll
+// up to the page. It applies only once the script has first placed a target or followed a link inside
+// the specimen (.pv-clear), so it is absent while the browser restores a reloaded page's position.
+const HOST_STYLE = `<style>
+  body { min-height: 100vh; }
+  :root.pv-clear[data-surface-nav-mode="desktop"] { scroll-padding-top: calc(var(--surface-nav-top-depth) + var(--space-5)); }
+  .pv-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0 0 var(--space-5); }
+  .pv-stage { margin: 0; }
+  .pv-stage .caption { margin: 0 0 var(--space-3); }
+  .pv-frame { display: block; width: 100%; border: 1px solid var(--line-1); background: transparent; }
+  .pv-frame { height: 82vh; height: 82dvh; min-height: 20rem; }
+  :root[data-surface-nav-mode="desktop"] .pv-frame { height: calc(100dvh - var(--surface-nav-top-depth) - 2 * var(--space-5)); }
+  :root[data-surface-nav-mode="mobile"] .pv-frame { height: calc(100dvh - var(--surface-nav-reserve) - var(--space-5)); }
+</style>`;
+
+// Runs straight after the frame, which has no src until this sets one, so the specimen loads once, at
+// the host's own query and fragment, and the load listener is in place before it starts. A change to the
+// host's fragment before the frame has loaded re-plans that load. After it, the frame is never navigated
+// for the host's address: a flow host places the target a new host fragment names, a viewport host leaves
+// its specimen as it is, and Back and Forward between host addresses are the browser's own restoration.
+// The host tells a new host entry from a return to one by a marker it keeps in its own history.state.
+// The two addresses are then independent: a later host fragment does not reach a viewport specimen (a
+// radial #node= change, for one), and after a host-level edit a link inside the specimen adds history the
+// way the specimen's own address, not the host's, dictates.
+// The standalone action follows the host's address.
+// Fragments in a flow stage. A fragment moves the page only when it names an element in the specimen, so
+// the theme fragments and application state (#light, #dark, #node=) never do. Before load the host cannot
+// see the specimen, so it holds back any fragment that is neither theme nor state: the frame loads at a
+// placeholder that names nothing (so the specimen reads its theme exactly as it would at the real
+// address) and takes the real fragment in place once it has grown and its fonts are ready, or after two
+// seconds. The page then moves once, to the target, rather than first toward a frame still at its
+// starting height. If the reader has scrolled or navigated meanwhile (a scroll inside the frame before
+// it grew is carried into the page), the host does not move the page: it gives the frame's address the
+// fragment without a navigation (history.replaceState), or drops it. A reload or a return through history keeps the page where the browser restores it, as a
+// document of its own would, in the same way; if the browser brings the frame back at its last address,
+// fragment included, the host first parks it at the placeholder, because navigating to a fragment makes
+// the browser scroll the page to it, and keep doing so as the frame grows. The host places a target at
+// its scroll padding, measuring the frame from layout offsets, because the frame's on-screen box can lag
+// while the browser is still carrying the specimen's own fragment scroll up to the page. It leaves a
+// landing within a pixel of its own alone, so the browser's fractional landing is not nudged. Leaving a place
+// inside the specimen, by a link or by Back or Forward, records where the page was; returning to it
+// restores that, as it would in a document of its own. For that the host takes over the specimen's
+// scroll restoration, which a frame that never scrolls inside has no use for, and which would otherwise
+// move the page after the host had. Positions are kept per specimen address for the life of the page.
+// A file:// frame is not readable from its host: there a flow stage keeps its starting height and
+// scrolls inside, so the specimen scrolls to its own fragment, and a link inside the specimen opens in
+// the frame; the standalone action opens the specimen alone.
+const HOST_SCRIPT = `<script>
+(function () {
+  var frame = document.currentScript.previousElementSibling;
+  var base = frame.getAttribute('data-pv-src');
+  var solo = document.querySelector('a[data-pv-standalone]');
+  var flow = frame.getAttribute('data-pv-stage') === 'flow';
+  var HOLD = '#pv-held';
+  var held = '', loaded = false, touched = false, spots = {}, pending = null, y0 = window.pageYOffset;
+  var nav = window.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+  var keep = !!nav && (nav.type === 'reload' || nav.type === 'back_forward');
+  function stamp() {
+    try {
+      var st = history.state, o = {};
+      if (st && typeof st === 'object') for (var k in st) o[k] = st[k];
+      o.pvHost = 1;
+      history.replaceState(o, '');
+    } catch (e) {}
+  }
+  if (!(history.state && history.state.pvHost)) stamp();
+  function touch(e) {
+    if (e.type === 'keydown' && (e.metaKey || e.ctrlKey || e.altKey || !/^(PageUp|PageDown|Home|End|ArrowUp|ArrowDown| |Spacebar|Tab|Enter)$/.test(e.key))) return;
+    touched = true;
+  }
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) { window.addEventListener(t, touch, { capture: true, passive: true }); });
+  function plan() {
+    var h = location.hash;
+    if (solo) solo.href = base + location.search + h;
+    held = flow && h.length > 1 && h !== '#light' && h !== '#dark' && h.indexOf('=') < 0 ? h : '';
+    return base + location.search + (held ? HOLD : h);
+  }
+  function anchor(d, h) {
+    var raw = (h || '').slice(1), id = raw;
+    if (!raw || raw === 'light' || raw === 'dark') return null;
+    try { id = decodeURIComponent(raw); } catch (e) {}
+    var el = d.getElementById(raw) || d.getElementById(id);
+    if (el) return el;
+    var names = [raw, id];
+    for (var j = 0; j < names.length; j++) {
+      var named = d.getElementsByName(names[j]);
+      for (var i = 0; i < named.length; i++) if (named[i].tagName === 'A') return named[i];
+    }
+    return null;
+  }
+  function clear() { document.documentElement.classList.add('pv-clear'); }
+  function reveal(el) {
+    clear();
+    var w = frame.contentWindow, y = frame.clientTop;
+    for (var n = frame; n; n = n.offsetParent) y += n.offsetTop;
+    y += el.getBoundingClientRect().top + w.pageYOffset;
+    y -= (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0) + (parseFloat(w.getComputedStyle(el).scrollMarginTop) || 0);
+    y = Math.max(0, Math.round(y));
+    if (Math.abs(window.pageYOffset - y) > 1) window.scrollTo(0, y);
+  }
+  function arrive(e) {
+    var to = (e && e.newURL) || frame.contentWindow.location.href, pushed = pending === to;
+    if (pushed) pending = null;
+    if (!pushed) {
+      if (e && e.oldURL) spots[e.oldURL] = window.pageYOffset;
+      if (Object.prototype.hasOwnProperty.call(spots, to)) { window.scrollTo(0, spots[to]); return; }
+    }
+    var el = anchor(frame.contentDocument, to.indexOf('#') < 0 ? '' : to.slice(to.indexOf('#')));
+    if (el) reveal(el);
+  }
+  function fit() {
+    try {
+      var d = frame.contentDocument, w = frame.contentWindow;
+      if (!d || !d.body) return;
+      var bottom = 0;
+      Array.prototype.forEach.call(d.body.children, function (el) {
+        if (/^(SCRIPT|TEMPLATE|STYLE)$/.test(el.tagName)) return;
+        var r = el.getBoundingClientRect();
+        bottom = Math.max(bottom, r.bottom + parseFloat(w.getComputedStyle(el).marginBottom || 0));
+      });
+      var h = Math.ceil(bottom + w.scrollY + parseFloat(w.getComputedStyle(d.body).paddingBottom || 0));
+      if (h > 0 && Math.abs(h - frame.offsetHeight) > 1) frame.style.height = h + 'px';
+    } catch (e) {}
+  }
+  function leaveWhole(d) {
+    d.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!a || a.hasAttribute('download') || (a.getAttribute('target') && a.getAttribute('target') !== '_self')) return;
+      var u, here;
+      try { u = new URL(a.href); here = new URL(d.location.href); } catch (x) { return; }
+      if (!/^(https?|file):$/.test(u.protocol)) return;
+      if (u.origin === here.origin && u.pathname === here.pathname && u.search === here.search) {
+        if (flow && u.href.indexOf('#') >= 0) {
+          if (u.href === here.href) { var t = anchor(d, u.hash); if (t) setTimeout(function () { reveal(t); }, 0); }
+          else { spots[here.href] = window.pageYOffset; pending = u.href; clear(); }
+        }
+        return;
+      }
+      var had = a.getAttribute('target');
+      a.setAttribute('target', '_top');
+      setTimeout(function () { if (had === null) a.removeAttribute('target'); else a.setAttribute('target', had); }, 0);
+    }, true);
+  }
+  frame.addEventListener('load', function () {
+    var d = null, w = frame.contentWindow;
+    try { if (w.location.href === 'about:blank') return; } catch (e) {}
+    loaded = true;
+    try { d = frame.contentDocument; } catch (e) {}
+    if (!d || !d.body) {
+      var h0 = held; held = '';
+      if (h0) try { w.location.replace(base + location.search + h0); } catch (e) {}
+      return;
+    }
+    leaveWhole(d);
+    if (!flow) return;
+    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (t) { d.addEventListener(t, touch, { capture: true, passive: true }); });
+    if (keep && anchor(d, w.location.hash)) {
+      held = w.location.hash;
+      pending = w.location.href.split('#')[0] + HOLD;
+      w.location.replace(pending);
+    }
+    var inner = w.pageYOffset;
+    fit();
+    if (inner > 0) { touched = true; window.scrollTo(0, window.pageYOffset + inner); }
+    try { new w.ResizeObserver(fit).observe(d.body); } catch (e) {}
+    try { w.history.scrollRestoration = 'manual'; } catch (e) {}
+    w.addEventListener('hashchange', arrive);
+    var ready = d.fonts && d.fonts.ready ? Promise.race([d.fonts.ready, new Promise(function (r) { setTimeout(r, 2000); })]) : Promise.resolve();
+    ready.then(function () {
+      fit();
+      var h = held; held = '';
+      if (h) {
+        if (w.location.hash !== HOLD) return;
+        var to = w.location.href.split('#')[0] + h;
+        if (keep || touched || window.pageYOffset !== y0) { try { w.history.replaceState(w.history.state, '', to); } catch (e) {} return; }
+        pending = to;
+        clear();
+        w.location.replace(to);
+        return;
+      }
+      var el = !keep && !touched && anchor(d, w.location.hash);
+      if (el) reveal(el);
+    });
+  });
+  window.addEventListener('hashchange', function () {
+    if (!loaded) { if (!(history.state && history.state.pvHost)) stamp(); frame.src = plan(); return; }
+    if (solo) solo.href = base + location.search + location.hash;
+    held = '';
+    var fresh = !(history.state && history.state.pvHost);
+    if (fresh) stamp();
+    if (!flow || !fresh) return;
+    var d = null;
+    try { d = frame.contentDocument; } catch (e) {}
+    var el = d && anchor(d, location.hash);
+    if (el) reveal(el);
+  });
+  frame.src = plan();
+})();
+</script>`;
+
+const REPO_ACTION = '<a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>';
+const SEP = '<span class="sep" aria-hidden="true">//</span>';
+
+function renderHost(s) {
+  const name = s.out.replace(/\.html$/, '');
+  const specimen = `../_preview/${s.out}`;
+  const h = HOST_SPECS[s.out];
+  if (!h || (h.stage !== 'viewport' && h.stage !== 'flow') || !h.why) throw new Error(`gen-pattern-previews: ${s.out} has no host declaration (a stage, 'viewport' or 'flow', and why it is framed) — refusing to emit.`);
+  const what = `The ${s.dir} owner preview${h.note ? ', ' + h.note : ''}.`;
+  const siblings = SHELLS.map((o) => o.out === s.out
+    ? '      <li data-surface-nav-current></li>'
+    : `      <li><a href="${o.out}">${o.out.replace(/\.html$/, '')}</a></li>`).join('\n');
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // pattern previews // ${name}</title>
+<meta name="dsa-owner-preview" content="do-not-vendor; generated host for patterns/_preview/${s.out}">
+<meta name="description" content="${what} Framed by the design-system-ASK site.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+${HOST_MARKER(s.out, h.why)}
+${THEME_INIT}
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="../../surface-action.css">
+<link rel="stylesheet" href="../surface-shell/surface-shell.css">
+${HOST_STYLE}
+</head>
+<body>
+<div class="surface">
+  <header class="surface-head">
+    <div class="surface-head-main">
+      <a class="surface-mark" href="../../index.html" aria-label="design-system-ASK home">
+        <img class="surface-mark-light" src="../../assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+        <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+      </a>
+      <nav class="surface-breadcrumb" aria-label="Breadcrumb">
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> ${SEP} <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> ${SEP} <a href="https://a-s-k.studio/apex-solar-kiss/design">design</a> ${SEP} <a href="../../index.html">design-system-ASK</a> ${SEP} <a href="../index.html">pattern previews</a> ${SEP} <span class="page" aria-current="page">${name}</span></h1>
+      </nav>
+      <p class="surface-lede">${what} The frame below holds the generated specimen, unchanged.</p>
+      <span class="surface-badge">owner preview &gt;&gt; do not vendor</span>
+    </div>
+  </header>
+
+  <hr class="surface-rule">
+
+  <main class="surface-payload">
+    <p class="pv-actions"><a class="surface-action surface-action--secondary" href="${specimen}" data-pv-standalone>open standalone specimen</a></p>
+    <figure class="pv-stage">
+      <figcaption class="caption">specimen</figcaption>
+      <iframe class="pv-frame" data-pv-src="${specimen}" data-pv-stage="${h.stage}" title="${name} specimen"></iframe>
+${HOST_SCRIPT}
+      <noscript><p class="caption">the frame needs JavaScript // open the standalone specimen above</p></noscript>
+    </figure>
+  </main>
+
+  <footer class="surface-footer">
+    <a class="surface-action surface-action--secondary" href="../../index.html">design-system-ASK</a>
+    <a class="surface-action surface-action--secondary" href="../index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="../../preview/styleguide.html">style guide</a>
+    ${REPO_ACTION}
+  </footer>
+
+  <!-- The breadcrumb names the path; the panel derives it. The local list is the
+       previews themselves, this one marked current — no ancestor is repeated. -->
+  <template class="surface-nav-source">
+    <ul class="surface-nav-local">
+${siblings}
+    </ul>
+    <p class="surface-nav-utilities">
+      ${REPO_ACTION}
+    </p>
+  </template>
+
+</div>
+<script src="../surface-shell/surface-shell.js"></script>
+</body>
+</html>
+`;
+}
+
 const expected = new Map(SHELLS.map(s => [s.out, render(s)]));           // filename -> content
+const expectedHosts = new Map(SHELLS.map(s => [s.out, renderHost(s)])); // host filename -> content
 const CHECK = process.argv.includes('--check');
 
 // The parity gate must catch BOTH content drift and SET drift (a retired/renamed canonical
 // shell leaving a stale orphan preview behind). So we always account for the full on-disk
 // *.html set, never just the expected files.
 const onDisk = fs.existsSync(OUT) ? fs.readdirSync(OUT).filter(f => f.endsWith('.html')) : [];
+const onDiskHosts = fs.existsSync(VIEW) ? fs.readdirSync(VIEW).filter(f => f.endsWith('.html')) : [];
 
 if (CHECK) {
   const missing = [], differing = [], unexpected = [];
-  for (const [name, content] of expected) {
-    const p = path.join(OUT, name);
-    if (!fs.existsSync(p)) missing.push(name);
-    else if (fs.readFileSync(p, 'utf8') !== content) differing.push(name);
+  for (const [dir, rel, want, have] of [[OUT, '_preview/', expected, onDisk], [VIEW, 'view/', expectedHosts, onDiskHosts]]) {
+    for (const [name, content] of want) {
+      const p = path.join(dir, name);
+      if (!fs.existsSync(p)) missing.push(rel + name);
+      else if (fs.readFileSync(p, 'utf8') !== content) differing.push(rel + name);
+    }
+    for (const f of have) if (!want.has(f)) unexpected.push(rel + f);   // orphan / stale preview or host
   }
-  for (const f of onDisk) if (!expected.has(f)) unexpected.push(f);   // orphan / stale preview
   const clean = !missing.length && !differing.length && !unexpected.length;
-  console.log(JSON.stringify({ check: true, clean, expectedCount: expected.size, onDiskCount: onDisk.length, missing, differing, unexpected }, null, 2));
+  console.log(JSON.stringify({ check: true, clean, expectedCount: expected.size + expectedHosts.size, onDiskCount: onDisk.length + onDiskHosts.length, missing, differing, unexpected }, null, 2));
   process.exit(clean ? 0 : 1);
 }
 
-// write mode: remove EVERY existing generated *.html first (so a retired shell cannot leave an
-// orphan), then write the expected set. `git diff --exit-code patterns/_preview/` then shows
-// content-drift; the orphan removal shows set-drift as a deletion in the same diff.
+// write mode: remove EVERY existing generated *.html in both sets first (so a retired shell cannot
+// leave an orphan), then write the expected sets. `git diff --exit-code patterns/_preview/ patterns/view/`
+// then shows content-drift; the orphan removal shows set-drift as a deletion in the same diff.
 fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync(VIEW, { recursive: true });
 for (const f of onDisk) fs.rmSync(path.join(OUT, f));
+for (const f of onDiskHosts) fs.rmSync(path.join(VIEW, f));
 const results = [];
-for (const s of SHELLS) { fs.writeFileSync(path.join(OUT, s.out), expected.get(s.out)); results.push({ out: s.out, from: s.src, bytes: expected.get(s.out).length }); }
-console.log(JSON.stringify({ generated: results.length, removedBeforeWrite: onDisk.length, files: results }, null, 2));
+for (const s of SHELLS) {
+  fs.writeFileSync(path.join(OUT, s.out), expected.get(s.out));
+  fs.writeFileSync(path.join(VIEW, s.out), expectedHosts.get(s.out));
+  results.push({ out: s.out, from: s.src, bytes: expected.get(s.out).length, host: 'view/' + s.out, hostBytes: expectedHosts.get(s.out).length });
+}
+console.log(JSON.stringify({ generated: results.length * 2, removedBeforeWrite: onDisk.length + onDiskHosts.length, files: results }, null, 2));

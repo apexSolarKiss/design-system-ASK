@@ -121,6 +121,10 @@ OUTPUT_DIR = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 # index's and source views' copy
 IDENTITY_KEYS = ("name", "index_description", "index_lede", "documents_title", "records_intro", "source_note",
                  "source_card")
+# The breadcrumb's ancestors above the repository, outermost first, when the declaration names none. A declared
+# "ancestry" replaces the whole chain; these two entries reproduce the chain this copy rendered before the key existed.
+ANCESTRY_DEFAULT = ({"label": "ASK", "href": "https://a-s-k.studio/"},
+                    {"label": "apex solar kiss", "href": "https://a-s-k.studio/apex-solar-kiss"})
 PASSAGE_ROLES = ("quotation", "callout", "framing", "synthesis")
 BLOCK_SHAPES = ("groups-rail", "groups-aligned")
 
@@ -388,6 +392,17 @@ def config_problems(tree):
     front_link = ident.get("front_link") or {}
     if not front_link.get("label") or not front_link.get("href"):
         out.append("STRUCTURE-IDENTITY  identity.front_link: a label and a site path")
+    if "ancestry" in cfg:
+        chain = cfg["ancestry"]
+        if not isinstance(chain, list) or not chain:
+            out.append("STRUCTURE-ANCESTRY  ancestry: a list of the breadcrumb's ancestors, outermost first")
+        else:
+            for a in chain:
+                label = a.get("label") if isinstance(a, dict) else None
+                href = a.get("href") if isinstance(a, dict) else None
+                parts = urlsplit(href) if isinstance(href, str) else None
+                if not isinstance(label, str) or not label.strip() or not parts or parts.scheme != "https" or not parts.netloc:
+                    out.append("STRUCTURE-ANCESTRY  ancestry entry %r: an ancestor names a label and an https URL" % (a,))
     chrome = cfg.get("chrome") or {}
     for key in ("stylesheets", "scripts"):
         if not isinstance(chrome.get(key), list) or not chrome.get(key):
@@ -1417,6 +1432,9 @@ def shell_open(tree, page, crumb_tail, lede=""):
     home page itself crumb_tail is None and the name is the current leaf."""
     name = tree.ident["name"]
     mark, mark_label = tree.home_path(), "%s home" % name
+    ancestry = "".join('<a%s href="%s">%s</a> <span class="sep" aria-hidden="true">//</span> '
+                       % (' class="org"' if i == 0 else "", esc(a["href"]), esc(a["label"]))
+                       for i, a in enumerate(tree.cfg.get("ancestry") or ANCESTRY_DEFAULT))
     if crumb_tail is None:
         here = '<span class="page doc-nowrap" aria-current="page">%s</span>' % esc(name)
     else:
@@ -1428,15 +1446,13 @@ def shell_open(tree, page, crumb_tail, lede=""):
             "        <img class=\"surface-mark-dark\" src=\"%(dark)s\" alt=\"\" aria-hidden=\"true\" width=\"2160\" height=\"974\">\n"
             "      </a>\n"
             "      <nav class=\"surface-breadcrumb\" aria-label=\"Breadcrumb\">\n"
-            "        <h1 class=\"surface-title\"><a class=\"org\" href=\"https://a-s-k.studio/\">ASK</a> <span class=\"sep\" aria-hidden=\"true\">//</span> "
-            "<a href=\"https://a-s-k.studio/apex-solar-kiss\">apex solar kiss</a> <span class=\"sep\" aria-hidden=\"true\">//</span> "
-            "%(here)s</h1>\n"
+            "        <h1 class=\"surface-title\">%(ancestry)s%(here)s</h1>\n"
             "      </nav>\n%(lede)s"
             "    </div>\n  </header>\n\n  <hr class=\"surface-rule\">\n\n  <main class=\"surface-payload\">\n") % {
         "home": esc(tree.rel(page, mark)), "mark_label": esc(mark_label),
         "light": esc(tree.rel(page, tree.cfg["chrome"]["logo_light"])),
         "dark": esc(tree.rel(page, tree.cfg["chrome"]["logo_dark"])),
-        "here": here, "lede": lede}
+        "ancestry": ancestry, "here": here, "lede": lede}
 
 
 def action(href, label, primary=False, external=False):

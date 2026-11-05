@@ -243,6 +243,8 @@ public, so every one of them appears:
 <span class="sep" aria-hidden="true">//</span>
 <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a>
 <span class="sep" aria-hidden="true">//</span>
+<a href="https://a-s-k.studio/apex-solar-kiss/design">design</a>
+<span class="sep" aria-hidden="true">//</span>
 <a href="../index.html">design-system-ASK</a>
 <span class="sep" aria-hidden="true">//</span>
 <span class="page" aria-current="page">style guide</span>
@@ -254,8 +256,8 @@ is the label — `apex solar kiss`, not the `apexSolarKiss` GitHub handle, becau
 a breadcrumb names a place a reader goes rather than a repository namespace. And
 **within this breadcrumb path the segment classes grade depth**: `.org` on the
 outermost ancestor, `.page` on the inert current leaf, nothing on the segments
-between. That grading is what lets a four-segment chain still read as one object
-rather than four equal words. A plain title has no path to grade, so it has no
+between. That grading is what lets a five-segment chain still read as one object
+rather than five equal words. A plain title has no path to grade, so it has no
 intermediate tier and no `.page` — it still carries `.org` for its owning
 context.
 
@@ -1019,11 +1021,15 @@ owns that composition outside this generic shell rather than redefining the
 slot — the way a front-door homepage owns its own hero.
 
 **Live same-repo surfaces** reference the canonical file directly.
-design-system-ASK's own root, style guide, and pattern gallery page consume the
-shell this way: no copied bundle, no pin, resolving the canonical owner file at
-repo `HEAD`. When the shell contract changes, verify their rendering, landmarks,
-interaction, and behavior. They are hand-maintained pages, and they are not
-regenerated merely because the stylesheet they reference changed.
+design-system-ASK's own root, style guide, pattern gallery page and five root
+keys consume the shell this way: no copied bundle, no pin, resolving the
+canonical owner file at repo `HEAD`. When the shell contract changes, verify
+their rendering, landmarks, interaction, and behavior. They are hand-maintained
+pages, and they are not regenerated merely because the stylesheet they
+reference changed. The pattern-preview hosts under `patterns/view/` consume it
+the same way, but they are generated: their chrome is authored in the owner
+generator, so a shell contract change is made there, regenerated, checked and
+verified.
 
 **The generated owner preview is a distinct artifact.**
 `patterns/_preview/surface-shell.html` is regenerated from
