@@ -553,6 +553,7 @@
   function openPanel(invoker) {
     if (isOpen) return;
     isOpen = true;
+    pendingFragment = null;    /* a destination from an earlier close never carries over */
     cancelOpeningFrames();
     var gen = ++openGen;
     lastInvoker = invoker || visibleTrigger();
@@ -580,6 +581,45 @@
         panel.classList.add('is-open');
       });
     });
+  }
+
+  /* A same-document destination chosen in the panel, waiting for the close to
+     finish (see SAME-DOCUMENT DESTINATIONS below): its hash, and whether it was
+     chosen from the keyboard. */
+  var pendingFragment = null;
+  function fragmentTarget(raw) {
+    /* As the browser finds a fragment's target: an id, then an anchor's name,
+       first as written and then percent-decoded. */
+    var tries = [raw], dec = raw, i, j, named;
+    try { dec = decodeURIComponent(raw); } catch (err) {}
+    if (dec !== raw) tries.push(dec);
+    for (i = 0; i < tries.length; i++) {
+      if (doc.getElementById(tries[i])) return doc.getElementById(tries[i]);
+      named = doc.querySelectorAll('a[name]');
+      for (j = 0; j < named.length; j++) if (named[j].getAttribute('name') === tries[i]) return named[j];
+    }
+    return null;
+  }
+  function followFragment(f) {
+    var t = fragmentTarget(f.hash.slice(1));
+    /* The hash setter does nothing when the fragment is unchanged, so a second
+       press on the current section reveals its target directly. Either way the
+       landing honors the page's scroll-padding and the target's scroll-margin. */
+    if (location.hash !== f.hash) location.hash = f.hash;
+    else if (t && t.scrollIntoView) t.scrollIntoView();
+    /* From the keyboard, focus follows the destination, as after a skip link;
+       otherwise the next Tab can lead back up the page. From a pointer or touch
+       the runtime moves no focus itself: iOS Safari paints any programmatic
+       focus as :focus-visible, and the destination is page content, outside the
+       shell's pointer-focus suppression (INPUT MODALITY above), so focus is left
+       to the browser's own fragment navigation. A non-focusable target takes
+       tabindex="-1" only until focus leaves it. */
+    if (!f.key || !t || typeof t.focus !== 'function') return;
+    if (!t.hasAttribute('tabindex') && !t.matches('a[href], button, input, select, textarea, summary')) {
+      t.setAttribute('tabindex', '-1');
+      t.addEventListener('blur', function () { t.removeAttribute('tabindex'); }, { once: true });
+    }
+    t.focus({ preventScroll: true });
   }
 
   var closeTimer = null;
@@ -626,6 +666,8 @@
       unlockPageScroll();
       restoreFocus();
       if (pendingMode) { var m = pendingMode; pendingMode = null; commitMode(m); }
+      /* after a mode committed during the exit, so the landing uses the new geometry */
+      if (pendingFragment !== null) { var f = pendingFragment; pendingFragment = null; followFragment(f); }
       schedule();
     }
     function onEnd(e) { if (e.target === panel && e.propertyName === 'transform') finish(); }
@@ -761,6 +803,29 @@
     var r = panel.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right ||
         e.clientY < r.top  || e.clientY > r.bottom) closePanel();
+  });
+
+  /* SAME-DOCUMENT DESTINATIONS. A row or utility may name a section of the page
+     it is on. Followed while the panel is open, the fragment's scroll would be
+     undone by the scroll lock and the panel would still cover the page. So the
+     panel closes first and the fragment is followed once the lock has released;
+     the hash, the history entry and the landing stay the browser's own. Keyboard
+     activation arrives here as a click too. A modified press, another target,
+     another document and a bare "#" (no fragment to follow) are left to the
+     browser. */
+  panel.addEventListener('click', function (e) {
+    if (!isOpen) return;
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || !panel.contains(a) || e.defaultPrevented) return;
+    if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target && a.target !== '_self') return;
+    var url;
+    try { url = new URL(a.getAttribute('href'), location.href); } catch (err) { return; }
+    if (!url.hash || url.origin !== location.origin || url.pathname !== location.pathname ||
+        url.search !== location.search) return;
+    e.preventDefault();
+    pendingFragment = { hash: url.hash, key: lastModality === 'key' };
+    closePanel();
   });
 
   /* Commit a mode: publish it, then re-derive everything that depends on it. */
