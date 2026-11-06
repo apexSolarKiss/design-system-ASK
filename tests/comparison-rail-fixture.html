@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // comparison rail regression fixture</title>
+<meta name="description" content="Regression fixture for the comparison table's assessment lane in surface-document.css: each rail begins on the content edge of the header that governs its cell, the text keeps the lane's clearance after it, assessed and unassessed cells share one origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its rails with its text.">
+<!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/comparison-rail-fixture.html
+     The foundation, the register, then Spectral State and Criterion Assessment, in the profile's load order.
+     ?control=no-lane, ?control=rail-only, ?control=inline-figures or ?control=key-indent loads one
+     regression, which must fail only the cases tests/README.md names for it. -->
+<script>
+  (function () {
+    var c = new URLSearchParams(location.search).get('control');
+    if (c) document.documentElement.classList.add('fx-control-' + c);
+  })();
+</script>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-document.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  /* Page-local: a fixed box width makes the second table scroll at every viewport. */
+  .fx-box { width: 320px; max-width: 100%; }
+  .verdict-box { overflow-x: auto; }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  /* The regressions. Each outranks the register's zero-specificity geometry. */
+  html.fx-control-no-lane .doc-compare-table td:not(:first-child),
+  html.fx-control-rail-only .doc-compare-table td:not(:first-child) { padding-left: calc(var(--space-3) + 2px); }
+  html.fx-control-rail-only .doc-compare-table .doc-compare-assessed::before { left: 0; }
+  html.fx-control-inline-figures .doc-table-num > .doc-compare-assessed { display: inline-block; }
+  html.fx-control-key-indent .doc-compare-key { padding-left: 24px; flex-direction: column; }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Comparison rails</h1>
+    <p class="doc-body">Each case is measured once the fonts are ready. A rail begins on the content edge of the
+      header that governs its cell: the column header for a cell in one column, the group header for a cell that
+      spans the group. The cell's text keeps the lane's 12px after the rail, assessed and unassessed cells share
+      one origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its
+      rails with its text.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">A grouped comparison</h2>
+    <div class="doc-table-scroll" role="region" aria-label="Four options against four rows" tabindex="0" id="box-wide">
+      <table class="doc-table doc-compare-table" id="compare">
+        <colgroup><col></colgroup>
+        <colgroup span="2"></colgroup>
+        <colgroup span="2"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">First group</th><th class="doc-compare-head" scope="colgroup" colspan="2">Second group</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option one</th><th class="doc-compare-head" scope="col">Option two</th><th class="doc-compare-head doc-table-num" scope="col">Option three</th><th class="doc-compare-head" scope="col">Option four</th></tr>
+        </thead>
+        <tbody>
+          <tr data-case="neighbors"><th class="doc-compare-head" scope="row">Effort</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">low</p><p class="doc-meta">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse"><p>0.40</p><p class="doc-meta">adverse</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">high</p><p class="doc-meta">adverse</p></div></td></tr>
+          <tr data-case="unassessed"><th class="doc-compare-head" scope="row">Notes</th>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td>
+            <td class="doc-compare-cell doc-table-num"><p>12.5</p></td>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td></tr>
+          <tr data-case="grouped"><th class="doc-compare-head" scope="row">Reach</th>
+            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">one reading for both options</p><p class="doc-meta">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><p>3</p></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><ul class="doc-compare-points"><li>a first point</li><li>a second point</li></ul><p class="doc-meta">caution</p></div></td></tr>
+          <tr data-case="detail"><th class="doc-compare-head" scope="row">Detail</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">slow</p><p class="doc-meta">adverse</p></div><ul class="doc-compare-facts"><li>speed: a week</li><li>cost: a plan</li></ul></td>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">fast</p><ul class="doc-compare-facts"><li>speed: a day</li></ul></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable"><p>0.90</p><p class="doc-meta">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta">favorable</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" id="key" aria-label="Key to the comparison's rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse</p></li>
+      <li><p class="doc-meta">no rail // not assessed</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">The same comparison in a narrow box</h2>
+    <p class="doc-body">A copy of the table above in a 320px box, so it scrolls at any viewport.</p>
+    <div class="fx-box" id="narrow-host"></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <div class="verdict-box"><table class="verdict"><tbody id="verdict"></tbody></table></div>
+  </section>
+
+</main>
+<script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cs = function (el, pseudo) { return getComputedStyle(el, pseudo || null); };
+    var tick = function (ms) { return new Promise(function (r) { setTimeout(r, ms || 60); }); };
+    var rows = [];
+    var near = function (name, actual, expected, tol) {
+      var a = Math.round(actual * 10) / 10, e = Math.round(expected * 10) / 10;
+      rows.push([Math.abs(actual - expected) <= tol, name, a + 'px', e + 'px ±' + tol]);
+    };
+    var atLeast = function (name, actual, floor) {
+      var a = Math.round(actual * 10) / 10;
+      rows.push([actual >= floor, name, a + 'px', 'at least ' + floor + 'px']);
+    };
+    var expect = function (name, actual, expected) { rows.push([actual === expected, name, String(actual), String(expected)]); };
+
+    /* The narrow copy: the same table, its ids dropped. */
+    var copy = $('box-wide').cloneNode(true);
+    copy.removeAttribute('id');
+    copy.setAttribute('aria-label', 'The same comparison in a narrow box');
+    copy.querySelectorAll('[id]').forEach(function (e) { e.removeAttribute('id'); });
+    $('narrow-host').appendChild(copy);
+
+    await document.fonts.ready;
+    await tick(120);
+
+    var left = function (el) { return el.getBoundingClientRect().left; };
+    var contentStart = function (el) { var s = cs(el); return left(el) + parseFloat(s.borderLeftWidth) + parseFloat(s.paddingLeft); };
+    var textRect = function (el) { var r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect(); };
+    var rail = function (w) { var s = cs(w, '::before'); return { start: left(w) + parseFloat(s.left), width: parseFloat(s.borderLeftWidth), content: s.content, placed: s.position + ' in ' + cs(w).position }; };
+    /* Where a block's text begins: a paragraph's first line, or a list's own box, whose markers hang inside it. */
+    var textStart = function (el) { return el.tagName === 'P' ? textRect(el).left : left(el); };
+    var name = function (el) { return el.textContent.trim().replace(/\s+/g, ' '); };
+
+    /* The table's grid: each cell's first column and span, through rows and spans. */
+    var grid = function (table) {
+      var occ = [], out = [];
+      [].forEach.call(table.rows, function (tr, r) {
+        occ[r] = occ[r] || [];
+        var c = 0;
+        [].forEach.call(tr.cells, function (cell) {
+          while (occ[r][c]) c++;
+          for (var i = 0; i < cell.rowSpan; i++) for (var j = 0; j < cell.colSpan; j++) (occ[r + i] = occ[r + i] || [])[c + j] = true;
+          out.push({ cell: cell, tr: tr, col: c, span: cell.colSpan });
+          c += cell.colSpan;
+        });
+      });
+      return out;
+    };
+
+    var measure = function (table, tag) {
+      var g = grid(table), head = table.tHead.rows[table.tHead.rows.length - 1], groups = table.querySelector('thead > tr.doc-compare-groups');
+      var governing = function (e) {
+        var row = e.span === 1 ? head : groups;
+        var h = g.filter(function (x) { return x.tr === row && x.col === e.col && x.span === e.span; })[0];
+        return h ? h.cell : null;
+      };
+      var origins = {};
+      g.forEach(function (e) {
+        if (e.cell.tagName !== 'TD' || e.tr.parentNode.tagName !== 'TBODY' || e.col === 0) return;
+        var row = e.tr.dataset.case + ' / ' + e.col + (e.span > 1 ? '+' + (e.span - 1) : '');
+        var h = governing(e);
+        var w = e.cell.firstElementChild && e.cell.firstElementChild.classList.contains('doc-compare-assessed') ? e.cell.firstElementChild : null;
+        var num = e.cell.classList.contains('doc-table-num');
+        var origin = textStart(w ? w.firstElementChild : e.cell.firstElementChild);
+        (origins[e.col] = origins[e.col] || []).push({ row: row, origin: origin, num: num, cell: e.cell });
+        if (!h) { expect(tag + ' / ' + row + ': a governing header', 'none', 'one'); return; }
+        if (num) {
+          var fig = e.cell.querySelector('p');
+          near(tag + ' / ' + row + ': the figure keeps the end of "' + name(h) + '"', textRect(fig).right, textRect(h).right, 1);
+        }
+        if (!w) return;
+        var r = rail(w), edge = contentStart(h);
+        expect(tag + ' / ' + row + ': the rail is drawn, placed in its wrapper', r.content + ' ' + r.width + 'px, ' + r.placed, '"" 2px, absolute in relative');
+        near(tag + ' / ' + row + ': the rail begins on the content edge of "' + name(h) + '"', r.start, edge, 1);
+        atLeast(tag + ' / ' + row + ': the rail sits clear of the gutter, inside its column', r.start - left(e.cell), 13);
+        if (!num) near(tag + ' / ' + row + ': the text keeps the lane\'s 12px after the rail', origin - (r.start + r.width), 12, 1);
+      });
+      /* Assessed and unassessed cells in a column share one origin; a spanning cell takes its first column's. */
+      Object.keys(origins).forEach(function (col) {
+        var text = origins[col].filter(function (o) { return !o.num; });
+        if (text.length < 2) return;
+        text.slice(1).forEach(function (o) { near(tag + ' / column ' + col + ': ' + o.row + ' starts where ' + text[0].row + ' does', o.origin, text[0].origin, 1); });
+      });
+    };
+
+    measure($('compare'), 'wide');
+    measure(copy.querySelector('table'), 'narrow');
+
+    /* The key keeps its own geometry: a row of items, the first rail at the key's start, each word 12px
+       clear of its rail. */
+    var key = $('key'), ks = cs(key);
+    expect('key / the items sit in a row', ks.display + ' ' + ks.flexDirection, 'flex row');
+    var items = key.querySelectorAll('li.doc-compare-assessed');
+    near('key / the first rail sits at the key\'s start', rail(items[0]).start, left(key) + parseFloat(ks.borderLeftWidth), 1);
+    [].forEach.call(items, function (li) {
+      var r = rail(li), word = name(li);
+      expect('key / ' + word + ': the rail is drawn, placed in its item', r.content + ' ' + r.width + 'px, ' + r.placed, '"" 2px, absolute in relative');
+      near('key / ' + word + ': the word sits 12px after the rail', textStart(li.firstElementChild) - (r.start + r.width), 12, 1);
+    });
+
+    /* A table that scrolls carries its rails with its text. */
+    var nb = copy, nt = nb.querySelector('table'), last = nt.querySelector('tr[data-case="neighbors"] > td:last-child > .doc-compare-assessed');
+    expect('scroll / the narrow box overflows', nb.scrollWidth > nb.clientWidth, true);
+    var r0 = rail(last).start, o0 = textStart(last.firstElementChild);
+    nb.scrollLeft = 60;
+    await tick();
+    var moved = nb.scrollLeft;
+    expect('scroll / the narrow box scrolls', moved > 0, true);
+    near('scroll / the rail moves with the box', r0 - rail(last).start, moved, 1);
+    near('scroll / the text moves with the box', o0 - textStart(last.firstElementChild), moved, 1);
+    nb.scrollLeft = 0;
+    await tick();
+    expect('page / no horizontal overflow', document.documentElement.scrollWidth <= document.documentElement.clientWidth, true);
+
+    var failed = 0, tbody = $('verdict');
+    rows.forEach(function (r) {
+      if (!r[0]) failed++;
+      var tr = document.createElement('tr');
+      [r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
+        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    window.__compareRailFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+  })();
+</script>
+</body>
+</html>

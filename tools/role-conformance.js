@@ -530,6 +530,9 @@
     { role: 'doc-pre',              sel: '.doc-pre',              family: MONO, size: '--fs-small',   weight: '--fw-light',      lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1' },
     { role: 'doc-toc-link',         sel: '.doc-toc-link',         family: MONO, size: '--fs-small',   weight: '--fw-light',      lh: '--lh-tight',   tracking: '--tracking-tight',  color: '--fg-1', transform: 'none' },
     { role: 'doc-table-cell',       sel: '.doc-table-cell',       family: MONO, size: '--fs-small',   weight: '--fw-light',      lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1' },
+    { role: 'doc-compare-head',     sel: '.doc-compare-head',     family: SANS, size: '--fs-small',   weight: '--fw-regular',    lh: '--lh-tight',   tracking: '--tracking-normal', color: '--fg-1', transform: 'none' },
+    { role: 'doc-compare-cell',     sel: '.doc-compare-cell',     family: SANS, size: '--fs-small',   weight: '--fw-light',      lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', transform: 'none' },
+    { role: 'doc-compare-summary',  sel: '.doc-compare-summary',  family: SANS, size: '--fs-small',   weight: '--fw-regular',    lh: '--lh-body',    tracking: '--tracking-normal', color: '--fg-1', transform: 'none' },
   ];
   /* C0: the values colors_and_type.css gives the tokens the matrix, the rails
      and the link states resolve through. */
@@ -573,7 +576,8 @@
     focus: { line: 'underline', thickness: '2px', color: 'var(--fg-1)' },
   };
   const ROLE_CLASSES = ['doc-title', 'doc-section-title', 'doc-subsection-title', 'doc-deep-title', 'doc-body', 'doc-lede',
-    'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell', 'doc-entry-title'];
+    'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell', 'doc-entry-title',
+    'doc-compare-head', 'doc-compare-cell', 'doc-compare-summary'];
   /* Classes whose owners are not this register: their text is governed elsewhere. */
   const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-panel-title',
     'surface-panel-support', 'surface-emphasis-chip', 'surface-disclosure-label', 'surface-disclosure-indicator', 'caption'];

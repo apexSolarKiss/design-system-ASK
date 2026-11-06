@@ -1,0 +1,95 @@
+/* =========================================================================
+   criterion-assessment.css — Criterion Assessment
+
+   A semantic state-color PROFILE under the Spectral State family. It answers
+   one question: how does this characteristic serve the stated criterion?
+   Favorable, caution or adverse, against a criterion the consuming author
+   declares; or unassessed, where no such judgment is asserted.
+
+   It is a SANCTIONED PROFILE, not a separate palette and not a change to
+   Spectral State. Spectral State's eight-role vocabulary is unchanged. This
+   profile REUSES three Spectral State values by reference and adds no value
+   of its own.
+
+   Load order (each layers on the previous):
+     colors_and_type.css  →  spectral-state.css  →  criterion-assessment.css
+   Its table application also needs surface-document.css, which draws the
+   rail's geometry and loads before this file.
+
+   Offline; no CDN. Theme-aware through Spectral State's own per-theme values,
+   and through the foundation's [data-theme] + prefers-color-scheme model for
+   caution's light dose (below).
+
+   STATUS: v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
+   capability, with colored rails selected for its table application.
+
+   ---------------------------------------------------------------------------
+   ROLE MAP
+   ---------------------------------------------------------------------------
+   Assessment meaning   Visual implementation          Relationship
+     favorable          value of --state-earned        visual-role mapping
+     caution            value of --state-structural    visual-role mapping
+     adverse            value of --state-deflated      visual-role mapping
+     unassessed         no color                       no assessment asserted
+
+   The three reused values are VISUAL-ROLE mappings, not semantic aliases. A
+   consuming surface keeps the assessment LABELS — Favorable / Caution /
+   Adverse — and never relabels them earned / structural / deflated because a
+   color value is shared. Nor is an assessment a review or an evidence state:
+   favorable is not accepted, and favorable is not supported. A supported
+   disadvantage is still adverse.
+
+   THE CRITERION IS THE AUTHOR'S. This profile owns the meaning of each role
+   and its presentation. The consuming author owns the criterion each row is
+   judged against and every assignment. A color token supplies no judgment.
+
+   ---------------------------------------------------------------------------
+   TABLE APPLICATION
+   ---------------------------------------------------------------------------
+   In a comparison table (surface-document.css, COMPARISON TABLE) a summary's
+   wrapper, .doc-compare-assessed, takes data-assessment="favorable",
+   "caution" or "adverse". This file generates the wrapper's rail and gives it
+   the role's value; surface-document.css draws its geometry: one 2px stroke in
+   the cell's lane, beginning on its column's content edge, as tall as the
+   wrapper. The word that names the
+   assessment sits inside the wrapper, in an ordinary text role, so the
+   assessment never depends on color. An unassessed summary takes no wrapper
+   and draws nothing; data-assessment="unassessed" draws nothing either.
+
+   CAUTION'S LIGHT DOSE. Spectral State's yellow is its recorded brightness
+   watch-point on the light field, and as a 2px rail on the light lavender
+   ground it all but disappears. In light only, caution's rail takes a 1px
+   same-color, zero-blur reinforcement: 4px apparent, paint rather than layout,
+   so no text moves — the method the bordered label and the magenta edge use
+   for their light doses. Its color is unchanged. Favorable and adverse, and
+   every rail in dark, keep the plain 2px stroke. Like Spectral State's
+   values, the dose follows the root theme only: a .theme-dark subtree on a
+   light page keeps the light dose.
+
+   Never a fill, tint, backplate, glow or colored cell border; never the
+   labeled range, whose rail admits only neutral and review colors; never a
+   review, evidence or state attribute standing in for an assessment.
+   ========================================================================= */
+
+/* ---------- The three roles — both themes ----------
+   Each resolves through --state-*, which spectral-state.css re-resolves per
+   theme, so no theme block is needed here. */
+:root {
+  --assessment-favorable: var(--state-earned);     /* visual-role mapping */
+  --assessment-caution:   var(--state-structural); /* visual-role mapping */
+  --assessment-adverse:   var(--state-deflated);   /* visual-role mapping */
+}
+
+/* ---------- Caution's light dose ---------- */
+:root { --assessment-caution-reinforce: 1px; }
+:root[data-theme="dark"] { --assessment-caution-reinforce: 0; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) { --assessment-caution-reinforce: 0; }
+}
+
+/* ---------- Table application ---------- */
+.doc-compare-assessed:is([data-assessment="favorable"], [data-assessment="caution"], [data-assessment="adverse"])::before { content: ""; }
+.doc-compare-assessed[data-assessment="favorable"] { --doc-compare-rail-color: var(--assessment-favorable); }
+.doc-compare-assessed[data-assessment="caution"]   { --doc-compare-rail-color: var(--assessment-caution); }
+.doc-compare-assessed[data-assessment="adverse"]   { --doc-compare-rail-color: var(--assessment-adverse); }
+.doc-compare-assessed[data-assessment="caution"]::before { box-shadow: 0 0 0 var(--assessment-caution-reinforce) var(--doc-compare-rail-color); }

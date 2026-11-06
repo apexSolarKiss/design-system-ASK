@@ -115,6 +115,7 @@ const GOVERNED = [
   'spectral-state.html',
   'evidence-state.html',
   'review-semantics.html',
+  'criterion-assessment.html',
   'surface-document.html',
   'preview/styleguide.html',
   'index.html',
@@ -181,6 +182,9 @@ const ROLE_MATRIX = [
   { selector: '.doc-pre',              family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
   { selector: '.doc-toc-link',         family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-tight)',   tracking: 'var(--tracking-tight)',  color: 'var(--fg-1)' },
   { selector: '.doc-table-cell',       family: MONO, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
+  { selector: '.doc-compare-head',     family: SANS, size: 'var(--fs-small)',   weight: 'var(--fw-regular)',    lh: 'var(--lh-tight)',   tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
+  { selector: '.doc-compare-cell',     family: SANS, size: 'var(--fs-small)',   weight: 'var(--fw-light)',      lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
+  { selector: '.doc-compare-summary',  family: SANS, size: 'var(--fs-small)',   weight: 'var(--fw-regular)',    lh: 'var(--lh-body)',    tracking: 'var(--tracking-normal)', color: 'var(--fg-1)' },
 ];
 const ROLE_PROPS = { family: 'font-family', size: 'font-size', weight: 'font-weight', lh: 'line-height', tracking: 'letter-spacing', color: 'color' };
 const PASSAGE_SELECTORS = ['.doc-quote', '.doc-pre'];

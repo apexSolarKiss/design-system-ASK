@@ -27,8 +27,10 @@ Provenance record for a static output artifact rendered from the design-system-A
 | surface-text-link.css | `surface-text-link.css` | `<sha256 here>` |
 | surface-document.css | `surface-document.css` | `<sha256 here>` |
 | surface-treatments.css | `surface-treatments.css` | `<sha256 here>` |
+| spectral-state.css | `spectral-state.css` | `<sha256 here>` (an assessed comparison only) |
+| criterion-assessment.css | `criterion-assessment.css` | `<sha256 here>` (an assessed comparison only) |
 
-A single-file artifact inlines these verbatim at seal time, after the foundation and in this order; record the hashes of the files it inlined.
+A single-file artifact inlines these verbatim at seal time, after the foundation and in this order; record the hashes of the files it inlined. An artifact that assesses nothing removes the last two rows.
 
 Add or remove rows for any required project-approved assets copied into the artifact bundle. Do not include `logo-ASK` assets unless the consuming artifact is an ASK-instance surface and has explicitly accepted that Tier 3 overlay, or ASK has explicitly assigned the `logo-ASK` wordmark to the consuming project as its locally supplied Tier 3 and the artifact falls within the assignment's recorded scope. An assignment does not make that project ASK-the-entity.
 

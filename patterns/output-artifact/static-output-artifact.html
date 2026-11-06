@@ -22,6 +22,15 @@
   <link rel="stylesheet" href="surface-document.css">
   <link rel="stylesheet" href="surface-treatments.css">
 
+  <!-- OPTIONAL — only for a comparison whose cells are assessed: Spectral
+       State, then Criterion Assessment, after the register (after Review
+       Semantics too, where the artifact adopts it, with spectral-state.css
+       loaded once). An artifact that assesses nothing removes both lines with
+       the sample comparison's rails; the comparison table itself is the
+       register's and needs neither. -->
+  <link rel="stylesheet" href="spectral-state.css">
+  <link rel="stylesheet" href="criterion-assessment.css">
+
   <style>
     /* ====================================================================
        Class B output-artifact overlay.
@@ -38,7 +47,11 @@
        register leaves to its consumer, and one named print adaptation for an
        adopted table (Tables, below). Every other geometry rule on an element
        the register may also style is written in :where(), at zero
-       specificity, so it can never outrank a register rule.
+       specificity, so it never outranks a register rule of class
+       specificity. Where the register's own rule is also at zero
+       specificity, as for a comparison's lists, this file loads later and
+       would win, so its rule excludes that population, as the list rule
+       does.
 
        The ONE sanctioned Class B override is LINE INTENSITY: report rules,
        borders, table lines, and dividers read too faint at the foundation
@@ -89,8 +102,9 @@
     .meta > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
 
     /* ---------- Lists and rules ----------
-       List items take .doc-body. */
-    :where(.artifact) :where(ul, ol) {
+       List items take .doc-body. A comparison's own lists, its points, its
+       facts and its key, keep the register's geometry. */
+    :where(.artifact) :where(ul, ol):where(:not(.doc-compare-points, .doc-compare-facts, .doc-compare-key)) {
       display: flex; flex-direction: column; gap: var(--space-2);
       margin: 0; padding-left: var(--space-5);
     }
@@ -201,8 +215,8 @@
     <!-- ==================================================================
          Sections — DOWNSTREAM: replace section titles + bodies with content.
          The samples show the register roles an artifact uses — body, list,
-         quotation, code, preformatted block, a dense and a narrative table in
-         the document table composition, and disclosure.
+         quotation, code, preformatted block, a dense, a narrative and a
+         comparison table in the document table composition, and disclosure.
          Replace the CONTENT; keep each role's class and each table's markers,
          and name each table's box.
          ================================================================== -->
@@ -251,6 +265,27 @@
           </tbody>
         </table>
       </div>
+      <p class="doc-body">Body text placeholder. A comparison sets options side by side on the Small step. An assessed summary carries a rail in its cell's lane and the word that names it, against the criterion its row declares; an unassessed one carries neither.</p>
+      <div class="doc-table-scroll" role="region" aria-label="[Comparison table name]">
+        <table class="doc-table doc-compare-table">
+          <thead>
+            <tr><th class="doc-compare-head" scope="col">[Row // criterion]</th><th class="doc-compare-head" scope="col">[Option A]</th><th class="doc-compare-head" scope="col">[Option B]</th></tr>
+          </thead>
+          <tbody>
+            <tr><th class="doc-compare-head" scope="row">[Row one]<p class="doc-meta">[what is favorable here]</p></th>
+                <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">[summary]</p><p class="doc-meta">favorable</p></div><ul class="doc-compare-facts"><li>[field]: [value]</li><li>[field]: [value]</li></ul></td>
+                <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">[summary]</p><p class="doc-meta">adverse</p></div><ul class="doc-compare-points"><li>[statement]</li><li>[statement]</li></ul></td></tr>
+            <tr><th class="doc-compare-head" scope="row">[Row two]<p class="doc-meta">[no criterion declared]</p></th>
+                <td class="doc-compare-cell"><p class="doc-compare-summary">[summary]</p><p>[one supporting statement]</p></td>
+                <td class="doc-compare-cell"><p class="doc-compare-summary">[summary]</p><p>[one supporting statement]</p></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="doc-compare-key" aria-label="[Key to the comparison's rails]">
+        <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // supports the row's criterion</p></li>
+        <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // works against it</p></li>
+        <li><p class="doc-meta">no rail // not assessed</p></li>
+      </ul>
     </section>
 
     <section class="doc-section">
