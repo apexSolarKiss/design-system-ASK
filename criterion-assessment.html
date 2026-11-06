@@ -236,6 +236,25 @@
     </div>
   </section>
 
+  <section class="doc-section" aria-labelledby="paint-title">
+    <h2 class="doc-section-title key-prose" id="paint-title">One paint per rail color</h2>
+    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's. Here a declined range and an adverse assessment share one red, and an accepted range and a favorable assessment one green, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">The shipment is not split across two carriers.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-accepted">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">Each parcel is tracked from its first scan.</p>
+    </div>
+    <ul class="doc-compare-key" aria-label="The rails' three paints">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // ringed in light</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
+    </ul>
+    <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and its ring is the same beside a summary, in a value field and in a key, above. A review range is never yellow.</p>
+  </section>
+
   <footer class="doc-group key-prose">
     <p class="doc-meta">Schematic comparison; the numeric table's figures are the register's own. Reads the foundation, the register modules, Spectral State, Evidence State, Review Semantics and criterion-assessment.css live. Contract: <a class="surface-text-link" href="criterion-assessment.md">criterion-assessment.md</a>.</p>
   </footer>

@@ -470,7 +470,9 @@
                      placement in its page. Whether a wrapper draws its rail,
                      and its color, is the composing meaning's: Criterion
                      Assessment (criterion-assessment.css) is the one
-                     admitted, through --doc-compare-rail-color
+                     admitted, through --doc-compare-rail-color, with that
+                     color's paint as a rail (surface-treatments.css, RAIL
+                     PAINT) through --doc-compare-rail-paint
      reuses          the document table composition, and inside it
                      the 32rem measure, --space-3 block padding, --space-4
                      end padding (30px from header text to the next column's
@@ -1090,8 +1092,10 @@
    row's height, never the detail below. One straight 2px stroke in the
    cell's lane, its ends plain. This draws the geometry only: no content is
    generated here, so a wrapper draws nothing until a composing meaning
-   generates the rail and sets --doc-compare-rail-color (Criterion
-   Assessment, criterion-assessment.css). An unassessed summary needs no
+   generates the rail and sets --doc-compare-rail-color, with that color's
+   paint as a rail through --doc-compare-rail-paint (Criterion Assessment,
+   criterion-assessment.css, binding surface-treatments.css's RAIL PAINT);
+   both are drawn in the rail's color. An unassessed summary needs no
    wrapper. The stroke sits at the lane's start, which in a table cell is by
    default its column's content edge, and the lane's 12px stays clear between it and the
    text. In a numeric cell the wrapper spans the cell, so its rail begins on
@@ -1105,7 +1109,9 @@
   left: calc(-1 * (var(--space-3) + 2px));
   box-sizing: border-box;
   width: 2px;
-  border-left: 2px solid var(--doc-compare-rail-color, transparent);
+  color: var(--doc-compare-rail-color, transparent);
+  border-left: 2px solid currentColor;
+  box-shadow: var(--doc-compare-rail-paint, none);
   pointer-events: none;
 }
 :where(.doc-table-num) > .doc-compare-assessed { display: block; text-align: end; }

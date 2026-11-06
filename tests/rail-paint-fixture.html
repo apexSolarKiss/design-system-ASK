@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // rail paint regression fixture</title>
+<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow ring is the same beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, and the bordered label and the passage rail keep their own treatments.">
+<!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/rail-paint-fixture.html
+     The foundation, the register and the surface treatments, then the state modules, Review Semantics and
+     Criterion Assessment, in their load order.
+     ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
+     ?control=local-dose, ?control=unbound-range, ?control=subtree-dose or ?control=label-reach loads one
+     regression, which must fail only the cases tests/README.md names for it. -->
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    if (c) document.documentElement.classList.add('fx-control-' + c);
+  })();
+</script>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../surface-document.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../evidence-state.css">
+<link rel="stylesheet" href="../review-semantics.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .fx-subtree { padding: var(--space-4) var(--space-5); }
+  .verdict-box { overflow-x: auto; }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  /* The regressions. Each outranks the rule it replaces. */
+  html.fx-control-local-dose .doc-compare-assessed[data-assessment="caution"] { --doc-compare-rail-paint: 0 0 0 1px; }
+  html.fx-control-unbound-range .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review]) { --surface-labeled-range-paint: none; }
+  html.fx-control-subtree-dose .theme-dark { --surface-rail-paint-structural: none; }
+  html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-deflated); }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Rail paint</h1>
+    <p class="doc-body">Each case is measured once the fonts are ready. A rail in one governed color takes the same
+      paint whichever meaning draws it: a review range's scope rail and a comparison's assessment rail in green or
+      red are painted alike, and caution's yellow ring is the same beside a summary, in a value field, in a key and
+      in a dark subtree. When the shared paint changes, every rail bound to it follows; the bordered label and the
+      passage rail keep their own treatments.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Review ranges</h2>
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-declined" data-paint="deflated">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined" id="l-declined">Declined</span><span class="doc-meta">this paragraph</span></span></div>
+      <p class="doc-body">A range whose judgment is declined.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-accepted" data-paint="earned">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">this paragraph</span></span></div>
+      <p class="doc-body">A range whose judgment is accepted.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-proposed" data-paint="">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">this paragraph</span></span></div>
+      <p class="doc-body">A range whose judgment is proposed.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-open" data-paint="">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">this paragraph</span></span></div>
+      <p class="doc-body">A range that holds an open question.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-none" data-paint="">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="none">No decision recorded</span><span class="doc-meta">this paragraph</span></span></div>
+      <p class="doc-body">A range with no decision recorded.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="r-neutral" data-paint="">
+      <span class="doc-label surface-bordered-label">draft</span>
+      <p class="doc-body">A neutral range.</p>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Assessments</h2>
+    <div class="doc-table-scroll" role="region" aria-label="Three options with their words" tabindex="0">
+      <table class="doc-table doc-compare-table">
+        <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option one</th><th class="doc-compare-head" scope="col">Option two</th><th class="doc-compare-head" scope="col">Option three</th></tr></thead>
+        <tbody>
+          <tr><th class="doc-compare-head" scope="row">Effort</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable" id="a-fav" data-paint="earned"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="a-cau" data-paint="structural"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse" id="a-adv" data-paint="deflated"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll" role="region" aria-label="Three rated figures" tabindex="0">
+      <table class="doc-table doc-compare-table doc-compare-legend-led">
+        <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head doc-table-num" scope="col">Figure one</th><th class="doc-compare-head doc-table-num" scope="col">Figure two</th><th class="doc-compare-head doc-table-num" scope="col">Figure three</th></tr></thead>
+        <tbody>
+          <tr><th class="doc-compare-head" scope="row">Size</th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="00.0" id="f-fav" data-paint="earned"><p class="doc-compare-summary">4.5</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="00.0" id="f-cau" data-paint="structural"><p class="doc-compare-summary">17.0</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="00.0" id="f-adv" data-paint="deflated"><p class="doc-compare-summary">62.5</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" aria-label="Key to the rated figures' rails">
+      <li class="doc-compare-assessed" data-assessment="favorable" id="k-fav" data-paint="earned"><p class="doc-meta">favorable</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution" id="k-cau" data-paint="structural"><p class="doc-meta">caution</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse" id="k-adv" data-paint="deflated"><p class="doc-meta">adverse</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">A dark subtree</h2>
+    <p class="doc-body">Spectral State's values follow the root theme, so a caution rail inside a dark subtree takes
+      the root's yellow, and its paint follows the root too.</p>
+    <div class="theme-dark fx-subtree">
+      <div class="doc-table-scroll" role="region" aria-label="One option inside a dark subtree" tabindex="0">
+        <table class="doc-table doc-compare-table">
+          <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option</th></tr></thead>
+          <tbody>
+            <tr><th class="doc-compare-head" scope="row">Effort</th>
+              <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="s-cau" data-paint="structural"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Other expressions</h2>
+    <blockquote class="doc-quote" id="quote"><p class="doc-body">A quotation keeps its own violet passage rail.</p></blockquote>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <div class="verdict-box"><table class="verdict"><tbody id="verdict"></tbody></table></div>
+  </section>
+
+</main>
+<script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cs = function (el, pseudo) { return getComputedStyle(el, pseudo || null); };
+    var tick = function (ms) { return new Promise(function (r) { setTimeout(r, ms || 60); }); };
+    var rows = [];
+    var expect = function (name, actual, expected) { rows.push([actual === expected, name, String(actual), String(expected)]); };
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    await tick();
+
+    /* The theme the root resolves: its data-theme, or the browser's preference. */
+    var held = document.documentElement.getAttribute('data-theme');
+    var dark = held ? held === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    /* A computed box-shadow as none, or as one layer's color and lengths. */
+    var shadow = function (v) {
+      if (!v || v === 'none') return 'none';
+      var m = v.match(/^(rgba?\([^)]*\))\s+(.*)$/);
+      return m ? m[2].trim() + ' in ' + m[1] : v;
+    };
+    var rails = [].slice.call(document.querySelectorAll('[data-paint]'));
+    var paint = function (el) {
+      var b = cs(el, '::before');
+      return { stroke: b.borderLeftWidth + ' ' + b.borderLeftStyle, color: b.borderLeftColor, shadow: shadow(b.boxShadow) };
+    };
+    var dose = { earned: 'none', structural: dark ? 'none' : '0px 0px 0px 1px', deflated: 'none', '': 'none' };
+    var want = function (el, doses) {
+      var d = doses[el.getAttribute('data-paint')];
+      return d === 'none' ? 'none' : d + ' in ' + paint(el).color;
+    };
+
+    /* The paint each rail takes now. */
+    var before = {};
+    rails.forEach(function (el) {
+      var p = paint(el);
+      before[el.id] = p;
+      expect('stroke / ' + el.id, p.stroke, '2px solid');
+      expect('paint / ' + el.id, p.shadow, want(el, dose));
+    });
+    /* One color, one paint, whichever meaning draws it. */
+    var same = function (name, ids) {
+      var first = before[ids[0]], all = ids.every(function (id) { return before[id].color === first.color && before[id].shadow === first.shadow; });
+      expect(name, all ? 'one paint' : ids.map(function (id) { return id + ' ' + before[id].color + ' ' + before[id].shadow; }).join(' / '), 'one paint');
+    };
+    same('one red / the declined range and every adverse rail', ['r-declined', 'a-adv', 'f-adv', 'k-adv']);
+    same('one green / the accepted range and every favorable rail', ['r-accepted', 'a-fav', 'f-fav', 'k-fav']);
+    same('one yellow / caution beside a summary, in a field, in the key and in a dark subtree', ['a-cau', 'f-cau', 'k-cau', 's-cau']);
+    /* The bordered label and the passage rail keep their own treatments. */
+    var label = $('l-declined'), lc = cs(label);
+    expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0.5px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);
+    var labelBefore = shadow(lc.boxShadow), quoteBefore = cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth;
+
+    /* Change the shared paint: every rail bound to it follows, and nothing else moves. */
+    var perturb = document.createElement('style');
+    perturb.textContent = ':root { --surface-rail-paint-earned: 0 0 0 3px !important; --surface-rail-paint-structural: 0 0 0 2px !important; --surface-rail-paint-deflated: 0 0 0 1.5px !important; }';
+    document.head.appendChild(perturb);
+    await tick();
+    var changed = { earned: '0px 0px 0px 3px', structural: '0px 0px 0px 2px', deflated: '0px 0px 0px 1.5px', '': 'none' };
+    rails.forEach(function (el) { expect('follows / ' + el.id, paint(el).shadow, want(el, changed)); });
+    expect('label / the shared paint does not reach the declined mark', shadow(cs(label).boxShadow), labelBefore);
+    expect('quote / the shared paint does not reach the passage rail', cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth, quoteBefore);
+    perturb.remove();
+    await tick();
+    var restored = rails.every(function (el) { var p = paint(el), q = before[el.id]; return p.stroke === q.stroke && p.color === q.color && p.shadow === q.shadow; });
+    expect('restored / every rail paints as before', restored, true);
+
+    var failed = 0, tbody = $('verdict');
+    rows.forEach(function (r) {
+      if (!r[0]) failed++;
+      var tr = document.createElement('tr');
+      [r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
+        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    window.__railPaintFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+  })();
+</script>
+</body>
+</html>

@@ -282,6 +282,61 @@ only the tables that show their words.
                           shown case fails
 ```
 
+## rail-paint-fixture.html
+
+Guards **the rail paint** in `surface-treatments.css`: a rail in one governed color takes the
+same paint whichever meaning draws it. The fixture sets five review ranges, one per review
+judgment, and a neutral range; a comparison that shows its words, with a favorable, a caution
+and an adverse summary; a legend-led comparison with the same three as rated figures in value
+fields, and their key; a caution summary inside a `.theme-dark` subtree; and a quotation.
+
+The page measures each case once the fonts are ready and reports one overall verdict, with a row
+per case:
+
+```text
+stroke    every rail is a 2px solid stroke
+paint     each rail's paint is its color's: caution's yellow a 1px ring in its own color in light
+          and none in dark, the root's theme deciding, in the dark subtree too; every green, red,
+          review-accented and neutral rail none
+one       the declined range's rail and every adverse rail share one color and one paint; the
+          accepted range's and every favorable rail, another; caution beside a summary, in a
+          field, in the key and in the dark subtree, a third
+label     the declined review mark keeps the bordered label's own edge, 1px in light and 0.5px in
+          dark
+follows   with the shared paints changed on the root (green 3px, yellow 2px, red 1.5px), every
+          rail bound to one follows it, and the proposed, open, no-decision and neutral ranges'
+          rails stay bare; the declined mark's edge and the quotation's rail do not move; once the
+          change is removed, every rail paints as before
+```
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/rail-paint-fixture.html
+# add ?theme=light or ?theme=dark to hold a mode
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
+also on `window.__railPaintFixture` and the verdict on `body[data-result]`. Run it held light,
+held dark and following the browser, with the browser's preference light and dark.
+
+**Verifying the fixture still bites.** Each control below loads one regression from a page-local
+rule; it fails only the cases named, in every one of those six settings unless a line says
+otherwise.
+
+```text
+?control=local-dose       caution keeps a dose of its own, as the profile once did: its four rails'
+                          follows cases fail, and in dark their paint cases too
+?control=unbound-range    the review ranges lose their binding to the shared paint: the accepted
+                          and declined ranges' follows cases fail
+?control=subtree-dose     the yellow paint follows a .theme-dark subtree, as the bordered label's
+                          dose does: the subtree rail's follows case fails, and where the root is
+                          light its paint case and the one-yellow case too
+?control=label-reach      the red rail paint is put on the declined review mark: the mark's own-
+                          edge case and its untouched case fail
+```
+
 ## doc-actions-end-fixture.html
 
 Guards **the action row at an item's end** in `surface-document.css`: `.doc-actions--end`,

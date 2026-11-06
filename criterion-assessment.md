@@ -20,7 +20,7 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
 - **Adverse:** it works against that criterion.
 - **Unassessed:** no criterion-based judgment is asserted. It is not a neutral rating, a warning or a gray badge: nothing is drawn.
 
-**Caution takes a light-theme dose.** Spectral State's yellow is its recorded brightness watch-point on the light field, and as a 2px rail on the light lavender ground it all but disappears. In light only, caution's rail takes a 1px same-color, zero-blur reinforcement, 4px apparent, as paint rather than layout, so no text moves. Its color is unchanged; favorable and adverse, and every rail in dark, keep the plain 2px stroke.
+**Each rail takes its color's shared paint.** How a color is painted as a rail belongs to the surface treatments' **rail paint** ([`surface-treatments.css`](surface-treatments.css), RAIL PAINT), not to this profile: the same color drawn as a rail in the same theme takes the same paint, whichever meaning draws it. This profile binds each role to its color's paint and sets no dose of its own. Favorable and adverse keep the plain 2px stroke, as a review range's green and red rails do. Caution's yellow, Spectral State's recorded brightness watch-point on the light field, all but disappears as a bare 2px rail on the light lavender ground, so in light its paint adds a same-color ring. The ring is paint rather than layout, and no text moves. Its color is unchanged, and every rail in dark keeps the plain stroke.
 
 **Labels stay assessment labels.** A consuming surface keeps **Favorable**, **Caution** and **Adverse**. It never relabels them `earned`, `structural` or `deflated` because a color value is shared: the reused values are visual-role mappings, not semantic aliases.
 
@@ -41,7 +41,7 @@ The ASK semantic profiles answer different questions, and a shared color never m
 
 ## The criterion is the author's
 
-This profile owns each role's meaning and its presentation. The consuming author owns the **criterion** each row is judged against and every **assignment**, and records them where the surface keeps its decisions. A color token supplies no judgment.
+This profile owns each role's meaning and its presentation, binding each role to a color and to that color's shared rail paint. The consuming author owns the **criterion** each row is judged against and every **assignment**, and records them where the surface keeps its decisions. A color token supplies no judgment.
 
 Every assessed row declares, at least in the consumer's own record (where the ratings are a source author's own, the criterion and its direction are the author's, as the source labels the row, and the record says the ratings are carried):
 - **its criterion and direction:** what is favorable here, such as less set-up time and cost;
@@ -75,7 +75,7 @@ In a comparison table (the register's **COMPARISON TABLE** composition, `table.d
 | Concern | Rule |
 | --- | --- |
 | Scope | The rail marks the wrapper: the assessed summary or figure, and its word. Never a row, a column or a table. |
-| Placement | Inside the cell, in the lane each body cell outside the first column reserves from its column's content edge, where that column's header begins: a 2px stroke beginning on that edge, 12px clear of the text. Never in the gutter before the column. In a legend-led table a rated figure may instead sit in a value field (below): its rail sits 12px before the field, nearer the figure, and never begins before the content edge. In light, caution's stroke takes its 1px reinforcement, painted 1px beyond the stroke on every side. |
+| Placement | Inside the cell, in the lane each body cell outside the first column reserves from its column's content edge, where that column's header begins: a 2px stroke beginning on that edge, 12px clear of the text. Never in the gutter before the column. In a legend-led table a rated figure may instead sit in a value field (below): its rail sits 12px before the field, nearer the figure, and never begins before the content edge. In light, caution's stroke takes its color's 1px ring, painted 1px beyond the stroke on every side. |
 | Height | The wrapper's own height, wrapped lines included; caution's light ring adds 1px at each end. Never the row's, never through the detail below. In a legend-led table the word takes no line, so the rail is as tall as the summary or figure alone, except under forced colors. |
 | Ends | Straight and plain: no cap, dot, arrow or glow. |
 | Surface and type | The ordinary table surface, rules and text foreground. No fill, tint, backplate or colored cell border. |
@@ -92,7 +92,7 @@ A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a
 
 **A value field, for rated figures.** In a legend-led table a rated figure's wrapper may take `data-value-field`, a template of the widest value its group shows, such as `"0.00"` or `"-00.0%"`. The wrapper then sits at the column's end, as wide as that template on the column's tabular figures, or as its own figure where that is wider, and its rail sits 12px before it. Every wrapper in the group carries the same template, so their fields share one width and each column's rails share one line. The figure takes the cell's type; a template narrower than its figure is an authoring defect, since that field widens and its rail leaves the line. The field never reaches past the column's content edge: in a column too narrow for it, it fills the column and the rail begins on that edge. In an auto-sized table the template also sets the column's least width, so that happens only where a fixed layout or a declared width makes the column narrower. In a table that shows its words, and under forced colors, the template is ignored and the rail keeps the content edge.
 
-**It is not the labeled range.** The labeled range's scope rail sits in the outer margin and admits only neutral and review colors. A comparison rail sits inside its cell and admits only this profile's. A cell that also carries a review or evidence mark keeps that mark whole: its own box or marker, its own color and its own scope.
+**It is not the labeled range.** The labeled range's scope rail sits in the outer margin and admits only neutral and review colors. A comparison rail sits inside its cell and admits only this profile's. Where the two draw the same color, green or red, they take the same paint, in different places. A cell that also carries a review or evidence mark keeps that mark whole: its own box or marker, its own color and its own scope.
 
 ## Tiers
 
@@ -102,7 +102,7 @@ A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a
 
 ## How to use it
 
-1. Load `colors_and_type.css`, then `spectral-state.css`, then `criterion-assessment.css`. For the table application, load `surface-document.css` before this file.
+1. Load `colors_and_type.css`, then `spectral-state.css`, then `criterion-assessment.css`. For the table application, also load `surface-panel.css`, `surface-document.css` and `surface-treatments.css`, in that order, ahead of this file, all from one design-system commit: the document register draws the rails' geometry and the treatments their paint.
 2. Declare the comparison: `table.doc-table.doc-compare-table` directly inside a named `.doc-table-scroll` box.
 3. Wrap each assessed summary and its word in `.doc-compare-assessed` with one `data-assessment` value, the word marked `.doc-compare-word`. Leave unassessed summaries unwrapped.
 4. Give the table a key. Keep the words beside the rails, or declare `doc-compare-legend-led` on the table to let the key name them; there, a group of rated figures may share a value field, each wrapper carrying the same `data-value-field` template.
@@ -110,5 +110,5 @@ A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the four roles, their meanings and labels, the reuse-by-reference mapping, the table application's binding, and the comparison table's geometry in the document register.
+- **Upstream (this repo):** the four roles, their meanings and labels, the reuse-by-reference mapping, the table application's binding of each role to its color and that color's rail paint, the comparison table's geometry in the document register, and the rail paint in the surface treatments.
 - **Consumer-local:** the criteria, every assignment and its basis, the table's content and columns, and where the table sits in its page.
