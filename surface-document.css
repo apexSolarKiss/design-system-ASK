@@ -68,11 +68,14 @@
      meaning         the space between one role and the next, carried by a
                      composition as a gap because every role sets margin 0
      population      a document flow, its sections, prose runs, titled
-                     groups, groups, labeled values and action rows
+                     groups, groups, labeled values and action rows, and a
+                     flow of peer parts nested inside a section
      owner           this module
      reuses          foundation space tokens
-     variation       a section nested inside a section leads by --space-4; an
-                     item's action row may sit at the item's end (below)
+     variation       a section, or a flow of peer parts, nested inside a
+                     section leads by --space-4, and the nested flow sets its
+                     peers --space-8 apart at any depth; an item's action row
+                     may sit at the item's end (below)
      exclusions      page grid, column count, order and payload stay with the
                      consuming surface
      example         a heading and its body sit --space-3 apart wherever the
@@ -757,8 +760,14 @@
 
 /* A section nested inside a section. The parent's gap is the heading-to-body
    rhythm, too tight to read a new subsection as starting, so the nesting adds
-   one shared lead wherever it occurs — nested rail levels included. */
-.doc-section > .doc-section { margin-top: var(--space-4); }
+   one shared lead wherever it occurs — nested rail levels included.
+   A part whose content is a run of substantial peer parts holds them in a
+   .doc-flow nested the same way: the flow takes the same lead after the part's
+   heading or introduction, then sets its peers --space-8 apart, the document
+   flow's own gap. Space follows the relationship, not the heading level, so
+   peer parts start as visibly at any depth. */
+.doc-section > .doc-section,
+.doc-section > .doc-flow { margin-top: var(--space-4); }
 
 .doc-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 
