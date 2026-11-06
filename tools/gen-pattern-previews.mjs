@@ -475,6 +475,7 @@ const HOST_SCRIPT = `<script>
 </script>`;
 
 const REPO_ACTION = '<a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>';
+const DESIGN_ACTION = '<a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/design">design</a>';
 const SEP = '<span class="sep" aria-hidden="true">//</span>';
 
 function renderHost(s) {
@@ -513,7 +514,7 @@ ${HOST_STYLE}
         <img class="surface-mark-dark" src="../../assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
       </a>
       <nav class="surface-breadcrumb" aria-label="Breadcrumb">
-        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> ${SEP} <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> ${SEP} <a href="https://a-s-k.studio/apex-solar-kiss/design">design</a> ${SEP} <a href="../../index.html">design-system-ASK</a> ${SEP} <a href="../index.html">pattern previews</a> ${SEP} <span class="page" aria-current="page">${name}</span></h1>
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> ${SEP} <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> ${SEP} <a href="../../index.html">design-system-ASK</a> ${SEP} <a href="../index.html">pattern previews</a> ${SEP} <span class="page" aria-current="page">${name}</span></h1>
       </nav>
       <p class="surface-lede">${what} The frame below holds the generated specimen, unchanged.</p>
       <span class="surface-badge">owner preview &gt;&gt; do not vendor</span>
@@ -546,6 +547,7 @@ ${HOST_SCRIPT}
 ${siblings}
     </ul>
     <p class="surface-nav-utilities">
+      ${DESIGN_ACTION}
       ${REPO_ACTION}
     </p>
   </template>

@@ -403,6 +403,17 @@ def config_problems(tree):
                 parts = urlsplit(href) if isinstance(href, str) else None
                 if not isinstance(label, str) or not label.strip() or not parts or parts.scheme != "https" or not parts.netloc:
                     out.append("STRUCTURE-ANCESTRY  ancestry entry %r: an ancestor names a label and an https URL" % (a,))
+    if "utilities" in cfg:
+        routes = cfg["utilities"]
+        if not isinstance(routes, list) or not routes:
+            out.append("STRUCTURE-UTILITIES  utilities: a list of the navigation panel's off-path routes, in order")
+        else:
+            for u in routes:
+                label = u.get("label") if isinstance(u, dict) else None
+                href = u.get("href") if isinstance(u, dict) else None
+                parts = urlsplit(href) if isinstance(href, str) else None
+                if not isinstance(label, str) or not label.strip() or not parts or parts.scheme != "https" or not parts.netloc:
+                    out.append("STRUCTURE-UTILITIES  utilities entry %r: a route names a label and an https URL" % (u,))
     chrome = cfg.get("chrome") or {}
     for key in ("stylesheets", "scripts"):
         if not isinstance(chrome.get(key), list) or not chrome.get(key):
@@ -1461,6 +1472,13 @@ def action(href, label, primary=False, external=False):
     return '<a class="%s" href="%s"%s>%s</a>' % (cls, esc(href), ext, esc(label))
 
 
+def off_path(tree):
+    """The navigation panel's utilities tail: the declared off-path routes (routes outside the repository's own tree,
+    such as another branch of the same family site), then the repository. Without the key nothing precedes it."""
+    return ([action(u["href"], u["label"]) for u in tree.cfg.get("utilities") or ()]
+            + [action("https://github.com/" + tree.cfg["repo"], "repository", external=True)])
+
+
 def shell_close(tree, page, footer_actions, nav_local, nav_utilities):
     return ("  </main>\n\n  <footer class=\"surface-footer\">\n    %s\n  </footer>\n\n"
             "  <template class=\"surface-nav-source\">\n    <ul class=\"surface-nav-local\">\n%s    </ul>\n"
@@ -1552,8 +1570,7 @@ def render_document(tree, entry, report):
          action("https://github.com/" + cfg["repo"], "repository", external=True)],
         "".join(siblings),
         [action(front, fl["label"]), action(tree.github(path), "source on GitHub", external=True),
-         action(raw_href, raw_label, external=raw_href.startswith("https:")),
-         action("https://github.com/" + cfg["repo"], "repository", external=True)])
+         action(raw_href, raw_label, external=raw_href.startswith("https:"))] + off_path(tree))
     report[path] = {"links": links, "images": images, "headings": headings, "title": title, "findings": findings}
     if not title and not any(k.startswith("STRUCTURE") for _, _, k in findings):
         report[path]["findings"].append(("", "", "NO-TITLE (the H1 has no text)"))
@@ -1605,8 +1622,7 @@ def render_source(tree, entry):
          action(tree.github(path), "GitHub", external=True), action(rel_raw, "raw file")],
         '      <li data-surface-nav-current></li>\n',
         [action(index, "documents"), action(rel_fig, "open figure"),
-         action(tree.github(path), "source on GitHub", external=True),
-         action("https://github.com/" + cfg["repo"], "repository", external=True)])
+         action(tree.github(path), "source on GitHub", external=True)] + off_path(tree))
     return doc
 
 
@@ -1687,7 +1703,7 @@ def render_index(tree, report):
         [action(diagrams, fl["label"]), action("https://github.com/" + cfg["repo"], "repository", external=True),
          action("https://a-s-k.studio/", "A-S-K.studio", external=True)],
         "".join(local),
-        [action(diagrams, fl["label"]), action("https://github.com/" + cfg["repo"], "repository", external=True)])
+        [action(diagrams, fl["label"])] + off_path(tree))
     return doc
 
 
@@ -1715,7 +1731,7 @@ def render_home(tree):
         tree, page,
         [action(repo, "repository", external=True), action("https://a-s-k.studio/", "A-S-K.studio", external=True)],
         "      <li data-surface-nav-current>\n        <ul>\n" + "".join(local) + "        </ul>\n      </li>\n",
-        [action(repo, "repository", external=True)])
+        off_path(tree))
     return doc
 
 

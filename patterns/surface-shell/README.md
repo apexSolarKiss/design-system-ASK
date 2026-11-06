@@ -243,8 +243,6 @@ public, so every one of them appears:
 <span class="sep" aria-hidden="true">//</span>
 <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a>
 <span class="sep" aria-hidden="true">//</span>
-<a href="https://a-s-k.studio/apex-solar-kiss/design">design</a>
-<span class="sep" aria-hidden="true">//</span>
 <a href="../index.html">design-system-ASK</a>
 <span class="sep" aria-hidden="true">//</span>
 <span class="page" aria-current="page">style guide</span>
@@ -256,8 +254,8 @@ is the label — `apex solar kiss`, not the `apexSolarKiss` GitHub handle, becau
 a breadcrumb names a place a reader goes rather than a repository namespace. And
 **within this breadcrumb path the segment classes grade depth**: `.org` on the
 outermost ancestor, `.page` on the inert current leaf, nothing on the segments
-between. That grading is what lets a five-segment chain still read as one object
-rather than five equal words. A plain title has no path to grade, so it has no
+between. That grading is what lets a four-segment chain still read as one object
+rather than four equal words. A plain title has no path to grade, so it has no
 intermediate tier and no `.page` — it still carries `.org` for its owning
 context.
 
@@ -745,7 +743,7 @@ control is simply *in* the layout.
 the DOM. The head's own box is dropped, so the hierarchy, the utilities and the
 close all become grid items of `.surface-nav-panel-inner` directly, and the
 desktop override arranges them as a scrolling hierarchy above one shared bottom
-row: hierarchy across the upper row, repository utilities lower-left, close
+row: hierarchy across the upper row, the utilities lower-left, close
 lower-right. The two footer items align to a common bottom edge because they are
 siblings in one row that both end-align inside it — not because either is
 positioned against the panel.
@@ -877,7 +875,17 @@ siblings it does not contain, so the remaining sources are strictly *off-path*:
 | --- | --- | --- |
 | the header breadcrumb | once, visibly | the panel's vertical **current path**, derived — never restated |
 | `.surface-nav-local` | once, optionally | **sibling or child** destinations the path cannot contain |
-| `.surface-nav-utilities` | once, optionally | repository and other external routes |
+| `.surface-nav-utilities` | once, optionally | the repository and other off-path routes, another branch of the same site among them |
+
+**Keep cross-branch routes outside the local subtree.** The runtime attaches
+the local list beneath the deepest breadcrumb ancestor, or at the root when none
+exists, and preserves its authored nesting. In the sibling form, local entries
+sit beside the current page; in the parent form, entries nested under the
+current-page marker are its children. Destinations outside that local subtree
+belong in `.surface-nav-utilities`. On design-system-ASK's pages, the design
+gateway appears there beside the repository link: **design-system-ASK and design
+are peers under apex solar kiss**. The shell itself names no destination; each
+consumer authors its own.
 
 **No public ancestor is repeated in source configuration.** A segment that
 belongs to the current path belongs in the visible title, where a reader can see

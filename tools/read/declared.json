@@ -14,8 +14,8 @@
     "front_link": {"label": "pattern previews", "href": "patterns/index.html"}
   },
   "ancestry": [{"label": "ASK", "href": "https://a-s-k.studio/"},
-               {"label": "apex solar kiss", "href": "https://a-s-k.studio/apex-solar-kiss"},
-               {"label": "design", "href": "https://a-s-k.studio/apex-solar-kiss/design"}],
+               {"label": "apex solar kiss", "href": "https://a-s-k.studio/apex-solar-kiss"}],
+  "utilities": [{"label": "design", "href": "https://a-s-k.studio/apex-solar-kiss/design"}],
   "chrome": {
     "stylesheets": ["colors_and_type.css", "surface-panel.css", "surface-action.css", "surface-text-link.css",
                     "surface-document.css", "surface-treatments.css", "patterns/surface-shell/surface-shell.css"],
