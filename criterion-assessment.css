@@ -49,12 +49,16 @@
    In a comparison table (surface-document.css, COMPARISON TABLE) a summary's
    wrapper, .doc-compare-assessed, takes data-assessment="favorable",
    "caution" or "adverse". This file generates the wrapper's rail and gives it
-   the role's value; surface-document.css draws its geometry: one 2px stroke in
-   the cell's lane, beginning on its column's content edge, as tall as the
-   wrapper. The word that names the
-   assessment sits inside the wrapper, in an ordinary text role, so the
-   assessment never depends on color. An unassessed summary takes no wrapper
-   and draws nothing; data-assessment="unassessed" draws nothing either.
+   the role's value; surface-document.css draws its geometry: one 2px stroke,
+   as tall as the wrapper, beginning on its column's content edge, or, for a
+   rated figure in a value field, 12px before the field. The word that names the
+   assessment sits inside the wrapper, in an ordinary text role, marked
+   .doc-compare-word. Shown, it keeps the assessment from depending on color.
+   In a legend-led table the key names each rail's color and the word stays
+   in the cell as text only, drawing nothing, except under forced colors,
+   where it shows again (surface-document.css). An
+   unassessed summary takes no wrapper and draws nothing;
+   data-assessment="unassessed" draws nothing either.
 
    CAUTION'S LIGHT DOSE. Spectral State's yellow is its recorded brightness
    watch-point on the light field, and as a 2px rail on the light lavender

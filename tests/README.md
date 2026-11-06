@@ -197,29 +197,42 @@ put the range-lane rule at zero specificity        the consumer-margin case
 ## comparison-rail-fixture.html
 
 Guards **the comparison table's assessment lane** in `surface-document.css`, with the rails
-`criterion-assessment.css` draws on it. A rail marks the column it assesses, so it begins on the
-content edge of the header that governs its cell, and the cell's text keeps the lane's clearance
-after it. The fixture sets one grouped comparison: neighboring cells with different ratings, an
-unassessed row, a cell spanning a group, a point list, facts below a summary, and a numeric column
-with rated and unrated figures; a copy of it in a 320px box; and a key.
+`criterion-assessment.css` draws on it. A rail marks the column it assesses, so it never begins
+before the content edge of the header that governs its cell; outside a value field it begins on
+that edge, and the cell's text keeps the lane's clearance after it. The fixture sets one grouped
+comparison: neighboring cells with different ratings, an unassessed row, a cell spanning a group,
+a point list, facts below a summary, and a numeric column with rated and unrated figures, whose
+value-field templates this table ignores; a copy of it in a 320px box; and a key. It also sets a
+legend-led comparison, whose rated figures share the template `000.00` with figures of unequal
+width in each column; a copy of it and its key, the table in a 320px box; and a fixed layout
+whose figure columns are too narrow for their template; and a last legend-led table whose one
+word holds a link. Each legend-led table is followed by its key.
 
 The page measures each case once the fonts are ready and reports one overall verdict, with a row
 per case:
 
 ```text
 rail      each rail is drawn, 2px, absolutely placed in its relatively placed wrapper, so its
-          computed place is where it paints; it begins on the content edge of the header that
-          governs its cell, the column header for a cell in one column and the group header for a
-          cell that spans the group, within 1px; it begins at least 13px inside its own cell, clear
-          of the gutter before the column
+          computed place is where it paints; outside a value field it begins on the content edge
+          of the header that governs its cell, the column header for a cell in one column and the
+          group header for a cell that spans the group, within 1px; it begins at least 13px
+          inside its own cell, clear of the gutter before the column
 text      in a text cell the first block's text begins 12px after the rail: a paragraph's first
           line, or a list's own box, whose markers hang inside it; assessed and unassessed cells in
           a column, and a cell spanning from it, share that origin
 figures   a numeric cell's figure ends where its column header's text ends, rated or not
+words     in a table that shows its words, each word is shown; in a legend-led table each word
+          stays in the cell as its assessment's text, not hidden from assistive technology, drawn
+          nowhere and taking no space, so its wrapper is as tall as what it shows, unless it holds
+          a link, when it stays shown; the key follows the table's box
+field     a rated figure in a legend-led table with a template: its wrapper is as wide as the
+          template in the cell's own figures, or as the figure where wider, and never wider than
+          the column's content; its rail sits 12px before it, beside it at the column's end, and
+          never before the content edge; in each column the group's rails share one line
 key       the key lays out its items in a row; its first rail sits at the key's own start; each
           item's rail is drawn and placed as a cell's is, and its word begins 12px after it
-scroll    the narrow box overflows and scrolls, and a rail and its text move with it by the same
-          distance; the page itself never scrolls sideways
+scroll    each narrow box overflows and scrolls, and a rail and its text or figure move with it by
+          the same distance; the page itself never scrolls sideways
 ```
 
 **Run it** from the repo root:
@@ -234,7 +247,8 @@ also on `window.__compareRailFixture` and the verdict on `body[data-result]`. Ru
 themes, and at a phone width as well as a desktop one.
 
 **Verifying the fixture still bites.** Each control below loads one regression from a page-local
-rule; it fails only the cases named, in both themes and at both widths.
+rule; it fails only the cases named, in both themes and at both widths. The first four touch
+only the tables that show their words.
 
 ```text
 ?control=no-lane          body cells lose the lane after the content edge, so each rail hangs in
@@ -246,6 +260,26 @@ rule; it fails only the cases named, in both themes and at both widths.
                           cases of the two rated figures fail, in each table
 ?control=key-indent       the key takes a list's indent and stacks its items: the key's row case
                           and its first-rail case fail
+?control=words-shown      a legend-led table's words return to their lines in its text cells:
+                          those wrappers' no-space and height cases fail, in each legend-led
+                          table with text cells
+?control=figure-words-shown
+                          the same in its figure cells: those wrappers' no-space and height cases
+                          fail; each word widens its field, so the field-width and beside-the-
+                          field cases fail wherever the column has room for the word, and so does
+                          each column's shared line where its words differ in width
+?control=own-width        a value field loses its template and takes its figure's width: the field-
+                          width and beside-the-field cases of every figure narrower than its
+                          template fail, and so does each column's shared line where its figures
+                          differ in width
+?control=no-clamp         a value field keeps its template's width in a column too narrow for it,
+                          and overflows the column's end: the narrow columns' field-width and
+                          figure-end cases fail
+?control=end-anchored     the same field is anchored to the column's end instead, and overflows
+                          before the content edge: the narrow columns' field-width, beside-the-
+                          field, content-edge and inside-its-column cases fail
+?control=no-guard         the word that holds a link is hidden as the others are: its stays-
+                          shown case fails
 ```
 
 ## doc-actions-end-fixture.html

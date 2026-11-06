@@ -106,45 +106,45 @@
           <tr>
             <th class="doc-compare-head" scope="row">Set-up<p class="doc-meta">less work before a reader can open it</p></th>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta">caution</p></div>
+              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div>
               <ul class="doc-compare-facts"><li>steps: a repository, a deployment and a domain</li><li>cost: a hosting plan</li></ul>
             </td>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <ul class="doc-compare-facts"><li>steps: copy one folder</li><li>cost: none</li></ul>
             </td>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <ul class="doc-compare-facts"><li>steps: print the page to a file</li><li>cost: none</li></ul>
             </td>
           </tr>
           <tr>
             <th class="doc-compare-head" scope="row">Reading offline<p class="doc-meta">readable without a connection</p></th>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">limited</p><p class="doc-meta">adverse</p></div>
+              <div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">limited</p><p class="doc-meta doc-compare-word">adverse</p></div>
               <p>needs a connection, unless the browser kept a copy</p>
             </td>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <p>opens from disk</p>
             </td>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <p>opens in any PDF reader</p>
             </td>
           </tr>
           <tr>
             <th class="doc-compare-head" scope="row">Fidelity<p class="doc-meta">the reader sees the reviewed bytes</p></th>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <ul class="doc-compare-points"><li>served from one reviewed commit</li><li>a later deployment replaces it</li></ul>
             </td>
             <td class="doc-compare-cell">
-              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta">favorable</p></div>
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">favorable</p></div>
               <ul class="doc-compare-points"><li>the reviewed folder itself</li><li>its fonts load from the folder</li></ul>
             </td>
             <td class="doc-compare-cell" id="worked-coexistence">
-              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">partial</p><p class="doc-meta">caution</p></div>
+              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">partial</p><p class="doc-meta doc-compare-word">caution</p></div>
               <ul class="doc-compare-points"><li>one theme, fixed at export</li><li>a table wider than the page needs a print layout</li></ul>
               <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">which print layout a wide table takes</span></span></div>
             </td>
@@ -172,6 +172,46 @@
       <p class="doc-body">The PDF's fidelity cell carries two judgments, and each keeps its own form. Its caution rail says how the PDF serves the row's criterion. Its open question is a review mark from Review Semantics: its own bordered box, its own color and its own words. The mark does not make the caution a review decision, and the rail does not answer the question.</p>
       <p class="doc-body">The same holds for an evidence mark. A favorable characteristic is not a supported claim, and a supported disadvantage is still adverse.</p>
     </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="legend-title">
+    <h2 class="doc-section-title key-prose" id="legend-title">A legend-led comparison</h2>
+    <p class="doc-body key-prose">The same three options, with a row of summaries and two rows of figures. The table is legend-led: its key names each rail, so the words stay in the cells as text for assistive technology and draw nothing, and each rail is as tall as its summary or figure. Each summary spans its family's columns, so its rail begins where the family's header does. The figures share a value field, as wide as the template 000.00 that their widest needs: each sits at its column's end, and in each column the rails share one line, 12px before the field, however wide the figure. A sighted reader reads these assessments from the rails' colors against the key, so the worked comparison above keeps its words.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document, with figures" tabindex="0">
+      <table class="doc-table doc-compare-table doc-compare-legend-led" id="legend-table">
+        <colgroup><col></colgroup>
+        <colgroup span="2"></colgroup>
+        <colgroup span="1"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">In a browser</th><th class="doc-compare-head" scope="colgroup">Exported</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Row // criterion</th><th class="doc-compare-head doc-table-num" scope="col">Hosted site</th><th class="doc-compare-head doc-table-num" scope="col">Local folder</th><th class="doc-compare-head doc-table-num" scope="col">PDF</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="doc-compare-head" scope="row">Set-up<p class="doc-meta">less work before a reader can open it</p></th>
+            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">copy a folder, or deploy it</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">print the page to a file</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">Size (MB)<p class="doc-meta">under 1 favorable, to 100 caution, over 100 adverse</p></th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>108.20</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>12.34</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.46</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">First open (s)<p class="doc-meta">under 1 favorable, to 5 caution, over 5 adverse</p></th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>2.75</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.31</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>12.60</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" aria-label="Key to the legend-led comparison's rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // supports the row's criterion</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // conditional or intermediate</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // works against it</p></li>
+    </ul>
   </section>
 
   <section class="doc-section" aria-labelledby="numeric-title">

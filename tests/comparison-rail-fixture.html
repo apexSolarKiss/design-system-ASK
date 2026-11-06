@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // comparison rail regression fixture</title>
-<meta name="description" content="Regression fixture for the comparison table's assessment lane in surface-document.css: each rail begins on the content edge of the header that governs its cell, the text keeps the lane's clearance after it, assessed and unassessed cells share one origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its rails with its text.">
+<meta name="description" content="Regression fixture for the comparison table's assessment lane in surface-document.css: each rail outside a value field begins on the content edge of the header that governs its cell, the text keeps the lane's clearance after it, assessed and unassessed cells share one origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its rails with its text. A legend-led table keeps its words as text that takes no space, and its rated figures share a value field whose rails line up and never pass the content edge.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/comparison-rail-fixture.html
-     The foundation, the register, then Spectral State and Criterion Assessment, in the profile's load order.
-     ?control=no-lane, ?control=rail-only, ?control=inline-figures or ?control=key-indent loads one
-     regression, which must fail only the cases tests/README.md names for it. -->
+     The foundation, the text-link module the linked word composes, the register, then Spectral State and
+     Criterion Assessment, in the profile's load order.
+     ?control=no-lane, ?control=rail-only, ?control=inline-figures, ?control=key-indent,
+     ?control=words-shown, ?control=figure-words-shown, ?control=own-width, ?control=no-clamp,
+     ?control=end-anchored or ?control=no-guard loads one regression, which must fail only the cases tests/README.md names for it. -->
 <script>
   (function () {
     var c = new URLSearchParams(location.search).get('control');
@@ -16,6 +18,7 @@
   })();
 </script>
 <link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-text-link.css">
 <link rel="stylesheet" href="../surface-document.css">
 <link rel="stylesheet" href="../spectral-state.css">
 <link rel="stylesheet" href="../criterion-assessment.css">
@@ -25,15 +28,27 @@
   .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
   /* Page-local: a fixed box width makes the second table scroll at every viewport. */
   .fx-box { width: 320px; max-width: 100%; }
+  /* Page-local: a fixed layout whose two figure columns are too narrow for their template. */
+  #clamp { table-layout: fixed; }
+  #clamp col.fx-figure { width: 100px; }
   .verdict-box { overflow-x: auto; }
   .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
   .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
-  /* The regressions. Each outranks the register's zero-specificity geometry. */
-  html.fx-control-no-lane .doc-compare-table td:not(:first-child),
-  html.fx-control-rail-only .doc-compare-table td:not(:first-child) { padding-left: calc(var(--space-3) + 2px); }
-  html.fx-control-rail-only .doc-compare-table .doc-compare-assessed::before { left: 0; }
-  html.fx-control-inline-figures .doc-table-num > .doc-compare-assessed { display: inline-block; }
-  html.fx-control-key-indent .doc-compare-key { padding-left: 24px; flex-direction: column; }
+  /* The regressions. Each outranks the register's geometry, and the first four touch only the tables
+     that show their words. */
+  html.fx-control-no-lane .doc-compare-table:not(.doc-compare-legend-led) td:not(:first-child),
+  html.fx-control-rail-only .doc-compare-table:not(.doc-compare-legend-led) td:not(:first-child) { padding-left: calc(var(--space-3) + 2px); }
+  html.fx-control-rail-only .doc-compare-table:not(.doc-compare-legend-led) .doc-compare-assessed::before { left: 0; }
+  html.fx-control-inline-figures .doc-compare-table:not(.doc-compare-legend-led) .doc-table-num > .doc-compare-assessed { display: inline-block; }
+  html.fx-control-key-indent #key { padding-left: 24px; flex-direction: column; }
+  html.fx-control-words-shown .doc-compare-legend-led td:not(.doc-table-num) .doc-compare-assessed > .doc-compare-word {
+    position: static; width: auto; height: auto; margin: var(--space-2) 0 0; overflow: visible; clip-path: none; white-space: normal; }
+  html.fx-control-figure-words-shown .doc-compare-legend-led td.doc-table-num .doc-compare-assessed > .doc-compare-word {
+    position: static; width: auto; height: auto; margin: 0; overflow: visible; clip-path: none; white-space: normal; }
+  html.fx-control-no-guard #guard .doc-compare-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  html.fx-control-own-width .doc-compare-legend-led .doc-table-num > .doc-compare-assessed[data-value-field]::after { content: none; }
+  html.fx-control-no-clamp .doc-compare-legend-led .doc-table-num > .doc-compare-assessed[data-value-field] { max-width: none; }
+  html.fx-control-end-anchored .doc-compare-legend-led .doc-table-num > .doc-compare-assessed[data-value-field] { max-width: none; float: right; }
 </style>
 </head>
 <body>
@@ -41,11 +56,12 @@
 
   <section class="doc-section">
     <h1 class="doc-title">Comparison rails</h1>
-    <p class="doc-body">Each case is measured once the fonts are ready. A rail begins on the content edge of the
-      header that governs its cell: the column header for a cell in one column, the group header for a cell that
-      spans the group. The cell's text keeps the lane's 12px after the rail, assessed and unassessed cells share
-      one origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its
-      rails with its text.</p>
+    <p class="doc-body">Each case is measured once the fonts are ready. A rail never begins before the content edge
+      of the header that governs its cell: the column header for a cell in one column, the group header for a cell
+      that spans the group. Outside a value field it begins on that edge, and the cell's text keeps the lane's 12px
+      after the rail; a value field's rail sits 12px before the field. Assessed and unassessed cells share one
+      origin, figures keep the end, the key keeps its own geometry, and a table that scrolls carries its rails with
+      its text.</p>
     <p class="doc-label" id="overall">not run</p>
   </section>
 
@@ -62,24 +78,24 @@
         </thead>
         <tbody>
           <tr data-case="neighbors"><th class="doc-compare-head" scope="row">Effort</th>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">low</p><p class="doc-meta">favorable</p></div></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta">caution</p></div></td>
-            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse"><p>0.40</p><p class="doc-meta">adverse</p></div></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">high</p><p class="doc-meta">adverse</p></div></td></tr>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="00.00"><p>0.40</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
           <tr data-case="unassessed"><th class="doc-compare-head" scope="row">Notes</th>
             <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td>
             <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td>
             <td class="doc-compare-cell doc-table-num"><p>12.5</p></td>
             <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td></tr>
           <tr data-case="grouped"><th class="doc-compare-head" scope="row">Reach</th>
-            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">one reading for both options</p><p class="doc-meta">favorable</p></div></td>
+            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">one reading for both options</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
             <td class="doc-compare-cell doc-table-num"><p>3</p></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><ul class="doc-compare-points"><li>a first point</li><li>a second point</li></ul><p class="doc-meta">caution</p></div></td></tr>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><ul class="doc-compare-points"><li>a first point</li><li>a second point</li></ul><p class="doc-meta doc-compare-word">caution</p></div></td></tr>
           <tr data-case="detail"><th class="doc-compare-head" scope="row">Detail</th>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">slow</p><p class="doc-meta">adverse</p></div><ul class="doc-compare-facts"><li>speed: a week</li><li>cost: a plan</li></ul></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">slow</p><p class="doc-meta doc-compare-word">adverse</p></div><ul class="doc-compare-facts"><li>speed: a week</li><li>cost: a plan</li></ul></td>
             <td class="doc-compare-cell"><p class="doc-compare-summary">fast</p><ul class="doc-compare-facts"><li>speed: a day</li></ul></td>
-            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable"><p>0.90</p><p class="doc-meta">favorable</p></div></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta">favorable</p></div></td></tr>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="00.00"><p>0.90</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta doc-compare-word">favorable</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -95,6 +111,99 @@
     <h2 class="doc-section-title">The same comparison in a narrow box</h2>
     <p class="doc-body">A copy of the table above in a 320px box, so it scrolls at any viewport.</p>
     <div class="fx-box" id="narrow-host"></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">A legend-led comparison</h2>
+    <p class="doc-body">The key names the rails, so each word stays in its cell as text that takes no space. Its rated
+      figures carry the template 000.00 and share a value field, with figures of unequal width in each column.</p>
+    <div class="doc-table-scroll" role="region" aria-label="A legend-led comparison" tabindex="0" id="box-legend">
+      <table class="doc-table doc-compare-table doc-compare-legend-led" id="legend">
+        <colgroup><col></colgroup>
+        <colgroup span="2"></colgroup>
+        <colgroup span="2"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">First group</th><th class="doc-compare-head" scope="colgroup" colspan="2">Second group</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option one</th><th class="doc-compare-head doc-table-num" scope="col">Option two</th><th class="doc-compare-head doc-table-num" scope="col">Option three</th><th class="doc-compare-head doc-table-num" scope="col">Option four</th></tr>
+        </thead>
+        <tbody>
+          <tr data-case="text"><th class="doc-compare-head" scope="row">Effort</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.46</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>12.34</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>108.20</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+          <tr data-case="points"><th class="doc-compare-head" scope="row">Reach</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution"><ul class="doc-compare-points"><li>a first point</li><li>a second point</li></ul><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>108.20</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.46</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>12.34</p><p class="doc-meta doc-compare-word">caution</p></div></td></tr>
+          <tr data-case="unrated"><th class="doc-compare-head" scope="row">Notes</th>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">plain</p></td>
+            <td class="doc-compare-cell doc-table-num"><p>7.50</p></td>
+            <td class="doc-compare-cell doc-table-num"><p>1.00</p></td>
+            <td class="doc-compare-cell doc-table-num"><p>0.25</p></td></tr>
+          <tr data-case="spanning"><th class="doc-compare-head" scope="row">Span</th>
+            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">one reading for both options</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>2.75</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.31</p><p class="doc-meta doc-compare-word">favorable</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" id="key-legend" aria-label="Key to the legend-led comparison's rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse</p></li>
+      <li><p class="doc-meta">no rail // not assessed</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">The legend-led comparison in a narrow box</h2>
+    <p class="doc-body">A copy of the legend-led table and its key, the table in a 320px box, so it scrolls at any viewport.</p>
+    <div class="fx-box" id="legend-narrow-host"></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Figure columns too narrow for their template</h2>
+    <p class="doc-body">A fixed layout whose two figure columns are 100px wide, narrower than the template 0000.00
+      needs, so each field fills its column and its rail begins on the content edge.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Figure columns too narrow for their template" tabindex="0" id="box-clamp">
+      <table class="doc-table doc-compare-table doc-compare-legend-led" id="clamp">
+        <colgroup><col><col class="fx-figure"><col class="fx-figure"></colgroup>
+        <thead>
+          <tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head doc-table-num" scope="col">Five</th><th class="doc-compare-head doc-table-num" scope="col">Six</th></tr>
+        </thead>
+        <tbody>
+          <tr data-case="clamped"><th class="doc-compare-head" scope="row">Effort</th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="0000.00"><p>0.46</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="0000.00"><p>1.20</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" id="key-clamp" aria-label="Key to the narrow columns' rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">A word that holds a link</h2>
+    <p class="doc-body">A legend-led table whose one word holds a link: that word stays shown, so focus never lands
+      where nothing is drawn.</p>
+    <div class="doc-table-scroll" role="region" aria-label="A word that holds a link" tabindex="0" id="box-guard">
+      <table class="doc-table doc-compare-table doc-compare-legend-led" id="guard">
+        <thead>
+          <tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option one</th></tr>
+        </thead>
+        <tbody>
+          <tr data-case="linked"><th class="doc-compare-head" scope="row">Effort</th>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word"><a class="surface-text-link" href="#overall">favorable</a></p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" id="key-guard" aria-label="Key to the linked word's rail">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable</p></li>
+    </ul>
   </section>
 
   <section class="doc-section">
@@ -125,6 +234,14 @@
     copy.setAttribute('aria-label', 'The same comparison in a narrow box');
     copy.querySelectorAll('[id]').forEach(function (e) { e.removeAttribute('id'); });
     $('narrow-host').appendChild(copy);
+    var legendCopy = $('box-legend').cloneNode(true);
+    legendCopy.removeAttribute('id');
+    legendCopy.setAttribute('aria-label', 'The legend-led comparison in a narrow box');
+    legendCopy.querySelectorAll('[id]').forEach(function (e) { e.removeAttribute('id'); });
+    $('legend-narrow-host').appendChild(legendCopy);
+    var legendKeyCopy = $('key-legend').cloneNode(true);
+    legendKeyCopy.removeAttribute('id');
+    $('legend-narrow-host').appendChild(legendKeyCopy);
 
     await document.fonts.ready;
     await tick(120);
@@ -136,6 +253,19 @@
     /* Where a block's text begins: a paragraph's first line, or a list's own box, whose markers hang inside it. */
     var textStart = function (el) { return el.tagName === 'P' ? textRect(el).left : left(el); };
     var name = function (el) { return el.textContent.trim().replace(/\s+/g, ' '); };
+    var contentEnd = function (el) { var s = cs(el), r = el.getBoundingClientRect(); return r.right - parseFloat(s.borderRightWidth) - parseFloat(s.paddingRight); };
+    /* A template's width in the cell's own type, its tabular figures included, measured apart from the field. */
+    var probe = function (cell, text) {
+      var s = document.createElement('span');
+      s.textContent = text;
+      s.style.cssText = 'position: absolute; visibility: hidden; white-space: nowrap;';
+      cell.appendChild(s);
+      var wd = s.getBoundingClientRect().width;
+      s.remove();
+      return wd;
+    };
+    /* What a wrapper shows: its children other than the word. */
+    var shown = function (w) { return [].filter.call(w.children, function (c) { return !c.classList.contains('doc-compare-word'); }); };
 
     /* The table's grid: each cell's first column and span, through rows and spans. */
     var grid = function (table) {
@@ -160,7 +290,8 @@
         var h = g.filter(function (x) { return x.tr === row && x.col === e.col && x.span === e.span; })[0];
         return h ? h.cell : null;
       };
-      var origins = {};
+      var led = table.classList.contains('doc-compare-legend-led');
+      var origins = {}, fieldRails = {};
       g.forEach(function (e) {
         if (e.cell.tagName !== 'TD' || e.tr.parentNode.tagName !== 'TBODY' || e.col === 0) return;
         var row = e.tr.dataset.case + ' / ' + e.col + (e.span > 1 ? '+' + (e.span - 1) : '');
@@ -175,11 +306,41 @@
           near(tag + ' / ' + row + ': the figure keeps the end of "' + name(h) + '"', textRect(fig).right, textRect(h).right, 1);
         }
         if (!w) return;
-        var r = rail(w), edge = contentStart(h);
+        var r = rail(w), edge = contentStart(h), word = w.querySelector(':scope > .doc-compare-word');
         expect(tag + ' / ' + row + ': the rail is drawn, placed in its wrapper', r.content + ' ' + r.width + 'px, ' + r.placed, '"" 2px, absolute in relative');
-        near(tag + ' / ' + row + ': the rail begins on the content edge of "' + name(h) + '"', r.start, edge, 1);
         atLeast(tag + ' / ' + row + ': the rail sits clear of the gutter, inside its column', r.start - left(e.cell), 13);
+        var linked = word && word.querySelector('a[href], button, input, select, textarea, [tabindex]');
+        if (word && led && linked) {
+          expect(tag + ' / ' + row + ': the word holds a link, so it stays shown', cs(word).position + ' ' + (word.getBoundingClientRect().height > 1), 'static true');
+        } else if (word && led) {
+          /* A legend-led table: the word stays as text and takes no space, so the wrapper is as tall as what it shows. */
+          var ws = cs(word), wr = word.getBoundingClientRect(), kids = shown(w);
+          expect(tag + ' / ' + row + ': the word stays in the cell as text', word.textContent.trim() === w.dataset.assessment && ws.display !== 'none' && ws.visibility === 'visible' && !word.closest('[aria-hidden="true"]'), true);
+          expect(tag + ' / ' + row + ': the word draws nothing and takes no space', ws.position + ' ' + ws.clipPath + ' ' + (wr.width <= 1 && wr.height <= 1), 'absolute inset(50%) true');
+          near(tag + ' / ' + row + ': the wrapper is as tall as what it shows', w.getBoundingClientRect().height,
+            Math.max.apply(null, kids.map(function (k) { return k.getBoundingClientRect().bottom; })) - kids[0].getBoundingClientRect().top, 1);
+        } else if (word) {
+          expect(tag + ' / ' + row + ': the word is shown', word.getBoundingClientRect().height > 1, true);
+        }
+        if (led && num && w.hasAttribute('data-value-field')) {
+          /* A value field: as wide as its template, or its figure where wider, never wider than the column's
+             content; the rail 12px before it, and never before the content edge. */
+          var room = contentEnd(e.cell) - contentStart(e.cell);
+          var want = Math.min(room, Math.max(probe(e.cell, w.dataset.valueField), textRect(w.firstElementChild).width));
+          near(tag + ' / ' + row + ': the field is its template\'s width, within the column', w.getBoundingClientRect().width, want, 0.5);
+          near(tag + ' / ' + row + ': the rail sits 12px before its field', left(w) - (r.start + r.width), 12, 1);
+          near(tag + ' / ' + row + ': the rail sits beside the field at the column\'s end', r.start, Math.max(edge, contentEnd(e.cell) - want - 14), 1);
+          atLeast(tag + ' / ' + row + ': the rail never begins before the content edge of "' + name(h) + '"', r.start - edge, -0.5);
+          (fieldRails[e.col] = fieldRails[e.col] || []).push({ row: row, start: r.start });
+          return;
+        }
+        near(tag + ' / ' + row + ': the rail begins on the content edge of "' + name(h) + '"', r.start, edge, 1);
         if (!num) near(tag + ' / ' + row + ': the text keeps the lane\'s 12px after the rail', origin - (r.start + r.width), 12, 1);
+      });
+      /* In each column, the rails of a value field's group share one line. */
+      Object.keys(fieldRails).forEach(function (col) {
+        var f = fieldRails[col];
+        f.slice(1).forEach(function (o) { near(tag + ' / column ' + col + ': the rail of ' + o.row + ' shares the line of ' + f[0].row, o.start, f[0].start, 0.5); });
       });
       /* Assessed and unassessed cells in a column share one origin; a spanning cell takes its first column's. */
       Object.keys(origins).forEach(function (col) {
@@ -191,6 +352,16 @@
 
     measure($('compare'), 'wide');
     measure(copy.querySelector('table'), 'narrow');
+    measure($('legend'), 'legend');
+    measure(legendCopy.querySelector('table'), 'legend narrow');
+    measure($('clamp'), 'clamp');
+    measure($('guard'), 'guard');
+
+    /* A legend-led table's key follows its box directly. */
+    [['legend', $('box-legend')], ['legend narrow', legendCopy], ['clamp', $('box-clamp')], ['guard', $('box-guard')]].forEach(function (t) {
+      var next = t[1].nextElementSibling;
+      expect(t[0] + ' / the key follows the table\'s box', !!next && next.matches('ul.doc-compare-key') && next.getBoundingClientRect().height > 0, true);
+    });
 
     /* The key keeps its own geometry: a row of items, the first rail at the key's start, each word 12px
        clear of its rail. */
@@ -215,6 +386,18 @@
     near('scroll / the rail moves with the box', r0 - rail(last).start, moved, 1);
     near('scroll / the text moves with the box', o0 - textStart(last.firstElementChild), moved, 1);
     nb.scrollLeft = 0;
+    await tick();
+    /* A value field's rail moves with its box too. */
+    var lt = legendCopy.querySelector('table'), lf = lt.querySelector('tr[data-case="text"] > td:last-child > .doc-compare-assessed');
+    expect('legend scroll / the narrow box overflows', legendCopy.scrollWidth > legendCopy.clientWidth, true);
+    var lr0 = rail(lf).start, lo0 = textRect(lf.firstElementChild).left;
+    legendCopy.scrollLeft = 60;
+    await tick();
+    var lmoved = legendCopy.scrollLeft;
+    expect('legend scroll / the narrow box scrolls', lmoved > 0, true);
+    near('legend scroll / the rail moves with the box', lr0 - rail(lf).start, lmoved, 1);
+    near('legend scroll / the figure moves with the box', lo0 - textRect(lf.firstElementChild).left, lmoved, 1);
+    legendCopy.scrollLeft = 0;
     await tick();
     expect('page / no horizontal overflow', document.documentElement.scrollWidth <= document.documentElement.clientWidth, true);
 

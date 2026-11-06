@@ -63,7 +63,7 @@ In a comparison table (the register's **COMPARISON TABLE** composition, `table.d
 <td class="doc-compare-cell">
   <div class="doc-compare-assessed" data-assessment="caution">
     <p class="doc-compare-summary">moderate</p>
-    <p class="doc-meta">caution</p>
+    <p class="doc-meta doc-compare-word">caution</p>
   </div>
   <ul class="doc-compare-facts">
     <li>steps: a repository, a deployment and a domain</li>
@@ -74,19 +74,23 @@ In a comparison table (the register's **COMPARISON TABLE** composition, `table.d
 
 | Concern | Rule |
 | --- | --- |
-| Scope | The rail marks the wrapper: the assessed summary and its word. Never a row, a column or a table. |
-| Placement | Inside the cell, in the lane each body cell outside the first column reserves from its column's content edge, where that column's header begins: a 2px stroke beginning on that edge, 12px clear of the text. Never in the gutter before the column. In light, caution's stroke takes its 1px reinforcement, painted 1px beyond the stroke on every side. |
-| Height | The wrapper's own height, wrapped lines included; caution's light ring adds 1px at each end. Never the row's, never through the detail below. |
+| Scope | The rail marks the wrapper: the assessed summary or figure, and its word. Never a row, a column or a table. |
+| Placement | Inside the cell, in the lane each body cell outside the first column reserves from its column's content edge, where that column's header begins: a 2px stroke beginning on that edge, 12px clear of the text. Never in the gutter before the column. In a legend-led table a rated figure may instead sit in a value field (below): its rail sits 12px before the field, nearer the figure, and never begins before the content edge. In light, caution's stroke takes its 1px reinforcement, painted 1px beyond the stroke on every side. |
+| Height | The wrapper's own height, wrapped lines included; caution's light ring adds 1px at each end. Never the row's, never through the detail below. In a legend-led table the word takes no line, so the rail is as tall as the summary or figure alone, except under forced colors. |
 | Ends | Straight and plain: no cap, dot, arrow or glow. |
 | Surface and type | The ordinary table surface, rules and text foreground. No fill, tint, backplate or colored cell border. |
-| Alignment | Assessed and unassessed cells keep the same lane, so a rail never moves text. In a numeric cell the rail begins on the column's content edge, like the column's other rails, and the figures keep the end. |
+| Alignment | Assessed and unassessed cells keep the same lane, so a rail never moves text. In a numeric cell the rail begins on the column's content edge, like the column's other rails, and the figures keep the end. In a value field the figures keep the end too, and each column's rails in the group share one line, set by the group's template rather than by each figure's width. |
 | Unassessed | No wrapper, no rail, no word. |
-| Words | The word that names the assessment sits inside the wrapper in an ordinary text role: the metadata role in the specimen. Meaning never depends on color, hover or a legend alone. |
+| Words | The word that names the assessment sits inside the wrapper in an ordinary text role, the metadata role in the specimen, marked `.doc-compare-word`. By default it is shown beside the rail, so the meaning never depends on color. In a legend-led table the key names each rail's color once, and the words stay in their cells as text for assistive technology, drawing nothing: a sighted reader then reads each assessment from its rail's color against the key, and favorable and adverse differ mainly in hue. Where a reader may not tell the hues apart, or the table may print in monochrome, keep the words. Under forced colors, where every rail takes one system color, a legend-led table falls back to showing its words, its figures' rails on the content edge. Never hover alone. |
 | Several judgments | One wrapper per judgment, each labeled. Never one rail over contradictory judgments. |
 | Scroll | The rail, the summary and the detail move together inside the table's box. |
-| Print | The stroke is a border, which browsers print by default; caution's light ring is a shadow, which a print without background graphics drops. The word carries the meaning where color does not. Print is not yet rendered in the owner's checks. |
+| Print | The stroke is a border, which browsers print by default; caution's light ring is a shadow, which a print without background graphics drops. A shown word carries the meaning where color does not print; a legend-led table's words do not print. Print is not yet rendered in the owner's checks. |
 
 A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a wrapper holding its word, so the key draws the cells' rail. The rail itself is decorative to assistive technology: it is generated content with no text.
+
+**Two presentations of the words.** A table shows its words beside its rails unless it declares `table.doc-compare-table.doc-compare-legend-led`. Then its key, directly after the table's box, names the assessments, and each `.doc-compare-word` stays in its cell as text that takes no line and draws nothing. The word is its wrapper's last child and holds no link or control; one that does stays shown, and a browser without `:has()` shows every word. Under forced colors the table falls back to showing its words. A legend-led table without its key is a defect.
+
+**A value field, for rated figures.** In a legend-led table a rated figure's wrapper may take `data-value-field`, a template of the widest value its group shows, such as `"0.00"` or `"-00.0%"`. The wrapper then sits at the column's end, as wide as that template on the column's tabular figures, or as its own figure where that is wider, and its rail sits 12px before it. Every wrapper in the group carries the same template, so their fields share one width and each column's rails share one line. The figure takes the cell's type; a template narrower than its figure is an authoring defect, since that field widens and its rail leaves the line. The field never reaches past the column's content edge: in a column too narrow for it, it fills the column and the rail begins on that edge. In an auto-sized table the template also sets the column's least width, so that happens only where a fixed layout or a declared width makes the column narrower. In a table that shows its words, and under forced colors, the template is ignored and the rail keeps the content edge.
 
 **It is not the labeled range.** The labeled range's scope rail sits in the outer margin and admits only neutral and review colors. A comparison rail sits inside its cell and admits only this profile's. A cell that also carries a review or evidence mark keeps that mark whole: its own box or marker, its own color and its own scope.
 
@@ -100,8 +104,8 @@ A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a
 
 1. Load `colors_and_type.css`, then `spectral-state.css`, then `criterion-assessment.css`. For the table application, load `surface-document.css` before this file.
 2. Declare the comparison: `table.doc-table.doc-compare-table` directly inside a named `.doc-table-scroll` box.
-3. Wrap each assessed summary and its word in `.doc-compare-assessed` with one `data-assessment` value. Leave unassessed summaries unwrapped.
-4. Keep the words visible, and give the table a key.
+3. Wrap each assessed summary and its word in `.doc-compare-assessed` with one `data-assessment` value, the word marked `.doc-compare-word`. Leave unassessed summaries unwrapped.
+4. Give the table a key. Keep the words beside the rails, or declare `doc-compare-legend-led` on the table to let the key name them; there, a group of rated figures may share a value field, each wrapper carrying the same `data-value-field` template.
 5. Record each row's criterion and each assignment's basis in the consumer's own decision record.
 
 ## What is upstream vs consumer-local
