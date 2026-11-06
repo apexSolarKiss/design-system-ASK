@@ -61,11 +61,12 @@ const SHELLS = [
   { src: 'diagram-interactive-radial/diagram-interactive-radial.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.html',
     localDirs: ['reference/'] },
   { src: 'diagram-interactive-radial/diagram-interactive-radial.neutral.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.neutral.html' },
-  // The output artifact is a document-register consumer: it loads the register's four root modules by
-  // bare filename, as a consumer vendors them beside its template, so they are declared in rootRefs
-  // rather than routed through `_dsa-tokens/`, the token and font mirror.
+  // The output artifact is a document-register consumer: it loads the register's four root modules,
+  // and the two profile modules an assessed comparison needs, by bare filename, as a consumer vendors
+  // them beside its template, so they are declared in rootRefs rather than routed through
+  // `_dsa-tokens/`, the token and font mirror.
   { src: 'output-artifact/static-output-artifact.html',            dir: 'output-artifact',            out: 'output-artifact.html',
-    rootRefs: ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css'] },
+    rootRefs: ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css', 'spectral-state.css', 'criterion-assessment.css'] },
   // The message-archive preview renders the canonical template as it stands, in its one flavor,
   // default-ASK. The retired AA-compliant preview is no longer generated; write mode removes it.
   { src: 'message-archive/message-archive.template.html',          dir: 'message-archive',            out: 'message-archive-default-ASK.html' },

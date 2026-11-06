@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criterion Assessment // key</title>
+<meta name="description" content="Visual key for Criterion Assessment, a profile under the Spectral State family, and its table application in the document register's comparison table. Reads criterion-assessment.css live.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- Visual key for Criterion Assessment (criterion-assessment.css +
+     criterion-assessment.md) and the comparison table it colors
+     (surface-document.css, COMPARISON TABLE). Reads the foundation, the
+     compact-action module, the four register modules, the three state modules
+     and this profile live, in the contract's load order; theme-aware (light
+     default · dark via prefers-color-scheme / [data-theme="dark"]), inside the
+     site's surface-shell chrome, which loads after them. Open directly. The
+     comparison's content is schematic; the last table's figures are the
+     register's own. -->
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="surface-action.css">
+<link rel="stylesheet" href="surface-panel.css">
+<link rel="stylesheet" href="surface-text-link.css">
+<link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-treatments.css">
+<link rel="stylesheet" href="spectral-state.css">
+<link rel="stylesheet" href="evidence-state.css">
+<link rel="stylesheet" href="review-semantics.css">
+<link rel="stylesheet" href="criterion-assessment.css">
+<link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
+<style>
+  /* The foundation binds the ground, ink and face; the shell supplies the inset. */
+  body { min-height: 100vh; }
+  /* Prose keeps the keys' reading measure; a comparison takes the shell's
+     whole column and scrolls inside its box below its own measure. */
+  .key-prose { max-width: calc(940px - 2 * var(--space-6)); }
+  /* Fragment clearance, as the other keys give it. */
+  :root[data-surface-nav-mode="desktop"] [id] { scroll-margin-top: calc(var(--surface-nav-top-depth) + var(--space-5)); }
+  /* The worked comparison's columns: the row headers narrow, the three
+     options sharing the rest. Column widths are the consumer's. */
+  #worked-table { table-layout: fixed; }
+  #worked-table col.key-criterion { width: 9rem; }
+</style>
+</head>
+<body>
+<div class="surface">
+  <header class="surface-head">
+    <div class="surface-head-main">
+      <a class="surface-mark" href="index.html" aria-label="design-system-ASK home">
+        <img class="surface-mark-light" src="assets/logo-ASK-white.png" alt="" aria-hidden="true" width="2160" height="974">
+        <img class="surface-mark-dark" src="assets/logo-ASK-lavender-ASK.png" alt="" aria-hidden="true" width="2160" height="974">
+      </a>
+      <nav class="surface-breadcrumb" aria-label="Breadcrumb">
+        <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> <span class="sep" aria-hidden="true">//</span> <a href="index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="patterns/index.html">pattern previews</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">Criterion Assessment</span></h1>
+      </nav>
+      <p class="surface-lede">Visual key for Criterion Assessment, a profile under the Spectral State family, and its table application in the document register's comparison table. Reads criterion-assessment.css live.</p>
+    </div>
+  </header>
+
+  <hr class="surface-rule">
+
+  <main class="surface-payload">
+<div class="doc-flow">
+
+  <header class="doc-titled key-prose">
+    <p class="doc-label">v0.1 // profile under the Spectral State family // Spectral State unchanged</p>
+    <h2 class="doc-title">Criterion Assessment</h2>
+    <p class="doc-lede">How does this characteristic serve the stated criterion? Favorable, caution or adverse, against a criterion the author declares, or unassessed. The profile owns what each role means and how it is drawn; the author owns the criterion and every assignment.</p>
+  </header>
+
+  <section class="doc-section" aria-labelledby="roles-title">
+    <h2 class="doc-section-title key-prose" id="roles-title">Four roles, three colors</h2>
+    <ul class="doc-compare-key" aria-label="The four roles">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // value of state-earned</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // value of state-structural, reinforced in light</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // value of state-deflated</p></li>
+      <li><p class="doc-meta">unassessed // no rail</p></li>
+    </ul>
+    <div class="doc-table-scroll key-prose" role="region" aria-label="What each role means" tabindex="0">
+      <table class="doc-table">
+        <thead><tr><th class="doc-label" scope="col">Role</th><th class="doc-label" scope="col">Means</th><th class="doc-label" scope="col">Never means</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-body">Favorable</td><td class="doc-body">supports the row's criterion</td><td class="doc-body">accepted, supported, or good overall</td></tr>
+          <tr><td class="doc-body">Caution</td><td class="doc-body">conditional, mixed or intermediate against it</td><td class="doc-body">danger, or an unknown</td></tr>
+          <tr><td class="doc-body">Adverse</td><td class="doc-body">works against the row's criterion</td><td class="doc-body">declined, weakened, or bad overall</td></tr>
+          <tr><td class="doc-body">Unassessed</td><td class="doc-body">no judgment asserted</td><td class="doc-body">a neutral rating or a warning</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="doc-body key-prose">The three colors are Spectral State's, by reference, so they change with the theme as Spectral State does. In light, caution's rail takes a 1px reinforcement, because Spectral State's yellow all but disappears as a thin rail on the light ground; its color is unchanged. They are visual-role mappings, not aliases: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, structural or deflated for them.</p>
+  </section>
+
+  <section class="doc-section" aria-labelledby="worked-title">
+    <h2 class="doc-section-title key-prose" id="worked-title">A worked comparison</h2>
+    <p class="doc-body key-prose">Three ways to deliver a reviewed document, against four rows. Each assessed summary carries one rail in its cell's lane, beginning on the edge its column's header begins on, and the word that names it; the rail is as tall as the summary and its word, never the row. The last row declares no criterion, so its summaries carry no rail, and their text sits where the others' does.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document" tabindex="0">
+      <table class="doc-table doc-compare-table" id="worked-table">
+        <colgroup><col class="key-criterion"></colgroup>
+        <colgroup span="2"></colgroup>
+        <colgroup span="1"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">In a browser</th><th class="doc-compare-head" scope="colgroup">Exported</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Row // criterion</th><th class="doc-compare-head" scope="col">Hosted site</th><th class="doc-compare-head" scope="col">Local folder</th><th class="doc-compare-head" scope="col">PDF</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="doc-compare-head" scope="row">Set-up<p class="doc-meta">less work before a reader can open it</p></th>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div>
+              <ul class="doc-compare-facts"><li>steps: a repository, a deployment and a domain</li><li>cost: a hosting plan</li></ul>
+            </td>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <ul class="doc-compare-facts"><li>steps: copy one folder</li><li>cost: none</li></ul>
+            </td>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">fast</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <ul class="doc-compare-facts"><li>steps: print the page to a file</li><li>cost: none</li></ul>
+            </td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">Reading offline<p class="doc-meta">readable without a connection</p></th>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="adverse"><p class="doc-compare-summary">limited</p><p class="doc-meta doc-compare-word">adverse</p></div>
+              <p>needs a connection, unless the browser kept a copy</p>
+            </td>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <p>opens from disk</p>
+            </td>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">full</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <p>opens in any PDF reader</p>
+            </td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">Fidelity<p class="doc-meta">the reader sees the reviewed bytes</p></th>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <ul class="doc-compare-points"><li>served from one reviewed commit</li><li>a later deployment replaces it</li></ul>
+            </td>
+            <td class="doc-compare-cell">
+              <div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">favorable</p></div>
+              <ul class="doc-compare-points"><li>the reviewed folder itself</li><li>its fonts load from the folder</li></ul>
+            </td>
+            <td class="doc-compare-cell" id="worked-coexistence">
+              <div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">partial</p><p class="doc-meta doc-compare-word">caution</p></div>
+              <ul class="doc-compare-points"><li>one theme, fixed at export</li><li>a table wider than the page needs a print layout</li></ul>
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">which print layout a wide table takes</span></span></div>
+            </td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">Themes<p class="doc-meta">no criterion declared</p></th>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">light + dark</p><p>follows the reader's setting</p></td>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">light + dark</p><p>follows the reader's setting</p></td>
+            <td class="doc-compare-cell"><p class="doc-compare-summary">one</p><p>the theme it was exported in</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" aria-label="Key to the comparison's rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // supports the row's criterion</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // conditional or intermediate</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // works against it</p></li>
+      <li><p class="doc-meta">no rail // not assessed</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section" aria-labelledby="coexist-title">
+    <h2 class="doc-section-title key-prose" id="coexist-title">An assessment beside a review mark</h2>
+    <div class="doc-prose key-prose">
+      <p class="doc-body">The PDF's fidelity cell carries two judgments, and each keeps its own form. Its caution rail says how the PDF serves the row's criterion. Its open question is a review mark from Review Semantics: its own bordered box, its own color and its own words. The mark does not make the caution a review decision, and the rail does not answer the question.</p>
+      <p class="doc-body">The same holds for an evidence mark. A favorable characteristic is not a supported claim, and a supported disadvantage is still adverse.</p>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="legend-title">
+    <h2 class="doc-section-title key-prose" id="legend-title">A legend-led comparison</h2>
+    <p class="doc-body key-prose">The same three options, with a row of summaries and two rows of figures. The table is legend-led: its key names each rail, so the words stay in the cells as text for assistive technology and draw nothing, and each rail is as tall as its summary or figure. Each summary spans its family's columns, so its rail begins where the family's header does. The figures share a value field, as wide as the template 000.00 that their widest needs: each sits at its column's end, and in each column the rails share one line, 12px before the field, however wide the figure. A sighted reader reads these assessments from the rails' colors against the key, so the worked comparison above keeps its words.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document, with figures" tabindex="0">
+      <table class="doc-table doc-compare-table doc-compare-legend-led" id="legend-table">
+        <colgroup><col></colgroup>
+        <colgroup span="2"></colgroup>
+        <colgroup span="1"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">In a browser</th><th class="doc-compare-head" scope="colgroup">Exported</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Row // criterion</th><th class="doc-compare-head doc-table-num" scope="col">Hosted site</th><th class="doc-compare-head doc-table-num" scope="col">Local folder</th><th class="doc-compare-head doc-table-num" scope="col">PDF</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="doc-compare-head" scope="row">Set-up<p class="doc-meta">less work before a reader can open it</p></th>
+            <td class="doc-compare-cell" colspan="2"><div class="doc-compare-assessed" data-assessment="caution"><p class="doc-compare-summary">copy a folder, or deploy it</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable"><p class="doc-compare-summary">print the page to a file</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">Size (MB)<p class="doc-meta">under 1 favorable, to 100 caution, over 100 adverse</p></th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>108.20</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>12.34</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.46</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+          </tr>
+          <tr>
+            <th class="doc-compare-head" scope="row">First open (s)<p class="doc-meta">under 1 favorable, to 5 caution, over 5 adverse</p></th>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="000.00"><p>2.75</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="000.00"><p>0.31</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="000.00"><p>12.60</p><p class="doc-meta doc-compare-word">adverse</p></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="doc-compare-key" aria-label="Key to the legend-led comparison's rails">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // supports the row's criterion</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // conditional or intermediate</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // works against it</p></li>
+    </ul>
+  </section>
+
+  <section class="doc-section" aria-labelledby="numeric-title">
+    <h2 class="doc-section-title key-prose" id="numeric-title">A numeric comparison, unassessed</h2>
+    <p class="doc-body key-prose">Figures are assessed only where their author rated them, or under a rule their author declares. Without either, a comparison keeps its figures neutral: no rail marks the largest value, and no threshold is read from a neighbor. These are the comparison roles' own metrics, beside the roles they sit between, under a grouped header.</p>
+    <div class="doc-table-scroll" role="region" aria-label="The comparison roles beside their neighbors" tabindex="0">
+      <table class="doc-table doc-compare-table">
+        <colgroup><col></colgroup>
+        <colgroup span="1"></colgroup>
+        <colgroup span="3"></colgroup>
+        <colgroup span="1"></colgroup>
+        <thead>
+          <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup">Document text</th><th class="doc-compare-head" scope="colgroup" colspan="3">Comparison table</th><th class="doc-compare-head" scope="colgroup">Labels</th></tr>
+          <tr><th class="doc-compare-head" scope="col">Metric</th><th class="doc-compare-head doc-table-num" scope="col">body</th><th class="doc-compare-head doc-table-num" scope="col">head</th><th class="doc-compare-head doc-table-num" scope="col">cell</th><th class="doc-compare-head doc-table-num" scope="col">summary</th><th class="doc-compare-head doc-table-num" scope="col">metadata</th></tr>
+        </thead>
+        <tbody>
+          <tr><th class="doc-compare-head" scope="row">size (px)</th><td class="doc-compare-cell doc-table-num">24</td><td class="doc-compare-cell doc-table-num">18</td><td class="doc-compare-cell doc-table-num">18</td><td class="doc-compare-cell doc-table-num">18</td><td class="doc-compare-cell doc-table-num">14</td></tr>
+          <tr><th class="doc-compare-head" scope="row">weight</th><td class="doc-compare-cell doc-table-num">200</td><td class="doc-compare-cell doc-table-num">400</td><td class="doc-compare-cell doc-table-num">300</td><td class="doc-compare-cell doc-table-num">400</td><td class="doc-compare-cell doc-table-num">300</td></tr>
+          <tr><th class="doc-compare-head" scope="row">leading</th><td class="doc-compare-cell doc-table-num">1.45</td><td class="doc-compare-cell doc-table-num">1.20</td><td class="doc-compare-cell doc-table-num">1.45</td><td class="doc-compare-cell doc-table-num">1.45</td><td class="doc-compare-cell doc-table-num">1.40</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="paint-title">
+    <h2 class="doc-section-title key-prose" id="paint-title">One paint per rail color</h2>
+    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's. Here a declined range and an adverse assessment share one red, and an accepted range and a favorable assessment one green, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">The shipment is not split across two carriers.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-accepted">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">Each parcel is tracked from its first scan.</p>
+    </div>
+    <ul class="doc-compare-key" aria-label="The rails' three paints">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // ringed in light</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
+    </ul>
+    <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and its ring is the same beside a summary, in a value field and in a key, above. A review range is never yellow.</p>
+  </section>
+
+  <footer class="doc-group key-prose">
+    <p class="doc-meta">Schematic comparison; the numeric table's figures are the register's own. Reads the foundation, the register modules, Spectral State, Evidence State, Review Semantics and criterion-assessment.css live. Contract: <a class="surface-text-link" href="criterion-assessment.md">criterion-assessment.md</a>.</p>
+  </footer>
+</div>
+  </main>
+
+  <footer class="surface-footer">
+    <a class="surface-action surface-action--secondary" href="index.html">design-system-ASK</a>
+    <a class="surface-action surface-action--secondary" href="patterns/index.html">pattern previews</a>
+    <a class="surface-action surface-action--secondary" href="preview/styleguide.html">style guide</a>
+    <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+  </footer>
+
+  <!-- The breadcrumb names the path; the panel derives it. The gallery links
+       the keys, so they sit under it; the local list is the six keys, this
+       one marked current — no ancestor is repeated. -->
+  <template class="surface-nav-source">
+    <ul class="surface-nav-local">
+      <li><a href="spectral-state.html">Spectral State</a></li>
+      <li><a href="evidence-state.html">Evidence State</a></li>
+      <li><a href="review-semantics.html">Review Semantics</a></li>
+      <li data-surface-nav-current></li>
+      <li><a href="three-functions.html">Three Functions</a></li>
+      <li><a href="surface-document.html">Document register and surface treatments</a></li>
+    </ul>
+    <p class="surface-nav-utilities">
+      <a class="surface-action surface-action--secondary" href="https://a-s-k.studio/apex-solar-kiss/design">design</a>
+      <a class="surface-action surface-action--secondary" href="https://github.com/apexSolarKiss/design-system-ASK" target="_blank" rel="noopener">repository</a>
+    </p>
+  </template>
+
+</div>
+<script src="surface-document-overflow.js"></script>
+<script src="patterns/surface-shell/surface-shell.js"></script>
+</body>
+</html>

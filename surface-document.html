@@ -850,8 +850,16 @@ one passage behind the magenta block rail</pre>
         box. It draws the row rules and the spacing, aligns a numeric column on tabular figures, and scrolls a
         table wider than its column inside its own box, with its header row in place. Nothing implies it —
         not the dense marker, not a role on a cell — so a table without the class keeps its consumer's
-        geometry. Technical type is not a compact layout: a surface that needs a compact review density, or
-        rows that stack at a narrow width, keeps its own geometry and does not adopt this one.</p>
+        geometry. Technical type is not a compact layout: a comparison read across options declares
+        <code class="doc-code">table.doc-compare-table</code> on top of the composition, and a surface whose
+        rows stack at a narrow width keeps its own geometry and does not adopt either.</p>
+      <p class="doc-body">A comparison sets its headers and source summaries on the Small step at 400 and every
+        other cell's text at 300, takes 16px of end padding in each cell, and can group its column headers. Each body
+        cell outside the first column keeps an assessment lane from the edge its column's header begins on, so a rail
+        never begins before that edge and moves no text. A legend-led comparison lets its key name the
+        assessments, and can bring a rated figure's rail beside a value field that its group shares.
+        <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment</a> is the one
+        meaning that colors it.</p>
 
       <div class="doc-labeled" id="table-narrative">
         <p class="doc-label">a narrative table, in the composition</p>
@@ -891,6 +899,30 @@ one passage behind the magenta block rail</pre>
               <tr><td class="doc-table-cell">Small</td><td class="doc-table-cell">Inter</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.40</td><td class="doc-table-cell">0</td></tr>
               <tr><td class="doc-table-cell">Preformatted text</td><td class="doc-table-cell">JetBrains Mono</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.45</td><td class="doc-table-cell">0</td></tr>
               <tr><td class="doc-table-cell">Table-of-contents entry</td><td class="doc-table-cell">JetBrains Mono</td><td class="doc-table-cell doc-table-num">300</td><td class="doc-table-cell doc-table-num">18 / 1.20</td><td class="doc-table-cell">-0.02em</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="doc-labeled" id="table-compare">
+        <p class="doc-label">a comparison table, grouped, unassessed</p>
+        <div class="doc-table-scroll" role="region" aria-label="A comparison table: two families of type step" tabindex="0">
+          <table class="doc-table doc-compare-table">
+            <colgroup><col></colgroup>
+            <colgroup span="2"></colgroup>
+            <colgroup span="2"></colgroup>
+            <thead>
+              <tr class="doc-compare-groups"><td></td><th class="doc-compare-head" scope="colgroup" colspan="2">Reading steps</th><th class="doc-compare-head" scope="colgroup" colspan="2">Label steps</th></tr>
+              <tr><th class="doc-compare-head" scope="col">Step</th><th class="doc-compare-head" scope="col">Body</th><th class="doc-compare-head" scope="col">Small</th><th class="doc-compare-head" scope="col">Caption</th><th class="doc-compare-head" scope="col">Structural locator</th></tr>
+            </thead>
+            <tbody>
+              <tr><th class="doc-compare-head" scope="row">Carries</th>
+                  <td class="doc-compare-cell"><p class="doc-compare-summary">document body</p><p>prose, ledes and quotations</p></td>
+                  <td class="doc-compare-cell"><p class="doc-compare-summary">compact text</p><ul class="doc-compare-points"><li>dense and comparison cells</li><li>contents entries</li></ul></td>
+                  <td class="doc-compare-cell"><p class="doc-compare-summary">labels</p><ul class="doc-compare-facts"><li>case: uppercase or none</li><li>family: mono</li></ul></td>
+                  <td class="doc-compare-cell"><p class="doc-compare-summary">the page's path</p><p>the shell's structural title</p></td></tr>
+              <tr><th class="doc-compare-head" scope="row">Size</th>
+                  <td class="doc-compare-cell">24px</td><td class="doc-compare-cell">18px</td><td class="doc-compare-cell">14px</td><td class="doc-compare-cell">24px</td></tr>
             </tbody>
           </table>
         </div>
@@ -1342,13 +1374,14 @@ one passage behind the magenta block rail</pre>
   </footer>
 
   <!-- The breadcrumb names the path; the panel derives it. The gallery links
-       the keys, so they sit under it; the local list is the five keys, this
+       the keys, so they sit under it; the local list is the six keys, this
        one marked current — no ancestor is repeated. -->
   <template class="surface-nav-source">
     <ul class="surface-nav-local">
       <li><a href="spectral-state.html">Spectral State</a></li>
       <li><a href="evidence-state.html">Evidence State</a></li>
       <li><a href="review-semantics.html">Review Semantics</a></li>
+      <li><a href="criterion-assessment.html">Criterion Assessment</a></li>
       <li><a href="three-functions.html">Three Functions</a></li>
       <li data-surface-nav-current></li>
     </ul>

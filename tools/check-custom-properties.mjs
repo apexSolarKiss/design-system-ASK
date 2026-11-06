@@ -67,7 +67,9 @@ const DEPENDENCIES = {
   'three-functions.css':                                               [FOUNDATION, SELF],
   'spectral-state.css':                                                [FOUNDATION, SELF],
   'evidence-state.css':                                                [FOUNDATION, 'spectral-state.css', SELF],
-  'review-semantics.css':                                              [FOUNDATION, 'spectral-state.css', 'evidence-state.css', SELF],
+  'review-semantics.css':                                              [FOUNDATION, 'surface-treatments.css', 'spectral-state.css',
+                                                                        'evidence-state.css', SELF],
+  'criterion-assessment.css':                                          [FOUNDATION, 'surface-treatments.css', 'spectral-state.css', SELF],
   'patterns/surface-shell/surface-shell.css':                          [FOUNDATION, SELF],
   'patterns/diagram-interactive-spine/diagrams-interactive-spine.css': [FOUNDATION, 'spectral-state.css',
                                                                         'patterns/diagram-interactive-spine/diagrams-interactive-spine-engine.js'],
@@ -93,7 +95,7 @@ const TOKEN_MIRROR = ['./_dsa-tokens/', '_dsa-tokens/', './_dsa-surface/', '_dsa
 const ROOT_REFS = {
   'patterns/surface-shell/surface-shell.template.html': ['surface-action.css'],
   'patterns/output-artifact/static-output-artifact.html':
-    ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css'],
+    ['surface-panel.css', 'surface-text-link.css', 'surface-document.css', 'surface-treatments.css', 'spectral-state.css', 'criterion-assessment.css'],
 };
 
 /* The embedded-font payload carries @font-face data only. */

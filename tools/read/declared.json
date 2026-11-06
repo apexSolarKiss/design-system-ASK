@@ -35,6 +35,7 @@
     {"path": "spectral-state.md", "label": "Spectral State"},
     {"path": "evidence-state.md", "label": "Evidence State"},
     {"path": "review-semantics.md", "label": "Review Semantics"},
+    {"path": "criterion-assessment.md", "label": "Criterion Assessment"},
     {"path": "three-functions.md", "label": "Three Functions"}
   ],
   "collections": [
@@ -77,6 +78,9 @@
       {"starts": "Status:", "role": "callout"}
     ],
     "review-semantics.md": [
+      {"starts": "Status:", "role": "callout"}
+    ],
+    "criterion-assessment.md": [
       {"starts": "Status:", "role": "callout"}
     ],
     "three-functions.md": [
