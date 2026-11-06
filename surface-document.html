@@ -633,6 +633,39 @@
       </div>
     </section>
 
+    <!-- PEER PARTS INSIDE A PART — a part whose content is a run of substantial
+         parts holds them in a nested .doc-flow. The flow leads by --space-4, as a
+         nested section does, then sets its peers --space-8 apart, the document
+         flow's own gap; each peer keeps its own heading-to-body rhythm. The
+         composition nests, so peers at any depth sit the same distance apart. -->
+    <section class="doc-section" id="nested-flow">
+      <h2 class="doc-section-title">Peer parts inside a part</h2>
+      <p class="doc-body">An appendix, or any part whose content is itself a run of substantial parts, holds
+        them in a flow of its own. Its peers sit as far apart as the document's own sections, and each
+        keeps the tight rhythm of its own heading and body.</p>
+      <div class="doc-flow">
+        <div class="doc-section">
+          <h3 class="doc-subsection-title">h3 // first peer part</h3>
+          <p class="doc-body">Its body sits one heading-to-body step below its heading.</p>
+          <p class="doc-meta">A source line or caption stays with what it describes.</p>
+        </div>
+        <div class="doc-section">
+          <h3 class="doc-subsection-title">h3 // second peer part</h3>
+          <p class="doc-body">It sits as far from the first as the document's sections sit apart, whatever its heading level.</p>
+          <div class="doc-flow">
+            <div class="doc-section">
+              <h4 class="doc-deep-title">h4 // a peer inside a peer</h4>
+              <p class="doc-body">The composition nests: peers at any depth sit as far apart as the document's sections.</p>
+            </div>
+            <div class="doc-section">
+              <h4 class="doc-deep-title">h4 // its neighbor</h4>
+              <p class="doc-body">The heading step says how deep a part is; the space says where one ends.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- STRUCTURED TEXT — one scroll box whose indentation is structure. Each level
          is one hierarchy rail. A grouped diagram declares each peer group as a
          .doc-pre-group: one line between successive groups at any count, and nothing
@@ -790,6 +823,7 @@ one passage behind the magenta block rail</pre>
               </ul>
             </li>
             <li><a class="doc-toc-link surface-text-link" href="#depth">Hierarchy rail</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#nested-flow">Peer parts inside a part</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#structured">Structured text</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#passage">Set-apart passages</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#framing">Section framing</a></li>
