@@ -92,7 +92,16 @@
            non-interactive form instead — <div class="surface-mark" role="img"
            aria-label="..."> — and omits the source template and the script.
            Both forms are specified in patterns/surface-shell/README.md,
-           §The identity mark. -->
+           §The identity mark.
+
+           An identity whose symbol and wordmark are separate things may open
+           on its full lockup instead: data-surface-identity="expanded" on this
+           link, with the two parts as .surface-identity-symbol and
+           .surface-identity-wordmark children and the composition declared on
+           .surface. Its symbol alone then becomes the navigation control, at
+           the compact height the consumer may declare on .surface as
+           --surface-identity-compact-height, in px. See the README, §An
+           expanded identity. -->
       <a class="surface-mark" href="#" aria-label="[consuming organization] home">
         <svg class="surface-mark-light" viewBox="0 0 216 97" aria-hidden="true" focusable="false">
           <rect x="1" y="1" width="214" height="95" rx="10" fill="none"
@@ -157,9 +166,16 @@
            as design-system-ASK's own surfaces do. Label a segment with the
            human-facing name of the place it goes, not a repository namespace.
            Every structural separator is `//`, never a single slash, and each is a
-           decorative <span class="sep" aria-hidden="true">. -->
+           decorative <span class="sep" aria-hidden="true">.
+           A ROOT's plain title whose identity already shows the same name, as
+           an expanded identity's wordmark does, may be visually hidden with
+           data-surface-title="visually-hidden": it stays the h1 and the panel's
+           source, and gives up its box. Never a breadcrumb title, never one
+           holding a link. README.md §The structural title, visually hidden. -->
       <h1 class="surface-title"><span class="org">[org]</span> <span class="sep" aria-hidden="true">//</span> [repo]</h1>
-      <!-- LEDE. One or two calm declarative sentences about this surface. The shell
+      <!-- LEDE. One or two calm declarative sentences about this surface; optional
+           beside a visually hidden title whose surface says what it is
+           elsewhere. The shell
            sets the foundation's Small supporting-text role — 18px at Light weight
            (300) — and imposes NO measure, so the lede uses the full header width;
            a per-surface measure is the consumer's call.

@@ -383,6 +383,33 @@ because it has no navigable ancestor, not because the consumer has one surface.
 Either of `.org` and the repo segment may be a link or static — apply the
 destination test above to each, per surface.
 
+### The structural title, visually hidden
+
+A brand-led opening may already show the surface's name in its identity — an
+expanded identity's wordmark spells it — so a visible title beneath it repeats
+the name. There the plain title may opt out of view, never out of the document:
+
+```html
+<h1 class="surface-title" data-surface-title="visually-hidden"><span class="org">[org]</span></h1>
+```
+
+- **It stays the title.** It is still the document's `<h1>`, in the
+  accessibility tree, and still the source the panel derives its current row
+  from. It gives up its box, so the next item in the header follows the
+  identity directly, at the identity's own spacing.
+- **Only where the identity visibly shows the same name.** The hidden title and
+  the page's `<title>` are then the surface's only programmatic name, because
+  the upgraded wordmark is hidden from the tree and the trigger names its
+  action.
+- **Only the plain form, and only with nothing focusable in it.** A breadcrumb
+  title shows real ancestors a reader must be able to see and follow, and a
+  hidden link would take focus where nothing is drawn; the stylesheet refuses
+  both, and the title stays visible. A browser without `:has()` keeps it
+  visible too.
+- **The lede is optional with it.** A surface that already says what it is
+  elsewhere, as a closing note about the page, may omit the lede; the status
+  note, where present, follows the identity.
+
 ### The lede
 
 One or two calm declarative sentences about the surface. The shell sets the
@@ -530,6 +557,102 @@ one. If the foundation ever adds a fourth path, `surface-shell.css` must gain it
 too — a consumer whose tokens go dark under a mark that stays light is exactly
 the failure this mirroring prevents.
 
+#### An expanded identity
+
+**Optional, and for an identity whose symbol and wordmark are separate things.**
+Some identities are one object: the mark and the name are the same artwork, and
+the 116px slot carries all of it. Others are a symbol beside a wordmark, and the
+symbol has to stand on its own where the full lockup will not fit. An expanded
+identity opens the page on the full lockup and keeps the symbol alone as the
+persistent control.
+
+You opt in on the mark and supply its two parts, each with its own correctly
+bounded artwork and, if you want one, its own light/dark pairing:
+
+```html
+<a class="surface-mark" href="/" aria-label="[destination or purpose]"
+   data-surface-identity="expanded">
+  <span class="surface-identity-symbol">
+    <img class="surface-mark-light" src="…" alt="" aria-hidden="true">
+    <img class="surface-mark-dark"  src="…" alt="" aria-hidden="true">
+  </span>
+  <span class="surface-identity-wordmark">
+    <img class="surface-mark-light" src="…" alt="" aria-hidden="true">
+    <img class="surface-mark-dark"  src="…" alt="" aria-hidden="true">
+  </span>
+</a>
+```
+
+Then declare the composition once, on `.surface`:
+
+| Property | What it is |
+| --- | --- |
+| `--surface-identity-ratio` | the lockup's width / height |
+| `--surface-identity-symbol-x`, `-y`, `-w`, `-h` | the symbol's box in the lockup, as percentages of the lockup's width and height |
+| `--surface-identity-wordmark-x`, `-y`, `-w`, `-h` | the wordmark's box, the same way |
+
+Take the numbers from your source lockup, so the composition keeps its
+proportions. The shell owns the layout: the lockup spans the header's main
+column, which is the content column where the header has no control beside it,
+at every width. Nothing in the shell infers which part of a logo is the symbol,
+and a part whose file still carries the other part's empty space renders small,
+so bound each part to its own artwork. Only the two parts are kept; any other
+child of the mark is dropped.
+
+**With navigation, the symbol is the control** (§The mark is the disclosure):
+
+| | Desktop | Mobile |
+| --- | --- | --- |
+| page opening | the full lockup, with the symbol as the trigger | the full lockup, with the symbol as the opening trigger |
+| scrolling down | the wordmark leaves with the page; the symbol rides with it until it reaches the persistent mark's settled height, then changes size, aspect preserved, into the compact box: it shrinks where the lockup's symbol is larger, and grows where it is smaller | the opening trigger leaves with the page, and the seated control arrives carrying the symbol alone, in the compact box |
+| back at the top | the same path in reverse; at the top the symbol sits exactly in its slot | the ordinary handoff, reversed |
+
+- **The compact box is the consumer's to size.** Declare the compact symbol's
+  height in px on `.surface` as `--surface-identity-compact-height`; its width
+  follows from the artwork's aspect. An optional
+  `--surface-identity-compact-max-inline`, also in px, caps that width, and the
+  height then follows from it. Any other unit counts as undeclared. A consumer
+  that declares no compact height gets the shell's footprint, and the cap then
+  does not apply: the symbol fitted, aspect
+  preserved, inside the slot's 116px width and a 52px block, about the box
+  design-system-ASK's own mark fills in the slot, so a square symbol is as tall
+  as a wide mark and narrower. The seated control always takes the full compact
+  box, on the narrowest phone too, even where that is larger than the opening
+  symbol it takes over from. The height may also differ by navigation mode:
+  declared under `:root[data-surface-nav-mode="mobile"]`, it sizes the phone's
+  seated control alone, because the runtime publishes the mode before it
+  measures and measures again whenever the mode changes.
+- **Every clearance follows the compact box.** The runtime measures it and
+  writes its height as `--surface-nav-mark-block`, so the desktop band behind
+  the control, the phone's seated unit, the terminal reserve and the scroll
+  padding all grow with a larger symbol, and the first payload line is never
+  under it. A larger compact symbol is a larger band and unit: at a 116px
+  symbol, the desktop band is 156px deep and the phone's seated unit 208px.
+- **One control throughout.** On desktop the symbol is one fixed element whose
+  box the runtime sets each frame, so the same trigger is operable from the full
+  lockup to the compact mark, and its focus ring and press feedback are drawn at
+  its true size. On a phone the ordinary handoff applies: exactly one of the
+  opening and seated controls is operable.
+- **Timing.** The movement follows the scroll position each animation frame, as
+  the persistent mark's settle and the seated handoff do. Where a browser
+  scrolls off the main thread, the symbol can trail the page by a frame while
+  the page is moving.
+- **The fade behind the persistent mark arrives with the compact mark,**
+  because at the top of the page it would cover the lockup.
+- **Reduced motion** keeps the end states only: the symbol rides with the page
+  at full size, and the compact box replaces it where the change of size would
+  have finished.
+- **Without JavaScript** the lockup stays an ordinary home link.
+- **An undeclared composition** draws nothing without JavaScript. With it, the
+  runtime withdraws the expanded presentation, and the symbol stands in the
+  slot as a single mark, so no control is left unseen.
+- **The accessibility tree.** Upgraded, the lockup is no longer a link. The
+  runtime hides the wordmark from the tree, the trigger names its action, and
+  the surface's title names the surface, as with a single mark.
+
+A single-mark surface is unaffected. The opt-in attribute and both parts must be
+present, and the runtime treats a mark missing either one as a single mark.
+
 ---
 
 ## Optional slots
@@ -610,7 +733,9 @@ but inert mark is the defect this replaces.
 **One authored mark.** You author a single `<a class="surface-mark" href="…">`
 with a real home destination. The runtime upgrades that element in place into
 the navigation button and derives the seated placement from the same payload.
-There is no second authored mark to drift out of step.
+There is no second authored mark to drift out of step. Where the mark opts
+into an expanded identity, its symbol alone is the trigger at every placement
+(§An expanded identity).
 
 **Without JavaScript it stays a home link.** The panel and the button never
 appear, and no dead control is exposed. That is the whole reason the authored
@@ -689,6 +814,13 @@ depth is not a taste decision: `.surface-head` takes
 that same gap puts the fade at zero opacity exactly where the title starts. At the
 top of the page nothing is attenuated and the band is invisible, because it paints
 the page's own gradient over the page's own padding.
+
+With an expanded identity, desktop differs in four ways (§An expanded
+identity): the header reserves no padding, because the lockup is in flow; the
+fade's opacity follows the change of size, because at the top it would cover
+the lockup; its shield engages only once the mark is compact; and the opaque
+zone ends at the compact symbol's bottom edge, measured from the settled top,
+because the compact symbol never sits at the resting offset.
 
 **A mask changes what is painted and nothing about what is hit.** Each placement
 therefore carries a shield over exactly its *opaque* region and no further, so
@@ -889,7 +1021,10 @@ consumer authors its own.
 
 **No public ancestor is repeated in source configuration.** A segment that
 belongs to the current path belongs in the visible title, where a reader can see
-it — not in an attribute that only the panel reads.
+it — not in an attribute that only the panel reads. The one title that may be
+visually hidden is a root's plain title whose identity already shows the same
+name (§The structural title, visually hidden); it has no ancestor to show, and
+a breadcrumb title never qualifies.
 
 > **`data-nav-root-*` is legacy runtime compatibility, not current authoring.**
 > It predates the ancestry rule, when the public root was configured *above* the
