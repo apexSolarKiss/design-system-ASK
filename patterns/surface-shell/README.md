@@ -52,8 +52,10 @@ class label into it — one surface pattern does not earn a taxonomy.
 | `surface-shell.js` | **Optional** responsive-navigation runtime. Vendored only by surfaces that adopt navigation. |
 
 The rendered specimen is generated to `patterns/_preview/surface-shell.html` by
-`tools/gen-pattern-previews.mjs`. It is owner preview evidence — do not vendor
-it.
+`tools/gen-pattern-previews.mjs`, and its expanded-identity variant, the same
+template with a placeholder lockup, to
+`patterns/_preview/surface-shell-expanded.html`. Both are owner preview
+evidence — do not vendor them.
 
 **What to vendor.** The core shell is `surface-shell.css` plus the template, and
 every consumer takes those. Two additions are conditional, and they are separate
@@ -653,6 +655,10 @@ child of the mark is dropped.
 A single-mark surface is unaffected. The opt-in attribute and both parts must be
 present, and the runtime treats a mark missing either one as a single mark.
 
+The owner preview `patterns/_preview/surface-shell-expanded.html` shows this
+contract with placeholder artwork: a geometric symbol beside a placeholder
+wordmark, their composition and a compact height declared on `.surface`.
+
 ---
 
 ## Optional slots
@@ -1189,12 +1195,13 @@ the same way, but they are generated: their chrome is authored in the owner
 generator, so a shell contract change is made there, regenerated, checked and
 verified.
 
-**The generated owner preview is a distinct artifact.**
-`patterns/_preview/surface-shell.html` is regenerated from
-`surface-shell.template.html` through the owner generator, and it takes the
+**The generated owner previews are a distinct artifact.**
+`patterns/_preview/surface-shell.html` and its expanded-identity variant
+`patterns/_preview/surface-shell-expanded.html` are regenerated from
+`surface-shell.template.html` through the owner generator, and they take the
 generated-artifact treatment: generator `--check`, generated-set parity, and
 visual verification. The gallery page consuming the shell for its own chrome is
-a separate relationship from the gallery cataloguing that generated specimen.
+a separate relationship from the gallery cataloging those generated specimens.
 
 **Downstream repos** vendor local pinned copies alongside the foundation mirror,
 with no CDN and no live hot-link to a design-system deployment. A cross-origin
