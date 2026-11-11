@@ -5,7 +5,7 @@
    fixture.html and tests/review-semantics-fixture.html load it with a
    <script> tag) and call
 
-     ASKRoleConformance.check({ scope, profiles })
+     ASKRoleConformance.check({ scope, profiles, assignment })
         scope     an element or a selector; the whole document when omitted
         profiles  PROFILE DECLARATIONS: the consumer's own named roles (for
                   example a count numeral). Each is an object
@@ -14,9 +14,16 @@
                   profile's elements are reported under `profiles` with their
                   metrics instead of being checked as descendants (C8); an
                   invalid one exempts nothing.
+        assignment  a PRESENTATION ASSIGNMENT DECLARATION: the consumer's own
+                  values per theme context, { name, field, contexts: { light:
+                  { '--fg-1': '#…', … }, dark: { … } } }
+                  (patterns/output-artifact/README.md, Presentation
+                  assignment). It is validated before it admits anything (C0);
+                  an invalid one admits nothing. A root that declares an
+                  assignment fails C0 when this is omitted.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   unmapped, collapsed }. Each finding carries a rule (C0–C15) and a reason
+   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C15) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -46,7 +53,22 @@
                         emphasis accents must equal colors_and_type.css; the
                         theme roles (--fg-1, --fg-3, --line-1, --line-2) must
                         equal its light or its dark value. Each drifted token is
-                        reported once per distinct value, naming the token
+                        reported once per distinct value, naming the token. A
+                        declared presentation assignment adds, for the theme
+                        roles above, the values it binds in the page's current
+                        context (light or dark, read as the foundation reads
+                        it), and nothing else. It must be declared by name,
+                        with its field, on the page root (data-surface-
+                        assignment and data-surface-field; a check scoped to a
+                        region reads the region or its ancestors), its
+                        declaration must name the root's field, and it may
+                        bind only the assignable roles: the field, the
+                        foreground ramp, the lines and the artifact line
+                        overlay. The roles C0 does not check are recorded,
+                        not verified. An invalid declaration is reported
+                        (C0.assignment) and admits no value, and so is a root
+                        that declares an assignment when the check receives
+                        no declaration, even where every checked role inherits
      C1  role metric    every element carrying a governed role computes to its
                         matrix family, size, weight, leading, tracking,
                         foreground and case
@@ -553,6 +575,10 @@
     '--line-1': ['rgba(255, 255, 255, 0.45)', 'rgba(212, 198, 225, 0.22)'],
     '--line-2': ['rgba(255, 255, 255, 0.22)', 'rgba(212, 198, 225, 0.10)'],
   };
+  /* The roles a presentation assignment may bind (patterns/output-artifact/README.md).
+     C0 checks the theme roles above; the others are recorded, not verified. */
+  const ASSIGNABLE = { '--bg-from': 1, '--bg-to': 1, '--bg-gradient': 1, '--bg-edge': 1, '--fg-1': 1, '--fg-2': 1, '--fg-3': 1,
+    '--line-1': 1, '--line-2': 1, '--artifact-line': 1, '--artifact-line-soft': 1 };
   /* C3: one geometry, one color per role. An emphasis rail on document text is an
      authorial callout and is always magenta; any other emphasis rail keeps the
      three accents surface-treatments sanctions. check-type-roles.mjs R7 pins the
@@ -853,9 +879,63 @@
     const tokens = {};
     const tokenHost = hostOf(scope);
     for (const name of [...Object.keys(TOKENS), ...Object.keys(THEME_TOKENS)]) tokens[name] = tokenAt(tokenHost, name);
+    /* A presentation assignment admits, for the theme roles C0 checks, the values
+       it binds in the current context, only where the page root declares it by
+       name with its field. Every other token keeps the owner's values, and an
+       invalid declaration admits nothing. The roles C0 does not check (--fg-2,
+       the field, the line overlay) are validated as names and recorded only. */
+    const assigned = {};
+    let assignmentReport = null;
+    const contextNow = () => {
+      if (tokenHost.closest('.theme-dark')) return 'dark';
+      const t = document.documentElement.getAttribute('data-theme');
+      if (t === 'dark' || t === 'light') return t;
+      return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    if (o.assignment) {
+      const a = o.assignment;
+      const name = a && typeof a.name === 'string' && a.name.trim() ? a.name : null;
+      const root = scope === document ? document.documentElement : tokenHost.closest('[data-surface-assignment]');
+      const declared = root ? root.getAttribute('data-surface-assignment') : null;
+      const field = root ? root.getAttribute('data-surface-field') : null;
+      const context = contextNow();
+      const bad = (message, detail) => add('C0', 'assignment', root || tokenHost, { assignment: name || '(unnamed assignment)', message, ...detail });
+      let valid = true;
+      if (!name) { bad('the assignment has no name'); valid = false; }
+      else if (declared !== name) { bad('the page root does not declare this assignment', { declared }); valid = false; }
+      else if (!field || !field.trim()) { bad('the assignment\'s root declares no field', { declared }); valid = false; }
+      else if (typeof a.field !== 'string' || !a.field.trim()) { bad('the declaration names no field', { declared_field: field }); valid = false; }
+      else if (a.field !== field) { bad('the declaration names a different field than the root', { field: a.field, declared_field: field }); valid = false; }
+      const ctxs = a && a.contexts && typeof a.contexts === 'object' && !Array.isArray(a.contexts) ? a.contexts : null;
+      if (!ctxs) { bad('the assignment declares no contexts'); valid = false; }
+      let bound = 0;
+      for (const [cname, toks] of Object.entries(ctxs || {})) {
+        if (cname !== 'light' && cname !== 'dark') { bad('a context is light or dark', { context: cname }); valid = false; continue; }
+        if (!toks || typeof toks !== 'object' || Array.isArray(toks)) { bad('a context binds roles to values', { context: cname }); valid = false; continue; }
+        for (const [tname, v] of Object.entries(toks)) {
+          if (!Object.prototype.hasOwnProperty.call(ASSIGNABLE, tname)) { bad('an assignment may bind only the assignable roles', { context: cname, token: tname }); valid = false; }
+          else if (typeof v !== 'string' || !v.trim()) { bad('each assigned value is a non-empty string', { context: cname, token: tname }); valid = false; }
+          else { bound++; if (cname === context && Object.prototype.hasOwnProperty.call(THEME_TOKENS, tname)) assigned[tname] = [v]; }
+        }
+      }
+      if (ctxs && !bound) { bad('the assignment binds no role'); valid = false; }
+      if (!valid) for (const k of Object.keys(assigned)) delete assigned[k];
+      assignmentReport = { name, declared, field, context, valid, admitted: { ...assigned } };
+    } else {
+      /* A root that declares an assignment is checked against its declaration
+         file, even where every role C0 checks inherits: without the file the
+         check cannot tell what the assignment binds. */
+      const root = scope === document ? document.documentElement : tokenHost.closest('[data-surface-assignment]');
+      if (root && root.hasAttribute('data-surface-assignment')) {
+        const declared = root.getAttribute('data-surface-assignment');
+        const field = root.getAttribute('data-surface-field');
+        add('C0', 'assignment', root, { assignment: declared || '(unnamed assignment)', message: 'the page root declares a presentation assignment, but the check received no declaration', declared, declared_field: field });
+        assignmentReport = { name: null, declared, field, context: contextNow(), valid: false, admitted: {} };
+      }
+    }
     const drift = new Map();
     const contexts = [tokenHost, ...all(roleSel + ', ' + RAILED + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', .doc-hierarchy, .doc-toc-list, .doc-toc-link, .doc-table-cell, .doc-dense-table')];
-    const wanted = [...Object.entries(TOKENS).map(([n, v]) => [n, [v]]), ...Object.entries(THEME_TOKENS)];
+    const wanted = [...Object.entries(TOKENS).map(([n, v]) => [n, [v]]), ...Object.entries(THEME_TOKENS).map(([n, v]) => [n, [...v, ...(assigned[n] || [])]])];
     for (const el of contexts) {
       const cs = getComputedStyle(el);
       for (const [name, allowed] of wanted) {
@@ -1360,7 +1440,7 @@
       if (corners(c).some((r) => Math.abs(radius(r, box.width, box.height) - LABEL_BOX.corner) > TOL)) cmp('corner', { message: 'a bordered label takes the owner\'s selected 8px corner (--radius-sm) on all four corners; corner shape alone assigns no interaction', got: corners(c) });
       if (!clear(c.backgroundColor) || (c.backgroundImage && c.backgroundImage !== 'none')) cmp('fill', { message: 'a bordered label has no fill: its meaning is its border and its words', background: c.backgroundColor, image: c.backgroundImage });
       const fg1 = probe(el, 'color:var(--fg-1)').color;
-      const theme = fg1 === fg1Light ? 'light' : fg1 === fg1Dark ? 'dark' : null;
+      const theme = assignmentReport && assignmentReport.valid ? assignmentReport.context : fg1 === fg1Light ? 'light' : fg1 === fg1Dark ? 'dark' : null;
       const layers = shadows(c.boxShadow);
       const l = layers[0];
       if (!theme) cmp('edge', { message: 'the theme at a bordered label cannot be read from --fg-1, so its edge dose cannot be judged', got: fg1 });
@@ -1589,7 +1669,7 @@
 
     for (const [el, h] of heldHere) held.set(el, h);
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
-    return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, unmapped, collapsed: collapsedHere };
+    return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, assignment: assignmentReport, unmapped, collapsed: collapsedHere };
   }
 
   /* ---- The interaction half, driven by the runner ------------------------

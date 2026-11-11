@@ -7,7 +7,8 @@
 
      node tools/check-role-conformance.mjs --url URL [--url URL ...]
           [--scheme dark|light|both] [--width 1440] [--height 900] [--mobile]
-          [--scope SELECTOR] [--profiles FILE.json] [--allow-vacuous]
+          [--scope SELECTOR] [--profiles FILE.json] [--assignment FILE.json]
+          [--allow-vacuous]
      node tools/check-role-conformance.mjs --fixture URL [--scheme ...]
           load a role fixture (tests/role-conformance-fixture.html, or
           tests/review-semantics-fixture.html for C12) from a served repo root and
@@ -22,6 +23,18 @@
      [{ "name": "...", "selector": "...", "owner": "...", "reason": "...",
         "expected_count": 6 }]
    role-conformance.js validates each one (C10) before it exempts anything.
+
+   --assignment names a JSON file holding one presentation assignment
+   declaration, the consumer's own values per theme context
+   (patterns/output-artifact/README.md, Presentation assignment):
+     { "name": "...", "field": "...",
+       "contexts": { "light": { "--fg-1": "#...", "--fg-3": "rgba(...)" }, "dark": {} } }
+   role-conformance.js admits the current context's values in C0 only where
+   the page root declares the assignment by name with that field, and reports
+   an invalid declaration (C0.assignment), which admits nothing. The "field"
+   is required. A page whose root declares an assignment fails C0.assignment
+   when this flag is omitted. Each scheme this runner emulates is its own
+   context.
 
    THE INTERACTION PASS. After the resting check, every closed <details> in
    scope is opened (an exclusive group's name is set aside until the pass
@@ -68,11 +81,11 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CHECKER = fs.readFileSync(path.join(HERE, 'role-conformance.js'), 'utf8');
 const LOAD_TIMEOUT_MS = 30000;
-const USAGE = 'usage: check-role-conformance.mjs --url URL [...] [--scheme dark|light|both] [--width N] [--height N] [--mobile] [--scope SEL] [--profiles FILE.json] [--allow-vacuous]\n       check-role-conformance.mjs --fixture URL [--scheme ...] [--width N] [--height N] [--mobile]';
+const USAGE = 'usage: check-role-conformance.mjs --url URL [...] [--scheme dark|light|both] [--width N] [--height N] [--mobile] [--scope SEL] [--profiles FILE.json] [--assignment FILE.json] [--allow-vacuous]\n       check-role-conformance.mjs --fixture URL [--scheme ...] [--width N] [--height N] [--mobile]';
 
 function usage(msg) { console.error(msg ? `${msg}\n${USAGE}` : USAGE); process.exit(2); }
 function parseArgs(argv) {
-  const o = { urls: [], scheme: 'both', width: 1440, height: 900, mobile: false, scope: null, profiles: [], profilesFile: null, allowVacuous: false, fixture: null };
+  const o = { urls: [], scheme: 'both', width: 1440, height: 900, mobile: false, scope: null, profiles: [], profilesFile: null, assignment: null, assignmentFile: null, allowVacuous: false, fixture: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const next = () => { if (i + 1 >= argv.length) usage(`${a} needs a value`); return argv[++i]; };
@@ -84,12 +97,14 @@ function parseArgs(argv) {
     else if (a === '--mobile') o.mobile = true;
     else if (a === '--scope') o.scope = next();
     else if (a === '--profiles') o.profilesFile = next();
+    else if (a === '--assignment') o.assignmentFile = next();
     else if (a === '--allow-vacuous') o.allowVacuous = true;
     else usage(`unknown argument ${a}`);
   }
   if (!o.urls.length && !o.fixture) usage();
   if (o.urls.length && o.fixture) usage('--fixture and --url are separate runs');
   if (o.fixture && o.profilesFile) usage('the fixture declares its own profiles');
+  if (o.fixture && o.assignmentFile) usage('the fixture declares its own assignments');
   if (!['dark', 'light', 'both'].includes(o.scheme)) usage('--scheme is dark, light or both');
   if (!(o.width > 0 && o.height > 0)) usage('--width and --height are positive numbers');
   if (o.profilesFile) {
@@ -97,6 +112,12 @@ function parseArgs(argv) {
     try { d = JSON.parse(fs.readFileSync(o.profilesFile, 'utf8')); } catch (e) { usage(`--profiles: cannot read ${o.profilesFile}: ${e.message}`); }
     if (!Array.isArray(d)) usage('--profiles: the file must hold a JSON array of profile declarations');
     o.profiles = d;
+  }
+  if (o.assignmentFile) {
+    let d;
+    try { d = JSON.parse(fs.readFileSync(o.assignmentFile, 'utf8')); } catch (e) { usage(`--assignment: cannot read ${o.assignmentFile}: ${e.message}`); }
+    if (!d || typeof d !== 'object' || Array.isArray(d)) usage('--assignment: the file must hold one JSON object, a presentation assignment declaration');
+    o.assignment = d;
   }
   return o;
 }
@@ -243,7 +264,7 @@ const o = parseArgs(process.argv.slice(2));
 const schemes = o.scheme === 'both' ? ['dark', 'light'] : [o.scheme];
 let b;
 try { b = await launch(); } catch (e) { console.error(String(e)); process.exit(2); }
-const report = { tool: 'check-role-conformance', viewport: `${o.width}x${o.height}${o.mobile ? ' mobile' : ''}`, profiles: o.profiles, runs: [] };
+const report = { tool: 'check-role-conformance', viewport: `${o.width}x${o.height}${o.mobile ? ' mobile' : ''}`, profiles: o.profiles, assignment: o.assignment, runs: [] };
 let ok = true;
 try {
   if (o.fixture) {
@@ -274,14 +295,14 @@ try {
     for (const url of o.urls) for (const scheme of schemes) {
       const p = await page(b, { url, width: o.width, height: o.height, mobile: o.mobile, scheme });
       await p.evaluate(CHECKER);
-      const r = await p.evaluate(`ASKRoleConformance.check(${JSON.stringify({ scope: o.scope, profiles: o.profiles })})`);
+      const r = await p.evaluate(`ASKRoleConformance.check(${JSON.stringify({ scope: o.scope, profiles: o.profiles, assignment: o.assignment })})`);
       const ip = await interactionPass(p, o.scope);
       const findings = [...r.findings, ...ip.findings];
       let status = findings.length ? 'fail' : r.governed === 0 ? 'vacuous' : 'pass';
       if (status === 'vacuous' && o.allowVacuous) status = 'vacuous-allowed';
       if (p.errors.length && status !== 'fail') status = 'page-error';
       report.runs.push({ url, scheme, status, governed: r.governed, counts: r.counts, tokens: r.tokens, findings, collapsed: r.collapsed,
-        interaction: ip.summary, interaction_records: ip.records, profiles: r.profiles, unmapped: r.unmapped, page_errors: p.errors });
+        interaction: ip.summary, interaction_records: ip.records, profiles: r.profiles, assignment: r.assignment, unmapped: r.unmapped, page_errors: p.errors });
       if (!(status === 'pass' || status === 'vacuous-allowed')) ok = false;
       await p.close();
     }

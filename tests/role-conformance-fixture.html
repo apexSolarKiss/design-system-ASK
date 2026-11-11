@@ -899,6 +899,36 @@ another</pre></div></div>
     <div data-control="two labeled ranges with no buffer" data-expect="C14.buffer">
       <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>
     </div>
+    <div data-control="a declared assignment's own foreground, with a bordered label" data-expect="" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fg-1": "#FFFFFF", "--fg-2": "rgba(255, 255, 255, 0.72)"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph in the assignment's own foreground, with a <span class="doc-label surface-bordered-label">draft</span> label.</p>
+    </div>
+    <div data-control="a foreground the assignment does not declare" data-expect="C0.token" data-expect-token="--fg-1" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fg-1": "#FFFFFF", "--fg-2": "rgba(255, 255, 255, 0.72)"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #EEEEEE">
+      <p class="doc-body">A paragraph in a value the assignment never declared.</p>
+    </div>
+    <div data-control="an assignment its root does not declare" data-expect="C0.assignment C0.token" data-expect-token="--fg-1" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fg-1": "#FFFFFF", "--fg-2": "rgba(255, 255, 255, 0.72)"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph under an assignment no element declares.</p>
+    </div>
+    <div data-control="an assignment declared without a field" data-expect="C0.assignment C0.token" data-expect-token="--fg-1" data-surface-assignment="fx-assignment" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fg-1": "#FFFFFF", "--fg-2": "rgba(255, 255, 255, 0.72)"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph under an assignment that names no field.</p>
+    </div>
+    <div data-control="an assignment naming another field than its root" data-expect="C0.assignment C0.token" data-expect-token="--fg-1" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "other-field", "contexts": {"light": {"--fg-1": "#FFFFFF"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph under a declaration whose field the root does not paint.</p>
+    </div>
+    <div data-control="a light-only assignment in a dark region" data-expect="C0.token" data-expect-token="--fg-1" class="theme-dark" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph whose assignment binds nothing in this context.</p>
+    </div>
+    <div data-control="an assignment binding a fixed token" data-expect="C0.assignment" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"--fs-body": "20px"}}}'>
+      <p class="doc-body">A paragraph under an assignment that tries to bind a type size.</p>
+    </div>
+    <div data-control="an assignment naming an inherited object key" data-expect="C0.assignment" data-surface-assignment="fx-assignment" data-surface-field="fx-field" data-assignment='{"name": "fx-assignment", "field": "fx-field", "contexts": {"light": {"toString": "#FFFFFF"}}}'>
+      <p class="doc-body">A paragraph under an assignment whose role name is not a role.</p>
+    </div>
+    <div data-control="a declared assignment checked without its declaration, every checked role inherited" data-expect="C0.assignment" data-surface-assignment="fx-assignment" data-surface-field="fx-field" style="--bg-from: #D4C6E1; --bg-to: #EBDEE8">
+      <p class="doc-body">A paragraph whose root binds only the field, checked with no declaration file.</p>
+    </div>
+    <div data-control="a declaration naming no field, on a root whose field changed" data-expect="C0.assignment C0.token" data-expect-token="--fg-1" data-surface-assignment="fx-assignment" data-surface-field="unrecorded-field" data-assignment='{"name": "fx-assignment", "contexts": {"light": {"--fg-1": "#FFFFFF"}, "dark": {"--fg-1": "#FFFFFF"}}}' style="--fg-1: #FFFFFF">
+      <p class="doc-body">A paragraph under a declaration that names no field, on a field it never recorded.</p>
+    </div>
   </section>
 
   <section class="doc-section">
@@ -949,7 +979,8 @@ another</pre></div></div>
     judge('conforming specimen', ASKRoleConformance.check({ scope: '#conforming', unmapped: false }), '', null);
     document.querySelectorAll('[data-control]').forEach(function (el) {
       var profiles = el.dataset.profiles ? JSON.parse(el.dataset.profiles) : [];
-      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false, profiles: profiles }), el.dataset.expect, el.dataset.expectToken || null);
+      var assignment = el.dataset.assignment ? JSON.parse(el.dataset.assignment) : null;
+      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false, profiles: profiles, assignment: assignment }), el.dataset.expect, el.dataset.expectToken || null);
     });
     var failed = cases.filter(function (c) { return !c.staticPass; }).length;
     document.getElementById('overall').textContent = (failed ? 'RESTING FAIL: ' + failed + ' case(s)' : 'RESTING PASS') + ' · link states: run the headless runner';

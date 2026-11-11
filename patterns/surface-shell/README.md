@@ -1147,7 +1147,9 @@ together or has a stated reason not to.
   The shell defines **no `body` rule at all**. A consuming surface *may* add a
   deliberate, token-based instance or payload default there — a page whose
   payload defaults to `var(--font-mono)`, for instance. It may **not** redefine
-  a Tier-1 or Tier-2 role, and duplicating a foundation binding to no purpose is
+  a Tier-1 or Tier-2 role (an output artifact's presentation assignment, in
+  `patterns/output-artifact/README.md`, is the bounded exception), and
+  duplicating a foundation binding to no purpose is
   noise rather than a default. Two of this repo's own three surfaces carry such
   a delta — a mono payload default — and nothing else; a re-stated `background`
   shorthand in particular is not free, because it also resets the foundation's
