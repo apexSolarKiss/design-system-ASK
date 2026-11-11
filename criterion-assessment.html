@@ -40,6 +40,10 @@
      options sharing the rest. Column widths are the consumer's. */
   #worked-table { table-layout: fixed; }
   #worked-table col.key-criterion { width: 9rem; }
+  /* Page-local diagnostic, never shipped and not a module class: inside it a
+     rail draws its bare stroke on this page's field, so the calibration's
+     specimen can show what the field's dose adds. */
+  .o-paint-bare { --surface-rail-paint-structural: none; }
 </style>
 </head>
 <body>
@@ -72,7 +76,7 @@
     <h2 class="doc-section-title key-prose" id="roles-title">Four roles, three colors</h2>
     <ul class="doc-compare-key" aria-label="The four roles">
       <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // value of state-earned</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // value of state-structural, reinforced in light</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // value of state-structural, reinforced on the lavender field</p></li>
       <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // value of state-deflated</p></li>
       <li><p class="doc-meta">unassessed // no rail</p></li>
     </ul>
@@ -87,7 +91,7 @@
         </tbody>
       </table>
     </div>
-    <p class="doc-body key-prose">The three colors are Spectral State's, by reference, so they change with the theme as Spectral State does. In light, caution's rail takes a 1px reinforcement, because Spectral State's yellow all but disappears as a thin rail on the light ground; its color is unchanged. They are visual-role mappings, not aliases: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, structural or deflated for them.</p>
+    <p class="doc-body key-prose">The three colors are Spectral State's, by reference, so they change with the theme as Spectral State does. On the light lavender field, caution's rail takes a 1px reinforcement, because Spectral State's yellow all but disappears there as a thin rail; in dark, or on another field a root declares, it keeps the bare stroke, and its color is unchanged. They are visual-role mappings, not aliases: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, structural or deflated for them.</p>
   </section>
 
   <section class="doc-section" aria-labelledby="worked-title">
@@ -249,10 +253,47 @@
     </div>
     <ul class="doc-compare-key" aria-label="The rails' three paints">
       <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // ringed in light</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // ringed on the lavender field</p></li>
       <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
     </ul>
     <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and its ring is the same beside a summary, in a value field and in a key, above. A review range is never yellow.</p>
+  </section>
+
+  <!-- THE FIELD'S CALIBRATION — each assessment rail drawn bare and as it ships,
+       on the same field, at the same size. The bare key is a diagnostic: a
+       page-local rule takes the dose away inside it, and no surface ships it.
+       The account is surface-treatments.css, RAIL PAINT and THE RAIL'S PAINT. -->
+  <section class="doc-section" aria-labelledby="calibration-title">
+    <h2 class="doc-section-title key-prose" id="calibration-title">Calibrated for the field</h2>
+    <p class="doc-body key-prose">A rail is calibrated for the field it sits on, not for a light theme. Two layers do it: Spectral State sets each color's value for its theme's field, and the surface treatments add a dose where a color still fails there as a bare stroke. On the light lavender field the bare yellow all but disappears, so caution's rail takes a ring; green and red read as a bare stroke and take none. On the dark ink field every rail is bare. Below, the same three rails are drawn twice on this page's field: bare first, as a diagnostic, then as they ship.</p>
+    <div class="doc-group key-prose" id="calibration-bare">
+      <p class="doc-label">diagnostic // bare stroke // never shipped</p>
+      <ul class="doc-compare-key o-paint-bare" aria-label="The three assessment rails, bare">
+        <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // bare</p></li>
+        <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // bare</p></li>
+        <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // bare</p></li>
+      </ul>
+    </div>
+    <div class="doc-group key-prose" id="calibration-shipped">
+      <p class="doc-label">as shipped // the field's dose</p>
+      <ul class="doc-compare-key" aria-label="The three assessment rails, as shipped">
+        <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // no dose</p></li>
+        <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // ringed on the lavender field, bare on the dark ink</p></li>
+        <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // no dose</p></li>
+      </ul>
+    </div>
+    <div class="doc-table-scroll key-prose" role="region" aria-label="Each rail's calibration by field">
+      <table class="doc-table" id="calibration-table">
+        <thead><tr><th class="doc-label">rail</th><th class="doc-label">light lavender field</th><th class="doc-label">dark ink field</th><th class="doc-label">why</th></tr></thead>
+        <tbody>
+          <tr><td class="doc-body">caution // yellow</td><td class="doc-body">2px stroke and a 1px same-color, zero-blur ring: 4px apparent</td><td class="doc-body">2px stroke</td><td class="doc-body">a bare yellow stroke all but disappears on the lavender</td></tr>
+          <tr><td class="doc-body">favorable // green</td><td class="doc-body">2px stroke</td><td class="doc-body">2px stroke</td><td class="doc-body">reads as a bare stroke on both</td></tr>
+          <tr><td class="doc-body">adverse // red</td><td class="doc-body">2px stroke</td><td class="doc-body">2px stroke</td><td class="doc-body">reads as a bare stroke on both</td></tr>
+          <tr><td class="doc-body">each color's value</td><td class="doc-body">Spectral State's light values, S 85% / L 45%</td><td class="doc-body">its dark values, S 95% / L 60%</td><td class="doc-body">the color layer, set for each field before any dose</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="doc-meta key-prose">The dose changes paint only: the color, the rail's place, length and gap, the meaning and the text stay as they are. It is the surface treatments' one rail paint, so a review range in green or red takes the same none as favorable and adverse, and caution, the one yellow drawn as a rail, is the ring's only caller (One paint per rail color, above). A root that declares no field is taken to paint its theme's own: the lavender in light, the ink in dark. A root that declares one with <code class="doc-code">data-surface-field</code> keeps the ring only for ask-lavender in light; any other declaration keeps the bare stroke: ask-ink is the dark field's own, and an unreviewed field keeps it until a rail is measured on it. Not this calibration: a bordered label's edge reinforcement, which every label color takes per theme, a diagram's stroke, a dot or a square.</p>
   </section>
 
   <footer class="doc-group key-prose">

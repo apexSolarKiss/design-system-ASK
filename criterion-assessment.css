@@ -19,7 +19,7 @@
 
    Offline; no CDN. Theme-aware through Spectral State's own per-theme values,
    and through surface-treatments.css's rail paint, which follows the same
-   root theme (below).
+   root theme and any field the root declares with data-surface-field (below).
 
    STATUS: v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
    capability, with colored rails selected for its table application.
@@ -66,10 +66,11 @@
    gives its color as a rail (RAIL PAINT), the paint every rail in that color
    takes, whichever meaning draws it. Favorable and adverse keep the plain
    2px stroke, as a review range's green and red rails do. Caution, Spectral
-   State's yellow, takes that paint's light ring, because that yellow all but
-   disappears as a bare 2px rail on the light lavender ground; its color is
-   unchanged, and in dark it keeps the plain stroke. This file binds each
-   role to its color's paint and sets no dose of its own.
+   State's yellow, takes that paint's ring on the light lavender field,
+   because that yellow all but disappears there as a bare 2px rail; its color
+   is unchanged, and in dark, or on another field its page declares, it keeps
+   the plain stroke. This file binds each role to its color's paint and sets
+   no dose of its own.
 
    Never a fill, tint, backplate, glow or colored cell border; never the
    labeled range, whose rail admits only neutral and review colors; never a
