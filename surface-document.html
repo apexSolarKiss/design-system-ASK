@@ -560,6 +560,20 @@
           A list that opens or closes on such an item keeps the passage buffer from a range beside it.</p>
       </div>
 
+      <!-- THE RAIL'S PAINT — the dose a governed color takes as a rail, per field.
+           This key loads no governed color, so the specimen sits with the rails
+           that draw one. -->
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Rail paint</h3>
+        <p class="doc-body" id="rail-paint">A rail in a governed color takes that color's paint for the field it sits on,
+          whichever meaning draws it: on the light lavender field, caution's yellow a 1px ring around its 2px stroke;
+          every other rail, and every rail on the dark ink field, the bare stroke. A root that declares no field is taken
+          to paint its theme's own; one that declares a field with <code class="doc-code">data-surface-field</code> keeps
+          the ring only for ask-lavender in light, and otherwise the bare stroke until a rail is measured on its field. <a class="surface-text-link" href="criterion-assessment.html#calibration-title">Criterion
+          Assessment's key</a> draws each rail bare and as shipped on the same field.</p>
+        <p class="doc-meta">Paint only, in the rail's own color: no place, length or gap changes, and nothing moves.</p>
+      </div>
+
       <!-- THE SCOPE UNDERLINE — one solid line under the exact words one label
            governs. Neutral here; Review Semantics' passage mark
            (review-semantics.html) is its review member. -->

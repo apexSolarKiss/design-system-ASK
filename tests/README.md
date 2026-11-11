@@ -295,9 +295,10 @@ per case:
 
 ```text
 stroke    every rail is a 2px solid stroke
-paint     each rail's paint is its color's: caution's yellow a 1px ring in its own color in light
-          and none in dark, the root's theme deciding, in the dark subtree too; every green, red,
-          review-accented and neutral rail none
+paint     each rail's paint is its color's: caution's yellow a 1px ring in its own color on the
+          lavender field in light and none in dark, the root deciding, in the dark subtree too; every
+          green, red, review-accented and neutral rail none. A root that declares a field with
+          data-surface-field keeps the ring only for ask-lavender in light
 one       the declined range's rail and every adverse rail share one color and one paint; the
           accepted range's and every favorable rail, another; caution beside a summary, in a
           field, in the key and in the dark subtree, a third
@@ -315,15 +316,18 @@ follows   with the shared paints changed on the root (green 3px, yellow 2px, red
 python3 -m http.server 8080
 # open http://localhost:8080/tests/rail-paint-fixture.html
 # add ?theme=light or ?theme=dark to hold a mode
+# add ?field=ask-lavender, ?field=ask-ink, an unreviewed name such as ?field=other, or an empty ?field= to declare the field
 ```
 
 The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
 also on `window.__railPaintFixture` and the verdict on `body[data-result]`. Run it held light,
-held dark and following the browser, with the browser's preference light and dark.
+held dark and following the browser, each with the browser's preference light and dark; then each of
+those six with `?field=ask-lavender`, which keeps caution's ring wherever the root is light, and with
+`?field=other` or an empty `?field=`, which keep the bare stroke in all six.
 
 **Verifying the fixture still bites.** Each control below loads one regression from a page-local
-rule; it fails only the cases named, in every one of those six settings unless a line says
-otherwise.
+rule; it fails only the cases named, in every one of those six settings without ?field, unless a line
+says otherwise.
 
 ```text
 ?control=local-dose       caution keeps a dose of its own, as the profile once did: its four rails'
@@ -335,6 +339,9 @@ otherwise.
                           light its paint case and the one-yellow case too
 ?control=label-reach      the red rail paint is put on the declined review mark: the mark's own-
                           edge case and its untouched case fail
+?control=theme-dose       with a field declared, the yellow paint follows the theme again: with
+                          ?field=other its four paint cases fail wherever the root is light; it
+                          changes nothing without ?field or with ?field=ask-lavender
 ```
 
 ## doc-actions-end-fixture.html
