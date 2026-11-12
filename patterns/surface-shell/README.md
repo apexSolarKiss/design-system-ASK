@@ -39,7 +39,10 @@ This is a **surface pattern**, not Class A and not Class B. Class A templates
 render diagrams; Class B templates seal project-output artifacts. This one
 frames a live public page and seals nothing. It is catalogued in its own group
 for that reason. Do not file it under an existing class, and do not read a new
-class label into it — one surface pattern does not earn a taxonomy.
+class label into it — one surface pattern does not earn a taxonomy. A consumer
+may still compose a pinned copy of it into a Class B output artifact; that
+consumer's renderer then seals the artifact, not this pattern (§Consuming this
+pattern).
 
 ---
 
@@ -1256,6 +1259,14 @@ Do not hand-edit a vendored copy. Local differences belong in the consuming
 repo's own stylesheet, layered over the vendored file — that keeps the vendored
 bytes verifiable against the owner at its pinned commit, and keeps the local
 delta legible as a delta.
+
+**Composed into an output artifact.** `surface-shell` remains a maintained
+surface pattern, not an artifact scaffold. A consumer may compose a pinned copy
+of the shell into a Class B output artifact. The consumer's renderer seals the
+assembled artifact, including those dependency bytes; it does not freeze the
+upstream shell contract. Accepted releases remain unchanged, while the
+consumer's source and repository remain live. Adopting an upstream change
+produces a new reviewed release rather than modifying a frozen one.
 
 Your own identity mark must be reachable from the consuming surface — from
 wherever your repo already keeps it. Nothing about it is vendored from here:
