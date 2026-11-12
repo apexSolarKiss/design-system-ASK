@@ -1140,6 +1140,45 @@ to give one page of a family a different mark behavior from the rest: the mark's
 meaning is supposed to be the same wherever it appears, so a family either adopts
 together or has a stated reason not to.
 
+### On paper
+
+Paper does not scroll, so the navigation has nothing to do there, and its
+layers print badly: a browser draws a `position: fixed` box on every sheet, and
+the runtime's layers keep their window state when the page is laid out for
+paper.
+
+- **The fade repeats across the head of each sheet.** On a narrow layout
+  printed mid-scroll, it covers most of every sheet.
+- **An open panel prints its tree,** over every sheet where it covers the page.
+- **The marks print once, but where the window left them.** The desktop mark
+  sits at its scrolled offset, the expanded symbol away from its slot, and the
+  seated mark at the foot of one sheet or the head of the next.
+
+`surface-shell.css` therefore carries one print block:
+
+- **The navigation does not print.** The seat, with its shield and seated mark,
+  the fade and the panel are not drawn on paper.
+- **The identity prints once, where it rests.** The desktop mark prints at the
+  head of the first sheet, in the position it holds on screen before any
+  scroll: the standard mark at the top of the reserved head band, an expanded
+  identity's symbol inside its own slot in the lockup. The runtime's
+  scroll-driven offsets are not read, so a page printed mid-scroll prints its
+  resting head. On a narrow layout the mark is already part of the page and
+  prints as it stands. The standard mark's print position resolves against
+  the page, because the shell positions none of its ancestors; a consumer that
+  positions one restates that position.
+- **Nothing is held back for the seat.** The mobile reserve beneath the payload
+  is released, so the last sheet carries no empty seat band, and an open
+  panel's scroll lock is released for paper.
+
+The hiding rules name no mode. The mark rules apply to the desktop mode, where
+the mark is fixed; on a narrow layout the mark is already in the flow. Together
+they cover either mode, because the mode during print may follow the window or
+the print width. Paper size,
+orientation and how the payload breaks across sheets stay the consuming
+page's. A consumer that hid the shell's layers in its own print rules can drop
+those rules when it vendors this file.
+
 ## What the shell does not own
 
 - **The gradient field, base type, and base element styling.** `colors_and_type.css`
