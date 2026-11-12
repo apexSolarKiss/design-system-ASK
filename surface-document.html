@@ -866,7 +866,10 @@ one passage behind the magenta block rail</pre>
         not the dense marker, not a role on a cell — so a table without the class keeps its consumer's
         geometry. Technical type is not a compact layout: a comparison read across options declares
         <code class="doc-code">table.doc-compare-table</code> on top of the composition, and a surface whose
-        rows stack at a narrow width keeps its own geometry and does not adopt either.</p>
+        rows stack at a narrow width keeps its own geometry and does not adopt either. A narrative table keeps a
+        32rem measure and scrolls below it; one its consumer declares short enough to fit its column,
+        <code class="doc-code">table.doc-compact-table</code>, takes no measure, with the same type and spacing,
+        and a comparison keeps the measure even when marked.</p>
       <p class="doc-body">A comparison sets its headers and source summaries on the Small step at 400 and every
         other cell's text at 300, takes 16px of end padding in each cell, and can group its column headers. Each body
         cell outside the first column keeps an assessment lane from the edge its column's header begins on, so a rail
@@ -891,6 +894,22 @@ one passage behind the magenta block rail</pre>
                   <td class="doc-body">its navigation panel keeps its own material for navigation composed over another surface: the <code class="doc-code">--surface-glass-2</code> fill with a 14px blur</td></tr>
               <tr><td class="doc-body"><code class="doc-code">patterns/_preview/</code></td><td class="doc-body">generated</td>
                   <td class="doc-body"><code class="doc-code">tools/gen-pattern-previews.mjs</code> writes it from the canonical templates, and <code class="doc-code">--check</code> verifies it</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="doc-labeled" id="table-compact">
+        <p class="doc-label">a compact narrative table, in the composition</p>
+        <div class="doc-table-scroll" role="region" aria-label="A compact narrative table: three type steps">
+          <table class="doc-table doc-compact-table">
+            <thead>
+              <tr><th class="doc-label" scope="col">step</th><th class="doc-label doc-table-num" scope="col">size</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="doc-body">Body</td><td class="doc-body doc-table-num">24px</td></tr>
+              <tr><td class="doc-body">Small</td><td class="doc-body doc-table-num">18px</td></tr>
+              <tr><td class="doc-body">Caption</td><td class="doc-body doc-table-num">14px</td></tr>
             </tbody>
           </table>
         </div>
@@ -971,7 +990,8 @@ one passage behind the magenta block rail</pre>
       </div>
 
       <p class="doc-meta" id="table-sources">Sources: README.md, four rows of the catalog dispositions, the
-        surface-shell detail ending after its first sentence, and seven rows of the type-role matrix;
+        surface-shell detail ending after its first sentence, seven rows of the type-role matrix, and the
+        sizes of three of its steps for the compact table;
         patterns/message-archive/README.md before its AA-compliant flavor was retired, three rows of the
         flavor table. The link on
         <code class="doc-code">AA-compliant</code> points here.</p>
