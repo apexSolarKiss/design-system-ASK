@@ -418,9 +418,10 @@ only column, and a list that opens on two item hosts after a range, keeping the 
 buffer from it; and the scope underline without Review Semantics: a neutral underline in
 body text, and one under a phrase holding a link, which keeps its own line and states —
 which must return no finding at rest or in any link state.
-After it come **controls**: 175 negative controls, one per failure branch,
+After it come **controls**: 184 negative controls, one per failure branch,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
-13 positive controls — an unmarked prose table, a complete profile declaration, an
+14 positive controls — an unmarked prose table, a complete profile declaration, a
+declared presentation assignment's own foreground with a bordered label under it, an
 emphasis rail off document text keeping a sanctioned violet accent, six declared
 peer-group blocks (two, five and ten groups, a question set out as three groups, a single
 lead label, and a group boundary that also records a blank line, which must not double),
@@ -498,6 +499,24 @@ C9.class                    a bare link a script adds when its disclosure opens,
 C9.hover                    a lost hover in the first member of an exclusive
                             disclosure group, which the pass must open together
                             with the second rather than close
+(none)                      a declared presentation assignment's own --fg-1, the
+                            assignment named, with its field, on its root, and a
+                            bordered label under it, whose theme the assignment's
+                            context gives
+C0.token                    a foreground value the assignment does not declare ·
+C0.token                    a light-only assignment inside a .theme-dark region,
+                            where its context binds nothing
+C0.assignment C0.token ·    an assignment its root does not declare · one
+C0.assignment C0.token ·    declared without a field · one whose declaration names
+C0.assignment C0.token      another field than its root; an invalid assignment
+                            admits nothing, so its drift is reported too
+C0.assignment ·             an assignment that tries to bind a type size · one
+C0.assignment               naming an inherited object key as a role
+C0.assignment               a root declaring an assignment, checked without its
+                            declaration, even though it binds only the field and
+                            every checked role inherits
+C0.assignment C0.token      a declaration that names no field, on a root whose
+                            field it never recorded; it admits nothing
 (none)                      mono text inside body, declared as a complete profile
 C10.role + its defect       a profile that captures .doc-body cannot hide body at
                             the Small step (C1.lh C1.size C2.body still fire)

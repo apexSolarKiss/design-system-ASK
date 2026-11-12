@@ -19,7 +19,9 @@
        DOWNSTREAM: adjust path if your mirror lives elsewhere.
        The foundation resolves the --fg-* ramp in light and dark, and the
        register's roles bind text to it. FOREGROUND IS INHERITED — this
-       template adds NO local --fg rebind. Do not reintroduce one. -->
+       template adds NO local --fg rebind. Do not reintroduce one: another
+       brand's foreground comes only through a declared presentation
+       assignment (README), at the page root. -->
   <link rel="stylesheet" href="../../colors_and_type.css">
 
   <!-- The document register, vendored beside this template (NOT into
@@ -63,7 +65,8 @@
        would win, so its rule excludes that population, as the list rule
        does.
 
-       The ONE sanctioned Class B override is LINE INTENSITY: report rules,
+       Apart from a presentation assignment (README), the ONE sanctioned
+       Class B override is LINE INTENSITY: report rules,
        borders, table lines, and dividers read too faint at the foundation
        hairline (white .45 / .22) on the light field, so a Class B-scoped
        token carries stronger white lines in light mode and inherits the
@@ -189,8 +192,10 @@
        DOWNSTREAM: add project-specific banners, status rails, review-status
        strips, or branding as Tier 3 here. Keep minimal. Bind to foundation
        tokens (--fg-*, --artifact-line, type tokens) and to register roles for
-       any text; do NOT redefine Tier 1/2 tokens, do NOT restyle a register
-       role, do NOT introduce hues outside the closed palette, and do NOT
+       any text; do NOT redefine Tier 1/2 tokens, other than through a
+       declared presentation assignment (README), do NOT restyle a register
+       role, do NOT introduce hues outside the closed palette or that
+       assignment's recorded colors, and do NOT
        propagate the design-system's own identity (logo-ASK / "ASK Design
        System") unless your artifact is itself an ASK-instance surface, or,
        for the logo-ASK wordmark alone, ASK has explicitly assigned that

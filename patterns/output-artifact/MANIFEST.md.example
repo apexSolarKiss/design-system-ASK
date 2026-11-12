@@ -34,6 +34,20 @@ A single-file artifact inlines these verbatim at seal time, after the foundation
 
 Add or remove rows for any required project-approved assets copied into the artifact bundle. Do not include `logo-ASK` assets unless the consuming artifact is an ASK-instance surface and has explicitly accepted that Tier 3 overlay, or ASK has explicitly assigned the `logo-ASK` wordmark to the consuming project as its locally supplied Tier 3 and the artifact falls within the assignment's recorded scope. An assignment does not make that project ASK-the-entity.
 
+## Presentation assignment (only when the artifact declares one)
+
+- Name: `[presentation-assignment-name]`, declared on the page root as `data-surface-assignment`
+- Field: `[field-name]`, declared on the page root as `data-surface-field`
+- Declaration file for the rendered check, naming every bound role per context: `[path/to/assignment.json]`, SHA-256 `<sha256 here>`
+
+| Context | Role | Bound value | Or inherited |
+| --- | --- | --- | --- |
+| light | `--bg-from` / `--bg-to` / `--bg-edge` | `[values]` | |
+| light | `--fg-1` / `--fg-2` / `--fg-3` | `[values]` | |
+| dark | every role | | the foundation's |
+
+Record the measured findings beside it: contrast of each bound text role on the field's stops and on each material it sits on, and every unreviewed surface. An artifact that declares no presentation assignment removes this section.
+
 ## Consuming project
 
 - Project: `[consuming-project-name]`
