@@ -126,7 +126,8 @@ text role. A composition is adopted by class, so the fixture sets a dense table,
 unmarked table, a table marked without its box and a table nested in a composition cell
 beside the composition, and requires that the composition reach none of them. The boxes
 are 320px wide, or the column's width where that is narrower, so every overflow case
-overflows at any viewport.
+overflows at any viewport. A wide table box and a wide block that a consumer makes focusable
+carry the keyboard-focus cases.
 
 The page measures each case once the fonts are ready and reports one overall verdict, with
 a row per case:
@@ -147,6 +148,9 @@ composition       the 32rem narrative measure and none on a dense table; --space
                   row a script appends to the table itself taking the cell rules
 scroll-into-view  a header link scrolled into view by its nearest edge lands inside its box and
                   clear of the fade, while hidden content remains to its right
+focus             a focusable wide table box and a focusable wide block, each drawing the fade
+                  at rest: under keyboard focus, a 2px solid --fg-1 outline --space-1 out and
+                  no fade; on blur, the fade as it was at rest
 range lane        a box without .doc-table-scroll--range-lane takes no lane; a range-lane box
                   reaches the lane (--space-3 and 2px) into the margin and pads it back, its
                   edge that far outside the column, and every header and cell sits where it
@@ -167,11 +171,16 @@ added             a table box and a block added after load are reported; a box m
 
 ```
 python3 -m http.server 8080
-# open http://localhost:8080/tests/document-table-fixture.html
+# open http://localhost:8080/tests/document-table-fixture.html, then press any key
 ```
 
-The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The
-cases are also on `window.__tableFixture` and the verdict on `body[data-result]`.
+Every case runs on load except keyboard focus, which runs on the first key press: script
+focus matches `:focus-visible` only once the page has seen keyboard input, so the focus limb
+waits for one, and a box that still does not take keyboard focus is reported `NOT RUN`, never
+`PASS`. The label under the title reads `REST PASS` until then, and `PASS`, `NOT RUN` with
+the number of focus cases that did not run, or `FAIL` with the number of failing cases. The
+cases are also on `window.__tableFixture` and the verdict on `body[data-result]`
+(`REST-ONLY`, `PASS`, `NOT-RUN` or `FAIL`).
 
 **Verifying the fixture still bites.** Each change below fails only the cases named.
 
@@ -192,6 +201,7 @@ hide the composition's header row                  the header-row case
 drop the range-lane box's start margin             the lane-pair and box-edge cases, and the three
                                                    cases that place the headers and cells
 put the range-lane rule at zero specificity        the consumer-margin case
+move the focus rule above the mask rule            the two no-fade-while-focused cases
 ```
 
 ## comparison-rail-fixture.html

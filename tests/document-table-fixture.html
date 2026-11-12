@@ -39,6 +39,8 @@
       return add.call(this, type, fn, opts);
     };
   })();
+  /* The keyboard-focus limb waits for the page's first key press. */
+  window.__firstKey = new Promise(function (r) { document.addEventListener('keydown', r, { once: true }); });
 </script>
 </head>
 <body>
@@ -143,6 +145,19 @@
     <h2 class="doc-section-title">Preformatted blocks</h2>
     <pre class="doc-pre fx-box" id="pre-wide">a line wide enough to scroll inside a box of three hundred and twenty pixels</pre>
     <pre class="doc-pre fx-box" id="pre-fits">short</pre>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Keyboard focus</h2>
+    <p class="doc-body">A wide table box and a wide block that a consumer makes focusable. Each takes
+      the focus outline with no fade while it shows keyboard focus, and its fade again on blur.</p>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="focusable, wide" tabindex="0" id="focus-box">
+      <table class="doc-table doc-dense-table">
+        <thead><tr><th class="doc-label">digest</th><th class="doc-label doc-table-num">bytes</th></tr></thead>
+        <tbody><tr><td class="doc-table-cell">a64665da40b1ca21bf8113e01b6233717ee1acd5895031d7fc50c32220971226</td><td class="doc-table-cell doc-table-num">41470</td></tr></tbody>
+      </table>
+    </div>
+    <pre class="doc-pre fx-box" tabindex="0" id="focus-pre">a line wide enough to scroll inside a box of three hundred and twenty pixels</pre>
   </section>
 
   <section class="doc-section" id="added">
@@ -313,19 +328,52 @@
     expect('added / a box moved in the document keeps one scroll listener', window.__scrollListeners.get(box), 1);
     expect('added / a box added after load has one scroll listener', window.__scrollListeners.get(newBox), 1);
 
-    var failed = 0;
-    var tbody = $('verdict');
-    rows.forEach(function (r) {
-      if (!r[0]) failed++;
-      var tr = document.createElement('tr');
-      [r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
-        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+    /* A row passes (true), fails (false) or did not run (null). Before the first key press
+       the verdict is REST-ONLY: every case but keyboard focus has run. */
+    var render = function (withFocus) {
+      var failed = 0, notRun = 0;
+      var tbody = $('verdict');
+      tbody.textContent = '';
+      rows.forEach(function (r) {
+        if (r[0] === false) failed++;
+        if (r[0] === null) notRun++;
+        var tr = document.createElement('tr');
+        [r[0] === null ? 'NOT RUN' : r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
+          var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
       });
-      tbody.appendChild(tr);
+      $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)'
+        : !withFocus ? 'REST PASS // press a key to run the keyboard-focus cases'
+        : notRun ? 'NOT RUN: ' + notRun + ' focus case(s) did not take keyboard focus' : 'PASS';
+      window.__tableFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
+      document.body.dataset.result = failed ? 'FAIL' : !withFocus ? 'REST-ONLY' : notRun ? 'NOT-RUN' : 'PASS';
+    };
+    render(false);
+
+    /* Keyboard focus. Script focus matches :focus-visible only once the page has seen keyboard
+       input, so this limb waits for the first key press; a box that still does not match is
+       reported NOT RUN, never PASS. Focused, a block or a table's box takes the --fg-1 outline,
+       2px wide and --space-1 out, with no fade; on blur its fade returns. */
+    await window.__firstKey;
+    var fg1 = color('var(--fg-1)');
+    var space1 = (function () { var p = document.createElement('div'); p.style.paddingTop = 'var(--space-1)'; document.body.appendChild(p); var v = cs(p).paddingTop; p.remove(); return v; })();
+    [['table box', $('focus-box')], ['block', $('focus-pre')]].forEach(function (c) {
+      var name = 'focus / ' + c[0], el = c[1];
+      var restMask = cs(el).maskImage;
+      expect(name + ': the fade is drawn at rest', attrs(el) + ' ' + restMask.slice(0, 15), 'data-overflow data-overflow-end linear-gradient');
+      el.focus({ preventScroll: true });
+      if (!el.matches(':focus-visible')) {
+        rows.push([null, name + ': keyboard focus', 'not :focus-visible', ':focus-visible']);
+      } else {
+        expect(name + ': a 2px solid --fg-1 outline', cs(el).outlineStyle + ' ' + cs(el).outlineWidth + ' ' + cs(el).outlineColor, 'solid 2px ' + fg1);
+        expect(name + ': the outline sits --space-1 out', cs(el).outlineOffset, space1);
+        expect(name + ': no fade while focused', cs(el).maskImage + ' ' + cs(el).webkitMaskImage, 'none none');
+      }
+      el.blur();
+      expect(name + ': the fade returns on blur', cs(el).maskImage, restMask);
     });
-    $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
-    window.__tableFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
-    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+    render(true);
   })();
 </script>
 </body>

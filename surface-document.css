@@ -628,7 +628,9 @@
      variation       "scroll >>", "<< scroll >>", "<< scroll"
      exclusions      nothing is shrunk, wrapped, enclosed or reflowed; a block
                      that fits shows nothing; print shows neither the label
-                     nor the fade, because paper cannot scroll
+                     nor the fade, because paper cannot scroll; while a block
+                     or box shows keyboard focus, the fade is dropped so its
+                     focus outline shows, and the label stays
      example         a wide diagram at a narrow width: a right-edge fade and
                      "scroll >>" held at the box's left edge
      counterexample  shrinking a diagram's type until it fits
@@ -674,6 +676,8 @@
      2px                   with --space-3, a labeled range's lane, which a
                            range-lane table's box keeps (surface-treatments.css)
      #000, transparent     overflow mask stops: alpha only, never paint
+     2px                   a scrollable block's or box's focus-outline width,
+                           the disclosure trigger's (surface-treatments.css)
      0.9em                 inline code, the foundation code rule's own size
      1lh, 2lh, 3lh         blank source lines in structured text; 1lh is also
                            the one line between declared peer groups
@@ -693,7 +697,11 @@
        larger value.
      - Without the helper a block or a table's box still scrolls and shows no
        cue. Keyboard scrolling of either is not claimed: nothing here sets a
-       tabindex.
+       tabindex, so whether either takes a Tab stop is the browser's choice,
+       or the consumer's where it sets one. When a browser or a consumer
+       makes one focusable, its focus indicator is the one this module draws:
+       a --fg-1 outline, 2px wide and --space-1 out, with the fade dropped
+       while it shows.
      - Print draws no overflow cue, but a block or a table's box that is wider
        than the printed column keeps its scroll clip there: what lies past its
        edge does not print. Nothing here reflows a block or a table for paper.
@@ -1351,6 +1359,23 @@
 .doc-table-scroll[data-overflow-start][data-overflow-end]::after { content: "<< scroll >>"; }
 .doc-pre[data-overflow-start]:not([data-overflow-end])::after,
 .doc-table-scroll[data-overflow-start]:not([data-overflow-end])::after { content: "<< scroll"; }
+
+/* Focus. Nothing here sets a tabindex, but a browser may make a block or a
+   table's box that scrolls focusable, and a consumer may. When it shows
+   keyboard focus, a --fg-1 outline surrounds it, 2px wide and --space-1 out:
+   the disclosure trigger's outline geometry, without its foreground or
+   indicator. The fade is a mask on the same box, and a mask hides what is
+   drawn outside the box, so with the fade in place this outline would not
+   show at all. The fade is dropped while focus shows, and the label beneath
+   still names the direction. This follows the mask rule at the same
+   specificity, so it wins. */
+.doc-pre:focus-visible,
+.doc-table-scroll:focus-visible {
+  outline: 2px solid var(--fg-1);
+  outline-offset: var(--space-1);
+  -webkit-mask-image: none;
+          mask-image: none;
+}
 
 /* Print draws neither. Paper cannot scroll, so a label that says to scroll and
    a fade over content no one can reach are both wrong there, and the helper's
