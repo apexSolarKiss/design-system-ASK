@@ -222,7 +222,7 @@ ASK's *personal* writing voice, terminalcore, is otherwise a separate convention
 - **Dark** // `linear-gradient(45deg, #201D26 → #0A090C)`. Text is `#D4C6E1`.
 - **Another brand's output artifact** // may declare a presentation assignment for its own field on the same 45° mechanism ([`patterns/output-artifact/README.md`](patterns/output-artifact/README.md)). ASK's own surfaces never take one.
 
-The gradient is **fixed to the viewport** (`background-attachment: fixed`), so scrolling reveals one continuous field.
+The gradient is **fixed to the viewport** (`background-attachment: fixed`), so scrolling reveals one continuous field. In print, the foundation's default body background scrolls with the document rather than remaining fixed to the viewport. Page-specific styles may override this behavior.
 
 **Browser / under-page edge.** A browser paints its own area beyond the document — the
 over-scroll pocket above and below the page — and derives it from a **solid** background
