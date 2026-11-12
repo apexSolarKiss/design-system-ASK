@@ -100,6 +100,24 @@
         <tbody><tr><td class="doc-table-cell">a64665da40b1ca21bf8113e01b6233717ee1acd5895031d7fc50c32220971226</td><td class="doc-table-cell doc-table-num">41470</td></tr></tbody>
       </table>
     </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="compact, fits" id="box-compact">
+      <table class="doc-table doc-compact-table" id="comp-compact">
+        <thead><tr><th class="doc-label">step</th><th class="doc-label doc-table-num">size</th></tr></thead>
+        <tbody><tr><td class="doc-body">Small</td><td class="doc-body doc-table-num">18px</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="compact, cannot fit" id="box-compact-wide">
+      <table class="doc-table doc-compact-table">
+        <thead><tr><th class="doc-label">item</th><th class="doc-label doc-table-num">bytes</th></tr></thead>
+        <tbody><tr><td class="doc-body">one</td><td class="doc-body doc-table-num">12 345 678 901 234 567 890 123</td></tr></tbody>
+      </table>
+    </div>
+    <div class="doc-table-scroll fx-box" role="region" aria-label="comparison marked compact" id="box-compact-compare">
+      <table class="doc-table doc-compare-table doc-compact-table" id="comp-compact-compare">
+        <thead><tr><th class="doc-compare-head">step</th><th class="doc-compare-head">size</th></tr></thead>
+        <tbody><tr><th class="doc-compare-head">Small</th><td class="doc-compare-cell">18px</td></tr></tbody>
+      </table>
+    </div>
   </section>
 
   <section class="doc-section">
@@ -225,6 +243,9 @@
     var nLast = nTable.querySelector('td:last-child');
     expect('composition / narrative: 32rem measure', cs(nTable).minWidth, (32 * rootPx) + 'px');
     expect('composition / dense: no measure', cs($('comp-dense')).minWidth === (32 * rootPx) + 'px', false);
+    expect('composition / compact: no measure', cs($('comp-compact')).minWidth === (32 * rootPx) + 'px', false);
+    expect('composition / compact: the same cell block padding', cs($('comp-compact').querySelector('td')).paddingTop, space3);
+    expect('composition / a comparison marked compact keeps the 32rem measure', cs($('comp-compact-compare')).minWidth, (32 * rootPx) + 'px');
     expect('composition / cell block padding is --space-3', cs(nTd).paddingTop, space3);
     expect('composition / space between columns is --space-5', cs(nTd).paddingRight, space5);
     expect('composition / last column has no end padding', cs(nLast).paddingRight, '0px');
@@ -292,6 +313,10 @@
     expect('overflow / table box that fits', attrs($('box-fits')), '(none)');
     expect('overflow / table box that fits: no cue', cue($('box-fits')), 'none');
     expect('overflow / narrative table below its measure', attrs($('box-narrative')), 'data-overflow data-overflow-end');
+    expect('overflow / compact table that fits', attrs($('box-compact')), '(none)');
+    expect('overflow / compact table that fits: no cue', cue($('box-compact')), 'none');
+    expect('overflow / compact table that cannot fit', attrs($('box-compact-wide')), 'data-overflow data-overflow-end');
+    expect('overflow / compact table that cannot fit: cue', cue($('box-compact-wide')), '"scroll >>"');
     expect('overflow / wide block, unchanged', attrs($('pre-wide')), 'data-overflow data-overflow-end');
     expect('overflow / wide block: cue, unchanged', cue($('pre-wide')), '"scroll >>"');
     expect('overflow / block that fits, unchanged', attrs($('pre-fits')), '(none)');

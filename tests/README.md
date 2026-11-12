@@ -138,13 +138,15 @@ reach             the dense marker alone draws no padding, no row rule and no nu
                   table and a table marked without its box take no measure, no row rule and no
                   composition padding; a table nested in a composition cell takes no row rule
                   and no composition padding
-composition       the 32rem narrative measure and none on a dense table; --space-3 block
-                  padding, --space-5 between columns and none after the last; the --line-2 row
-                  rule and the --line-1 header rule; the header row shown in place, visible and
-                  unclipped; code breaking at its own opportunities; a numeric header and cell
-                  at the end, a numeric header and a narrative numeric cell on tabular figures;
-                  a dense value on one line; --space-6 of scroll padding on the box; a consumer
-                  rule of one class, loaded before the register, winning over the cell rules; a
+composition       the 32rem narrative measure and none on a dense table; none on a compact
+                  table, which keeps the cell padding, and the measure kept on a comparison
+                  marked compact; --space-3 block padding, --space-5 between columns and
+                  none after the last; the --line-2 row rule and the --line-1 header rule;
+                  the header row shown in place, visible and unclipped; code breaking at its
+                  own opportunities; a numeric header and cell at the end, a numeric header
+                  and a narrative numeric cell on tabular figures; a dense value on one
+                  line; --space-6 of scroll padding on the box; a consumer rule of one
+                  class, loaded before the register, winning over the cell rules; a
                   row a script appends to the table itself taking the cell rules
 scroll-into-view  a header link scrolled into view by its nearest edge lands inside its box and
                   clear of the fade, while hidden content remains to its right
@@ -160,9 +162,10 @@ range lane        a box without .doc-table-scroll--range-lane takes no lane; a r
 label             the label in capitals; code in it, with the class and without, in its own
                   case; plain text in it, such as mW, in capitals
 overflow          a wide table box and a narrative table below its measure report the right
-                  side and draw the cue; a box that fits reports nothing; scrolled to the end
-                  and to the middle, the attributes and the cue follow; a wide and a fitting
-                  block report as before
+                  side and draw the cue; a box that fits reports nothing; a compact table that
+                  fits reports nothing and draws no cue, and one that cannot fit reports the
+                  right side and draws the cue; scrolled to the end and to the middle, the
+                  attributes and the cue follow; a wide and a fitting block report as before
 added             a table box and a block added after load are reported; a box moved in the
                   document, and one added after load, each carry one scroll listener
 ```
@@ -197,6 +200,9 @@ drop the box's scroll-padding                      the scroll-padding case and t
 give the cell rule specificity                     the consumer-override case, and the cases whose
                                                    zero-specificity rules it now outranks
 key the measure on the table marker alone          the marker-without-its-box measure case
+drop .doc-compact-table from the measure's         the compact table's measure case and its
+exclusion                                          fits and no-cue cases
+drop the comparison clause from the measure rule   the compact comparison's measure case
 hide the composition's header row                  the header-row case
 drop the range-lane box's start margin             the lane-pair and box-edge cases, and the three
                                                    cases that place the headers and cells
