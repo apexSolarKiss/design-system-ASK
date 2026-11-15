@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // ordered sequence print fixture</title>
+<meta name="description" content="Regression fixture for the ordered sequence on paper: under print media each step stays whole, and the one rail runs to the foot of every sheet the sequence continues past.">
+<!-- Serve from the repo root:  python3 -m http.server 8080
+     Headless, under print media only:
+       node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/sequence-print-fixture.html --media print
+     Each case's sheets are a multi-column container of fixed height: columns are fragmentainers, as
+     printed sheets are, so the register's print rule is exercised by the browser's own fragmentation.
+     Under screen media every case fails: the print rule is not in effect there. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-text-link.css">
+<link rel="stylesheet" href="../surface-document.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); border-collapse: collapse; }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  /* Sheets: fixed-height columns, each a fragmentainer. A column that would be narrower than 16rem
+     is not made; the sheets then run on past the right edge, still one column high. */
+  .fx-sheets { columns: 16rem; column-fill: auto; column-gap: var(--space-6); height: 420px; }
+  /* Consumer overrides the check must catch. Each reaches only its own control. */
+  @media print { [data-control="a step allowed to break across sheets"] .doc-sequence > .doc-sequence-step { break-inside: auto; } }
+  [data-control="a rail drawn on each step instead of the list"] .doc-sequence { border-left-color: transparent; }
+  [data-control="a rail drawn on each step instead of the list"] .doc-sequence-step { border-left: 1px solid var(--line-2); }
+</style>
+</head>
+<body>
+<main class="page doc-flow">
+
+  <section class="doc-section">
+    <h1 class="doc-title">Ordered sequence in print</h1>
+    <p class="doc-body">Run under print media. In each case a sequence of nine steps runs across fixed-height
+      sheets. The conforming case keeps every step whole, and its rail runs to the foot of every sheet it
+      continues past, resumes at the head of the next and ends with the last step. Each control after it
+      must fail with exactly the reason codes it names, and the continuation it names.</p>
+    <p class="doc-label" id="overall">not run</p>
+  </section>
+
+  <section class="doc-section" id="cases">
+    <h2 class="doc-section-title">Cases</h2>
+    <div data-control="a sequence across sheets" data-expect="" data-continuation="holds"><div class="fx-sheets"></div></div>
+    <div data-control="a step allowed to break across sheets" data-expect="C16.print C16.split" data-continuation="holds"><div class="fx-sheets"></div></div>
+    <div data-control="a rail drawn on each step instead of the list" data-expect="C16.center C16.rail C16.segment" data-continuation="breaks"><div class="fx-sheets"></div></div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Verdict</h2>
+    <table class="verdict"><tbody id="verdict"></tbody></table>
+  </section>
+
+</main>
+<script src="../tools/role-conformance.js"></script>
+<script>
+  (function () {
+    /* Nine steps whose bodies differ in length, so the sheets break inside the sequence, between steps. */
+    var bodies = [1, 2, 1, 2, 2, 1, 2, 1, 1];
+    var sentence = 'A sentence of the step\'s body, long enough to wrap in a column. ';
+    document.querySelectorAll('.fx-sheets').forEach(function (sheets) {
+      var ol = document.createElement('ol');
+      ol.className = 'doc-sequence';
+      ol.setAttribute('aria-label', 'Nine steps across sheets');
+      bodies.forEach(function (n, i) {
+        var li = document.createElement('li');
+        li.className = 'doc-sequence-step doc-group';
+        li.innerHTML = '<p class="doc-label">step ' + (i + 1) + '</p><h3 class="doc-subsection-title">Step ' + (i + 1) + '</h3>' +
+          '<p class="doc-body">' + new Array(n + 1).join(sentence) + '</p>';
+        ol.appendChild(li);
+      });
+      sheets.appendChild(ol);
+    });
+
+    var printing = matchMedia('print').matches;
+    var rows = document.getElementById('verdict');
+    var cases = [];
+    var sortJoin = function (list) { return Array.from(new Set(list)).sort().join(' '); };
+    var row = function (state, name, detail) {
+      var tr = document.createElement('tr');
+      [state, name, detail].forEach(function (t) { var td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+      rows.appendChild(tr);
+    };
+    /* Continuation, measured on the sheets: the sequence breaks at least once and draws its rail as
+       its own visible border; every fragment but the last reaches the foot of its sheet; every
+       fragment but the first starts at the head of its sheet; the last ends with the last step; and
+       every step that a sheet can hold is one fragment. */
+    var continuation = function (sheets) {
+      var ol = sheets.querySelector('.doc-sequence');
+      var c = getComputedStyle(ol);
+      var s = sheets.getBoundingClientRect();
+      var top = s.top + sheets.clientTop, foot = top + sheets.clientHeight;
+      var frags = Array.from(ol.getClientRects());
+      var steps = Array.from(ol.children);
+      var lastStep = steps[steps.length - 1].getClientRects();
+      var near = function (a, b) { return Math.abs(a - b) <= 0.5; };
+      var railed = c.borderLeftStyle === 'solid' && parseFloat(c.borderLeftWidth) >= 1 && !/^transparent$|rgba\([^)]*,\s*0\s*\)$/.test(c.borderLeftColor);
+      var reaches = frags.slice(0, -1).every(function (f) { return near(f.bottom, foot); });
+      var resumes = frags.slice(1).every(function (f) { return near(f.top, top); });
+      var ends = frags.length > 0 && lastStep.length > 0 && near(frags[frags.length - 1].bottom, lastStep[lastStep.length - 1].bottom);
+      /* A step taller than a sheet still breaks; every other step is one fragment. */
+      var whole = steps.every(function (li) { var r = Array.from(li.getClientRects()); return r.length === 1 || r.reduce(function (t, x) { return t + x.height; }, 0) > sheets.clientHeight; });
+      return { holds: frags.length >= 2 && railed && reaches && resumes && ends, fragments: frags.length, railed: railed, reaches: reaches, resumes: resumes, ends: ends, wholeSteps: whole };
+    };
+    document.querySelectorAll('[data-control]').forEach(function (el) {
+      var name = el.dataset.control;
+      var result = ASKRoleConformance.check({ scope: el, unmapped: false });
+      var expected = sortJoin(el.dataset.expect.split(/\s+/).filter(Boolean));
+      var got = sortJoin(result.findings.map(function (f) { return f.reason; }));
+      var cont = continuation(el.querySelector('.fx-sheets'));
+      var wantCont = el.dataset.continuation === 'holds';
+      var detailPass = printing && cont.holds === wantCont && (expected !== '' || cont.wholeSteps);
+      var detail = (printing ? '' : 'not under print media · ') + 'continuation ' + (cont.holds ? 'holds' : 'breaks') + ' (expected ' + el.dataset.continuation + ')' +
+        ' · fragments ' + cont.fragments + ' · railed ' + cont.railed + ' · reaches the foot ' + cont.reaches + ' · resumes at the head ' + cont.resumes +
+        ' · ends with the last step ' + cont.ends + ' · every step whole ' + cont.wholeSteps;
+      var staticPass = got === expected && detailPass;
+      cases.push({ case: name, expected: expected, expectedStatic: expected, staticGot: got, staticPass: staticPass, detailPass: detailPass, detail: detail,
+        interactionJudged: false, findings: result.findings, continuation: cont });
+      row(staticPass ? 'PASS' : 'FAIL', name, 'expected ' + (expected || 'none') + ' · got ' + (got || 'none') + ' · ' + detail);
+    });
+    var failed = cases.filter(function (c) { return !c.staticPass; }).length;
+    document.getElementById('overall').textContent = (failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS') + (printing ? '' : ' · run under print media');
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+    window.__roleFixture = { staticResult: failed ? 'FAIL' : 'PASS', cases: cases };
+  })();
+</script>
+</body>
+</html>

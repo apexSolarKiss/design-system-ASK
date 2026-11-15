@@ -6,10 +6,10 @@
    protocol with Node's built-in WebSocket (Node 22+).
 
      node tools/check-role-conformance.mjs --url URL [--url URL ...]
-          [--scheme dark|light|both] [--width 1440] [--height 900] [--mobile]
-          [--scope SELECTOR] [--profiles FILE.json] [--assignment FILE.json]
-          [--allow-vacuous]
-     node tools/check-role-conformance.mjs --fixture URL [--scheme ...]
+          [--scheme dark|light|both] [--media screen|print] [--width 1440]
+          [--height 900] [--mobile] [--scope SELECTOR] [--profiles FILE.json]
+          [--assignment FILE.json] [--allow-vacuous]
+     node tools/check-role-conformance.mjs --fixture URL [--scheme ...] [--media ...]
           load a role fixture (tests/role-conformance-fixture.html, or
           tests/review-semantics-fixture.html for C12) from a served repo root and
           judge every case: its static reason codes from the page, its
@@ -17,6 +17,11 @@
           page's own resting verdict passes and the union of both equals its
           expected codes; where the page names the codes this runner must return
           for a case (expectedRunner), they must match exactly
+
+   --media print emulates print media for the whole run: the page's print rules
+   apply, on the viewport the other flags set. It does not paginate, so it
+   proves what elements compute in print (C16.print, for one) and the
+   fragments a multi-column container makes, not where a printed sheet breaks.
 
    --profiles names a JSON file holding an array of profile declarations, the
    consumer's own named roles (a count numeral, say):
@@ -81,17 +86,18 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CHECKER = fs.readFileSync(path.join(HERE, 'role-conformance.js'), 'utf8');
 const LOAD_TIMEOUT_MS = 30000;
-const USAGE = 'usage: check-role-conformance.mjs --url URL [...] [--scheme dark|light|both] [--width N] [--height N] [--mobile] [--scope SEL] [--profiles FILE.json] [--assignment FILE.json] [--allow-vacuous]\n       check-role-conformance.mjs --fixture URL [--scheme ...] [--width N] [--height N] [--mobile]';
+const USAGE = 'usage: check-role-conformance.mjs --url URL [...] [--scheme dark|light|both] [--media screen|print] [--width N] [--height N] [--mobile] [--scope SEL] [--profiles FILE.json] [--assignment FILE.json] [--allow-vacuous]\n       check-role-conformance.mjs --fixture URL [--scheme ...] [--media screen|print] [--width N] [--height N] [--mobile]';
 
 function usage(msg) { console.error(msg ? `${msg}\n${USAGE}` : USAGE); process.exit(2); }
 function parseArgs(argv) {
-  const o = { urls: [], scheme: 'both', width: 1440, height: 900, mobile: false, scope: null, profiles: [], profilesFile: null, assignment: null, assignmentFile: null, allowVacuous: false, fixture: null };
+  const o = { urls: [], scheme: 'both', media: 'screen', width: 1440, height: 900, mobile: false, scope: null, profiles: [], profilesFile: null, assignment: null, assignmentFile: null, allowVacuous: false, fixture: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const next = () => { if (i + 1 >= argv.length) usage(`${a} needs a value`); return argv[++i]; };
     if (a === '--url') o.urls.push(next());
     else if (a === '--fixture') o.fixture = next();
     else if (a === '--scheme') o.scheme = next();
+    else if (a === '--media') o.media = next();
     else if (a === '--width') o.width = Number(next());
     else if (a === '--height') o.height = Number(next());
     else if (a === '--mobile') o.mobile = true;
@@ -106,6 +112,7 @@ function parseArgs(argv) {
   if (o.fixture && o.profilesFile) usage('the fixture declares its own profiles');
   if (o.fixture && o.assignmentFile) usage('the fixture declares its own assignments');
   if (!['dark', 'light', 'both'].includes(o.scheme)) usage('--scheme is dark, light or both');
+  if (!['screen', 'print'].includes(o.media)) usage('--media is screen or print');
   if (!(o.width > 0 && o.height > 0)) usage('--width and --height are positive numbers');
   if (o.profilesFile) {
     let d;
@@ -155,7 +162,7 @@ async function stop(b) {
   }
 }
 
-async function page(b, { url, width, height, mobile, scheme }) {
+async function page(b, { url, width, height, mobile, scheme, media }) {
   const tgt = await (await fetch(`http://127.0.0.1:${b.port}/json/new?about:blank`, { method: 'PUT' })).json();
   const ws = new WebSocket(tgt.webSocketDebuggerUrl);
   await new Promise((r) => ws.addEventListener('open', r));
@@ -174,7 +181,7 @@ async function page(b, { url, width, height, mobile, scheme }) {
   const close = async () => { try { ws.close(); } catch { /* closed */ } await fetch(`http://127.0.0.1:${b.port}/json/close/${tgt.id}`).catch(() => {}); };
   await call('Page.enable'); await call('Runtime.enable');
   await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile });
-  await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await call('Emulation.setEmulatedMedia', { media: media || 'screen', features: [{ name: 'prefers-color-scheme', value: scheme }, { name: 'prefers-reduced-motion', value: 'reduce' }] });
   await call('Emulation.setFocusEmulationEnabled', { enabled: true });
   const nav = await call('Page.navigate', { url });
   if (nav.errorText) { await close(); throw new Error(`navigation failed: ${url}: ${nav.errorText}`); }
@@ -237,7 +244,7 @@ async function interactionPass(p, scope) {
     } else if (a === '#other' && first === null) first = '#other-start';
   }
   const judged = await p.evaluate(`${I}.judge(${JSON.stringify([...records.values()])})`);
-  /* then the held C12, C13, C14 and C15 elements, after every link-state judgment: finishing their animations
+  /* then the held C12, C13, C14, C15 and C16 elements, after every link-state judgment: finishing their animations
      must not move a token the link states are judged against */
   await p.evaluate(`${I}.blur()`);
   await p.mouse(await p.evaluate(`${I}.neutral()`));
@@ -264,12 +271,12 @@ const o = parseArgs(process.argv.slice(2));
 const schemes = o.scheme === 'both' ? ['dark', 'light'] : [o.scheme];
 let b;
 try { b = await launch(); } catch (e) { console.error(String(e)); process.exit(2); }
-const report = { tool: 'check-role-conformance', viewport: `${o.width}x${o.height}${o.mobile ? ' mobile' : ''}`, profiles: o.profiles, assignment: o.assignment, runs: [] };
+const report = { tool: 'check-role-conformance', viewport: `${o.width}x${o.height}${o.mobile ? ' mobile' : ''}`, media: o.media, profiles: o.profiles, assignment: o.assignment, runs: [] };
 let ok = true;
 try {
   if (o.fixture) {
     for (const scheme of schemes) {
-      const p = await page(b, { url: o.fixture, width: o.width, height: o.height, mobile: o.mobile, scheme });
+      const p = await page(b, { url: o.fixture, width: o.width, height: o.height, mobile: o.mobile, scheme, media: o.media });
       const f = await p.evaluate('window.__roleFixture || null');
       if (!f) { report.runs.push({ fixture: o.fixture, scheme, result: null, page_errors: p.errors }); ok = false; await p.close(); continue; }
       const ip = await interactionPass(p, null);
@@ -293,7 +300,7 @@ try {
     }
   } else {
     for (const url of o.urls) for (const scheme of schemes) {
-      const p = await page(b, { url, width: o.width, height: o.height, mobile: o.mobile, scheme });
+      const p = await page(b, { url, width: o.width, height: o.height, mobile: o.mobile, scheme, media: o.media });
       await p.evaluate(CHECKER);
       const r = await p.evaluate(`ASKRoleConformance.check(${JSON.stringify({ scope: o.scope, profiles: o.profiles, assignment: o.assignment })})`);
       const ip = await interactionPass(p, o.scope);

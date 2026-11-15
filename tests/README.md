@@ -432,11 +432,13 @@ ranges in a row, one in a table's second column, and, in tables whose box keeps 
 range lane, one in each of a first, an interior and a last column and one in a table's
 only column, and a list that opens on two item hosts after a range, keeping the passage
 buffer from it; and the scope underline without Review Semantics: a neutral underline in
-body text, and one under a phrase holding a link, which keeps its own line and states —
-which must return no finding at rest or in any link state.
-After it come **controls**: 184 negative controls, one per failure branch,
+body text, and one under a phrase holding a link, which keeps its own line and states;
+and an ordered sequence of three steps, each opening on its label — which must return no
+finding at rest or in any link state, on screen or under print media.
+After it come **controls**: 217 negative controls, one per failure branch, and two more
+under print media,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
-14 positive controls — an unmarked prose table, a complete profile declaration, a
+17 positive controls (15 under print media) — an unmarked prose table, a complete profile declaration, a
 declared presentation assignment's own foreground with a bordered label under it, an
 emphasis rail off document text keeping a sanctioned violet accent, six declared
 peer-group blocks (two, five and ten groups, a question set out as three groups, a single
@@ -445,7 +447,10 @@ a labeled range whose label holds its words in an inline child, a labeled range 
 page does not show, whose hidden label is then not judged, a wrapped list closing on
 an item host followed by a list opening on one, which keeps the buffer across the
 wrapper, and item hosts in two neighboring table cells, which owe no buffer across a
-row — which must return no finding:
+row, and three ordered sequences — one in a closed disclosure, judged once the runner
+opens it, one whose step a local print rule lets break and one whose step it keeps whole
+only in columns (`avoid-column`), which on screen draw as they should and under print
+media are the two more negative controls (`C16.print`) — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -617,6 +622,37 @@ C15.words · C15.words ·     a scope underline given a fill · recoloring its w
 C15.words · C15.words       drawn as a block · drawn as display: contents
 C15.color                   a neutral scope underline given a color
 C15.attach · C15.attach     a scope underline made focusable · set inside a link
+C16.rail · C16.rail ·       an ordered sequence whose rail is made invisible · drawn in
+C16.rail · C16.rail ·       an accent · given a glow · drawn again in its background ·
+C16.rail                    doubled by a second rail in its ::after
+C16.gap · C16.gap           its steps at a group's --space-3 rhythm · spaced by a
+                            margin of their own
+C16.direction               a right-to-left sequence, which is not yet served
+C16.hierarchy               a sequence that also composes .doc-hierarchy
+C16.step · C16.step         a loose item in a sequence · a step outside a sequence
+C16.reach · C16.reach       a sequence whose box ends before its last step · a last
+                            step set too short for its body, which runs past the rail
+C16.overflow                a step body held on one line past the column's edge
+C16.clearance               a sequence whose box clips the node left of its rail
+C16.label                   a step that does not open on its label
+C16.center · C16.center ·   a step that moves its label down · a label set lower by
+C16.center                  its own padding · a node off the rail
+C16.center C16.segment      a step drawn with a rail of its own, which also moves its
+                            node
+C16.segment · C16.segment · a step drawing a rail segment over the sequence's rail ·
+C16.segment · C16.segment   drawing one in its shadow · a line in its background ·
+                            given an outline
+C16.node                    a node removed
+C16.fill · C16.fill ·       a node given a fill · given a glow · given a fill in a
+C16.fill                    closed disclosure, which only the runner returns, once it
+                            opens the disclosure (data-expect-open)
+C16.color                   a node in an accent
+C16.center C16.ring ·       a node drawn 9px wide, which also moves its center · moved
+C16.center C16.ring ·       by a margin · drawn square · moved by a transform
+C16.ring · C16.ring
+C16.print · C16.print       under print media only (data-expect-print): a step a local
+                            print rule lets break · one it keeps whole only in columns
+                            (avoid-column), which does not hold on paper
 ```
 
 The page judges each case's **resting** codes itself and writes them to
@@ -626,13 +662,22 @@ each case's resting codes with the link-state codes it observes in that case and
 the union to equal the case's `data-expect` exactly, and the page's own resting verdict to
 pass.
 
-**Run it** from the repo root:
+A case may name two more expectations. `data-expect-print` replaces `data-expect` when the
+page is judged under print media. `data-expect-open` names codes only the runner returns,
+once it has opened the case's disclosures and judged what they hold; the runner requires
+its own findings for that case to equal them exactly.
+
+**Run it** from the repo root, on screen and under print media:
 
 ```
 python3 -m http.server 8080
 # open http://localhost:8080/tests/role-conformance-fixture.html
 node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
+node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html --media print
 ```
+
+Both pass at the runner's default 1440×900 and at 375×812 (`--width 375 --height 812
+--mobile`), in both themes.
 
 **The document-register key**, [`surface-document.html`](../surface-document.html), takes the same check in two parts. Its
 records-and-inspector section selects a record at load and hides the other records' views, as a
@@ -648,7 +693,7 @@ node tools/check-role-conformance.mjs --url 'http://127.0.0.1:8080/surface-docum
 The first run checks the whole page at load and is expected to **fail** with exactly six
 `C9.unrendered` findings per theme and no other finding: the relation links of the two hidden
 views that hold any, four in `CFW-N-217` and two in `CFW-S-435`. It is kept because it is the
-only run that covers the rest of the page; 10 of the page's 16 governed links are driven in it.
+only run that covers the rest of the page; 14 of the page's 20 governed links are driven in it.
 The second is run once per record — `CFW-C-008`, `CFW-N-217`, `CFW-S-435` and `CFW-S-014` — with
 the address selecting that record and the scope narrowing the check to its view. Each run passes;
 the `CFW-S-014` view holds no governed link, so its run checks roles only. Together the runs drive
@@ -660,9 +705,45 @@ Limits: each run proves the selection the page loads with, after the runner has 
 disclosure; none drives a selection change, the adapter's focus handling or the way back, which
 are page-local. The key's five locator links stand in `code.doc-code` outside any text role, so
 they are not governed links (C7) and no run drives them. Both parts give the same result at the
-runner's default 1440×900 and at 375×812 (`--width 375 --height 812 --mobile`), in both themes.
-Revisit this account when the key gains another hidden population, when the whole-page run is
+runner's default 1440×900 and at 375×812 (`--width 375 --height 812 --mobile`), in both themes,
+on screen and under `--media print`. Revisit this account when the key gains another hidden population, when the whole-page run is
 offered as evidence on its own, or when the checker changes.
+
+## sequence-print-fixture.html
+
+Guards **the ordered sequence on paper**: the register keeps each `.doc-sequence-step` whole in
+print, and the sequence's one rail, the list's own border, runs to the foot of every sheet the
+sequence continues past. Emulated print media lays a page out without pages, so this fixture makes
+its own sheets: a multi-column container of fixed height, whose columns are fragmentainers as
+printed sheets are, so the browser's own fragmentation applies the register's print rule. Each case
+is nine steps of differing length across those sheets, judged by `tools/role-conformance.js` and
+by the fixture's own continuation measure:
+
+- **a sequence across sheets** must return no finding, and its continuation must hold: the
+  sequence breaks at least once; it draws its rail as its own visible border; every fragment but
+  the last reaches the foot of its sheet; every fragment but the first starts at the head of its
+  sheet; the last ends with the last step; and every step a sheet can hold is one fragment.
+- **a step allowed to break across sheets**, under a local print rule that sets
+  `break-inside: auto`, must fail with exactly `C16.print C16.split`, its continuation still
+  holding.
+- **a rail drawn on each step instead of the list** must fail with exactly
+  `C16.center C16.rail C16.segment`, and its continuation must break: the list draws no visible
+  rail.
+
+**Run it** under print media. Under screen media every case fails by design: the print rule is not
+in effect there, and the conforming case's steps then break across sheets.
+
+```
+python3 -m http.server 8080
+node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/sequence-print-fixture.html --media print
+```
+
+It passes at the runner's default 1440×900 and at 375×812 (`--width 375 --height 812 --mobile`),
+in both themes.
+
+Limits: the sheets are columns, not printed pages. The fixture proves what the browser's
+fragmentation does with the register's rule; where a printed page breaks, with its margins and a
+printer's own handling, is shown by printing, not checked here.
 
 ## review-semantics-fixture.html
 
