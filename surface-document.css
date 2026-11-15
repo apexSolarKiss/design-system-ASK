@@ -158,10 +158,11 @@
                      its last step: no segment per step and no rail on a step.
                      A node is an unfilled ring, drawn only on a direct step:
                      no fill, accent, glow, shadow or state, because the node
-                     is structural punctuation, not a status. In print a step
-                     is kept whole on one sheet, so its node, label and body
-                     travel together, and where the sequence continues on the
-                     next sheet the rail runs to the foot of the one before
+                     is structural punctuation, not a status. In print, a rule
+                     asks the browser to keep a step that fits on one sheet
+                     whole, so its node, label and body travel together, and
+                     where the sequence continues on the next sheet the rail
+                     runs to the foot of the one before
      example         five steps on one rail, a ring centered on the rail at
                      each step's label line, the rail running on through the
                      last step's body
@@ -1498,10 +1499,10 @@
   .doc-table-scroll[data-overflow]::after { display: none; }
 }
 
-/* On paper a sequence step is kept whole, so its node, its label and its body
-   travel together. Where the sequence breaks between steps, the rail, the
-   list's own border, runs to the foot of the sheet and resumes at the head of
-   the next. */
+/* In print, the rule asks the browser to keep a sequence step that fits on
+   one sheet whole, so its node, its label and its body travel together.
+   Where the sequence breaks between steps, the rail, the list's own border,
+   runs to the foot of the sheet and resumes at the head of the next. */
 @media print {
   .doc-sequence > .doc-sequence-step { break-inside: avoid; }
 }
