@@ -67,7 +67,13 @@
        sanctioned accents — each role's color is pinned, and no role is
        required to share another's; .doc-hierarchy is declared by exactly one
        rail rule, the registered 1px neutral hierarchy rail (HIERARCHY_RAIL),
-       and no other rule on it sets a rail; the matrix
+       and no other rule on it sets a rail; the ordered sequence's rail is that
+       same rule, its node is one rule holding exactly the registered ring
+       (SEQUENCE_NODE), no other rule sets a rail or paints a line (shadow,
+       background, border image, outline) on a sequence or a step or draws on
+       a step's pseudo-element, one rule sets its steps --space-5
+       apart, one @media print rule keeps a step whole, and the node and
+       rhythm tools/role-conformance.js measures equal these; the matrix
        tools/role-conformance.js checks rendered pages against equals this
        one; and its link-state matrix (LINK_STATES) equals the rest, hover and
        focus-visible declarations of surface-text-link.css.
@@ -203,6 +209,19 @@ const TREATMENT_RAIL_ACCENTS = ['var(--ask-emphasis-magenta)', 'var(--ask-emphas
    passage rail. */
 const HIERARCHY = '.doc-hierarchy';
 const HIERARCHY_RAIL = { border: '1px solid var(--line-2)', inset: 'var(--space-4)' };
+/* The ordered sequence: its rail is the hierarchy rail's own rule, and each direct
+   step carries one unfilled ring, exactly these declarations and no others. */
+const SEQUENCE = '.doc-sequence';
+const SEQUENCE_STEP = '.doc-sequence > .doc-sequence-step';
+const SEQUENCE_NODE_SEL = '.doc-sequence > .doc-sequence-step::before';
+const SEQUENCE_NODE = {
+  content: '""', position: 'absolute',
+  left: 'calc(-1 * var(--space-4) - 0.5px - 3.5px)', top: 'calc(var(--fs-caption) * var(--lh-tight) / 2 - 3.5px)',
+  width: '7px', height: '7px', 'box-sizing': 'border-box', border: '1px solid var(--fg-3)', 'border-radius': '50%',
+};
+const SEQUENCE_GAP = 'var(--space-5)';
+/* Paint that could draw a second rail or a segment on a sequence or a step, beside RAIL_PROPS. */
+const SEQUENCE_PAINT = /^(box-shadow|background|background-image|border-image(-[\w-]+)?|outline(-[\w-]+)?)$/;
 const RENDERED_MATRIX = 'tools/role-conformance.js';
 const TEXT_LINK = 'surface-text-link.css';
 /* A class token in a selector outside :is() / :where() / :not() / :has(). */
@@ -351,7 +370,8 @@ const NESTING_AT = /^@(media|supports|container|layer|document)\b/i;
 /* rules of a cleaned stylesheet fragment; offsets relative to `base` */
 function parseCss(text, base) {
   const rules = [];
-  const walk = (start, end, inKeyframes) => {
+  /* `at` is the chain of enclosing conditional at-rule preludes, or null at the top level. */
+  const walk = (start, end, inKeyframes, at) => {
     let i = start;
     while (i < end) {
       while (i < end && /[\s;}]/.test(text[i])) i++;
@@ -363,13 +383,14 @@ function parseCss(text, base) {
       const close = matchBrace(text, brace);
       const innerEnd = Math.min(close, end);
       if (prelude.startsWith('@')) {
-        if (NESTING_AT.test(prelude)) walk(brace + 1, innerEnd, false);
-        else if (/^@(-webkit-)?keyframes\b/i.test(prelude)) walk(brace + 1, innerEnd, true);
+        if (NESTING_AT.test(prelude)) walk(brace + 1, innerEnd, false, at ? `${at} ${prelude}` : prelude);
+        else if (/^@(-webkit-)?keyframes\b/i.test(prelude)) walk(brace + 1, innerEnd, true, at);
         /* @font-face, @page, @property … carry descriptors, not properties */
       } else {
         rules.push({
           selectors: splitList(prelude).map(normSelector).filter(Boolean),
           keyframes: inKeyframes,
+          at: at || null,
           offset: preludeOffset,
           decls: parseDeclarations(text.slice(brace + 1, innerEnd), base + brace + 1),
         });
@@ -610,6 +631,60 @@ function roleMatrix(ctx) {
     if ((hb || '').replace(/\s+/g, ' ').trim() !== HIERARCHY_RAIL.border || hi !== HIERARCHY_RAIL.inset) findings.push({ rule: 'R7', file: DOCUMENT,
       line: lineAt(starts, h.offset), selector: HIERARCHY, value: `${hb} · ${hi}`, expected: `${HIERARCHY_RAIL.border} · ${HIERARCHY_RAIL.inset}`,
       message: 'the hierarchy rail is not the registered 1px neutral rail' });
+  }
+  /* the ordered sequence: the hierarchy rail's own rule draws its rail; one registered
+     node per direct step; no other rule draws a rail or a node on a sequence or a step;
+     its steps --space-5 apart; kept whole in print */
+  const sequenceRails = rules.filter((r) => r.selectors.includes(SEQUENCE) && r.decls.some((d) => d.property === 'border-left'));
+  if (sequenceRails.length !== 1 || hierarchyRules.length !== 1 || sequenceRails[0] !== hierarchyRules[0]) {
+    findings.push({ rule: 'R7', file: DOCUMENT, selector: SEQUENCE, value: `${sequenceRails.length} rail rule(s)`,
+      line: sequenceRails[0] ? lineAt(starts, sequenceRails[0].offset) : undefined,
+      message: 'the ordered sequence\'s rail must be declared by the hierarchy rail\'s own rule, and by no other' });
+  }
+  const nodeRules = rules.filter((r) => r.selectors.includes(SEQUENCE_NODE_SEL));
+  const seqClass = (selector) => hasClass(selector, 'doc-sequence') || hasClass(selector, 'doc-sequence-step');
+  if (nodeRules.length !== 1) {
+    findings.push({ rule: 'R7', file: DOCUMENT, selector: SEQUENCE_NODE_SEL, value: String(nodeRules.length), message: 'the sequence node must be declared by exactly one rule' });
+  } else {
+    const n = nodeRules[0];
+    const got = {};
+    for (const d of n.decls) got[d.property] = normValue(d.value);
+    const keys = [...new Set([...Object.keys(SEQUENCE_NODE), ...Object.keys(got)])];
+    const drift = keys.filter((k) => got[k] !== SEQUENCE_NODE[k]);
+    if (drift.length || n.selectors.length !== 1 || n.at) findings.push({ rule: 'R7', file: DOCUMENT, line: lineAt(starts, n.offset), selector: SEQUENCE_NODE_SEL,
+      value: drift.map((k) => `${k}: ${got[k] ?? '(not declared)'}`).join('; ') || (n.at || n.selectors.join(', ')),
+      expected: Object.entries(SEQUENCE_NODE).map(([k, v]) => `${k}: ${v}`).join('; '),
+      message: 'the sequence node is not the registered unfilled ring, declared alone at the top level, with nothing else drawn on it' });
+  }
+  for (const r of rules) {
+    if (r === hierarchyRules[0] || nodeRules.includes(r)) continue;
+    for (const selector of r.selectors) {
+      if (!seqClass(selector)) continue;
+      const pseudo = /::?(before|after|marker)\b/.test(outsidePseudo(selector));
+      for (const d of r.decls) {
+        if (pseudo || RAIL_PROPS.test(d.property) || SEQUENCE_PAINT.test(d.property)) findings.push({ rule: 'R7', file: DOCUMENT,
+          line: lineAt(starts, d.offset), selector, property: d.property, value: d.value,
+          message: pseudo ? 'a rule other than the node rule draws on a sequence or a step\'s pseudo-element' : 'a rule other than the shared rail sets a rail or paints a line on a sequence or a step' });
+      }
+    }
+  }
+  const gapRules = rules.filter((r) => r.selectors.includes(SEQUENCE) && !r.at && r.decls.some((d) => d.property === 'gap' || d.property === 'row-gap'));
+  const gapValue = gapRules.length === 1 ? normValue(gapRules[0].decls.filter((d) => d.property === 'gap' || d.property === 'row-gap').pop().value) : null;
+  if (gapRules.length !== 1 || gapValue !== SEQUENCE_GAP) findings.push({ rule: 'R7', file: DOCUMENT, selector: SEQUENCE,
+    value: gapRules.length === 1 ? gapValue : `${gapRules.length} gap rule(s)`, expected: SEQUENCE_GAP, message: 'a sequence\'s steps sit --space-5 apart, declared by one rule' });
+  const printRules = rules.filter((r) => r.at && /^@media\s+print\b/i.test(r.at) && r.selectors.includes(SEQUENCE_STEP) &&
+    r.decls.some((d) => d.property === 'break-inside' && normValue(d.value) === 'avoid'));
+  if (printRules.length !== 1) findings.push({ rule: 'R7', file: DOCUMENT, selector: SEQUENCE_STEP, value: String(printRules.length), expected: '@media print { break-inside: avoid }',
+    message: 'in print a sequence step is kept whole, declared by exactly one rule' });
+  /* the rendered checker measures the same node and the same rhythm */
+  if (ctx.exists(RENDERED_MATRIX)) {
+    const m = /const SEQUENCE_NODE = \{\s*diameter:\s*([\d.]+),\s*ring:\s*([\d.]+),\s*color:\s*'([^']+)',\s*gap:\s*'([^']+)'\s*\};/.exec(ctx.read(RENDERED_MATRIX));
+    const want = { diameter: parseFloat(SEQUENCE_NODE.width), ring: parseFloat(SEQUENCE_NODE.border), color: SEQUENCE_NODE.border.split(' ').slice(2).join(' '),
+      gap: SEQUENCE_GAP.replace(/^var\((--[\w-]+)\)$/, '$1') };
+    const got = m ? { diameter: parseFloat(m[1]), ring: parseFloat(m[2]), color: m[3], gap: m[4] } : null;
+    const drift = got ? Object.keys(want).filter((k) => got[k] !== want[k]) : ['(absent)'];
+    if (drift.length) findings.push({ rule: 'R7', file: RENDERED_MATRIX, selector: 'SEQUENCE_NODE', value: got ? JSON.stringify(got) : '(absent)', expected: JSON.stringify(want),
+      message: 'the rendered checker measures a different sequence node or rhythm' });
   }
   const tsrc = ctx.exists(TREATMENTS) ? ctx.read(TREATMENTS) : '';
   const trule = parseCss(stripCss(tsrc), 0).filter((r) => r.selectors.includes('.surface-emphasis-rail') && r.decls.some((d) => d.property === 'border-left'));
@@ -950,11 +1025,15 @@ function selfTest(root) {
 
   {
     const doc = read('surface-document.css');
+    /* The first rule opening on the selector, alone or first in a list, whose body holds `from`. */
     const inRule = (selector, from, to) => {
-      const i = doc.indexOf(`\n${selector} {`);
-      const j = doc.indexOf('}', i);
-      if (i < 0 || !doc.slice(i, j).includes(from)) throw new Error(`self-test anchor missing: ${selector} ${from}`);
-      return { 'surface-document.css': doc.slice(0, i) + doc.slice(i, j).replace(from, to) + doc.slice(j) };
+      for (let i = doc.indexOf(`\n${selector}`); i >= 0; i = doc.indexOf(`\n${selector}`, i + 1)) {
+        const after = doc.slice(i + 1 + selector.length, i + 3 + selector.length);
+        if (after !== ' {' && after !== ',\n') continue;
+        const j = doc.indexOf('}', i);
+        if (doc.slice(i, j).includes(from)) return { 'surface-document.css': doc.slice(0, i) + doc.slice(i, j).replace(from, to) + doc.slice(j) };
+      }
+      throw new Error(`self-test anchor missing: ${selector} ${from}`);
     };
     const allR7 = (got) => got.length > 0 && got.every((k) => k.startsWith('R7 '));
     const body = added(inRule('.doc-body', 'font-size: var(--fs-body)', 'font-size: var(--fs-small)'));
@@ -1010,6 +1089,30 @@ function selfTest(root) {
       allR7(hierarchyLater) && hierarchyLater.length === 1 && allR7(quoteLonghand) && quoteLonghand.length === 1 && allR7(whereRecolor) && whereRecolor.length === 1,
       'emphasis: registered accent + block parity (2); hierarchy (1); second hierarchy rule (1); longhand (1); :where() recolor (1)',
       { emphasisNeutral, hierarchyMagenta, hierarchyLater, quoteLonghand, whereRecolor });
+
+    const shared = '.doc-hierarchy,\n.doc-sequence {';
+    const printRule = '.doc-sequence > .doc-sequence-step { break-inside: avoid; }';
+    const nodeSel = '.doc-sequence > .doc-sequence-step::before';
+    const nodeJs = 'const SEQUENCE_NODE = { diameter: 7,';
+    if (!doc.includes(shared) || !doc.includes(printRule) || !read('tools/role-conformance.js').includes(nodeJs)) throw new Error('self-test anchor missing: sequence rules');
+    const seqOwnRail = added({ 'surface-document.css': doc.replace(shared, '.doc-hierarchy {') + '\n.doc-sequence { padding-left: var(--space-4); border-left: 1px solid var(--line-2); }\n' });
+    const nodeFill = added(inRule(nodeSel, 'border-radius: 50%;', 'border-radius: 50%;\n  background: var(--fg-3);'));
+    const nodeAccent = added(inRule(nodeSel, 'border: 1px solid var(--fg-3)', 'border: 1px solid var(--ask-emphasis-magenta)'));
+    const nodeLarge = added(inRule(nodeSel, 'width: 7px', 'width: 9px'));
+    const nodeGlow = added(append('surface-document.css', `${nodeSel} { box-shadow: 0 0 4px var(--ask-emphasis-magenta); }`));
+    const stepSegment = added(append('surface-document.css', '.doc-sequence > .doc-sequence-step { border-left: 1px solid var(--line-2); }'));
+    const stepAfter = added(append('surface-document.css', '.doc-sequence-step::after { content: ""; }'));
+    const stepShadow = added(append('surface-document.css', '.doc-sequence > .doc-sequence-step { box-shadow: -17px 0 0 var(--line-2); }'));
+    const gapDrift = added(inRule('.doc-sequence', 'gap: var(--space-5)', 'gap: var(--space-3)'));
+    const printGone = added({ 'surface-document.css': doc.replace(printRule, '') });
+    const nodeJsDrift = added({ 'tools/role-conformance.js': read('tools/role-conformance.js').replace(nodeJs, 'const SEQUENCE_NODE = { diameter: 9,') });
+    record('R7 ordered sequence: a rail of its own (not the hierarchy rail\'s rule, and two rail declarations off it), a filled node, an accented node, a 9px node, a second node rule adding a glow, a rail segment on a step, a step ::after, a shadow drawn as a segment, a --space-3 rhythm, no print rule and a drifted rendered node each fail',
+      allR7(seqOwnRail) && seqOwnRail.length === 3 && allR7(nodeFill) && nodeFill.length === 1 && allR7(nodeAccent) && nodeAccent.length === 1 &&
+      allR7(nodeLarge) && nodeLarge.length === 1 && allR7(nodeGlow) && nodeGlow.length === 1 && allR7(stepSegment) && stepSegment.length === 1 &&
+      allR7(stepAfter) && stepAfter.length === 1 && allR7(stepShadow) && stepShadow.length === 1 && allR7(gapDrift) && gapDrift.length === 1 && allR7(printGone) && printGone.length === 1 &&
+      allR7(nodeJsDrift) && nodeJsDrift.length === 1,
+      'own rail (3); fill (1); accent (1); 9px (1); second node rule (1); segment (1); ::after (1); shadow segment (1); rhythm (1); print (1); rendered node (1)',
+      { seqOwnRail, nodeFill, nodeAccent, nodeLarge, nodeGlow, stepSegment, stepAfter, stepShadow, gapDrift, printGone, nodeJsDrift });
 
     const linkSrc = read('surface-text-link.css');
     const hoverLost = added({ 'surface-text-link.css': linkSrc.replace('.surface-text-link:hover  { opacity: 1;    text-decoration-color: var(--ask-emphasis-magenta); }', '.surface-text-link:hover  { opacity: 1;    text-decoration-color: var(--fg-1); }') });

@@ -7,6 +7,7 @@
 <meta name="description" content="Regression fixture for tools/role-conformance.js: a conforming specimen of the document-register roles must pass, and each deliberately wrong mapping must fail with exactly its own reason codes.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/role-conformance-fixture.html
      Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/role-conformance-fixture.html
+     and again with --media print, where a case's data-expect-print replaces its data-expect.
      The page judges each case's resting (static) codes itself. The C9 link-state codes need real pointer and
      keyboard input, so only the headless runner gives the full verdict. -->
 <link rel="stylesheet" href="../colors_and_type.css">
@@ -87,6 +88,36 @@
   .fx-row { display: flex; gap: var(--space-3); align-items: center; }
   /* A consumer override the rendered check must catch: it recolors the quotation rail. */
   .fx-override-quote { border-left-color: var(--line-1); }
+  /* C16: consumer overrides of the ordered sequence the rendered check must catch. Each reaches only its own control. */
+  [data-control="sequence rail made invisible"] .doc-sequence { border-left-color: transparent; }
+  [data-control="sequence rail in an accent"] .doc-sequence { border-left-color: var(--ask-emphasis-magenta); }
+  [data-control="sequence rail given a glow"] .doc-sequence { box-shadow: -2px 0 6px var(--ask-emphasis-magenta); }
+  [data-control="sequence steps at a group's rhythm"] .doc-sequence { gap: var(--space-3); }
+  [data-control="sequence whose box ends before its last step"] .doc-sequence { height: 72px; }
+  [data-control="step that moves its label down"] .doc-sequence-step { padding-top: var(--space-3); }
+  [data-control="step drawn with a rail of its own"] .doc-sequence-step { border-left: 1px solid var(--line-2); }
+  [data-control="step drawing a rail segment beside it"] .doc-sequence-step::after { content: ""; position: absolute; left: -17px; top: 0; bottom: 0; border-left: 1px solid var(--line-2); }
+  [data-control="node removed"] .doc-sequence-step::before { content: none; }
+  [data-control="node given a fill"] .doc-sequence-step::before { background: var(--fg-3); }
+  [data-control="node given a glow"] .doc-sequence-step::before { box-shadow: 0 0 6px var(--ask-emphasis-magenta); }
+  [data-control="node in an accent"] .doc-sequence-step::before { border-color: var(--ask-emphasis-magenta); }
+  [data-control="node drawn 9px wide"] .doc-sequence-step::before { width: 9px; height: 9px; }
+  [data-control="node drawn square"] .doc-sequence-step::before { border-radius: 0; }
+  [data-control="node moved by a transform"] .doc-sequence-step::before { transform: translateX(4px); }
+  [data-control="node off the rail"] .doc-sequence-step::before { left: -18px; }
+  [data-control="sequence in a closed disclosure whose node is filled"] .doc-sequence-step::before { background: var(--fg-3); }
+  @media print { [data-control="step allowed to break in print"] .doc-sequence > .doc-sequence-step { break-inside: auto; } }
+  [data-control="node moved by a margin"] .doc-sequence-step::before { margin-left: 6px; }
+  [data-control="label set lower by its padding"] .doc-sequence-step > .doc-label { padding-top: 6px; }
+  [data-control="step drawing a rail in its shadow"] .doc-sequence-step { box-shadow: -17px 0 0 0 var(--ask-emphasis-magenta); }
+  [data-control="step drawing a line in its background"] .doc-sequence-step { background-image: linear-gradient(var(--line-2), var(--line-2)); background-size: 1px 100%; background-repeat: no-repeat; }
+  [data-control="step given an outline"] .doc-sequence-step { outline: 1px solid var(--line-2); }
+  [data-control="sequence rail drawn again in its background"] .doc-sequence { background-image: linear-gradient(var(--line-2), var(--line-2)); background-size: 1px 100%; background-repeat: no-repeat; }
+  [data-control="sequence drawing a second rail after it"] .doc-sequence { position: relative; }
+  [data-control="sequence drawing a second rail after it"] .doc-sequence::after { content: ""; position: absolute; left: 4px; top: 0; bottom: 0; border-left: 1px solid var(--line-2); }
+  [data-control="steps spaced by a margin of their own"] .doc-sequence-step { margin-bottom: var(--space-3); }
+  [data-control="a last step whose body runs past the rail"] .doc-sequence-step:last-child { height: 20px; }
+  @media print { [data-control="step kept whole only in columns"] .doc-sequence > .doc-sequence-step { break-inside: avoid-column; } }
 </style>
 </head>
 <body>
@@ -195,6 +226,11 @@ keeps the one violet rail</pre>
       <li class="doc-body">An item with no label takes no rail.</li>
     </ul>
     <p class="doc-body">Words with <span class="surface-scope-underline">a neutral scope underline</span> keep their color, and <span class="surface-scope-underline">a phrase holding <a class="surface-text-link" href="#controls">a link</a> keeps the link's own line</span> above the scope line.</p>
+    <ol class="doc-sequence" aria-label="Three steps of a sample sequence">
+      <li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><h3 class="doc-subsection-title">First</h3><p class="doc-body">An ordered sequence on the hierarchy rail's geometry, a ring at each label line.</p></li>
+      <li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><h3 class="doc-subsection-title">Second</h3><p class="doc-body">Its steps sit --space-5 apart.</p></li>
+      <li class="doc-sequence-step doc-group"><p class="doc-label">step 3</p><h3 class="doc-subsection-title">Third</h3><p class="doc-body">The rail runs through the last step's body.</p></li>
+    </ol>
     <div class="doc-table-scroll">
       <table class="doc-table">
         <thead><tr><th class="doc-label">item</th><th class="doc-label">statements</th></tr></thead>
@@ -896,6 +932,114 @@ another</pre></div></div>
     <div data-control="scope underline set inside a link" data-expect="C15.attach">
       <p class="doc-body">See <a class="surface-text-link" href="#controls">the <span class="surface-scope-underline">marked words</span></a>.</p>
     </div>
+    <div data-control="sequence rail made invisible" data-expect="C16.rail">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence rail in an accent" data-expect="C16.rail">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence rail given a glow" data-expect="C16.rail">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence steps at a group's rhythm" data-expect="C16.gap">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence composed with the hierarchy rail" data-expect="C16.hierarchy">
+      <ol class="doc-sequence doc-hierarchy"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="a loose item in a sequence" data-expect="C16.step">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-group"><p class="doc-label">step 2</p><p class="doc-body">An item that is not a step.</p></li></ol>
+    </div>
+    <div data-control="a sequence step outside a sequence" data-expect="C16.step">
+      <ul><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">A step in an ordinary list.</p></li></ul>
+    </div>
+    <div data-control="sequence whose box ends before its last step" data-expect="C16.reach">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">A body the rail no longer reaches.</p></li></ol>
+    </div>
+    <div data-control="sequence whose content overflows its width" data-expect="C16.overflow">
+      <div style="overflow-x: auto; padding-left: var(--space-2)"><ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body" style="white-space: nowrap">A body held on one line long enough to run past the right edge of any column this fixture is checked in.</p></li></ol></div>
+    </div>
+    <div data-control="sequence clipped at its rail" data-expect="C16.clearance">
+      <div style="overflow: hidden"><ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its node is cut at the box's left edge.</p></li></ol></div>
+    </div>
+    <div data-control="step that does not open on its label" data-expect="C16.label">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-body">A body before its label.</p><p class="doc-label">step 1</p></li></ol>
+    </div>
+    <div data-control="step that moves its label down" data-expect="C16.center">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its label sits below the node.</p></li></ol>
+    </div>
+    <div data-control="step drawn with a rail of its own" data-expect="C16.center C16.segment">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">A segment on the step, which also moves its node.</p></li></ol>
+    </div>
+    <div data-control="step drawing a rail segment beside it" data-expect="C16.segment">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">A segment drawn over the rail.</p></li></ol>
+    </div>
+    <div data-control="node removed" data-expect="C16.node">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node given a fill" data-expect="C16.fill">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node given a glow" data-expect="C16.fill">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node in an accent" data-expect="C16.color">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node drawn 9px wide" data-expect="C16.center C16.ring">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">A larger ring, which also moves its center.</p></li></ol>
+    </div>
+    <div data-control="node drawn square" data-expect="C16.ring">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node moved by a transform" data-expect="C16.ring">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="node off the rail" data-expect="C16.center">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="step allowed to break in print" data-expect="" data-expect-print="C16.print">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">On screen nothing differs; under print media the step may break.</p></li></ol>
+    </div>
+    <div data-control="node moved by a margin" data-expect="C16.center C16.ring">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="label set lower by its padding" data-expect="C16.center">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="step drawing a rail in its shadow" data-expect="C16.segment">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="step drawing a line in its background" data-expect="C16.segment">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="step given an outline" data-expect="C16.segment">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence rail drawn again in its background" data-expect="C16.rail">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence drawing a second rail after it" data-expect="C16.rail">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="steps spaced by a margin of their own" data-expect="C16.gap">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="a last step whose body runs past the rail" data-expect="C16.reach">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">A body held in a step set too short for it, so it runs on below the end of the rail.</p></li></ol>
+    </div>
+    <div data-control="a right-to-left sequence" data-expect="C16.direction" dir="rtl">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="step kept whole only in columns" data-expect="" data-expect-print="C16.print">
+      <ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol>
+    </div>
+    <div data-control="sequence in a closed disclosure, judged open" data-expect="">
+      <details><summary>Steps</summary><ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li><li class="doc-sequence-step doc-group"><p class="doc-label">step 2</p><p class="doc-body">Its body.</p></li></ol></details>
+    </div>
+    <div data-control="sequence in a closed disclosure whose node is filled" data-expect="" data-expect-open="C16.fill">
+      <details><summary>Steps</summary><ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol></details>
+    </div>
     <div data-control="two labeled ranges with no buffer" data-expect="C14.buffer">
       <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>
     </div>
@@ -959,9 +1103,13 @@ another</pre></div></div>
       [state, name, detail].forEach(function (t) { var td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
       rows.appendChild(tr);
     };
-    var judge = function (name, result, expect, expectToken) {
-      var expected = sortJoin(expect.split(/\s+/).filter(Boolean));
+    /* data-expect-print, where present, replaces data-expect under print media; data-expect-open names
+       the codes only the runner returns, once it has opened a case's disclosures and judged what they hold. */
+    var printing = matchMedia('print').matches;
+    var judge = function (name, result, expect, expectToken, expectOpen) {
+      var expected = sortJoin((expect + ' ' + (expectOpen || '')).split(/\s+/).filter(Boolean));
       var expectedStatic = sortJoin(expect.split(/\s+/).filter(function (k) { return k && k.indexOf('C9.') !== 0; }));
+      var expectedRunner = expectOpen === undefined ? undefined : sortJoin(expect.split(/\s+/).filter(function (k) { return k.indexOf('C9.') === 0; }).concat(expectOpen.split(/\s+/)).filter(Boolean));
       var staticGot = sortJoin(result.findings.map(function (f) { return f.reason; }));
       var detailPass = true, detail = null;
       if (expectToken) {
@@ -970,17 +1118,20 @@ another</pre></div></div>
         detail = 'C0.token names ' + (named || 'nothing') + '; expected ' + expectToken;
       }
       var staticPass = staticGot === expectedStatic && detailPass;
-      cases.push({ case: name, expected: expected, expectedStatic: expectedStatic, staticGot: staticGot, staticPass: staticPass, detailPass: detailPass, detail: detail,
-        interactionJudged: expected !== expectedStatic, findings: result.findings, profiles: result.profiles });
+      var c = { case: name, expected: expected, expectedStatic: expectedStatic, staticGot: staticGot, staticPass: staticPass, detailPass: detailPass, detail: detail,
+        interactionJudged: expected !== expectedStatic, findings: result.findings, profiles: result.profiles };
+      if (expectedRunner !== undefined) c.expectedRunner = expectedRunner;
+      cases.push(c);
       row(staticPass ? 'PASS' : 'FAIL', name, 'resting: expected ' + (expectedStatic || 'none') + ' · got ' + (staticGot || 'none') +
-        (expected !== expectedStatic ? ' · link states (runner only): ' + expected.split(' ').filter(function (k) { return k.indexOf('C9.') === 0; }).join(' ') : '') +
+        (expected !== expectedStatic ? ' · runner only: ' + expected.split(' ').filter(function (k) { return k && expectedStatic.split(' ').indexOf(k) < 0; }).join(' ') : '') +
         (detail ? ' · ' + detail : ''));
     };
     judge('conforming specimen', ASKRoleConformance.check({ scope: '#conforming', unmapped: false }), '', null);
     document.querySelectorAll('[data-control]').forEach(function (el) {
       var profiles = el.dataset.profiles ? JSON.parse(el.dataset.profiles) : [];
       var assignment = el.dataset.assignment ? JSON.parse(el.dataset.assignment) : null;
-      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false, profiles: profiles, assignment: assignment }), el.dataset.expect, el.dataset.expectToken || null);
+      var expect = printing && el.dataset.expectPrint !== undefined ? el.dataset.expectPrint : el.dataset.expect;
+      judge(el.dataset.control, ASKRoleConformance.check({ scope: el, unmapped: false, profiles: profiles, assignment: assignment }), expect, el.dataset.expectToken || null, el.dataset.expectOpen);
     });
     var failed = cases.filter(function (c) { return !c.staticPass; }).length;
     document.getElementById('overall').textContent = (failed ? 'RESTING FAIL: ' + failed + ' case(s)' : 'RESTING PASS') + ' · link states: run the headless runner';

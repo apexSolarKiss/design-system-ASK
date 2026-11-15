@@ -162,7 +162,7 @@
     <header class="doc-titled">
       <p class="doc-label">design system // document register · surface treatments</p>
       <h2 class="doc-title">Document register and surface treatments</h2>
-      <p class="doc-lede">Text roles, the space between them and the rails that carry depth; surfaces
+      <p class="doc-lede">Text roles, the space between them and the rails that carry depth and order; surfaces
         composed from three axes; disclosure and content emphasis. The owner demonstrates the rules it
         expects its consumers to follow — including on its own key pages.</p>
     </header>
@@ -647,6 +647,49 @@
       </div>
     </section>
 
+    <!-- ORDERED SEQUENCE — successive stages of one run, on the hierarchy rail's
+         geometry. One rule draws both rails and the meaning differs: a level
+         belongs inside the level above, a step comes after the step before.
+         Each direct step opens on its label and carries one unfilled ring on
+         the rail at that label's line; the rail runs through the last step. -->
+    <section class="doc-section" id="sequence">
+      <h2 class="doc-section-title">Ordered sequence</h2>
+      <p class="doc-body">An ordered sequence says "this comes after the step before." It draws the
+        hierarchy rail's rule at its inset, and its meaning is succession, not containment: a step is
+        not a level inside the one above it. Each step opens on its label, and a ring on the rail marks
+        that label's line. The ring is structure, unfilled and in the label's own color; it names no
+        state and no progress. One rail runs the whole sequence, through the body of its last step, and
+        on paper each step stays whole on its sheet.</p>
+      <ol class="doc-sequence" id="sequence-sample" aria-label="The five steps of a sample sequence">
+        <li class="doc-sequence-step doc-group">
+          <p class="doc-label">step 1</p>
+          <h3 class="doc-subsection-title">Collect</h3>
+          <p class="doc-body">The material for one decision is gathered in one place.</p>
+        </li>
+        <li class="doc-sequence-step doc-group">
+          <p class="doc-label">step 2</p>
+          <h3 class="doc-subsection-title">Sort</h3>
+          <p class="doc-body">Each item is placed with the others of its kind.</p>
+        </li>
+        <li class="doc-sequence-step doc-group">
+          <p class="doc-label">step 3</p>
+          <h3 class="doc-subsection-title">Compare</h3>
+          <p class="doc-body">The options are set side by side against the same questions.</p>
+        </li>
+        <li class="doc-sequence-step doc-group">
+          <p class="doc-label">step 4</p>
+          <h3 class="doc-subsection-title">Decide</h3>
+          <p class="doc-body">One option is chosen, with the reason it was chosen.</p>
+        </li>
+        <li class="doc-sequence-step doc-group">
+          <p class="doc-label">step 5</p>
+          <h3 class="doc-subsection-title">Record</h3>
+          <p class="doc-body">The decision and its reason are kept where the next reader will look.
+            A step's body may run to several sentences; the rail runs beside all of it.</p>
+        </li>
+      </ol>
+    </section>
+
     <!-- PEER PARTS INSIDE A PART — a part whose content is a run of substantial
          parts holds them in a nested .doc-flow. The flow leads by --space-4, as a
          nested section does, then sets its peers --space-8 apart, the document
@@ -746,7 +789,8 @@ headers</pre><pre class="doc-pre-part" data-lead-lines="1">body</pre></div>
     <!-- SET-APART PASSAGES — one rail geometry, a color per role, every outer rail an
          emphasis accent: a quotation (represented voice) on the violet rail, the
          document's own callout on the magenta emphasis rail, a preformatted block on
-         the magenta block rail. Neutral is the inner hierarchy rail only. A passage
+         the magenta block rail. Neutral rails carry structure: hierarchy expresses
+         containment and depth, while the ordered sequence expresses succession. A passage
          inside a railed passage draws no second rail, so a quoted code excerpt keeps
          the one violet rail. The quotation and the callout are body-sized: the rail,
          not a size step, sets them apart. -->
@@ -759,8 +803,9 @@ headers</pre><pre class="doc-pre-part" data-lead-lines="1">body</pre></div>
         presented as someone's — so its rail is violet. The document's own thesis, posed question or
         contrast within its argument is an authorial callout, so its rail is magenta; one that frames a
         whole part is the section framing, below. A block's line structure is its
-        content, so its rail is magenta too. Neutral is structure only: the hierarchy rail that
-        structures a section, a list or a block. Who is speaking is the consuming surface's assignment, never the element, the font or a
+        content, so its rail is magenta too. Neutral rails carry structure: the hierarchy rail
+        structures a section, list or block, while the ordered sequence carries succession through a run of steps.
+        Who is speaking is the consuming surface's assignment, never the element, the font or a
         pair of quotation marks.</p>
       <blockquote class="doc-quote" id="passage-quote">
         <p>A short statement presented as someone else's words is a quotation, on the violet rail.</p>
@@ -837,6 +882,7 @@ one passage behind the magenta block rail</pre>
               </ul>
             </li>
             <li><a class="doc-toc-link surface-text-link" href="#depth">Hierarchy rail</a></li>
+            <li><a class="doc-toc-link surface-text-link" href="#sequence">Ordered sequence</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#nested-flow">Peer parts inside a part</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#structured">Structured text</a></li>
             <li><a class="doc-toc-link surface-text-link" href="#passage">Set-apart passages</a></li>

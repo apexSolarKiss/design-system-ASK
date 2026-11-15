@@ -23,7 +23,7 @@
                   assignment fails C0 when this is omitted.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C15) and a reason
+   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C16) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -32,7 +32,7 @@
    runner drives them through ASKRoleConformance.interaction and adds its C9
    findings to the same report. The runner also opens every disclosure in
    scope and, after its link-state pass, judges there what each collapsed C12,
-   C13, C14 or C15 element presents (see C12 to C15).
+   C13, C14, C15 or C16 element presents (see C12 to C16).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -381,13 +381,52 @@
                         the runner once it is open, as C12's elements are; one
                         still collapsed then fails C15.line. A rendered or
                         held underline counts as a governed element
+     C16 sequence       (surface-document) applies to every .doc-sequence and
+                        .doc-sequence-step. A right-to-left sequence is not yet
+                        served and fails C16.direction alone. A sequence draws
+                        the hierarchy rail's geometry, the 1px solid --line-2
+                        rule at the --space-4 inset, as its own plain border,
+                        its one rail: no border image, background line,
+                        shadow, filter, clip, mask, outline or ::before or
+                        ::after of the sequence restyles, cuts or doubles it
+                        (C16.rail). It sets its steps --space-5 apart in one
+                        column, and no step adds a margin to that (C16.gap); it
+                        carries no .doc-hierarchy, whose meaning is containment
+                        (C16.hierarchy); and it holds only steps, at least
+                        one, as a step sits only directly in a sequence
+                        (C16.step). Its content stays inside its width
+                        (C16.overflow). Each step opens on its .doc-label
+                        (C16.label); draws no border, shadow, background line,
+                        border image, outline or ::after on its own box and
+                        carries no .doc-hierarchy, so the sequence keeps one
+                        continuous rail (C16.segment); and lies, with any
+                        content overflowing it, wholly within the sequence's
+                        box, or one fragment of it, so the rail reaches it,
+                        the last step's body included (C16.reach). Its ::before
+                        is its node: drawn and visible (C16.node), a 7px
+                        round ring, 1px solid, placed by the step and moved by
+                        no margin or transform (C16.ring), in --fg-3
+                        (C16.color), with no fill, image, glow, shadow, filter,
+                        clip, mask or outline (C16.fill), centered within 0.5px
+                        on the rail's rule and on the first line of the step's
+                        label, read from the label's content box (C16.center),
+                        and held whole by every clipping ancestor and the page,
+                        3px left of the sequence's border box (C16.clearance).
+                        Under print media a step computes break-inside: avoid
+                        or avoid-page, which hold on paper, never avoid-column
+                        alone (C16.print), and one broken across two fragments
+                        although a single one of its multi-column container
+                        would hold it fails C16.split. A sequence a closed
+                        disclosure holds is judged open by the runner, as
+                        C12's elements are; one still collapsed then fails
+                        C16.rail
 
    STATUS
      pass       no finding, and at least one governed element was checked
      fail       one or more findings
      vacuous    no governed element in scope: nothing was proven. A page that
                 has not adopted the register is not a passing page.
-     incomplete no finding, but C12 to C15 elements collapsed in closed
+     incomplete no finding, but C12 to C16 elements collapsed in closed
                 disclosures (listed under collapsed) await the runner's
                 open-state judgment, so nothing yet proves what they present.
    Neither vacuous nor incomplete is a pass.
@@ -400,9 +439,21 @@
    LIMITS
    - check() alone proves the resting state. The C9 states are proven only
      when the runner drives them.
+   - C16 reads a node from its step's ::before and the step's first fragment,
+     its containing block; it does not measure the ring's pixels. It holds the
+     owner's literal 7px, 1px and 0.5px, not values the page could redefine,
+     and --space-5 through the owner's token value, which C0 holds. Under
+     emulated print media (the runner's --media print) it proves what each
+     step computes; it does not paginate. Fragments it sees are a multi-column
+     container's: C16.split and the fragment-aware C16.reach judge those, and
+     where a printed sheet breaks is shown by printing, not checked here.
+   - C16 judges the sequence's own box and pseudo-elements and each step's own
+     box and ::after. It does not read paint inside a step's content: a mark a
+     consumer draws on a label's or a heading's own pseudo-element, or on a
+     child of the step, is outside it.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
-   - check() alone does not judge what a collapsed C12, C13, C14 or C15 element
+   - check() alone does not judge what a collapsed C12, C13, C14, C15 or C16 element
      presents: it lists the element under collapsed and never reports pass. The runner
      judges every element held this way, once it has opened every disclosure
      in scope and judged the link states; each ends in a judgment or a
@@ -412,7 +463,8 @@
      C12.note for a note, C12.rail for a row, an item, a list or a list's
      key or value, C12.range for an annotation range, C13.box for a
      bordered label or an emphasis chip, C14.rail for a neutral
-     labeled range, and C15.line for a neutral scope underline. One
+     labeled range, C15.line for a neutral scope underline, and C16.rail for an
+     ordered sequence. One
      that left the page as its disclosure opened fails it
      marked "removed", since what it presents cannot be proven. A page that
      changes a disclosure's content after that judgment is outside this
@@ -585,6 +637,13 @@
      quotation, callout and treatment-rail colors here to the owner's rules. */
   const RAIL = { width: 2, style: 'solid', inset: '--space-4' };
   const HIERARCHY_RAIL = { width: 1, style: 'solid', color: 'var(--line-2)', inset: '--space-4' };
+  /* C16: the ordered sequence draws the hierarchy rail's geometry, and each direct step one
+     unfilled ring of this diameter and ring width, in this color, centered on the rail and on
+     its label's first line; its steps sit this space apart. check-type-roles.mjs R7 holds these
+     equal to surface-document.css. */
+  const SEQUENCE_NODE = { diameter: 7, ring: 1, color: 'var(--fg-3)', gap: '--space-5' };
+  const SEQUENCE = '.doc-sequence';
+  const SEQUENCE_STEP = '.doc-sequence-step';
   const RAIL_COLOR = {
     quotation:    { sel: '.doc-quote',             colors: ['var(--ask-emphasis-violet)'] },
     preformatted: { sel: '.doc-pre',               colors: ['var(--ask-emphasis-magenta)'] },
@@ -848,6 +907,7 @@
     'doc-annotation-range': ['an annotation range', 'range', 'computed'], 'surface-labeled-range': ['a labeled range', 'rail', 'computed', 'C14'],
     'surface-emphasis-chip': ['an emphasis chip', 'box', 'computed', 'C13'], 'surface-bordered-label': ['a bordered label', 'box', 'computed', 'C13'],
     'surface-scope-underline': ['a scope underline', 'line', 'computed', 'C15'],
+    'doc-sequence': ['an ordered sequence', 'rail', 'computed', 'C16'],
     'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
   const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
 
@@ -1667,6 +1727,126 @@
       underlined(el, add);
     }
 
+    /* C16 ordered sequence: the hierarchy rail's geometry, one continuous rail through its last
+       step, and one unfilled ring per direct step, centered on the rail and on the label line */
+    const printing = matchMedia('print').matches;
+    const none = (v) => !v || v === 'none';
+    function sequenced(el, add) {
+      const c16 = (reason, e, detail) => add('C16', reason, e, { basis: 'computed', ...detail });
+      const c = getComputedStyle(el);
+      if (c.direction === 'rtl') { c16('direction', el, { message: 'a right-to-left sequence is not yet served: its rail and nodes are drawn on the left, so nothing else here is judged' }); return; }
+      const own = hierarchyRailOf(el);
+      if (own !== 'rail') c16('rail', el, { message: own === 'none' ? 'an ordered sequence draws no rail'
+        : `the sequence rail is the hierarchy rail's geometry, 1px solid ${HIERARCHY_RAIL.color} at the ${HIERARCHY_RAIL.inset} inset (its ${own} differs)` });
+      else {
+        const sb = getComputedStyle(el, '::before'), sa = getComputedStyle(el, '::after');
+        const drawsOwn = (q) => !(none(q.content) || q.content === 'normal') && q.display !== 'none';
+        if (!none(c.borderImageSource) || !none(c.boxShadow) || !none(c.backgroundImage) || !none(c.clipPath) || !none(c.maskImage || c.webkitMaskImage) || !none(c.filter) ||
+            (c.outlineStyle !== 'none' && px(c.outlineWidth) > TOL) || drawsOwn(sb) || drawsOwn(sa)) {
+          c16('rail', el, { message: 'the sequence rail is the list\'s plain 1px border, its one rail: no image, background line, shadow, glow, filter, clip, mask, outline or pseudo-element restyles, cuts or doubles it',
+            paint: { borderImage: c.borderImageSource, shadow: c.boxShadow, image: c.backgroundImage, clip: c.clipPath, mask: c.maskImage || c.webkitMaskImage, filter: c.filter, outline: c.outlineWidth + ' ' + c.outlineStyle, before: sb.content, after: sa.content } });
+        }
+      }
+      if (!/flex$/.test(c.display) || c.flexDirection !== 'column' || Math.abs(px(c.rowGap) - parseFloat(TOKENS[SEQUENCE_NODE.gap])) > TOL) {
+        c16('gap', el, { message: `a sequence sets its steps ${TOKENS[SEQUENCE_NODE.gap]} (${SEQUENCE_NODE.gap}) apart in one column`, display: c.display, direction: c.flexDirection, gap: c.rowGap });
+      }
+      if (el.matches('.doc-hierarchy')) c16('hierarchy', el, { message: 'an ordered sequence is not a hierarchy level: it shares the hierarchy rail\'s geometry and composes no .doc-hierarchy' });
+      const kids = [...el.children].filter(renders);
+      const steps = kids.filter((k) => k.matches(SEQUENCE_STEP));
+      for (const k of kids) if (!k.matches(SEQUENCE_STEP)) c16('step', k, { basis: 'syntax', message: 'an ordered sequence holds only its steps: each direct child carries .doc-sequence-step' });
+      if (!steps.length) c16('step', el, { basis: 'syntax', message: 'an ordered sequence holds its steps: no direct child carries .doc-sequence-step' });
+      /* Width is read where the sequence is one box: a fragmented sequence's scroll width spans its fragments. */
+      if ((!printing || el.getClientRects().length === 1) && el.scrollWidth > el.clientWidth + 1) {
+        c16('overflow', el, { message: 'a sequence\'s content overflows its width', scrollWidth: el.scrollWidth, clientWidth: el.clientWidth });
+      }
+      const frags = [...el.getClientRects()];
+      const bl = px(c.borderLeftWidth);
+      /* The fragment of the sequence a box sits in: the one that overlaps it horizontally and holds its top. */
+      const fragOf = (r) => frags.find((f) => r.left < f.right && r.right > f.left && r.top >= f.top - 0.5 && r.top <= f.bottom + 0.5);
+      /* A box the rail reaches: wholly inside one fragment of the sequence, top to bottom. */
+      const onRail = (r) => frags.some((f) => r.left < f.right && r.right > f.left && r.top >= f.top - 0.5 && r.bottom <= f.bottom + 0.5);
+      for (const k of steps) {
+        counts['doc-sequence-step'] = (counts['doc-sequence-step'] || 0) + 1;
+        const s = getComputedStyle(k);
+        const b = getComputedStyle(k, '::before');
+        const a = getComputedStyle(k, '::after');
+        const head = [...k.children].find(renders);
+        if (!head || !head.matches('.doc-label')) c16('label', k, { basis: 'syntax', message: 'a sequence step opens on its .doc-label, which its node marks' });
+        if (['Top', 'Right', 'Bottom', 'Left'].some((side) => drawn(s, side)) || k.matches('.doc-hierarchy') || !(none(a.content) || a.content === 'normal') ||
+            !none(s.boxShadow) || !none(s.backgroundImage) || !none(s.borderImageSource) || (s.outlineStyle !== 'none' && px(s.outlineWidth) > TOL)) {
+          c16('segment', k, { message: 'a step draws no rail and no mark of its own box: no border, shadow, background line, border image, outline or ::after; the sequence has one continuous rail, the list\'s own border, and one node per step',
+            border: ['Top', 'Right', 'Bottom', 'Left'].map((side) => s['border' + side + 'Width'] + ' ' + s['border' + side + 'Style']).join(' / '), after: a.content,
+            shadow: s.boxShadow, image: s.backgroundImage, borderImage: s.borderImageSource, outline: s.outlineWidth + ' ' + s.outlineStyle });
+        }
+        /* 5: the steps' spacing is the sequence's gap alone */
+        if ([s.marginTop, s.marginBottom].some((v) => Math.abs(px(v)) > TOL)) c16('gap', k, { message: `a step adds no margin of its own: the steps sit ${TOKENS[SEQUENCE_NODE.gap]} (${SEQUENCE_NODE.gap}) apart, the sequence's gap`, margin: s.marginTop + ' ' + s.marginBottom });
+        if (printing && !/^avoid(-page)?$/.test(s.breakInside)) c16('print', k, { message: 'in print a sequence step is kept whole, so its node, label and body travel together', breakInside: s.breakInside });
+        const parts = [...k.getClientRects()];
+        if (printing && parts.length > 1) {
+          let cols = null;
+          for (let p = k.parentElement; p && !cols; p = p.parentElement) { const ps = getComputedStyle(p); if (ps.columnCount !== 'auto' || ps.columnWidth !== 'auto') cols = p; }
+          const fits = cols ? parts.reduce((t, r) => t + r.height, 0) <= cols.clientHeight - px(getComputedStyle(cols).paddingTop) - px(getComputedStyle(cols).paddingBottom) + TOL : true;
+          if (fits) c16('split', k, { message: 'in print a step that fits on one sheet is not broken across two: its node would stand apart from part of its step', fragments: parts.length });
+        }
+        if (!parts.length) continue;
+        /* A step one fragment tall is judged to the end of what it holds, its overflowing content included. */
+        const extent = parts.length === 1 ? [{ left: parts[0].left, right: parts[0].right, top: parts[0].top, bottom: Math.max(parts[0].bottom, parts[0].top + k.clientTop + k.scrollHeight) }] : parts;
+        if (extent.some((r) => !onRail(r))) c16('reach', k, { message: 'the rail reaches every step: a step lies outside its sequence\'s box, past the end of its rail' });
+        /* the node */
+        const drawnNode = !(none(b.content) || b.content === 'normal') && b.display !== 'none' && b.visibility === 'visible' && parseFloat(b.opacity) >= 1;
+        if (!drawnNode) { c16('node', k, { message: 'a sequence step carries one node: its ::before draws a visible ring', content: b.content, display: b.display, visibility: b.visibility, opacity: b.opacity }); continue; }
+        const at = (v, want) => Math.abs(px(v) - want) <= TOL;
+        const ring = b.position === 'absolute' && s.position !== 'static' && b.boxSizing === 'border-box' && at(b.width, SEQUENCE_NODE.diameter) && at(b.height, SEQUENCE_NODE.diameter) &&
+          ['Top', 'Right', 'Bottom', 'Left'].every((side) => b['border' + side + 'Style'] === 'solid' && at(b['border' + side + 'Width'], SEQUENCE_NODE.ring)) &&
+          ['TopLeft', 'TopRight', 'BottomLeft', 'BottomRight'].every((corner) => b['border' + corner + 'Radius'] === '50%') &&
+          [b.transform, b.translate, b.rotate, b.scale].every(none) && [b.marginTop, b.marginRight, b.marginBottom, b.marginLeft].every((v) => Math.abs(px(v)) <= TOL);
+        if (!ring) c16('ring', k, { message: `a node is a ${SEQUENCE_NODE.diameter}px round ring, a ${SEQUENCE_NODE.ring}px solid border, placed by the step and moved by nothing else`,
+          got: { position: b.position, host: s.position, sizing: b.boxSizing, width: b.width, height: b.height, border: b.borderLeftWidth + ' ' + b.borderLeftStyle, radius: b.borderTopLeftRadius, transform: [b.transform, b.translate, b.rotate, b.scale].join(' / '), margin: [b.marginTop, b.marginRight, b.marginBottom, b.marginLeft].join(' ') } });
+        const want = probe(k, `border-left:1px solid ${SEQUENCE_NODE.color}`).border;
+        if (['Top', 'Right', 'Bottom', 'Left'].some((side) => b['border' + side + 'Color'] !== want)) c16('color', k, { message: `a node is drawn in the step label's own ${SEQUENCE_NODE.color}: never an accent, a state or another foreground`, got: b.borderLeftColor, expected: want });
+        if (!clear(b.backgroundColor) || !none(b.backgroundImage) || !none(b.boxShadow) || !none(b.filter) || !none(b.borderImageSource) || !none(b.maskImage || b.webkitMaskImage) ||
+            !none(b.clipPath) || (b.outlineStyle !== 'none' && px(b.outlineWidth) > TOL)) {
+          c16('fill', k, { message: 'a node is an unfilled ring: no fill, wash, image, glow, shadow, filter, clip, mask or outline, because it marks structure, not a status',
+            paint: { background: b.backgroundColor, image: b.backgroundImage, shadow: b.boxShadow, filter: b.filter, borderImage: b.borderImageSource, mask: b.maskImage || b.webkitMaskImage, clip: b.clipPath, outline: b.outlineWidth + ' ' + b.outlineStyle } });
+        }
+        /* Centered on the rail's rule and on the first line of the label the step opens on. The node's
+           box is placed from the step's first fragment, its containing block. */
+        const first = parts[0];
+        const f = fragOf(first);
+        const nodeL = first.left + k.clientLeft + px(b.left) + px(b.marginLeft), nodeT = first.top + k.clientTop + px(b.top) + px(b.marginTop);
+        const cx = nodeL + px(b.width) / 2, cy = nodeT + px(b.height) / 2;
+        /* Where no fragment of the sequence holds the step, the rail does not reach it (C16.reach) and
+           there is no rule to center the node on. */
+        const railX = f ? f.left + bl / 2 : null;
+        let lineY = null;
+        /* The label's first line starts at its content box: below its own top border and padding. */
+        if (head && head.matches('.doc-label')) { const hr = head.getClientRects()[0]; const hs = getComputedStyle(head); if (hr) lineY = hr.top + head.clientTop + px(hs.paddingTop) + px(hs.lineHeight) / 2; }
+        if (railX !== null && (Math.abs(cx - railX) > 0.5 || (lineY !== null && Math.abs(cy - lineY) > 0.5))) {
+          c16('center', k, { message: 'a node is centered on the rail\'s rule and on the first line of the step\'s label', dx: +(cx - railX).toFixed(2), dy: lineY === null ? null : +(cy - lineY).toFixed(2) });
+        }
+        /* Its box is clear when every clipping ancestor and the page hold it. */
+        let cut = null, scrolled = 0;
+        for (let p = k.parentElement; p && !cut; p = p.parentElement) {
+          const box = clipBox(p);
+          if (!box) continue;
+          scrolled += box.scrollLeft;
+          if ((box.x && (nodeL < box.x0 - TOL || nodeL + px(b.width) > box.x0 + box.w + TOL)) || (box.y && (nodeT < box.y0 - TOL || nodeT + px(b.height) > box.y0 + box.h + TOL))) cut = path(p);
+        }
+        if (!cut && (nodeL + scrolled + scrollX < -TOL || nodeT + scrollY < -TOL)) cut = 'the page';
+        if (cut) c16('clearance', k, { message: 'a node reaches ' + (SEQUENCE_NODE.diameter / 2 - 0.5) + 'px outside the sequence\'s border box, left of its rail: here ' + cut + ' cuts it', nodeLeft: +(nodeL + scrolled + scrollX).toFixed(2) });
+      }
+    }
+    for (const el of all(SEQUENCE_STEP)) {
+      if (!(el.parentElement && el.parentElement.matches(SEQUENCE))) add('C16', 'step', el, { basis: 'syntax', message: 'a sequence step is a direct child of its .doc-sequence: outside one it carries no node and sits on no rail' });
+    }
+    for (const el of all(SEQUENCE)) {
+      counts['doc-sequence'] = (counts['doc-sequence'] || 0) + 1;
+      if (collapsed(el)) { hold(el, (sink) => { if (renders(el)) sequenced(el, sink); }, heldHere.has(el) ? undefined : 'doc-sequence'); governed++; continue; }
+      if (!renders(el)) continue;   /* it renders no box: nothing is drawn to judge */
+      governed++;
+      sequenced(el, add);
+    }
+
     for (const [el, h] of heldHere) held.set(el, h);
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
     return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, assignment: assignmentReport, unmapped, collapsed: collapsedHere };
@@ -1678,7 +1858,7 @@
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
      read() on each governed link that takes focus; then judge(records).
-     Last, it calls collapsed(), which judges the C12, C13, C14 and C15
+     Last, it calls collapsed(), which judges the C12, C13, C14, C15 and C16
      elements a resting check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
@@ -1695,7 +1875,7 @@
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
     },
-    /* With every disclosure in scope open, judge what each C12 to C15 element a resting check held
+    /* With every disclosure in scope open, judge what each C12 to C16 element a resting check held
        presents, wherever it now sits, once the animations on it, inside it and on its ancestors
        have finished: its findings carry state "open". An element still collapsed fails its held
        reason marked "collapsed"; one no longer on the page fails it marked "removed". */
