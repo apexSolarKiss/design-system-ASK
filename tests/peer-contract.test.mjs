@@ -29,6 +29,10 @@
       same bytes twice
    E  the specimen's game reading (example content, not the contract): the dominance and equilibria
       its prose states
+   N  node rings: one equal ring per node, centered on its vertex; every supported label's measured
+      ink leaves the ring's padding clear inside it; every connector stops the ring's gap outside it,
+      a neutral line beginning and ending on dash ink; a carrier without a finite ink radius is
+      malformed, and a label whose ink would crowd its ring is LABEL_RING_FIT
    X  negative controls: each check fails for its intended reason on a mutated copy of the engine,
       the exporter or a relation source */
 import vm from 'node:vm';
@@ -409,6 +413,83 @@ const dominated = (M) => {
   check('E6 control: the uniform mix is not an equilibrium of the all-directed square', !isEquilibrium(O, [F(1n, 4n), F(1n, 4n), F(1n, 4n), F(1n, 4n)]));
 }
 
+// ------------------------------------------------------------------ N node rings
+
+const RING = P.GEOMETRY.ring;
+const num = (s) => s.match(/-?[\d.]+/g).map(Number);
+/* each ring's center, by node id */
+const ringsOf = (svg) => [...svg.matchAll(/<circle class="peer-ring" data-node="([^"]+)" cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"\/>/g)]
+  .map((m) => ({ id: m[1], x: +m[2], y: +m[3], r: +m[4] }));
+/* a neutral dash fit's distance from "an even number of whole periods plus one dash" */
+const fitMiss = (len, d, g) => Math.abs(2 * Math.round((len - d) / (2 * (d + g))) * (d + g) + d - len);
+/* how far each connector end sits from the vertex it leaves or reaches, and each neutral dash fit */
+function connectorEnds(engine, spec, options = {}) {
+  const svg = engine.render(spec, { glyphs: G, keyed: true, ...options });
+  const at = Object.fromEntries(ringsOf(svg).map((c) => [c.id, c]));
+  const dist = (p, id) => Math.hypot(p[0] - at[id].x, p[1] - at[id].y);
+  const ends = [], fits = [];
+  for (const m of svg.matchAll(/<path class="peer-neutral" data-relation="neutral" data-from="([^"]+)" data-to="([^"]+)" stroke-dasharray="([\d.]+) ([\d.]+)" stroke-dashoffset="([\d.]+)" d="([^"]+)"\/>/g)) {
+    const [x1, y1, x2, y2] = num(m[6]), len = Math.hypot(x2 - x1, y2 - y1);
+    ends.push(dist([x1, y1], m[1]), dist([x2, y2], m[2]));
+    fits.push({ what: 'plate', len, offset: +m[5], miss: fitMiss(len, +m[3], +m[4]) });
+  }
+  for (const m of svg.matchAll(/<path class="peer-neutral" stroke-dasharray="([\d.]+) ([\d.]+)" stroke-dashoffset="([\d.]+)" d="([^"]+)"\/>/g)) {
+    const [x1, , x2] = num(m[4]);
+    fits.push({ what: 'key', len: x2 - x1, offset: +m[3], miss: fitMiss(x2 - x1, +m[1], +m[2]) });
+  }
+  for (const m of svg.matchAll(/<g data-relation="directed" data-from="([^"]+)" data-to="([^"]+)"><path class="peer-edge" d="([^"]+)"\/><path class="peer-head" d="([^"]+)"\/><\/g>/g)) {
+    const [x1, y1, x2, y2] = num(m[3]), tip = num(m[4]).slice(0, 2);
+    ends.push(dist([x1, y1], m[1]));
+    // target heads: the tip reaches the gap; midpoint heads: the stroke itself runs to the gap
+    ends.push(options.arrowheads === 'midpoint' ? dist([x2, y2], m[2]) : dist(tip, m[2]));
+  }
+  return { svg, ends, fits };
+}
+/* N1: one ring per node, all of the ring radius, each centered on its letter's vertex */
+function ringsCentered(svg, spec, radius = RING.radius) {
+  const rings = ringsOf(svg);
+  const letters = [...svg.matchAll(/<text class="peer-glyph" data-node="([^"]+)" x="([\d.]+)" y="([\d.]+)">(.)<\/text>/g)];
+  return rings.length === spec.nodes.length && letters.length === spec.nodes.length && rings.every((c) => c.r === radius) && letters.every((t) => {
+    const c = rings.find((q) => q.id === t[1]), gm = G.labels.em[t[4]];
+    return c && Math.abs(c.x - (+t[2] - gm.dx * P.GEOMETRY.fontSize)) < 0.02 && Math.abs(c.y - (+t[3] - gm.dy * P.GEOMETRY.fontSize)) < 0.02;
+  });
+}
+/* N2: a keyed plate has its key, and the key holds no ring */
+const keyRingless = (svg) => { const k = svg.indexOf('<g class="peer-key-group">'); return k !== -1 && !svg.slice(k).includes('peer-ring'); };
+/* N3: room inside the ring around each supported label's ink */
+const roomFor = (glyphs) => [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'].map((c) => [c, RING.radius - RING.stroke / 2 - glyphs.labels.em[c].r * P.GEOMETRY.fontSize]);
+/* every neutral length class the plates draw: triangle sides, square sides and square diagonals */
+const NEUTRAL = [
+  tri(['a', 'b', 'c'], ['A', 'B', 'C'], [{ from: 'a', to: 'b', type: 'neutral' }, { from: 'b', to: 'c', type: 'neutral' }, { from: 'c', to: 'a', type: 'neutral' }]),
+  { id: 'q', preset: 'square', nodes: ['a', 'b', 'c', 'd'].map((id, i) => ({ id, label: 'ABCD'[i] })),
+    relations: [['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'a'], ['a', 'c'], ['b', 'd']].map(([from, to]) => ({ from, to, type: 'neutral' })) },
+];
+{
+  const plates = SPECS.map((s) => ({ s, svg: P.render(s, { glyphs: G, keyed: true }) }));
+  check('N1 every plate draws one ring per node, all of the ring radius, each centered on its vertex', plates.every(({ s, svg }) => ringsCentered(svg, s)));
+  check('N2 every keyed plate has its key, and the key draws no ring', plates.every(({ svg }) => keyRingless(svg)));
+  const roomy = roomFor(G), tightest = roomy.reduce((a, b) => (b[1] < a[1] ? b : a));
+  check('N3 every supported label leaves at least the ring padding clear inside its ring', roomy.length === 36 && roomy.every(([, room]) => room >= RING.padding),
+    `tightest ${tightest[0]} ${tightest[1].toFixed(1)} of ${RING.padding}`);
+  check('N4 the clearance is the ring outer edge plus the gap', P.GEOMETRY.clearance === RING.radius + RING.stroke / 2 + RING.gap);
+  const want = P.GEOMETRY.clearance;
+  const runs = [['target', {}], ['midpoint', { arrowheads: 'midpoint' }]].flatMap(([mode, o]) => [...SPECS, ...NEUTRAL].map((s) => ({ mode, s, ...connectorEnds(P, s, o) })));
+  const worst = Math.max(...runs.flatMap((r) => r.ends.map((e) => Math.abs(e - want))));
+  check('N5 every connector end, directed and neutral, in both arrowhead modes, sits the gap outside its ring', runs.every((r) => r.ends.length) && worst < 0.02, `worst ${worst.toFixed(3)}`);
+  const fits = runs.flatMap((r) => r.fits), lens = new Set(fits.filter((x) => x.what === 'plate').map((x) => x.len.toFixed(1)));
+  check('N6 every neutral line, of each length the plates draw, and the key sample begin and end on dash ink: an even number of whole periods plus one dash, unshifted',
+    lens.size === 3 && fits.some((x) => x.what === 'key') && fits.every((x) => x.offset === 0 && x.miss < 0.01),
+    `${fits.length} lines, lengths ${[...lens].join(' / ')} + key, worst miss ${Math.max(...fits.map((x) => x.miss)).toFixed(4)}`);
+  const base = byId['triangle.A-S-K'];
+  check('N7 a carrier whose letter lacks a finite, non-negative ink radius is GLYPHS_MALFORMED',
+    [bent((g) => { delete g.labels.em.Z.r; }), bent((g) => { g.labels.em.A.r = -0.1; }), bent((g) => { g.labels.em.K.r = NaN; })]
+      .every((g) => codes(P, base, g).includes('GLYPHS_MALFORMED') && renderError(P, base, { glyphs: g }) === 'GLYPHS_MALFORMED'));
+  const crowd = bent((g) => { g.labels.em.S.r = (RING.radius - RING.stroke / 2 - RING.padding) / P.GEOMETRY.fontSize + 0.001; });
+  check('N8 a label whose ink would crowd its ring is LABEL_RING_FIT; one exactly at the padding is not',
+    codes(P, base, crowd).includes('LABEL_RING_FIT')
+    && !codes(P, base, bent((g) => { g.labels.em.S.r = (RING.radius - RING.stroke / 2 - RING.padding) / P.GEOMETRY.fontSize; })).includes('LABEL_RING_FIT'));
+}
+
 // ------------------------------------------------------------------ X negative controls
 
 {
@@ -481,6 +562,33 @@ const dominated = (M) => {
     check('X11 F14 bites: an exporter without the letter-case check exits 0, reporting eight files whose names are four when case is ignored',
       names.length === 8 && new Set(names.map((x) => x.toLowerCase())).size === 4, `exit ${r.status}, ${names.length} reported`);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+}
+
+{
+  // N controls: each ring check fails for its intended reason on a mutated engine or carrier
+  const A = byId['triangle.A-S-K'];
+  const fixed = mutate('clearance: RING.radius + RING.stroke / 2 + RING.gap,', 'clearance: 104,');
+  const ends = SPECS.flatMap((s) => connectorEnds(fixed, s).ends);
+  check('X15 N5 bites: a clearance set apart from the ring leaves connector ends off the ring gap',
+    Math.max(...ends.map((e) => Math.abs(e - P.GEOMETRY.clearance))) > 1);
+  const oldFit = mutate("var k = Math.max(1, Math.round((len - dash[0]) / (2 * period)));\n    var scale = len / (2 * k * period + dash[0]);",
+    'var k = Math.max(1, Math.round(len / period)) / 2;\n    var scale = len / (2 * k * period);');
+  const fits = [...SPECS, ...NEUTRAL].flatMap((s) => connectorEnds(oldFit, s).fits);
+  check('X16 N6 bites: whole periods alone end a neutral line in a gap or a partial dash', fits.some((x) => x.miss >= 0.01), `${fits.length} lines`);
+  const noR = mutate('finite(em[k].dy) && finite(em[k].r) && em[k].r >= 0;', 'finite(em[k].dy);');
+  check('X17 N7 bites: an engine that does not require the ink radius accepts a carrier without one',
+    !codes(noR, A, bent((g) => { delete g.labels.em.Z.r; })).includes('GLYPHS_MALFORMED'));
+  const ringTag = "out.push('<circle class=\"peer-ring\" data-node=\"' + esc(node.id) + '\" cx=\"' + f(pts[i].x) + '\" cy=\"' + f(pts[i].y) + '\" r=\"' + f(G.ring.radius) + '\"/>');";
+  const ringless = mutate(ringTag, '');
+  const shifted = mutate(ringTag, ringTag.replace('f(pts[i].x)', 'f(pts[i].x + 3)'));
+  check('X18 N1 bites: an engine that draws no ring, or draws one off its vertex, fails the ring check',
+    !ringsCentered(ringless.render(A, { glyphs: G }), A) && !ringsCentered(shifted.render(A, { glyphs: G }), A) && !ringsCentered(P.render(A, { glyphs: G }), A, RING.radius + 1));
+  const keyRing = mutate("return '<g class=\"peer-key-group\">' + parts.join('') + '</g>';",
+    "return '<g class=\"peer-key-group\"><circle class=\"peer-ring\" cx=\"0\" cy=\"0\" r=\"1\"/>' + parts.join('') + '</g>';");
+  check('X19 N2 bites: a key that draws a ring, or a keyed plate with no key, fails the key check',
+    !keyRingless(keyRing.render(A, { glyphs: G, keyed: true })) && !keyRingless(P.render(A, { glyphs: G, keyed: false })));
+  const wide = bent((g) => { g.labels.em.W.r = (RING.radius - RING.stroke / 2 - RING.padding) / P.GEOMETRY.fontSize + 0.01; });
+  check('X20 N3 bites: a carrier whose W ink reaches past the padding fails the room check', !roomFor(wide).every(([, room]) => room >= RING.padding));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

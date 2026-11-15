@@ -30,7 +30,8 @@
 
    API (window.DIAGRAM_PEER, or module.exports)
      validate(spec, glyphs?)   { ok, errors: [{ code, path, message }] } — never throws. With glyphs
-                               it also checks the carrier and the key's wording against its slot
+                               it also checks the carrier, that each label's ink clears its ring,
+                               and the key's wording against its slot
      render(spec, options)     a standalone SVG string; throws a PeerError (err.code, err.errors)
                                for an invalid spec or option
      mount(host, spec, opts)   renders into an element and returns the <svg>; unless opts names a
@@ -40,7 +41,8 @@
 
    options
      glyphs      required: the DIAGRAM_PEER_GLYPHS carrier (diagrams-static-peer-glyphs.js). Each
-                 letter's offsets and the letters' measured weight must be finite numbers, and every
+                 letter's offsets, its ink radius (zero or more) and the letters' measured weight
+                 must be finite numbers, and every
                  printable Basic Latin character needs a finite advance of zero or more, or the
                  carrier is GLYPHS_MALFORMED
      theme       'inherit' (default): the page's foundation roles, so the plate follows the page's
@@ -88,11 +90,16 @@
   var THEME_KEYS = ['name', 'fieldFrom', 'fieldTo', 'ink', 'fontFamily', 'labelWeight', 'keyWeight'];
 
   // The plate's geometry, in viewBox units. Owned by the pattern; not an option.
+  // Each node is one outlined ring centered on its vertex. Every connector stops a fixed gap outside the
+  // ring's outer edge, so clearance is derived from the ring rather than set beside it.
+  var RING = { radius: 112, stroke: 3.6, gap: 14, padding: 18 };
   var GEOMETRY = freeze({
     size: 1000,            // square plate
     radius: 318,           // circumradius of the polygon
     fontSize: 150,         // vertex letters
-    clearance: 104,        // distance from a vertex where every connector stops
+    ring: RING,            // node ring: centerline radius, stroke, the gap outside it where connectors
+                           // stop, and the least clear space inside it around any supported letter's ink
+    clearance: RING.radius + RING.stroke / 2 + RING.gap,   // distance from a vertex where every connector stops
     stroke: 2.6,           // directed connector
     neutralStroke: 1.8,    // neutral connector
     dash: [12, 10],        // neutral dash / gap, fitted per segment
@@ -137,8 +144,8 @@
   var MEASURED_CHARS = [];
   for (var cc = 0x20; cc <= 0x7E; cc++) MEASURED_CHARS.push(String.fromCharCode(cc));
 
-  /** A carrier the engine can draw from: each letter entry's dx and dy and the weight the letters were
-      measured at are finite numbers, and every printable Basic Latin character has a finite advance of
+  /** A carrier the engine can draw from: each letter entry's dx, dy and ink radius r (zero or more)
+      and the weight the letters were measured at are finite numbers, and every printable Basic Latin character has a finite advance of
       zero or more. Anything else is malformed here, rather than a NaN coordinate, an unmeasured word or
       a TypeError later. */
   function validGlyphs(glyphs) {
@@ -146,11 +153,11 @@
       if (!isObject(glyphs) || !isObject(glyphs.labels) || !isObject(glyphs.labels.em) || !isObject(glyphs.labels.axes)
         || !isObject(glyphs.advances) || !isObject(glyphs.advances.em) || !finite(glyphs.labels.axes.wght)) return false;
       var em = glyphs.labels.em, adv = glyphs.advances.em;
-      return Object.getOwnPropertyNames(em).every(function (k) { return isObject(em[k]) && finite(em[k].dx) && finite(em[k].dy); })
+      return Object.getOwnPropertyNames(em).every(function (k) { return isObject(em[k]) && finite(em[k].dx) && finite(em[k].dy) && finite(em[k].r) && em[k].r >= 0; })
         && MEASURED_CHARS.every(function (ch) { return own(adv, ch) && finite(adv[ch]) && adv[ch] >= 0; });
     } catch (e) { return false; }
   }
-  var GLYPHS_SHAPE = 'not a DIAGRAM_PEER_GLYPHS carrier: each letter\'s dx and dy and the measured weight must be finite numbers, '
+  var GLYPHS_SHAPE = 'not a DIAGRAM_PEER_GLYPHS carrier: each letter\'s dx, dy and ink radius r (zero or more) and the measured weight must be finite numbers, '
     + 'and every printable Basic Latin character needs a finite advance of zero or more';
 
   /** Check a spec. Returns { ok, errors }; never throws, whatever the input: a spec whose fields
@@ -187,6 +194,8 @@
       else {
         labels[n.label] = true;
         if (measured && !own(glyphs.labels.em, n.label)) err('LABEL_UNMEASURED', p + '.label', 'the glyph carrier has no centering for "' + n.label + '"');
+        else if (measured && glyphs.labels.em[n.label].r * GEOMETRY.fontSize + GEOMETRY.ring.padding > GEOMETRY.ring.radius - GEOMETRY.ring.stroke / 2)
+          err('LABEL_RING_FIT', p + '.label', '"' + n.label + '" leaves less than ' + GEOMETRY.ring.padding + ' units inside its ring');
       }
     }
     if (!Array.isArray(spec.nodes)) err('NODES_NOT_ARRAY', 'spec.nodes', 'an array of nodes');
@@ -328,18 +337,18 @@
   }
 
   function f(v) { return (Math.round(v * 100) / 100).toString(); }
-  function f3(v) { return (Math.round(v * 1000) / 1000).toString(); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-  /** Dash pattern fitted to a length: whole periods, with a dash centered on the midpoint, so both
-      ends match and two crossing neutral diagonals cross as lines, not at a node. */
+  /** Dash pattern fitted to a length: an even number of whole periods plus one dash, scaled together,
+      so the line begins and ends on dash ink where it stops, to within the dash values' rounding (each
+      rim keeps the same gap as a directed connector), and a dash sits centered on the midpoint, so two
+      crossing neutral diagonals cross as lines, not at a node. */
   function dashFit(len, dash) {
     var period = dash[0] + dash[1];
-    var count = Math.max(1, Math.round(len / period));
-    var scale = len / (count * period);
-    var d = Math.round(dash[0] * scale * 1000) / 1000, g = Math.round(dash[1] * scale * 1000) / 1000, p = d + g;
-    var offset = ((d / 2 - len / 2) % p + p) % p;
-    return 'stroke-dasharray="' + f3(d) + ' ' + f3(g) + '" stroke-dashoffset="' + f3(offset) + '"';
+    var k = Math.max(1, Math.round((len - dash[0]) / (2 * period)));
+    var scale = len / (2 * k * period + dash[0]);
+    var d = Math.round(dash[0] * scale * 10000) / 10000, g = Math.round(dash[1] * scale * 10000) / 10000;
+    return 'stroke-dasharray="' + d + ' ' + g + '" stroke-dashoffset="0"';
   }
 
   function segment(P, Q, clearance) {
@@ -437,6 +446,7 @@
     // Every rule is scoped to this plate's id, so plates of different themes can share a page.
     var s = '#' + id + ' ';
     out.push('<style>' + o.fontFaceCSS
+      + s + '.peer-ring{fill:none;stroke:' + c.ink + ';stroke-width:' + G.ring.stroke + '}'
       + s + '.peer-glyph{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.lw + ';font-size:' + G.fontSize + 'px;text-anchor:middle;font-optical-sizing:auto}'
       + s + '.peer-edge{fill:none;stroke:' + c.ink + ';stroke-width:' + G.stroke + ';stroke-linecap:butt}'
       + s + '.peer-head{fill:' + c.ink + '}'
@@ -488,10 +498,12 @@
     });
     out.push('</g>');
 
-    // Vertex letters: one size, weight and ink, each centered on its vertex by its measured ink bounds.
+    // Nodes: one equal ring per vertex, then its letter — one size, weight and ink, centered on the
+    // vertex by its measured ink bounds.
     out.push('<g class="peer-nodes">');
     spec.nodes.forEach(function (node, i) {
       var gm = o.glyphs.labels.em[node.label];
+      out.push('<circle class="peer-ring" data-node="' + esc(node.id) + '" cx="' + f(pts[i].x) + '" cy="' + f(pts[i].y) + '" r="' + f(G.ring.radius) + '"/>');
       out.push('<text class="peer-glyph" data-node="' + esc(node.id) + '" x="' + f(pts[i].x + gm.dx * G.fontSize) + '" y="' + f(pts[i].y + gm.dy * G.fontSize) + '">' + esc(node.label) + '</text>');
     });
     out.push('</g>');
