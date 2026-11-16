@@ -972,7 +972,64 @@ X  negative controls on mutated copies of the engine, the exporter and the relat
 **Determinism is within one runtime.** The engine rounds every coordinate to two decimals, so the
 last-bit differences `Math.cos` and `Math.sin` may show between engines rarely reach the output,
 but a byte comparison across runtimes is not claimed. The test renders no PNG and opens no
-browser: the PNG route and the rendering in Chrome are checked outside it.
+browser: the PNG route and the rendering in Chrome are checked outside it. The plate under a host's
+inherited styles is checked in Chrome by peer-host-inheritance.mjs.
+
+## peer-host-inheritance.mjs
+
+Guards the [`diagram-static-peer`](../patterns/diagram-static-peer/README.md) plate **under a host's
+inherited styles**, in headless Chrome (Node 22+, Chrome at `$CHROME` or the default locations; no
+npm dependency). It exports every spec as a consumer would, with the heads at the target and at the
+midpoint (48 files), opens the specimen page, gives it the owner's token file (the page links its
+tokens at the vendored `_dsa-tokens/` path, which this repository does not carry), and inlines each
+exported SVG, unchanged, into a control host and into hosts that each carry ordinary inherited
+styles. After the fonts load it reads every text's first-character position, length, box, computed
+style and the platform font that drew it.
+
+```
+node tests/peer-host-inheritance.mjs             # --out DIR keeps results.json and the review PNGs
+```
+
+```text
+I1  in the control host every exported plate draws its texts where its layout placed them: each
+    letter centered on its x, each key wording starting at its x, both on the baseline at y; no
+    text leaves the plate; and every face it needs has loaded
+I2  the control draws every letter and key wording with an upright Inter face
+I3  with every host declaration applied (each parsed into the host's style), under each host —
+    text-anchor middle and end; dominant-baseline middle and hanging; italic; bold; condensed;
+    small caps; font-size-adjust; letter and word spacing and case; kerning, features,
+    variations, synthesis and optical sizing; direction rtl; vertical writing; white space; text
+    rendering; stroke and shadow; kerning and optical sizing turned off, the peer's own host; and
+    all of them at once — every exported plate's texts start, measure and box as in the control,
+    keep their faces and stay inside the plate, and text, heads and the field take no stroke, and
+    text no shadow
+I4  a keyed spec mounted through the page's engine, with the page's theme, under all the host
+    styles at once measures and faces as in the control host
+I5  a key wording with edge and doubled spaces, rendered now, draws as the former rules draw it:
+    its white space collapses, as an SVG text's does on its own
+N   negative controls on a plate whose rules declare only what the plate declared before it
+    stated its text properties (its text rules with only family, weight, size, the letters'
+    middle anchoring and optical sizing; no stroke rule on heads or the field), rebuilt from the
+    plate. N0 fails unless all four rules are found. The rebuilt plate is unchanged and
+    identically painted in an ordinary host (N1); an inherited text-anchor: end moves the key's
+    wording (N2); an inherited dominant-baseline: hanging moves the letters (N3); an inherited
+    italic draws the texts in an italic style (N4); an inherited stroke strokes the texts, the
+    heads and the field (N5)
+```
+
+**The guarantee is about inheritance, and only the properties the rules state.** A stylesheet rule
+written against the plate's own elements, or one marked `!important`, is not part of it. Neither is
+text rendering, which the rules leave to the page (the foundation sets it on its pages on purpose),
+nor the stroke styles the plate does not set, such as dashes on its solid connectors and rings,
+joins and miters, nor paint opacity.
+
+**Not every host fails the plate's former rules.** They already pass the bold, condensed,
+white-space and rendering hosts. They declared the weight. The embedded face has one width. In
+Chrome an SVG text computes `white-space: nowrap` on its own, and the host's `pre-wrap` did not
+change it; the rule now states that value. Text rendering moves nothing the test measures. The
+declarations for width and white space state the layout's assumptions; they do not repair an
+observed failure. The kerning-and-optical-sizing host is the peer's own: its key wording is kerned
+and optically sized as it renders alone, and the former rules let a host turn both off.
 
 ## radial-fixture.html + radial-behavior.mjs
 

@@ -114,6 +114,15 @@
     keyTextMax: 242,       // widest wording a slot holds: keyPitch - keySample - keyGap - 12
   });
 
+  // What both text rules state, rather than inherit, beyond their family, weight, size, anchoring and optical
+  // sizing: each at the value a plate draws with on its own (the subset's kerning stays on, as it renders today;
+  // white space collapses, as an SVG text's does), and synthesis off, since the plate never asks for a face that
+  // would need it. Text rendering is left to the page, whose foundation sets it on purpose.
+  var TEXT_RULES = 'font-style:normal;font-stretch:normal;font-size-adjust:none;font-variant:normal;font-kerning:auto;'
+    + 'font-feature-settings:normal;font-variation-settings:normal;font-synthesis:none;letter-spacing:0;word-spacing:0;'
+    + 'text-transform:none;dominant-baseline:alphabetic;direction:ltr;writing-mode:horizontal-tb;text-orientation:mixed;'
+    + 'white-space:nowrap;stroke:none;text-shadow:none';
+
   // ------------------------------------------------------------------ validation
 
   function PeerError(errors) {
@@ -444,14 +453,20 @@
     if (o.metadata) out.push('<metadata>' + esc(o.metadata) + '</metadata>');
 
     // Every rule is scoped to this plate's id, so plates of different themes can share a page.
+    // The letters are centered by their measured ink on an alphabetic baseline, and the key's wording starts
+    // at its x. So each text rule states, rather than inherits, its anchoring and the properties that would
+    // move a text, change the face that draws it or extend its ink (TEXT_RULES); heads and the field take no
+    // stroke. A plate inlined or mounted under a host's inherited styles draws as it does alone;
+    // tests/peer-host-inheritance.mjs measures it in a browser.
     var s = '#' + id + ' ';
     out.push('<style>' + o.fontFaceCSS
       + s + '.peer-ring{fill:none;stroke:' + c.ink + ';stroke-width:' + G.ring.stroke + '}'
-      + s + '.peer-glyph{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.lw + ';font-size:' + G.fontSize + 'px;text-anchor:middle;font-optical-sizing:auto}'
+      + s + '.peer-glyph{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.lw + ';font-size:' + G.fontSize + 'px;text-anchor:middle;font-optical-sizing:auto;' + TEXT_RULES + '}'
       + s + '.peer-edge{fill:none;stroke:' + c.ink + ';stroke-width:' + G.stroke + ';stroke-linecap:butt}'
-      + s + '.peer-head{fill:' + c.ink + '}'
+      + s + '.peer-head{fill:' + c.ink + ';stroke:none}'
       + s + '.peer-neutral{fill:none;stroke:' + c.ink + ';stroke-width:' + G.neutralStroke + ';stroke-linecap:butt}'
-      + s + '.peer-key{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.kw + ';font-size:' + G.keyFontSize + 'px}'
+      + s + '.peer-key{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.kw + ';font-size:' + G.keyFontSize + 'px;text-anchor:start;font-optical-sizing:auto;' + TEXT_RULES + '}'
+      + s + '.peer-field{stroke:none}'
       + (fixed ? '' : s + '.peer-field-from{stop-color:' + c.from + '}' + s + '.peer-field-to{stop-color:' + c.to + '}')
       + '</style>');
 
