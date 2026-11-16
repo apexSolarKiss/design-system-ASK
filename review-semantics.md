@@ -22,8 +22,8 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 | Review meaning | Words | Visual implementation | Relationship |
 | --- | --- | --- | --- |
-| `proposed` | Proposed, or Correction requested | value of `--ask-emphasis-magenta` | a candidate, not yet decided; Spectral `proposed`'s hue, not its value |
-| `open` | Open question | value of `--ask-emphasis-cyan` | a named open question: the matter Spectral `held` and Evidence `unresolved` also name, their meaning, not their value |
+| `proposed` | Proposed, or Correction requested | value of `--ask-emphasis-magenta` | a candidate, not yet decided; the same foundation magenta as Spectral `proposed` |
+| `open` | Open question | value of `--ask-emphasis-cyan` | a named open question: the matter Spectral `held` and Evidence `unresolved` also name, in the same foundation cyan |
 | `accepted` | Accepted | value of `--state-earned` | a recorded decision to adopt or permit, at its scope |
 | `declined` | Declined | value of `--state-deflated` | a recorded decision not to adopt or permit, at its scope |
 | `none` | No decision recorded | value of `--fg-3` | no decision recorded |
@@ -36,7 +36,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 **Proposed and Correction requested share paint, not event identity.** A candidate submitted and a correction requested are different events, kept apart by their words and by who made the request. Correction requested is used only when someone has asked for existing words to change. Proposed alone never implies a defect.
 
-**Proposed takes the emphasis magenta, and Open question the emphasis cyan.** Proposed is `#FF00FF` in both themes, the value a document's other magenta labels and rails already use, so a proposal never sits beside a near-identical second pink. A proposal and a thesis are told apart by their words, their place and their key, never by a difference in pink. Spectral's `proposed` keeps its own theme-calibrated magenta: the two Proposed roles share a word and a hue, not a value, and where both apply to one item the keyed list carries them, one key each. Open question is `#00BEFF` in both themes, by reference to `--ask-emphasis-cyan`: it reads bluer than Spectral `held`, which is tealer, and apart from Accepted's green. Spectral `held` and Evidence `unresolved` keep their own values; an open question shares their meaning, a matter not yet settled, not their value.
+**Proposed takes the emphasis magenta, and Open question the emphasis cyan.** Proposed is `#FF00FF` in both themes, the value a document's other magenta labels and rails already use, so a proposal never sits beside a near-identical second pink. A proposal and a thesis are told apart by their words, their place and their key, never by a difference in pink. Since Spectral State v1.2, Spectral's `proposed` takes the same foundation magenta: the two Proposed roles share a word and a value but remain two roles, and where both apply to one item the keyed list carries them, one key each. Open question is `#00BEFF` in both themes, by reference to `--ask-emphasis-cyan`, and apart from Accepted's green; Spectral `held` and Evidence `unresolved` now take the same cyan. An open question shares their meaning, a matter not yet settled, and their value, and remains its own review role.
 
 ## Annotation // the composition
 

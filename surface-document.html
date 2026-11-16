@@ -523,8 +523,8 @@
             </tbody>
           </table>
         </div>
-        <p class="doc-meta">Apparent edge 2px in light and 1.5px in dark: the 1px border and a zero-blur
-          reinforcement of 1px and 0.5px, which paints without moving anything. Block padding 2px, inline
+        <p class="doc-meta">Apparent edge 2px in light, the plain 1px border in dark: the 1px border and, in light,
+          a 1px zero-blur reinforcement, which paints without moving anything. Block padding 2px, inline
           --space-2, the small corner, as wide as its words on one line. Its 1px inline margin keeps the
           reinforcement inside its own box, so a scrolling table's side never cuts it.</p>
       </div>
@@ -560,18 +560,32 @@
           A list that opens or closes on such an item keeps the passage buffer from a range beside it.</p>
       </div>
 
-      <!-- THE RAIL'S PAINT — the dose a governed color takes as a rail, per field.
-           This key loads no governed color, so the specimen sits with the rails
-           that draw one. -->
+      <!-- THE RAIL'S PAINT — the dose a governed color takes as a rail. This key
+           loads no governed color, so the specimen sits with the rails that draw one. -->
       <div class="doc-section">
         <h3 class="doc-subsection-title">Rail paint</h3>
-        <p class="doc-body" id="rail-paint">A rail in a governed color takes that color's paint for the field it sits on,
-          whichever meaning draws it: on the light lavender field, caution's yellow a 1px ring around its 2px stroke;
-          every other rail, and every rail on the dark ink field, the bare stroke. A root that declares no field is taken
-          to paint its theme's own; one that declares a field with <code class="doc-code">data-surface-field</code> keeps
-          the ring only for ask-lavender in light, and otherwise the bare stroke until a rail is measured on its field. <a class="surface-text-link" href="criterion-assessment.html#calibration-title">Criterion
-          Assessment's key</a> draws each rail bare and as shipped on the same field.</p>
+        <p class="doc-body" id="rail-paint">A rail in a governed color takes that color's paint, whichever meaning draws
+          it. Every paint is none today: each governed color has one value in both themes, and in it the plain 2px stroke
+          reads on the light lavender and the dark ink alike, caution's yellow included. <a class="surface-text-link" href="criterion-assessment.html#calibration-title">Criterion
+          Assessment's key</a> draws the three assessment rails as shipped.</p>
         <p class="doc-meta">Paint only, in the rail's own color: no place, length or gap changes, and nothing moves.</p>
+      </div>
+
+      <!-- THE FILL'S PAINT — a governed color as a filled shape. This key loads no
+           governed color; the specimens are Spectral State's key, which fills every
+           state and the neutral shape, and Three Functions' key, which fills its parts
+           and field. -->
+      <div class="doc-section">
+        <h3 class="doc-subsection-title">Fill paint</h3>
+        <p class="doc-body" id="fill-paint">A role- or state-bearing shape is filled at 100% of its color, edged in the same
+          color, and any text on it takes that color's ink: the high-contrast ink on orange and cyan; the lavender on red
+          and violet; #6A637F on yellow, green, white and lavender; on magenta the lavender in light and the high-contrast
+          ink in dark. A filled shape that asserts no state takes the neutral shape: the static diagrams' node fill inside a
+          white edge in light, the lavender in dark. <a class="surface-text-link" href="spectral-state.html">Spectral State's
+          key</a> fills every state and the neutral shape this way, and <a class="surface-text-link" href="three-functions.html">Three
+          Functions' key</a> its parts and field.</p>
+        <p class="doc-meta">The composing surface owns the shape, its geometry, cutouts and emphasis; the semantic system
+          binds its role to a color and that color's ink.</p>
       </div>
 
       <!-- THE SCOPE UNDERLINE — one solid line under the exact words one label

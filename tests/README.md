@@ -311,15 +311,13 @@ per case:
 
 ```text
 stroke    every rail is a 2px solid stroke
-paint     each rail's paint is its color's: caution's yellow a 1px ring in its own color on the
-          lavender field in light and none in dark, the root deciding, in the dark subtree too; every
-          green, red, review-accented and neutral rail none. A root that declares a field with
-          data-surface-field keeps the ring only for ask-lavender in light
+paint     each rail's paint is its color's: none for every color, the plain stroke, on both fields,
+          in the dark subtree too
 one       the declined range's rail and every adverse rail share one color and one paint; the
           accepted range's and every favorable rail, another; caution beside a summary, in a
           field, in the key and in the dark subtree, a third
-label     the declined review mark keeps the bordered label's own edge, 1px in light and 0.5px in
-          dark
+label     the declined review mark keeps the bordered label's own edge, a 1px reinforcement in
+          light and a 0px one in dark
 follows   with the shared paints changed on the root (green 3px, yellow 2px, red 1.5px), every
           rail bound to one follows it, and the proposed, open, no-decision and neutral ranges'
           rails stay bare; the declined mark's edge and the quotation's rail do not move; once the
@@ -332,33 +330,33 @@ follows   with the shared paints changed on the root (green 3px, yellow 2px, red
 python3 -m http.server 8080
 # open http://localhost:8080/tests/rail-paint-fixture.html
 # add ?theme=light or ?theme=dark to hold a mode
-# add ?field=ask-lavender, ?field=ask-ink, an unreviewed name such as ?field=other, or an empty ?field= to declare the field
+# add ?field=ask-lavender (or any name) to declare a root field
 ```
 
 The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
 also on `window.__railPaintFixture` and the verdict on `body[data-result]`. Run it held light,
-held dark and following the browser, each with the browser's preference light and dark; then each of
-those six with `?field=ask-lavender`, which keeps caution's ring wherever the root is light, and with
-`?field=other` or an empty `?field=`, which keep the bare stroke in all six.
+held dark and following the browser, each with the browser's preference light and dark, and once
+more in each with `?field=ask-lavender`: the rail paint reads no declared field, so every case
+expects the same paint with the field declared.
 
 **Verifying the fixture still bites.** Each control below loads one regression from a page-local
-rule; it fails only the cases named, in every one of those six settings without ?field, unless a line
-says otherwise.
+rule; it fails only the cases named, in every one of those six settings.
 
 ```text
 ?control=local-dose       caution keeps a dose of its own, as the profile once did: its four rails'
-                          follows cases fail, and in dark their paint cases too
+                          paint and follows cases fail
 ?control=unbound-range    the review ranges lose their binding to the shared paint: the accepted
                           and declined ranges' follows cases fail
-?control=subtree-dose     the yellow paint follows a .theme-dark subtree, as the bordered label's
-                          dose does: the subtree rail's follows case fails, and where the root is
-                          light its paint case and the one-yellow case too
 ?control=label-reach      the red rail paint is put on the declined review mark: the mark's own-
                           edge case and its untouched case fail
-?control=theme-dose       with a field declared, the yellow paint follows the theme again: with
-                          ?field=other its four paint cases fail wherever the root is light; it
-                          changes nothing without ?field or with ?field=ask-lavender
+?field=ask-lavender&control=field-dose
+                          a declared field gives yellow a dose, as the retired ring did: the four
+                          caution rails' paint cases fail; without ?field= the control is inert
 ```
+
+Until the yellow ring was retired (Spectral State v1.2), the fixture carried two controls for the
+ring's field and subtree logic; with every paint none, neither can fail, so both are gone. The
+`?field=` run and its control stand in their place, guarding that no field brings a dose back.
 
 ## doc-actions-end-fixture.html
 

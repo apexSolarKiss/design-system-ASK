@@ -4,7 +4,9 @@ A semantic state-color **profile** under the Spectral State family. Where [`spec
 
 It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** Spectral State's eight-role architectural-element vocabulary is unchanged. This profile **reuses three Spectral State values by reference** and **adds two evidence-specific roles**.
 
-> **Status: v0.1 // first generalized profile.** Authorized by ASK source-of-intent (2026-06-18) as a reusable profile rather than a one-off. First consumer is [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory) (a domain-partner consumer, by reference). Provisional-but-reusable: the role list may firm up as the profile sees more use; the two new values are the stable, portable part.
+> **Status: v0.2 // one value per role in both themes.** As [Spectral State](spectral-state.md) v1.2: `weakened` is `hsl(30, 45%, 48%)` and `not-yet-testable` `hsl(264, 8%, 53%)` on either field, the former dark-theme brown and the former light-theme gray. The three reused roles move with Spectral State: `supported` and `partially-supported` each take one value, and `unresolved` the foundation cyan, a hue of about 195° where it was 180°. Role names and the `not-yet-testable` presentation contract (lavender-gray, dashed rail, hollow marker, visible label) are unchanged.
+>
+> **v0.1 // first generalized profile.** Authorized by ASK source-of-intent (2026-06-18) as a reusable profile rather than a one-off. First consumer is [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory) (a domain-partner consumer, by reference). Provisional-but-reusable: the role list may firm up as the profile sees more use; the two new values are the stable, portable part.
 
 ## The five roles
 
@@ -29,7 +31,7 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
 
 ## Wheel logic (inherited)
 
-Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values sit on it (`earned` 120°, `partial` 30°, `held` 180°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
+Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values come from it (`earned` 120°, `partial` 30°, and `held`, now the foundation's emphasis cyan at about 195°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
 
 The Spectral State health ramp is **unchanged**:
 
@@ -45,12 +47,12 @@ Evidence State derivation
 ## Tiers
 
 - **Tier 1 (identity-free):** the `--evidence-*` role names — a stable vocabulary other ASK-family surfaces can reuse.
-- **Tier 2 (ASK design language):** the two new per-theme values (`weakened` brown, `not-yet-testable` lavender-gray); the three reused values inherit [Spectral State](spectral-state.md)'s Tier 2 by reference.
+- **Tier 2 (ASK design language):** the two new values, one each in both themes (`weakened` brown `hsl(30, 45%, 48%)`, `not-yet-testable` lavender-gray `hsl(264, 8%, 53%)`); the three reused values inherit [Spectral State](spectral-state.md)'s Tier 2 by reference.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it
 
-1. Load `colors_and_type.css`, then `spectral-state.css`, then `evidence-state.css`.
+1. Load `colors_and_type.css`, then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks Spectral State binds), then `spectral-state.css`, then `evidence-state.css`, all from one design-system commit.
 2. On a consuming element, set color from a single role token, e.g. `fill: var(--evidence-supported)` or `color: var(--evidence-weakened)`.
 3. For `not-yet-testable`, apply the full presentation contract (lavender-gray + dashed rail + hollow marker + visible label) — never color alone.
 4. Keep the evidence labels visible; do not relabel reused roles by their Spectral State names.
@@ -68,5 +70,5 @@ Evidence State derivation
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the five role names, the two new per-theme values, the reuse-by-reference mapping, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
+- **Upstream (this repo):** the five role names, the two new values, the reuse-by-reference mapping, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
 - **Consumer-local (e.g. [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory)):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this color profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.
