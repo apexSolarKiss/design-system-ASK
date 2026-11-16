@@ -11,8 +11,9 @@ It is a **surface pattern**, not an artifact scaffold: a consumer takes it as pi
 ## Files and load order
 
 ```text
-diagrams-radial.css             the stylesheet; after colors_and_type.css and spectral-state.css, and, with
-                                the chrome module, after surface-panel.css then surface-treatments.css
+diagrams-radial.css             the stylesheet; after colors_and_type.css, surface-panel.css,
+                                surface-treatments.css and spectral-state.css (the treatments supply the inks
+                                Spectral State binds, and the chrome module uses them)
 diagrams-radial-contract.js     validation and assembly                         DOM-free
 diagrams-radial-layout.js       the layout grammar                              DOM-free
 diagrams-radial-labels.js       label placement, level of detail, the Fit's population   DOM-free

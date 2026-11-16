@@ -15,6 +15,8 @@
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="spectral-state.css">
 <link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-panel.css">
+<link rel="stylesheet" href="surface-treatments.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
@@ -38,8 +40,24 @@
   .demo { margin-top: 44px; }
   .demo p { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); margin: 0 0 16px; }
   .nodes { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-  .node { width: 22px; height: 22px; border-radius: 6px; background: var(--state-neutral); border: 1px solid var(--fg-3); }
-  .node.on { border-color: transparent; }
+  /* A node is a filled shape: it carries .surface-fill (surface-treatments.css, FILL PAINT), and a node with no
+     asserted state .surface-fill--neutral. This page binds each state and nothing else. */
+  .node { width: 22px; height: 22px; border-radius: 6px; border-width: 1px; border-style: solid; box-sizing: border-box; }
+  .filled .node { width: auto; min-width: 108px; height: 46px; border-radius: 8px; border-width: 1.5px; padding: 0 12px;
+                  display: flex; align-items: center; justify-content: center;
+                  font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
+  [data-state="earned"]     { --surface-fill-color: var(--state-earned);     --surface-fill-ink: var(--state-earned-ink); }
+  [data-state="structural"] { --surface-fill-color: var(--state-structural); --surface-fill-ink: var(--state-structural-ink); }
+  [data-state="partial"]    { --surface-fill-color: var(--state-partial);    --surface-fill-ink: var(--state-partial-ink); }
+  [data-state="deflated"]   { --surface-fill-color: var(--state-deflated);   --surface-fill-ink: var(--state-deflated-ink); }
+  [data-state="held"]       { --surface-fill-color: var(--state-held);       --surface-fill-ink: var(--state-held-ink); }
+  [data-state="external"]   { --surface-fill-color: var(--state-external);   --surface-fill-ink: var(--state-external-ink); }
+  [data-state="proposed"]   { --surface-fill-color: var(--state-proposed);   --surface-fill-ink: var(--state-proposed-ink); }
+  /* The same states as SVG shapes: .surface-fill on the shape and .surface-fill-ink on its text, under one group
+     that carries the state or the neutral shape. */
+  .filled-svg { display: block; width: 100%; max-width: 976px; height: auto; margin-top: 18px; }
+  .filled-svg rect { stroke-width: 1.5; }
+  .filled-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; }
 </style>
 </head>
 <body>
@@ -61,7 +79,7 @@
 
   <main class="surface-payload">
   <h2 class="doc-title">Spectral State</h2>
-  <div class="sub">v1.1 // restructured · neon on the lavender field</div>
+  <div class="sub">v1.2 // one value per role in both themes · neon on the lavender field</div>
 
   <div class="grid">
     <div class="arc-label">Health ramp // green → yellow → orange → red</div>
@@ -71,9 +89,9 @@
     <div class="swatch"><div class="dot" style="background:var(--state-deflated)"></div><div class="meta"><span class="role">state-deflated</span><span class="hue">0° red</span></div></div>
 
     <div class="arc-label">Orthogonal categories · Neutral — the field</div>
-    <div class="swatch"><div class="dot" style="background:var(--state-held)"></div><div class="meta"><span class="role">state-held</span><span class="hue">180° cyan</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-external)"></div><div class="meta"><span class="role">state-external</span><span class="hue">270° violet</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-proposed)"></div><div class="meta"><span class="role">state-proposed</span><span class="hue">300° magenta</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-held)"></div><div class="meta"><span class="role">state-held</span><span class="hue">195° cyan // emphasis cyan</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-external)"></div><div class="meta"><span class="role">state-external</span><span class="hue">273° violet // emphasis violet</span></div></div>
+    <div class="swatch"><div class="dot" style="background:var(--state-proposed)"></div><div class="meta"><span class="role">state-proposed</span><span class="hue">300° magenta // emphasis magenta</span></div></div>
     <div class="swatch"><div class="dot" style="background:var(--state-neutral);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">state-neutral</span><span class="hue">lavender field</span></div></div>
   </div>
 
@@ -83,18 +101,45 @@
       <p>most nodes neutral // neon only to say something</p>
     </div>
     <div class="nodes">
-      <div class="node"></div>
-      <div class="node on" style="background:var(--state-earned)"></div>
-      <div class="node"></div>
-      <div class="node"></div>
-      <div class="node on" style="background:var(--state-held)"></div>
-      <div class="node"></div>
-      <div class="node on" style="background:var(--state-deflated)"></div>
-      <div class="node"></div>
-      <div class="node"></div>
-      <div class="node on" style="background:var(--state-external)"></div>
-      <div class="node"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="earned"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="held"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="deflated"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="external"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
     </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title">Filled shapes</h2>
+      <p>each state at 100% // its ink on it // no state, the neutral shape</p>
+    </div>
+    <div class="nodes filled">
+      <div class="node surface-fill" data-state="earned">earned</div>
+      <div class="node surface-fill" data-state="structural">structural</div>
+      <div class="node surface-fill" data-state="partial">partial</div>
+      <div class="node surface-fill" data-state="deflated">deflated</div>
+      <div class="node surface-fill" data-state="held">held</div>
+      <div class="node surface-fill" data-state="external">external</div>
+      <div class="node surface-fill" data-state="proposed">proposed</div>
+      <div class="node surface-fill surface-fill--neutral">neutral</div>
+    </div>
+    <svg class="filled-svg" viewBox="0 0 976 62" role="img" aria-label="The same eight filled shapes drawn in SVG">
+      <g data-state="earned"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">earned</text></g>
+      <g data-state="structural"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">structural</text></g>
+      <g data-state="partial"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">partial</text></g>
+      <g data-state="deflated"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="421" y="36">deflated</text></g>
+      <g data-state="held"><rect class="surface-fill" x="489" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="543" y="36">held</text></g>
+      <g data-state="external"><rect class="surface-fill" x="611" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="665" y="36">external</text></g>
+      <g data-state="proposed"><rect class="surface-fill" x="733" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="787" y="36">proposed</text></g>
+      <g class="surface-fill--neutral"><rect class="surface-fill" x="855" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="909" y="36">neutral</text></g>
+    </svg>
   </div>
   </main>
 

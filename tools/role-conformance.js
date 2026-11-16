@@ -281,7 +281,7 @@
                         no fill: a transparent background and no background
                         image (C13.fill); exactly one outset, zero-offset,
                         zero-blur box-shadow in the border's color whose
-                        spread is the theme's dose, 1px in light and 0.5px in
+                        spread is the theme's dose, 1px in light and 0 in
                         dark, the theme read from --fg-1 at the label
                         (C13.edge); 1px of inline margin, so a clipping box
                         never cuts the edge's inline sides (C13.clearance);
@@ -888,7 +888,7 @@
      grouping; a review mark joins it by carrying the class. */
   const BORDERED = '.surface-bordered-label, .surface-emphasis-chip';
   /* The owner's values, as literals: padInline is --space-2 and corner --radius-sm in colors_and_type.css. */
-  const LABEL_BOX = { padBlock: 2, padInline: 8, border: 1, corner: 8, margin: 1, width: 'max-content', maxWidth: 'calc(100% - 2px)', dose: { light: 1, dark: 0.5 } };
+  const LABEL_BOX = { padBlock: 2, padInline: 8, border: 1, corner: 8, margin: 1, width: 'max-content', maxWidth: 'calc(100% - 2px)', dose: { light: 1, dark: 0 } };
   /* C14: the labeled range (surface-treatments.css), whose scope rail is its ::before. The owner's
      values, as literals: offset is --space-3 plus the 2px stroke, reach --space-1 and the buffer
      between two ranges --space-5. */

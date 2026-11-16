@@ -20,7 +20,9 @@ semantic color
 
 **Not a palette expansion.** The three role values are existing ASK values — two emphasis accents (magenta, cyan) plus the neutral white / lavender-ASK identity value. This primitive is a new *semantic binding* over the closed palette, not a new hue.
 
-> **Status: v0.2 // semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that coloring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
+> **Status: v0.3 // solid fill.** Until v0.3 the contract set a 30% wash (`color-mix(in srgb, <role> 30%, transparent)`) with the label on `--fg-1`, so the role read as a tint on structure. ASK approved the solid treatment on 2026-11-15: the full role value, with each role's ink, which FILL PAINT owns and keys by the fill color. The role values, the admissibility criteria and the channel discipline are unchanged.
+>
+> **v0.2 // semantic generation.** Authorized by ASK source-of-intent (2026-07-12; source-role correction 2026-09-11). **Landed public consumption is recorded in [`CONSUMERS.md`](CONSUMERS.md), which remains the record of what consumers have actually landed.** The bounded-generativity worked example below shows **how the upstream admissibility rule applies**. It does not make this repo the owner of a consumer's concrete element binding, and it is not a claim about what any consumer has landed. A landed consumption record is not, by itself, a portability, usability, or generality verdict. **v0.2 changes which elements qualify for `legislative`, not how the role renders once assigned** — no role token, palette binding, selector, cascade or resolved value changes. The role list is fixed at three and the role-to-palette mappings are unchanged and remain the portable part; the **admissible population of `legislative`** is what this generation revises. v0.1 held that coloring the source-of-intent apex legislative would collapse source of intent into the legislative function; v0.2 corrects that.
 
 ## The three roles
 
@@ -83,24 +85,23 @@ Only `executive` flips per theme; the two emphasis accents already read on both 
 
 ## Rendering contract
 
-Color is a **sparse semantic signal**, not a set of opaque blocks. A consuming surface keeps the restrained ASK field and marks each role-bearing apparatus at one intensity:
+Color is a **sparse semantic signal**: a consuming surface keeps the restrained ASK field, and only role-bearing apparatus take color. Each one takes it **solid**, at one intensity, through the surface treatments' shared fill paint ([`surface-treatments.css`](surface-treatments.css), FILL PAINT):
 
 ```text
-role stroke       full role value
-role fill         30%  ·  color-mix(in srgb, <role> 30%, transparent)
-label             the role-identifying name set on a role-bearing apparatus: --fg-1, the standard
-                  theme foreground, by default; a foreground registered in README.md
-                  (High-contrast foreground — registered uses) only within that registration's
-                  scope — never the role hue
-notes · tags      explanatory notes, and flow, section or relationship tags — including a tag
-                  that names a role from beside its apparatus — are not labels: they keep their
-                  own neutral foreground roles, never the role hue
+role fill         the full role value, 100%: .surface-fill with --surface-fill-color: var(--function-<role>)
+role boundary     the same value, the fill's own edge, unless a composing meaning claims the outline
+                  (a state outline: see Channel discipline)
+text on the fill  the role's ink, --function-<role>-ink: #D4C6E1 on legislative magenta in light and
+                  #201D26 in dark; #201D26 on judicial cyan; #6A637F on the executive white or lavender.
+                  Every text set on the fill takes it, a label, a note or a tag
+text beside it    notes and flow, section or relationship tags set beside the apparatus, including a
+                  tag that names a role, keep their own neutral foreground roles, never the role hue
 structural edges  neutral (frames, arrows, dimension lines stay --fg-* / --line-*)
 ```
 
-Every **role-bearing apparatus** — a labeled box, a bounded field or chamber, a selected node — carries a **30%** fill and the full role value as stroke. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it — not because its wash is lighter. Labels stay on `--fg-1`, or on a registered foreground within its scope, so the role reads as a tint on structure, not as colored text. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
+Every **role-bearing apparatus** — a labeled box, a bounded field or chamber, a selected node — is filled at the full role value with its boundary in the same value. The field-vs-object distinction is carried by **geometry and negative space, not opacity**: a large field reads as a field because it is large and because the artifacts inside it are cut *out* of it. Color must remain **redundant** with the labels and geometry: the surface still communicates legislative / executive / judicial in monochrome.
 
-**Semantic function color attaches to the role-bearing apparatus, not automatically to the artifacts produced inside it.** A function that *produces* things — an executive field emitting candidates — colors the **field**; the candidates it emits stay neutral content, rendered as **negative cutouts** (holes) through the field with neutral outlines, never a second role fill. The 30% fill is the rendering contract, not a palette addition — the three role colors are unchanged.
+**Semantic function color attaches to the role-bearing apparatus, not automatically to the artifacts produced inside it.** A function that *produces* things — an executive field emitting candidates — colors the **field**; the candidates it emits stay neutral content, rendered as **negative cutouts** (holes) through the field with neutral outlines, never a second role fill. The solid fill is the rendering contract, not a palette addition — the three role colors are unchanged.
 
 ## Non-function elements
 
@@ -118,7 +119,7 @@ Three semantic axes may appear on one surface; they may not compete for one visu
 function role   ≠   element state   ≠   evidence state
 ```
 
-**Reused hue does not create semantic identity.** `--function-legislative` and `--state-proposed` are both magenta; `--function-judicial` and `--state-held` are both named cyan. That is a shared hue *name*, **not** a shared token or resolved value — the function roles bind independently to the fixed emphasis accents, while `--state-*` are per-theme `hsl()` values, so they render differently (the magenta pair shares the 300° hue at different saturation/lightness; the two "cyans" are in fact different hues). These are **not** aliases: color proximity never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) applies to its *exact* reused values. Visible labels stay mandatory.
+**Reused color does not create semantic identity.** Since [Spectral State](spectral-state.md) v1.2, `--function-legislative` and `--state-proposed` are the one foundation magenta, and `--function-judicial` and `--state-held` the one foundation cyan. Each refers to the foundation color, not to the other, and they are **not** aliases: a shared value never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) applies to its reused values. Visible labels stay mandatory.
 
 Channel contract when more than one system is present on an element:
 
@@ -127,6 +128,8 @@ function role   → fill / principal node treatment
 state           → outline, badge, or separate state marker
 evidence state  → evidence marker, rail, dash, or labeled annotation
 ```
+
+**A state in its element's function color takes the badge or the separate marker.** A proposed legislative part or a held judicial part would draw its state outline in its own fill color, where the outline cannot be seen, so the state takes the badge or the separate state marker the contract already allows.
 
 In a document that adopts [Review Semantics](review-semantics.md), review is a further axis, and the composition applies this contract with all three apart: state takes the separate state marker (a square), evidence the evidence marker (a dot), and review the outline. A diagram keeps the contract above.
 
@@ -138,21 +141,23 @@ In a document that adopts [Review Semantics](review-semantics.md), review is a f
 
 ## How to use it
 
-1. Load `colors_and_type.css` first (Three Functions relies on its theme resolution and palette tokens), then `three-functions.css`.
-2. On a consuming element, set the stroke from a single role token and a restrained translucent fill from the same value:
+1. Load `colors_and_type.css` first (Three Functions relies on its theme resolution and palette tokens), then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks), then `three-functions.css`.
+2. On a consuming element, apply the shared fill paint with the role's value and ink:
 
    ```css
-   /* example — consuming surface */
-   .part[data-function="legislative"] {              /* discrete role object → 30% */
-     stroke: var(--function-legislative);
-     fill:   color-mix(in srgb, var(--function-legislative) 30%, transparent);
+   /* example — consuming surface; the element also carries .surface-fill */
+   .part[data-function="legislative"] {              /* discrete role object → solid */
+     --surface-fill-color: var(--function-legislative);
+     --surface-fill-ink:   var(--function-legislative-ink);
    }
-   .field[data-function="executive"] {               /* a bounded field is a role-bearing apparatus → 30% */
-     fill:   color-mix(in srgb, var(--function-executive) 30%, transparent);
+   .field[data-function="executive"] {               /* a bounded field is a role-bearing apparatus → solid */
+     --surface-fill-color: var(--function-executive);
+     --surface-fill-ink:   var(--function-executive-ink);
    }
    ```
 
-3. Keep labels at `--fg-1` — or at a foreground registered for that exact bounded use in [`README.md`](README.md) (*High-contrast foreground — registered uses*), within that registration's scope — and keep structural edges neutral. A registration never makes a label take the role hue. Color only the parts that perform a function; leave everything else on the neutral field.
+   SVG text on the fill also carries `.surface-fill-ink`; an HTML box's text takes the ink as its color.
+3. Keep text beside the apparatus and structural edges neutral. A label set on the fill takes the role's ink, never the role hue. Color only the parts that perform a function; leave everything else on the neutral field.
 4. If the surface also carries state or evidence color, assign them to different channels (outline / marker / rail), never the same fill.
 
 ## Worked example // bounded-generativity binding
@@ -160,7 +165,7 @@ In a document that adopts [Review Semantics](review-semantics.md), review is a f
 For the bounded-generativity model, Three Functions v0.2 applies the upstream admissibility rule as follows. **The owner fixes which kinds of thing qualify for each function; each consumer owns which concrete element instantiates those kinds.** [`method-ASK`](https://github.com/apexSolarKiss/method-ASK) was the first to instantiate it. Landed state is recorded in [`CONSUMERS.md`](CONSUMERS.md), not here.
 
 - **legislative → the source-of-intent / normative-apex role as constitutive source, and the `grammar / brief` box as delegated apparatus** // the apex adopts or authorizes the governing standard; the `grammar / brief` carries it into operative scope, and its grant produces the aperture.
-- **executive → the bounded-realization chamber** // the apparatus carries a 30% executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the wash with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
+- **executive → the bounded-realization chamber** // the apparatus carries the solid executive fill; generation fills the aperture, nonjudgmental. The **candidate glyphs are variance the chamber produces — content, not executive-function objects** — so they are rendered as **negative cutouts through the fill with neutral outlines** (consumer-local): the field reads as executive, the candidates read as uncommitted variance.
 - **judicial → the selection ring and the candidate it ratifies** // evaluation, selection, closure. The ratified candidate is judicial's closed output, no longer neutral chamber variance — which is why it, alone among the glyphs, takes a role fill.
 
 Everything else stays **neutral**, and those exclusions are load-bearing:

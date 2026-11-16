@@ -4,20 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // rail paint regression fixture</title>
-<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow ring is the same beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, and the bordered label and the passage rail keep their own treatments.">
+<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, and the bordered label and the passage rail keep their own treatments.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/rail-paint-fixture.html
      The foundation, the register and the surface treatments, then the state modules, Review Semantics and
      Criterion Assessment, in their load order.
      ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
-     ?field=<name> declares the root's field, as data-surface-field: ask-lavender keeps caution's ring where the
-     root is light, and any other value, ask-ink, an unreviewed name or an empty one, keeps the bare stroke.
-     ?control=local-dose, ?control=unbound-range, ?control=subtree-dose, ?control=label-reach or ?control=theme-dose loads one
+     ?field=<name> declares a root field (data-surface-field): the rail paint must not read it.
+     ?control=local-dose, ?control=unbound-range, ?control=label-reach or ?control=field-dose loads one
      regression, which must fail only the cases tests/README.md names for it. -->
 <script>
   (function () {
     var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control'), f = q.get('field');
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-    if (f !== null) document.documentElement.setAttribute('data-surface-field', f);
+    if (f) document.documentElement.setAttribute('data-surface-field', f);
     if (c) document.documentElement.classList.add('fx-control-' + c);
   })();
 </script>
@@ -41,13 +40,8 @@
   /* The regressions. Each outranks the rule it replaces. */
   html.fx-control-local-dose .doc-compare-assessed[data-assessment="caution"] { --doc-compare-rail-paint: 0 0 0 1px; }
   html.fx-control-unbound-range .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review]) { --surface-labeled-range-paint: none; }
-  html.fx-control-subtree-dose .theme-dark { --surface-rail-paint-structural: none; }
   html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-deflated); }
-  html.fx-control-theme-dose:root[data-surface-field] { --surface-rail-paint-structural: 0 0 0 1px; }
-  html.fx-control-theme-dose:root[data-surface-field][data-theme="dark"] { --surface-rail-paint-structural: none; }
-  @media (prefers-color-scheme: dark) {
-    html.fx-control-theme-dose:root[data-surface-field]:not([data-theme="light"]) { --surface-rail-paint-structural: none; }
-  }
+  html.fx-control-field-dose[data-surface-field] { --surface-rail-paint-structural: 0 0 0 1px; }
 </style>
 </head>
 <body>
@@ -57,8 +51,8 @@
     <h1 class="doc-title">Rail paint</h1>
     <p class="doc-body">Each case is measured once the fonts are ready. A rail in one governed color takes the same
       paint whichever meaning draws it: a review range's scope rail and a comparison's assessment rail in green or
-      red are painted alike, and caution's yellow ring is the same beside a summary, in a value field, in a key and
-      in a dark subtree. When the shared paint changes, every rail bound to it follows; the bordered label and the
+      red are painted alike, and caution's yellow is the same plain stroke beside a summary, in a value field, in a key
+      and in a dark subtree. When the shared paint changes, every rail bound to it follows; the bordered label and the
       passage rail keep their own treatments.</p>
     <p class="doc-label" id="overall">not run</p>
   </section>
@@ -160,12 +154,9 @@
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await tick();
 
-    /* The theme the root resolves: its data-theme, or the browser's preference. The field the dose answers:
-       the one the root declares, or else the one its theme paints. */
+    /* The theme the root resolves: its data-theme, or the browser's preference. */
     var held = document.documentElement.getAttribute('data-theme');
     var dark = held ? held === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    var declared = document.documentElement.hasAttribute('data-surface-field');
-    var field = declared ? document.documentElement.getAttribute('data-surface-field') : (dark ? 'ask-ink' : 'ask-lavender');
     /* A computed box-shadow as none, or as one layer's color and lengths. */
     var shadow = function (v) {
       if (!v || v === 'none') return 'none';
@@ -177,7 +168,8 @@
       var b = cs(el, '::before');
       return { stroke: b.borderLeftWidth + ' ' + b.borderLeftStyle, color: b.borderLeftColor, shadow: shadow(b.boxShadow) };
     };
-    var dose = { earned: 'none', structural: field === 'ask-lavender' && !dark ? '0px 0px 0px 1px' : 'none', deflated: 'none', '': 'none' };
+    /* Every color's paint is none, the plain stroke, on both fields. */
+    var dose = { earned: 'none', structural: 'none', deflated: 'none', '': 'none' };
     var want = function (el, doses) {
       var d = doses[el.getAttribute('data-paint')];
       return d === 'none' ? 'none' : d + ' in ' + paint(el).color;
@@ -201,7 +193,7 @@
     same('one yellow / caution beside a summary, in a field, in the key and in a dark subtree', ['a-cau', 'f-cau', 'k-cau', 's-cau']);
     /* The bordered label and the passage rail keep their own treatments. */
     var label = $('l-declined'), lc = cs(label);
-    expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0.5px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);
+    expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);
     var labelBefore = shadow(lc.boxShadow), quoteBefore = cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth;
 
     /* Change the shared paint: every rail bound to it follows, and nothing else moves. */

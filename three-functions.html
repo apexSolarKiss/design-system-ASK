@@ -13,8 +13,10 @@
      prefers-color-scheme / [data-theme="dark"]), inside the site's surface-shell
      chrome. Open directly. -->
 <link rel="stylesheet" href="colors_and_type.css">
-<link rel="stylesheet" href="three-functions.css">
 <link rel="stylesheet" href="surface-document.css">
+<link rel="stylesheet" href="surface-panel.css">
+<link rel="stylesheet" href="surface-treatments.css">
+<link rel="stylesheet" href="three-functions.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
@@ -41,15 +43,18 @@
   /* Widened from 92px when the labels moved to the Caption step: `legislative`
      needs 94px of inline space at 14px mono, which the old box clipped by 2px.
      The box grew to fit the type; the type did not shrink to fit the box. */
-  .part { width: 108px; height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3);
+  .part { width: 108px; height: 46px; border-radius: 8px; border-width: 1.5px; border-style: solid;
           display: flex; align-items: center; justify-content: center;
-          font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); color: var(--fg-1); }
-  .leg { border-color: var(--function-legislative); background: color-mix(in srgb, var(--function-legislative) 30%, transparent); }
-  .jud { border-color: var(--function-judicial);    background: color-mix(in srgb, var(--function-judicial) 30%, transparent); }
-  /* .neu — neutral part: default --fg-3 hairline, no function color */
-  /* executive is a FIELD, not a discrete object: 30% fill with variance as NEGATIVE cutouts */
+          font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
+  /* A role-bearing part carries .surface-fill (surface-treatments.css, FILL PAINT): its role's value fills it and
+     edges it, and its role's ink sets its text. This page binds each role and nothing else. */
+  .leg { --surface-fill-color: var(--function-legislative); --surface-fill-ink: var(--function-legislative-ink); }
+  .jud { --surface-fill-color: var(--function-judicial);    --surface-fill-ink: var(--function-judicial-ink); }
+  .exe { --surface-fill-color: var(--function-executive);   --surface-fill-ink: var(--function-executive-ink); }
+  /* the neutral part: the --fg-3 hairline, no function color */
+  .part:not(.surface-fill) { border-color: var(--fg-3); color: var(--fg-1); }
+  /* executive is a FIELD, not a discrete object: the solid fill, with variance as NEGATIVE cutouts */
   .efield-row { display: flex; align-items: center; gap: 16px; }
-  .efield-wash { fill: color-mix(in srgb, var(--function-executive) 30%, transparent); }
   .flabel { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); }
   /* neutral non-function exemplar — ONE pill, no topology / no chain */
   .gov { display: flex; align-items: center; gap: 12px; }
@@ -57,7 +62,7 @@
            display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .chan { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
   .chan .cell { width: 108px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-                font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); color: var(--fg-1); }
+                font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
   .chan .legend { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.7; color: var(--fg-2); }
 </style>
 </head>
@@ -80,7 +85,7 @@
 
   <main class="surface-payload">
   <h2 class="doc-title">Three Functions</h2>
-  <div class="sub">v0.2 // function color on the ASK field</div>
+  <div class="sub">v0.3 // function color on the ASK field, solid</div>
 
   <div class="grid">
     <div class="arc-label">Three functions · one spine</div>
@@ -92,30 +97,29 @@
   <div class="demo">
     <div class="doc-section">
       <h2 class="doc-section-title">Rendering contract</h2>
-      <p>every role-bearing apparatus → 30% fill · field vs object is geometry + negative space, not opacity · labels + structure neutral</p>
+      <p>every role-bearing apparatus → solid fill at the full role value, edged in the same value · text on it in the role's ink · field vs object is geometry + negative space, not opacity · structure neutral</p>
     </div>
     <div class="parts">
-      <div class="part leg">legislative</div>
-      <div class="part jud">judicial</div>
+      <div class="part leg surface-fill">legislative</div>
+      <div class="part jud surface-fill">judicial</div>
       <div class="part">neutral</div>
     </div>
     <div class="parts efield-row" style="margin-top:18px">
       <svg width="260" height="62" viewBox="0 0 260 62" aria-hidden="true">
-        <defs><mask id="key-holes" maskUnits="userSpaceOnUse" x="0" y="0" width="260" height="62">
-          <rect x="0" y="0" width="260" height="62" rx="8" fill="#fff"/>
+        <defs><mask id="key-holes" maskUnits="userSpaceOnUse" x="-2" y="-2" width="264" height="66">
+          <rect x="-2" y="-2" width="264" height="66" rx="10" fill="#fff"/>
           <rect x="28" y="21" width="20" height="20" rx="3" fill="#000"/>
           <circle cx="96" cy="31" r="11" fill="#000"/>
           <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="#000"/>
           <circle cx="226" cy="31" r="10" fill="#000"/>
         </mask></defs>
-        <rect class="efield-wash" x="0" y="0" width="260" height="62" rx="8" mask="url(#key-holes)"/>
-        <rect x="0" y="0" width="260" height="62" rx="8" fill="none" stroke="var(--function-executive)" stroke-width="1.5"/>
+        <rect class="surface-fill exe" x="0" y="0" width="260" height="62" rx="8" stroke-width="1.5" mask="url(#key-holes)"/>
         <rect x="28" y="21" width="20" height="20" rx="3" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
         <circle cx="96" cy="31" r="11" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
         <rect x="152" y="19" width="22" height="22" rx="3" transform="rotate(45 163 30)" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
         <circle cx="226" cy="31" r="10" fill="none" stroke="var(--fg-3)" stroke-width="1.2"/>
       </svg>
-      <span class="flabel">executive field // 30% fill · variance as negative cutouts</span>
+      <span class="flabel">executive field // solid fill · variance as negative cutouts</span>
     </div>
   </div>
 
@@ -136,8 +140,7 @@
       <p>function ≠ state ≠ evidence · reused hue is not identity · labels stay mandatory</p>
     </div>
     <div class="chan">
-      <div class="cell" style="background: color-mix(in srgb, var(--function-legislative) 30%, transparent);
-           border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
+      <div class="cell leg surface-fill" style="border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
       <div class="legend">one element · three channels //
         <b>fill</b> = function · <b>outline</b> = element state · <b>rail</b> = evidence state<br>
         state + evidence shown schematic — they would carry Spectral State / Evidence State values</div>

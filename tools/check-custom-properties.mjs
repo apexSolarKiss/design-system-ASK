@@ -64,8 +64,8 @@ const DEPENDENCIES = {
   'surface-text-link.css':                                             [FOUNDATION, SELF],
   'surface-document.css':                                              [FOUNDATION, SELF],
   'surface-treatments.css':                                            [FOUNDATION, 'surface-panel.css', SELF],
-  'three-functions.css':                                               [FOUNDATION, SELF],
-  'spectral-state.css':                                                [FOUNDATION, SELF],
+  'three-functions.css':                                               [FOUNDATION, 'surface-treatments.css', SELF],
+  'spectral-state.css':                                                [FOUNDATION, 'surface-treatments.css', SELF],
   'evidence-state.css':                                                [FOUNDATION, 'spectral-state.css', SELF],
   'review-semantics.css':                                              [FOUNDATION, 'surface-treatments.css', 'spectral-state.css',
                                                                         'evidence-state.css', SELF],
@@ -638,7 +638,10 @@ function selfTest(root) {
     const carrier = 'evidence-state.css';
     const foundationOnly = missesOf(checkCarrier(makeContext(root), carrier, [FOUNDATION]));
     const declared = missesOf(checkCarrier(makeContext(root), carrier, DEPENDENCIES[carrier]));
-    const want = ['evidence-state.css:59 --state-earned', 'evidence-state.css:60 --state-partial', 'evidence-state.css:61 --state-held'];
+    // Each reference's line is read from the carrier, so the case follows the file's own layout.
+    const lines = fs.readFileSync(path.join(root, carrier), 'utf8').split('\n');
+    const want = ['--state-earned', '--state-partial', '--state-held']
+      .map((name) => `${carrier}:${lines.findIndex((l) => l.includes(`var(${name})`)) + 1} ${name}`);
     record('evidence-state.css: 3 misses against the foundation only, 0 with its declared dependencies',
       JSON.stringify(foundationOnly) === JSON.stringify(want) && declared.length === 0,
       { foundationOnly: want, declared: [] }, { foundationOnly, declared });
