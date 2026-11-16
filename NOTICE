@@ -9,3 +9,28 @@ unmodified from the ASK site (github.com/apexSolarKiss/ASK).
 
 Licensed under the Apache License, Version 2.0.
 See the LICENSE file for the full license text.
+
+Exception // source-derived network specimen
+
+The network.forward-backward specimen of the Layered networks pattern is an
+independently rendered composition based on the topology, notation and
+equations of Figure 1c-d in:
+
+  Yann LeCun, Yoshua Bengio and Geoffrey Hinton, "Deep learning",
+  Nature 521, 436-444 (2015). https://doi.org/10.1038/nature14539
+
+The original published figure artwork is not included. The specimen's data,
+wherever it appears, is excluded from the Apache License 2.0 grant above:
+
+  - its entry in
+    patterns/diagram-static-network/diagram-static-network.source.js, and the
+    forward and backward equation sets that entry uses, in the same file;
+  - the restatement of its connections and marks in
+    tests/network-contract.test.mjs;
+  - every rendering or export of the specimen.
+
+No license to the underlying source material is granted. The rest of the
+pattern, its synthetic network.sparse-5-2-3 specimen and the rest of this
+repository remain licensed under the Apache License 2.0, except the Inter and
+JetBrains Mono font software, including the subsets the pattern's font
+carrier embeds, which remains under the SIL Open Font License 1.1.

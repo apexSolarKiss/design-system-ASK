@@ -1031,6 +1031,133 @@ declarations for width and white space state the layout's assumptions; they do n
 observed failure. The kerning-and-optical-sizing host is the peer's own: its key wording is kerned
 and optically sized as it renders alone, and the former rules let a host turn both off.
 
+## network-contract.test.mjs
+
+Guards the **network contract, rendering, layout and export** of the [`diagram-static-network`](../patterns/diagram-static-network/README.md)
+pattern, on the owner files themselves. It loads the engine, the glyph carrier, the font carrier and the
+specimen's network sources into one global exactly as a page does, and runs the exporter as a consumer would.
+Scripted, not by eye:
+
+```
+node tests/network-contract.test.mjs
+```
+
+```text
+P  every specimen validates; the reference is the source-read topology (layers 3-4-3-2 and the
+   23 connections of Fig. 1c-d, by name), its marks i, j, k, l sit on the marked units and each
+   weight labels a declared connection; the second specimen differs in layer count, populations
+   and connections, carries its own generic annotation and no credit; the glyph carrier records
+   ink outside the advance (the italic j left of its origin, the italic f past its advance)
+V  every malformed spec, notation, carrier or option checked is its named error, and validate()
+   never throws: misplaced, repeated or unknown connections, a weight on an undeclared one,
+   unsupported and look-alike characters, misspelled fields, bad marks and directions, an
+   unreadable spec, a missing carrier (GLYPHS_MISSING, also beside a spec-level error), ink bounds
+   that are not four numbers and a missing summation sign, a repeated equation layer, a wide label
+   a connector runs through on a dense network, equation lines that would overprint, a hole in the
+   weights, panels, equations or a notation line, an empty notation run; theme values by form (a
+   double-quoted family accepted; markup, CSS punctuation, an ampersand, a comment opener, an
+   unbalanced quote or a url() refused); font-face CSS written escaped; a credited one-panel plate
+   narrower than its credit validates, its plate grown to hold it
+R  rendering is deterministic; the art view keeps the annotated view's rings, connectors, heads,
+   plate size and drawn credit, and draws no other text and no dot; the annotated view draws the
+   notes, the four marks in each panel and a dot per weight per panel; a spec with no credit draws
+   none; six ids, all the plate's own; italic runs set cv05; the description names every panel,
+   reads the annotation and the notes in the annotated view, and carries the credit in every view;
+   the page's selector reads only its own buttons; the second specimen's annotation draws, and its
+   descriptions differ by view; no opacity anywhere and no rule of their own for the notes and
+   the credit; no kerning or ligatures, and the rules declaring each property the text's layout and
+   ink depend on (R14 reads the declarations; network-host-inheritance.mjs shows what they do); the
+   plate named by its title alone and described by its description; re-mounting into a host keeps
+   its prefix
+L  read back from five rendered plates — the reference, the second specimen, a one-panel credited
+   probe, a nested-fraction probe and an italic-overhang probe — with geometry written in the
+   test, independent of the engine's (closest points between segments, Liang-Barsky clipping, a
+   winding-number polygon test), and ink boxes built from the carrier's [xMin, yMin, xMax, yMax]:
+   every drawn text but the marks keeps 3 units from every connector, head and ring of its panel,
+   and every weight label also from every dot (L1); everything drawn lies inside the plate (L2);
+   the parser read every text and annotation group drawn (L3); every annotation keeps 3 units from
+   every other (L4); the notes and the credit keep 3 units from the graph (L5); every dot lies on
+   a drawn connector and keeps 3 units from every other connector and every head (L6); no
+   notation text comes within 1.5 units of a fraction rule of its own (L7); every annotation's
+   drawn ink lies inside the box the engine validated for it (L8)
+F  both carriers record the canonical fonts' sha256; the italic subset's own WOFF2 — its table
+   directory, Brotli stream, character map, glyph names and advances, decoded here — sends l to
+   the tailed glyph, whose advance is the glyph carrier's; the font carrier declares three faces
+   under private, hash-named families, keeps no layout feature, and carries both license texts
+   byte-equal to fonts/*-OFL.txt; the exporter resolves the canonical tokens, writes eight files
+   and the same bytes twice; the credited specimen's files draw the credit and the other's do not;
+   every file embeds the three subsets, names the private families first, carries both license
+   texts in full and no var(); each theme's field and ink are written; no id is shared between
+   files; an invalid source writes nothing
+X  negative controls on mutated copies of the engine, the page or a font, each run against the
+   check it guards: a fully connected network fails P2 (X1); keeping the first candidate is
+   refused by the engine's guard (X2) and, with the guard off, found by the read-back (X3); the
+   former sampled clearance accepts the wide dense label and the read-back finds the connector
+   through it (X4); a plate sized to its networks alone is LAYOUT_BOUNDS (X5) and, with that
+   guard off, the read-back finds the credit outside (X6); without the pairwise guard the
+   overprinting lines validate (X7); dropping the art view's credit fails R3 (X8); dropping cv05
+   fails R9 (X9); the canonical italic font fails F3 (X10); the former bare page selector fails
+   R11 (X11); the former fixed fraction offsets put the nested probe's operands into their bars
+   (X12, L7); a box built from advances does not hold the overhang probe's ink (X13, L8); without
+   the dot's own clearance the dot lands on another connector (X14, L6); a credit drawn on a note
+   fails L4 (X15); a text the parser cannot read fails L3 (X16)
+```
+
+**Determinism is within one runtime.** The engine rounds every coordinate to two decimals; a byte
+comparison across runtimes is not claimed. The test renders no PNG and opens no browser: the PNG
+route, the tailed l in a standalone PNG and the rendering in Chrome are checked outside it. The plate
+under a host's inherited styles is checked in Chrome by network-host-inheritance.mjs.
+
+## network-host-inheritance.mjs
+
+Guards the [`diagram-static-network`](../patterns/diagram-static-network/README.md) plate **under a
+host's inherited styles**, in headless Chrome (Node 22+, Chrome at `$CHROME` or the default locations;
+no npm dependency). It exports every spec as a consumer would, opens the specimen page and inlines
+each exported SVG, unchanged, into a control host and into hosts that each carry ordinary inherited
+styles. After the fonts load it reads every text's first-character position, length, box, computed
+style and the platform font that drew it.
+
+```
+node tests/network-host-inheritance.mjs             # --out DIR keeps results.json and the review PNGs
+```
+
+```text
+I1  in the control host every exported plate draws what its layout measured: each text starts at
+    its x and y; its length is the glyph carrier's advances, within 0.0001 of the size per character
+    for the carrier's rounding and 0.02 units for Chrome's 1/64-unit length grid; no text leaves the
+    plate; and every private face it uses has loaded
+I2  the control draws roman and sigma runs with the roman face and italic runs with the italic face
+I3  with every host declaration applied (each parsed into the host's style), under each host —
+    text-anchor middle and end; dominant-baseline middle and hanging; italic; bold; condensed;
+    small caps; font-size-adjust; letter and word spacing and case; kerning, features, variations,
+    synthesis and optical sizing; direction rtl; vertical writing; white space; text rendering;
+    stroke and shadow; and all of them at once — every exported plate's texts start, measure and
+    box as in the control, keep their faces and stay inside the plate, and text, heads, dots and
+    the field's rectangle take no stroke, and text no shadow
+I4  the reference spec mounted through the page's engine, with the page's theme, under all the
+    host styles at once measures and faces as in the control host
+N   negative controls on a plate whose rules declare only what the first version declared (its
+    text rule without anchoring, baseline, direction, writing mode, white space, face, ink and
+    rendering; no stroke rule on heads, dots or the field's rectangle), rebuilt from the plate. N0
+    fails unless all three rules are found. The rebuilt plate is unchanged and identically painted
+    in an ordinary host (N1); an inherited text-anchor: middle moves its texts and draws some
+    outside the plate (N2); an inherited dominant-baseline: middle moves them vertically (N3); an
+    inherited italic draws roman text with the italic face and changes its length (N4); an
+    inherited stroke strokes text, heads, dots and the field's rectangle (N5)
+```
+
+**The guarantee is about inheritance, and only the properties above.** A stylesheet rule written
+against the plate's own elements, or one marked `!important`, is not part of it. Neither are the
+connectors', rings' and rules' stroke styles beyond color and width, such as dashes, caps and joins,
+or paint opacity.
+
+**Not every host fails the first version.** Its plates already pass the bold, condensed, small-caps,
+spacing-and-case, features, white-space and rendering hosts. It declared the weight, features,
+synthesis, spacing and case. In Chrome these plates' faces have one width, and no text without
+`xml:space="preserve"` holds an edge space or a run of spaces, so collapsing white space changes
+nothing. The declarations for width, variants, white space and rendering state the layout's
+assumptions; they do not repair an observed failure.
+
 ## radial-fixture.html + radial-behavior.mjs
 
 The **browser behavior harness** of [`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md). `radial-behavior.mjs` serves
