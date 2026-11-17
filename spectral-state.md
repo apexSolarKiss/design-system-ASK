@@ -6,7 +6,9 @@ It is a **specialized, opt-in foundation primitive** — for surfaces that encod
 
 **Profiles.** Sanctioned *profiles* may build on this primitive for adjacent semantic domains. The first is [`evidence-state.md`](evidence-state.md) (epistemic evidence-state), which reuses three of the roles below by reference and adds two evidence-specific roles. The second is Review State, in [`review-semantics.md`](review-semantics.md), which reuses two of the roles below (`earned`, `deflated`) and the foundation's emphasis magenta, emphasis cyan and `--fg-3` by reference for the five review roles of a document annotation composition, and adds no value. Its Open question shares `held`'s meaning, a matter not yet settled, and since v1.2 its value: both are the emphasis cyan. Spectral State's own eight-role architectural-element vocabulary is unchanged by any profile.
 
-> **Status: v1.2 // one value per role in both themes.** So that a state shape can be painted at 100% fill ([`surface-treatments.css`](surface-treatments.css), FILL PAINT), where a color that changed between themes would be a different color, the per-theme calibration is retired. Every chromatic role takes one value in both themes: the former dark values for green, yellow and red; a more vivid orange; and the foundation's emphasis magenta, cyan and violet, by reference, for `proposed`, `held` and `external`. Each physical color is defined once. Role names are unchanged; consumers re-consume by re-sync.
+> **Status: v1.3 // each physical value defined once, in the foundation.** Green, yellow, orange and red move into the foundation's **reserved state values** in [`colors_and_type.css`](colors_and_type.css), beside the emphasis accents the other three roles already bind; the role values are unchanged. Those values are not general UI color: a surface reaches them only through a role here. Re-sync this file with `colors_and_type.css` from the same owner commit.
+>
+> **v1.2 // one value per role in both themes.** So that a state shape can be painted at 100% fill ([`surface-treatments.css`](surface-treatments.css), FILL PAINT), where a color that changed between themes would be a different color, the per-theme calibration is retired. Every chromatic role takes one value in both themes: the former dark values for green, yellow and red; a more vivid orange; and the foundation's emphasis magenta, cyan and violet, by reference, for `proposed`, `held` and `external`. Each physical color is defined once. Role names are unchanged; consumers re-consume by re-sync.
 >
 > **v1.1 // restructured after first-consumer proving.** The eight-role vocabulary and the wheel-as-resource concept were validated in a real surface — [`asset-pipeline-ASK`](https://github.com/apexSolarKiss/asset-pipeline-ASK)'s interactive IA state spine (first consumer), which exercised all eight roles by reference (no palette fork). That proving surfaced a category error: `proposed` is a *potentiality*, not a degree of achieved provenness, so it does not belong on the health ramp. **v1.1** moves `proposed` to the orthogonal axis (magenta 300°) and recolors the now-4-stop health ramp to a clean **green → yellow → orange → red**, which also retires the prior yellow-family perceptual-evenness watch-point (two near-yellows collapse to one). Role names are unchanged; AP re-consumes the recolor by re-sync.
 
@@ -27,7 +29,7 @@ The first four are the **health ramp** (ordered, achieved provenness); `held` / 
 
 ## Wheel logic
 
-A **12-hue neon wheel** is the palette's *origin*: `hsl(H, S, L)`, `H = n×30°`. It is where the hues were found and a resource, not a mandate to invent twelve states, and not a constraint on the final values: only the eight roles draw from it, and three of them now take a foundation color: magenta on the wheel at 300°, and cyan and violet a few degrees off it.
+A **12-hue neon wheel** is the palette's *origin*: `hsl(H, S, L)`, `H = n×30°`. It is where the hues were found and a resource, not a mandate to invent twelve states, and not a constraint on the final values: only the eight roles draw from it. Every chromatic role now takes its value from the foundation: green, yellow, orange and red from its reserved state values, and magenta, cyan and violet from its emphasis colors — magenta on the wheel at 300°, and cyan and violet a few degrees off it.
 
 - **Health ramp // the achieved-provenness axis.** One ordered axis, green "go" → red "no": `earned (120° green)` → `structural (60° yellow)` → `partial (30° orange)` → `deflated (0° red)`. Four stops, a clean stoplight-style gradient; the **green↔red anchors are firm**; all stops fall on the wheel's 30° steps.
 - **Orthogonal categories // not a health judgment.** `held` (cyan), `external` (violet) and `proposed` (magenta) sit off the ramp — "different axis, not good-vs-bad." They take the foundation's emphasis colors by reference, the same values Three Functions and Review Semantics use for their own meanings: one physical color, distinct meanings. `proposed` lives here because it is a *potentiality* (a candidate, not yet pressured), not a degree of achieved provenness.
@@ -37,10 +39,10 @@ A **12-hue neon wheel** is the palette's *origin*: `hsl(H, S, L)`, `H = n×30°`
 
 | Role | Value | Where it is defined |
 | --- | --- | --- |
-| `earned` | `hsl(120, 95%, 60%)` | here |
-| `structural` | `hsl(60, 95%, 60%)` | here |
-| `partial` | `hsl(30, 100%, 50%)` | here |
-| `deflated` | `hsl(0, 95%, 60%)` | here |
+| `earned` | `var(--ask-state-value-green)`, `hsl(120, 95%, 60%)` | [`colors_and_type.css`](colors_and_type.css), reserved state values |
+| `structural` | `var(--ask-state-value-yellow)`, `hsl(60, 95%, 60%)` | [`colors_and_type.css`](colors_and_type.css), reserved state values |
+| `partial` | `var(--ask-state-value-orange)`, `hsl(30, 100%, 50%)` | [`colors_and_type.css`](colors_and_type.css), reserved state values |
+| `deflated` | `var(--ask-state-value-red)`, `hsl(0, 95%, 60%)` | [`colors_and_type.css`](colors_and_type.css), reserved state values |
 | `held` | `var(--ask-emphasis-cyan)` | [`colors_and_type.css`](colors_and_type.css) |
 | `external` | `var(--ask-emphasis-violet)` | [`colors_and_type.css`](colors_and_type.css) |
 | `proposed` | `var(--ask-emphasis-magenta)` | [`colors_and_type.css`](colors_and_type.css) |
@@ -62,12 +64,12 @@ Each role also names its ink, `--state-<role>-ink` (`--state-earned-ink` … `--
 ## Tiers
 
 - **Tier 1 (identity-free):** the eight `--state-*` role names — a stable vocabulary other ASK-family repos can reuse.
-- **Tier 2 (ASK design language):** the neon `hsl()` values, the three references to the foundation's emphasis colors, and the wheel logic.
+- **Tier 2 (ASK design language):** the seven role values — four of the foundation's reserved state values and its three emphasis colors, each defined there and referenced here — and the wheel logic.
 - **No Tier 3.** This primitive carries no instance identity.
 
 ## How to use it
 
-1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*` and emphasis colors), then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name), then `spectral-state.css`, all from one design-system commit.
+1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*`, emphasis colors and reserved state values), then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name), then `spectral-state.css`, all from one design-system commit.
 2. On a consuming element, set color or stroke from a single role token, e.g. `stroke: var(--state-held)` or `color: var(--state-held)`. A shape filled in a role takes FILL PAINT: `.surface-fill` with the role's value and its ink.
 3. Leave an element with no asserted state neutral, and apply a neon role only to mark a state. A neutral filled shape takes FILL PAINT's neutral shape (`.surface-fill--neutral`), never `--state-neutral`, which is a foreground: in light it would leave the neutral node the darkest shape.
 

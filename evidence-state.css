@@ -17,11 +17,17 @@
      colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
      spectral-state.css  →  evidence-state.css
    surface-panel.css and surface-treatments.css supply the inks Spectral State
-   binds; this file reads none of them.
+   binds; this file reads none of them. Its two values are the foundation's reserved
+   state values (colors_and_type.css).
 
    Offline; no CDN. One value per role in both themes: no theme block.
 
-   STATUS: v0.2 — one value per role in both themes, as Spectral State v1.2:
+   STATUS: v0.3 — the two new values are defined once, in the foundation's reserved
+   state values (colors_and_type.css: --ask-state-value-brown and
+   --ask-state-value-lavender-gray), as Spectral State v1.3's are; the values are unchanged.
+   Re-sync this file with colors_and_type.css from the same owner commit.
+
+   v0.2 — one value per role in both themes, as Spectral State v1.2:
    weakened is hsl(30, 45%, 48%) and not-yet-testable hsl(264, 8%, 53%) on either
    field (ASK, 2026-11-15). The three reused roles move with Spectral State:
    supported and partially-supported each take one value, and unresolved the
@@ -70,8 +76,8 @@
   --evidence-unresolved:          var(--state-held);     /* exact mapping */
 
   /* new Evidence State roles — one value each, in both themes */
-  --evidence-weakened:            hsl( 30, 45%, 48%);    /* muted 30° — brown */
-  --evidence-not-yet-testable:    hsl(264,  8%, 53%);    /* neutral lavender-gray (see contract above) */
+  --evidence-weakened:            var(--ask-state-value-brown);          /* muted 30° — brown */
+  --evidence-not-yet-testable:    var(--ask-state-value-lavender-gray);  /* neutral lavender-gray (see contract above) */
 }
 
 /* No theme block. Through v0.1 the two new roles took a lighter brown and a

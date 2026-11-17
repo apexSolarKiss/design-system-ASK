@@ -12,12 +12,17 @@
    `diagram-static-V`), which are structural and assert no state.
 
    Layer this ON TOP of `colors_and_type.css` — it relies on that file's theme
-   resolution (`[data-theme]` + `prefers-color-scheme`), its `--fg-*` tokens and
-   its emphasis colors — and with `surface-panel.css` and `surface-treatments.css`,
+   resolution (`[data-theme]` + `prefers-color-scheme`), its `--fg-*` tokens, its
+   emphasis colors and its reserved state values — and with `surface-panel.css` and `surface-treatments.css`,
    whose FILL PAINT supplies the inks the `--state-*-ink` bindings below name.
    Offline; no CDN.
 
-   STATUS: v1.2 — one value per role in both themes. The per-theme calibration
+   STATUS: v1.3 — green, yellow, orange and red are defined once, in the foundation's
+   reserved state values (colors_and_type.css), as the three emphasis colors already
+   were; the role values are unchanged. Re-sync this file with colors_and_type.css from
+   the same owner commit.
+
+   v1.2 — one value per role in both themes. The per-theme calibration
    (S 85% / L 45% on the light field, S 95% / L 60% on the dark) is retired: so
    that a state shape can be painted at 100% fill (surface-treatments.css, FILL
    PAINT), a color must be the same in both themes. Every chromatic role now
@@ -68,17 +73,18 @@
    ========================================================================= */
 
 /* ---------- One value per role, in both themes ----------
-   S 95% / L 60% on the wheel for green, yellow and red; orange at S 100% / L 50%,
-   which reads as orange rather than peach at full fill; cyan, violet and magenta
-   by reference to the foundation's --ask-emphasis-* colors, defined once there.
-   No theme block redefines them. --state-neutral alone follows the theme, through
-   --fg-1. */
+   Every chromatic role takes its physical value by reference from the foundation
+   (colors_and_type.css), where each is defined once: green, yellow, orange and red
+   from its reserved state values (S 95% / L 60% on the wheel, orange at
+   S 100% / L 50%, which reads as orange rather than peach at full fill), cyan,
+   violet and magenta from its emphasis accents. No theme block redefines them.
+   --state-neutral alone follows the theme, through --fg-1. */
 :root {
-  --state-earned:     hsl(120, 95%, 60%);
-  --state-structural: hsl( 60, 95%, 60%);
-  --state-partial:    hsl( 30, 100%, 50%);
+  --state-earned:     var(--ask-state-value-green);
+  --state-structural: var(--ask-state-value-yellow);
+  --state-partial:    var(--ask-state-value-orange);
   --state-proposed:   var(--ask-emphasis-magenta);
-  --state-deflated:   hsl(  0, 95%, 60%);
+  --state-deflated:   var(--ask-state-value-red);
   --state-held:       var(--ask-emphasis-cyan);
   --state-external:   var(--ask-emphasis-violet);
   /* no asserted state — renders as the theme's default foreground (lavender
