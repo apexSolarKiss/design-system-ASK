@@ -288,7 +288,7 @@
         var cb = el('input'); cb.type = 'checkbox'; cb.id = id; cb.value = o.value; cb.disabled = o.locked;
         cb.setAttribute('data-radial-facet', f.def.id);
         lab.appendChild(cb);
-        if (f.def.swatch) { var sw = el('span', 'radial-facet-sw'); sw.style.setProperty('--st', 'var(--state-' + o.value + ')'); lab.appendChild(sw); }
+        if (f.def.swatch) { var sw = el('span', 'radial-facet-sw' + (o.value === 'neutral' ? ' radial-sw--wash' : '')); sw.style.setProperty('--st', 'var(--state-' + o.value + ')'); lab.appendChild(sw); }
         lab.appendChild(el('span', 'radial-facet-lbl', o.label));
         lab.appendChild(el('span', 'radial-facet-n', num(o.count)));
         d.appendChild(lab);

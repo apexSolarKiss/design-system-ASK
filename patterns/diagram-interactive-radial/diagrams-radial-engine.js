@@ -238,8 +238,29 @@
       spineEls.set(s.id, p);
     });
 
-    /* relations, drawn by their plane's policy; a 'never' plane is never drawn */
-    var edgeEls = [], undrawn = 0;
+    /* each mark's furthest extent from its center, as a multiple of its radius */
+    var REACH = { circle: 1, ring: 1.2, hex: 1.3, diamond: 1.25, tri: 1.48, square: 1.3, pill: 1.015 };
+    function qAt(t, a, c, b) { var u = 1 - t; return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]; }
+
+    /* relations, drawn by their plane's policy; a 'never' plane is never drawn. A directed relation
+       into a filled target ends just past the target's reach rather than at its center, so its tip
+       clears the fill: the curve is cut where it meets that reach, by splitting it (de Casteljau),
+       so the part drawn is the same curve. */
+    var edgeEls = [], undrawn = 0, obscured = [];
+    /* a mark that asserts a state is filled at 100%; the root and a mark asserting none keep the wash */
+    function filled(n) { return n.kind !== 'root' && !!n.state && n.state !== 'neutral'; }
+    var filledMarks = L.nodes.filter(filled).map(function (n) { return { n: n, shape: shapeOf(n) }; });
+    var strokeOf = {};                                       /* a plane's stroke width, read once per drawn class */
+    function tipUnderFill(cut, p, target, drawn) {
+      if (!(drawn in strokeOf)) strokeOf[drawn] = parseFloat(root.getComputedStyle(p).strokeWidth) || 1;
+      var sw = strokeOf[drawn];
+      var ux = cut.e[0] - cut.c[0], uy = cut.e[1] - cut.c[1], ul = Math.sqrt(ux * ux + uy * uy) || 1;
+      var tx = cut.e[0] + ux / ul * 0.6 * sw, ty = cut.e[1] + uy / ul * 0.6 * sw;
+      return filledMarks.some(function (m) {
+        if (m.n === target || Math.abs(m.n.x - tx) > m.n.r * 1.5 + 1 || Math.abs(m.n.y - ty) > m.n.r * 1.5 + 1) return false;
+        return gap(m, tx, ty) <= 0.75;                       /* inside the mark or its 1.5 outline */
+      });
+    }
     model.relations.forEach(function (e) {
       var pl = model.planes.get(e.plane);
       if (pl.drawn === 'never') { undrawn++; return; }
@@ -247,19 +268,99 @@
       if (!A || !B) return;
       var mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, dx = B.x - A.x, dy = B.y - A.y;
       var bow = Math.sqrt(dx * dx + dy * dy) * 0.15, nl = Math.sqrt(dx * dx + dy * dy) || 1;
-      var p = el('path', { 'class': 'radial-edge radial-edge--' + pl.drawn,
-        d: 'M' + A.x + ' ' + A.y + ' Q' + (mx - dy / nl * bow) + ' ' + (my + dx / nl * bow) + ' ' + B.x + ' ' + B.y });
+      var d = 'M' + A.x + ' ' + A.y + ' Q' + (mx - dy / nl * bow) + ' ' + (my + dx / nl * bow) + ' ' + B.x + ' ' + B.y;
+      /* A target filled at 100% would hide a head that ends under it, so a directed relation into a
+         state-bearing mark stops short of it. A washed target (no asserted state, or the root) shows
+         the head through its 15% fill, so its relation keeps the full curve, as before the fill paint. */
+      var cut = null, hidden = false;
+      if (pl.directed && filled(B)) {
+        var qa = [A.x, A.y], qc = [mx - dy / nl * bow, my + dx / nl * bow], qb = [B.x, B.y];
+        /* past the target's painted outline (0.75) and the head's tip, which overshoots the path's
+           end by 0.6 of the stroke width (refX 9 of 10, markerWidth 6; 1.14 at the widest plane).
+           A mark's outline meets at mitered corners: at a triangle's sharpest corner it reaches 1.57
+           past the vertex, 0.82 beyond the 0.75 allowed, more than the 0.61 left over at leaf size;
+           a diamond's (1.06) and a hexagon's (0.87) fit within it. */
+        var sh = shapeOf(B), stop = B.r * (REACH[sh] || 1) + 2.5 + (sh === 'tri' ? 0.82 : 0);
+        /* At this bow (0.15 of the chord) a point's distance from the target falls all the way along
+           the curve, so the cut is wherever it reaches `stop`, in either half: a relation between close
+           neighbors is cut near its source. A source whose own center stands within `stop` leaves no
+           point to cut at. */
+        if (stop < nl) {
+          var lo = 0, hi = 1;
+          for (var it = 0; it < 32; it++) {
+            var mid = (lo + hi) / 2, q = qAt(mid, qa, qc, qb);
+            if (Math.sqrt(Math.pow(q[0] - qb[0], 2) + Math.pow(q[1] - qb[1], 2)) > stop) lo = mid; else hi = mid;
+          }
+          var c2 = [qa[0] + (qc[0] - qa[0]) * lo, qa[1] + (qc[1] - qa[1]) * lo], e2 = qAt(lo, qa, qc, qb);
+          d = 'M' + A.x + ' ' + A.y + ' Q' + c2[0] + ' ' + c2[1] + ' ' + e2[0] + ' ' + e2[1];
+          cut = { c: c2, e: e2 };
+        } else hidden = true;
+      }
+      var p = el('path', { 'class': 'radial-edge radial-edge--' + pl.drawn, d: d });
       if (pl.directed) p.setAttribute('marker-end', 'url(#' + arrowId + ')');
       /* created in the state paint(null) gives it, so a drawn-always relation is visible in the first
          rendered frame rather than fading in from nothing */
       if (pl.drawn === 'always') p.classList.add('is-on');
       gEdge.appendChild(p);
       edgeEls.push({ p: p, e: e, drawn: pl.drawn });
+      /* Where the head has no visible place it stays under a fill, and report().obscuredHeads names
+         the relation rather than leaving it silent: the source stands within the target's reach, or
+         the tip, 0.6 of the path's own stroke width past the cut, falls on another filled mark (the
+         source, or a neighbor overlapping the target). "On" is within the outline's half-width (0.75)
+         of the mark's drawn shape, as measured at mount: a tip in a neighbor's mitered corner is not
+         counted, a tip in a filled ring's chip hole is, and a later membership change does not recount. */
+      if (cut && !hidden) hidden = tipUnderFill(cut, p, B, pl.drawn);
+      if (hidden) obscured.push({ key: e.key, from: e.from, to: e.to, plane: e.plane });
     });
 
     /* marks: the root, then containers by depth, then leaves, so a small mark is never drawn
        under a large one; within a group, the layout's order */
     var nodeEls = new Map();
+    /* the frame: an outline d world units outside a mark's boundary, following its shape, and its
+       reach, the frame's furthest point from the node's center (the focus ring stands clear of it).
+       d is FRAME_PX screen pixels beyond the mark's painted edge (its 1.5 outline, which scales with
+       the zoom) at the current zoom: apply() resizes every frame when the zoom changes, so the frame
+       neither merges into a mark zoomed out nor drifts onto a neighbor zoomed in. A polygon's sides
+       move out by d and meet at their miters (the marks are convex); the line's own corners are
+       round (diagrams-radial.css), so at a vertex the stroke reaches half its width past the miter
+       point, as everywhere else along it, which is what the focus ring's clearance assumes. */
+    var FRAME_PX = 4.75, MARK_HALF_STROKE = 0.75, framedAt = 1;
+    function frameOffset(k) { return FRAME_PX / k + MARK_HALF_STROKE; }
+    function frameGeom(m, d, cx, cy) {
+      var t = m.localName;
+      if (t === 'circle') {
+        var rc = +m.getAttribute('r') + d;
+        return { tag: 'circle', attrs: { cx: m.getAttribute('cx'), cy: m.getAttribute('cy'), r: rc }, reach: rc };
+      }
+      if (t === 'rect') {
+        var x = +m.getAttribute('x'), y = +m.getAttribute('y'), w = +m.getAttribute('width'), h = +m.getAttribute('height');
+        var rx = +(m.getAttribute('rx') || 0), ry = +(m.getAttribute('ry') || rx);
+        return { tag: 'rect', attrs: { x: x - d, y: y - d, width: w + 2 * d, height: h + 2 * d, rx: rx + d, ry: ry + d },
+                 reach: Math.sqrt(Math.pow(w / 2 + d, 2) + Math.pow(h / 2 + d, 2)) };
+      }
+      var p = m.getAttribute('points').trim().split(/[\s,]+/).map(Number), v = [], i, area = 0;
+      for (i = 0; i < p.length; i += 2) v.push([p[i], p[i + 1]]);
+      for (i = 0; i < v.length; i++) { var a = v[i], b = v[(i + 1) % v.length]; area += a[0] * b[1] - b[0] * a[1]; }
+      var sgn = area > 0 ? 1 : -1, lines = [], out = [], reach = 0;
+      for (i = 0; i < v.length; i++) {
+        var p0 = v[i], p1 = v[(i + 1) % v.length], ex = p1[0] - p0[0], ey = p1[1] - p0[1], len = Math.sqrt(ex * ex + ey * ey);
+        lines.push({ p: [p0[0] + sgn * ey / len * d, p0[1] - sgn * ex / len * d], e: [ex, ey] });
+      }
+      for (i = 0; i < v.length; i++) {
+        var l1 = lines[(i + v.length - 1) % v.length], l2 = lines[i];
+        var den = l1.e[0] * l2.e[1] - l1.e[1] * l2.e[0];
+        var k = ((l2.p[0] - l1.p[0]) * l2.e[1] - (l2.p[1] - l1.p[1]) * l2.e[0]) / den;
+        var qx = l1.p[0] + l1.e[0] * k, qy = l1.p[1] + l1.e[1] * k;
+        out.push(qx + ',' + qy);
+        reach = Math.max(reach, Math.sqrt(Math.pow(qx - cx, 2) + Math.pow(qy - cy, 2)));
+      }
+      return { tag: 'polygon', attrs: { points: out.join(' ') }, reach: reach };
+    }
+    function sizeFrame(x, d) {
+      var gm = frameGeom(x.mark, d, x.n.x, x.n.y);
+      for (var a in gm.attrs) x.frame.setAttribute(a, gm.attrs[a]);
+      x.frameReach = gm.reach;
+    }
     var drawOrder = L.nodes.slice().sort(function (a, b) {
       var ra = a.kind === 'root' ? 0 : a.kind === 'container' ? a.depth : 100;
       var rb = b.kind === 'root' ? 0 : b.kind === 'container' ? b.depth : 100;
@@ -286,8 +387,32 @@
         g.appendChild(el('circle', { 'class': 'radial-mark', cx: n.x, cy: n.y, r: r * 1.2 }));
         g.appendChild(el('circle', { 'class': 'radial-chip', cx: n.x, cy: n.y, r: r * 0.34 }));
       } else g.appendChild(el('circle', { 'class': 'radial-mark', cx: n.x, cy: n.y, r: r }));
+      /* A mark that asserts a state takes FILL PAINT (surface-treatments.css): its color at 100%,
+         its boundary in the same color, its chip cut out as a hole by a mask inside the node, so a
+         copy of the node carries it. A mark that asserts no state is structure and keeps the
+         stylesheet's neutral wash. Every mark has one neutral frame outside it, drawn only for
+         hover, relation and selection: emphasis never steps the fill. */
+      var mark = g.querySelector('.radial-mark'), chip = g.querySelector('.radial-chip');
+      if (n.kind !== 'root' && n.state && n.state !== 'neutral') {
+        g.style.setProperty('--surface-fill-color', 'var(--state-' + n.state + ')');
+        mark.setAttribute('class', 'radial-mark surface-fill');
+        if (chip) {
+          var cutId = id + '-cut' + index.get(n.id), cut = el('mask', { id: cutId, maskUnits: 'userSpaceOnUse',
+            x: n.x - r * 2, y: n.y - r * 2, width: r * 4, height: r * 4 });
+          var keep = mark.cloneNode(false); keep.removeAttribute('class'); keep.setAttribute('style', 'fill:#fff;stroke:#fff;stroke-width:4');
+          var hole = chip.cloneNode(false); hole.removeAttribute('class'); hole.setAttribute('style', 'fill:#000;stroke:none');
+          cut.appendChild(keep); cut.appendChild(hole);
+          g.insertBefore(cut, mark);
+          mark.setAttribute('mask', 'url(#' + cutId + ')');
+          chip.setAttribute('class', 'radial-chip radial-chip--hole');
+        }
+      }
+      var x = { g: g, n: n, shape: sh, mark: mark, frame: null, frameReach: 0 };
+      x.frame = el(frameGeom(mark, 0, n.x, n.y).tag, { 'class': 'radial-frame' });
+      sizeFrame(x, frameOffset(1));
+      g.insertBefore(x.frame, mark);
       gNode.appendChild(g);
-      nodeEls.set(n.id, { g: g, n: n, shape: sh });
+      nodeEls.set(n.id, x);
     });
 
     /* screen-space label elements, built once and positioned on every apply() */
@@ -388,6 +513,8 @@
     function tier() { return R.labels.tierFor(LC.tiers, view.k); }
     function solveInput(h) {
       return { nodes: L.nodes, view: view, W: W(), H: H(), tier: tier(), visible: visible, shownCount: shownCount,
+               /* the frame's reach plus half its widest (2px) line, in screen pixels from the center */
+               clearance: function (n) { var x = nodeEls.get(n.id); return x ? x.frameReach * view.k + 1 : null; },
                held: h === undefined ? held : h, measure: M.measure, font: M.font, crowding: LC.crowding, bands: bands(),
                countText: function (n) { return R.labels.countText(LC, n, membership ? shownCount(n) : undefined); } };
     }
@@ -419,6 +546,7 @@
     function apply() {
       if (destroyed) return;
       gRoot.setAttribute('transform', 'translate(' + view.x + ',' + view.y + ') scale(' + view.k + ')');
+      if (view.k !== framedAt) { framedAt = view.k; nodeEls.forEach(function (x) { sizeFrame(x, frameOffset(view.k)); }); }
       placeLabels();
       drawFocus();
       var pct = readout('zoom'), tr = readout('tier');
@@ -616,6 +744,8 @@
       var near = nid ? (neighbors.get(nid) || new Set()) : null;
       nodeEls.forEach(function (x, k) {
         x.g.classList.toggle('is-selected', !!nid && k === nid);
+        /* a previewed mark (hovered, or chosen in the chooser, and not locked) keeps a hover's 1px frame */
+        x.g.classList.toggle('is-preview', !!nid && k === nid && nid !== locked);
         x.g.classList.toggle('is-near', !!nid && k !== nid && near.has(k));
         x.g.classList.toggle('is-dim', !!nid && k !== nid && !near.has(k) && x.n.kind === 'leaf');
       });
@@ -708,7 +838,6 @@
     /* ------------------------------------------------------------ hit test -- */
     /* every mark under or near a stage point, in world terms; nearest first, then smaller marks */
     /* the outer reach of a mark, as a multiple of its radius: what the focus ring encloses */
-    var REACH = { circle: 1, ring: 1.2, hex: 1.3, diamond: 1.25, tri: 1.35, square: 1.3, pill: 1 };
     function reach(x) { return x.n.r * (REACH[x.shape] || 1); }
     function polygon(x) {
       if (x.poly) return x.poly;
@@ -814,7 +943,8 @@
       shown.forEach(function (k) {
         var n = byId.get(k), b = html('button', 'radial-chooser-item');
         b.type = 'button';
-        var sw = html('span', 'radial-chooser-sw');
+        var swNeutral = n.kind === 'root' || !n.state || n.state === 'neutral';
+        var sw = html('span', 'radial-chooser-sw' + (swNeutral ? ' radial-sw--wash' : ''));
         sw.style.setProperty('--st', 'var(--state-' + (n.kind === 'root' ? 'neutral' : n.state) + ')');
         b.appendChild(sw);
         var tx = html('span', 'radial-chooser-txt');
@@ -902,8 +1032,10 @@
       while (gFocus.firstChild) gFocus.removeChild(gFocus.firstChild);
       if (!focusId || !keyboard || document.activeElement !== stage || !visible(focusId)) return;
       var n = byId.get(focusId), p = project(n), x = nodeEls.get(focusId);
-      var rr = reach(x) * view.k;
-      gFocus.appendChild(el('circle', { 'class': 'radial-focus-ring', cx: p.x, cy: p.y, r: Math.max(rr * 1.25 + 4, 10) }));
+      /* the ring stands outside the node's frame with 3px clear: the frame's 2px line at its reach,
+         then the gap, then the ring's own 2px line, so focus and selection read apart at every zoom */
+      var rr = reach(x) * view.k, rf = x.frameReach * view.k + 5;
+      gFocus.appendChild(el('circle', { 'class': 'radial-focus-ring', cx: p.x, cy: p.y, r: Math.max(rr * 1.25 + 4, rf, 10) }));
     }
     function focusNode(nid, cause) {
       if (!nid || !byId.has(nid) || !visible(nid)) return false;
@@ -1078,6 +1210,10 @@
                 /* one module may offer another a service by a generic name ('inspector', 'facets') */
                 provide: function (name, obj) { services.set(name, obj); },
                 service: function (name) { return services.get(name) || null; },
+                /* a leaf name's clearance at zoom k, in screen pixels from the node's center: its frame's
+                   reach and line, as the live drawing places it, for a plate's own solve */
+                nameClearance: function (nid, k) { var x = nodeEls.get(nid);
+                  return x ? frameGeom(x.mark, frameOffset(k), x.n.x, x.n.y).reach * k + 1 : null; },
                 /* an exclusive overlay closes the others when it opens */
                 claim: function (name) {
                   overlays.slice().forEach(function (o) { if (o.exclusive && o.name !== name && o.isOpen()) o.dismiss('claim'); });
@@ -1152,7 +1288,9 @@
         /* fit is the last Fit as it was made; covered is what covers the drawing or its names now */
         return { fit: lastFit, covered: overlays.filter(function (o) { return o.isOpen() && covers(o.element); }).map(function (o) { return o.name; }),
                  unresolved: model.unresolved, unsupported: model.unsupported, hiddenRefs: model.hiddenRefs,
-                 hidden: Array.from(model.hidden), undrawnRelations: undrawn, ignoredAdapterSections: ignored,
+                 hidden: Array.from(model.hidden), undrawnRelations: undrawn,
+                 obscuredHeads: obscured.map(function (o) { return { key: o.key, from: o.from, to: o.to, plane: o.plane }; }),
+                 ignoredAdapterSections: ignored,
                  arrival: arrivalState, modules: listed.slice() };
       },
       labels: function () { return solution.map(function (e) { return { id: e.id, show: e.show, held: e.held, name: e.name, count: e.count }; }); },

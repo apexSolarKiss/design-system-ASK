@@ -92,7 +92,7 @@ role fill         the full role value, 100%: .surface-fill with --surface-fill-c
 role boundary     the same value, the fill's own edge, unless a composing meaning claims the outline
                   (a state outline: see Channel discipline)
 text on the fill  the role's ink, --function-<role>-ink: #D4C6E1 on legislative magenta in light and
-                  #201D26 in dark; #201D26 on judicial cyan; #6A637F on the executive white or lavender.
+                  #201D26 in dark; #6A637F on judicial cyan; #6A637F on the executive white or lavender.
                   Every text set on the fill takes it, a label, a note or a tag
 text beside it    notes and flow, section or relationship tags set beside the apparatus, including a
                   tag that names a role, keep their own neutral foreground roles, never the role hue

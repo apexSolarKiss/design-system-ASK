@@ -113,6 +113,7 @@ region relations relrow reltype reset result results return rgb rk rl rs rule s 
 shapes showing size spacing src stamp status stop stopped stretch stroke strong structured subtitle such
 summary swatch system tag toggle tokens tone truetype tspan ttf unavailable unexpected unique utf val value
 values variant vector weight with wof woff word xml yields
+cut cx cy fff mask points rx ry userspaceonuse wash
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;

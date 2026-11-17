@@ -1419,3 +1419,73 @@ held load with no change is the control).
 ```
 node tests/radial-export.mjs             # --out DIR keeps the review PNGs and the results
 ```
+
+## fill-paint-engines.mjs
+
+Guards the interactive [`diagram-interactive-spine`](../patterns/diagram-interactive-spine/README.md) and
+[`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md) on the surface treatments'
+fill paint ([`surface-treatments.css`](../surface-treatments.css), FILL PAINT). It serves the repository
+read-only and opens the spine's and the radial's gallery previews, the radial's synthetic composition and
+its arrow fixture ([`radial-arrows-fixture.html`](radial-arrows-fixture.html)), in headless Chrome, in both schemes: hover and a locking click with a real pointer, keyboard focus with
+real keys, and the rest of selection, zoom and Fit through the page's own API or a dispatched click on a
+node or a zoom button.
+
+```text
+S  spine: every node at 100% of its role, the root as the neutral filled shape, its label and tag in the
+   role's ink and the ink map read as values (green, yellow, orange, cyan #6A637F; red, violet the
+   lavender; magenta the lavender in light, #201D26 in dark), its chip a hole; no frame at rest; a
+   locked node 2px and a hovered related node 1px (the relation itself checked), the locked node hovered
+   keeping its 2px, none of it stepping a fill or outline, dimming or filtering; a hover with nothing
+   locked previewing at 1px, a real click locking at 2px; a dimmed node under the pointer in full; every
+   hole on its box's center line, the backbone through each spine node's hole and the selected node's
+   edges ending on holes; the frame 4.75px beyond the box's painted edge at both ends of the zoom; the
+   legend's and inspector's dots in their own paint (the root's neutral fill inside its edge; in dark the
+   neutral fill equals the theme foreground, so this discriminates in light only); the exports, taken with
+   a node locked and the pointer on the topmost node, equal to exports taken with the pointer away, and
+   baking no node part-faded
+R  radial: every state mark at 100% of its role, a state mark's chip a hole, every mark asserting no
+   state at the 15% wash, no mark's fill, wash or outline stepped by selection, relation or hover, and no
+   emphasized mark dimmed or filtered; the frame matrix (selected 2px, a hovered related node 1px at full,
+   the other related 1px at half); a preview at 1px, a real click locking at 2px; a dimmed mark under the
+   pointer in full; the frame 4.75px beyond its mark's painted edge zoomed in, at the Fit, and on a square
+   and a triangle at the greatest zoom; the keyboard focus ring, centered, 3px clear of the round-joined
+   frame at all three; every leaf's own name and identifier line clear of its frame on rays right, left,
+   up and down and in a triangle's cluster deep in; each directed relation, by its real target: into a
+   filled mark the head's tip outside the target, none reported obscured, and the head off other filled
+   marks (on the synthetic composition, except its one accepted base corner: VM-SE-213 > VM-LM-177, at
+   most 0.111 under VM-LM-185), into a washed mark the full curve; the inspector's dot the wash for no
+   asserted state; the page plate drawing no frame and keeping the fill paint by reference; on the
+   synthetic composition's holed rings, every mask the plate references resolving, and each ring's hole
+   the chip's geometry at its center, inside the ring
+R  the arrow fixture (R16–R19): a relation between close neighbors (the target's stop at least half their
+   distance, asserted, so the check cannot pass vacuously) cut in its first half, its tip on no filled mark;
+   every unreported head past its target's true painted reach, the circle through the tip meeting no
+   painted point of the target on any of 1,440 bearings, on a 76-unit triangle, a leaf-size triangle (its
+   mitered corners) and a pill among them; report().obscuredHeads naming exactly the relations whose tip
+   lies on a filled mark (the source's center within the target's reach, the cut inside a filled source,
+   the tip on a filled neighbor); the exported diagram, opened as its own document with its own styles,
+   drawing the live relation paths, its heads on a fill exactly where the live drawing reports one
+N  control: with surface-treatments.css off, S's paint check fails
+```
+
+Each fix this guard was written for was reverted alone, in its own copy, and the suite run against it: the
+frame measured from the geometric edge (radial R7, spine S5), mitered frame corners (R8), names placed
+without the frame's clearance (R5) or offset in screen y (R5), a 1.5 arrow stop (R6, R15), washed targets
+shortened too (R6), the inspector's solid no-state dot (R12; the spine's, S8 in light), a 2px preview (S9,
+R13), a dimmed node that stays dim under the pointer (S10, R14), an unsettled export (S11), and stepped
+outlines on hover or relation (S6, R4) each fail their check, in both schemes unless noted. Frames kept in
+the spine's export fail `spine-behavior.mjs` C14 and C15, not this suite.
+
+The arrow fixture's controls, each in its own copy:
+- **An engine that cuts only when the stop is under half the relation's length, and reports nothing,** fails R16 to R19. The short relation ends at its target's center, its tip on the fill.
+- **The triangle's reach at 1.35** fails R17: the circle through the tip meets the triangle on 46 of 1,440 bearings.
+  - The tip itself is clear on both approaches.
+  - That is why the gallery compositions never caught it: the reference directs no relation into a filled triangle, and the synthetic composition's two reach leaf-size triangles on bearings clear of their corners, so a test at the tip alone stayed clear.
+- **The pill's reach at 1** (its rounded corners reach 1.0142 of its radius) fails R17: the circle meets the pill on 212 bearings.
+- **No allowance for a triangle's mitered corner** fails R17 on the leaf-size triangle: the circle meets it on 4 bearings.
+- **The cut confined to the curve's second half** fails R16 to R18.
+- **Removing either reporting path** fails R17 to R19.
+
+```
+node tests/fill-paint-engines.mjs        # --out DIR keeps the results
+```

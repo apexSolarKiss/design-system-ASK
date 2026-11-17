@@ -318,9 +318,10 @@
                      Functions (--function-*-ink). The composing surface or
                      engine owns the shape: its geometry, stroke width,
                      cutouts, layout and emphasis
-     reuses          --fg-high-contrast (#201D26, README registered use 4),
-                     --ask-lavender-ask (#D4C6E1) and --ask-fg-light (#6A637F)
-                     as inks; --ask-surface for the neutral fill
+     reuses          --ask-fg-light (#6A637F), --ask-lavender-ask (#D4C6E1)
+                     and, on magenta in dark only, --fg-high-contrast
+                     (#201D26, README registered use 4) as inks;
+                     --ask-surface for the neutral fill
      variation       two declared theme exceptions and nothing else: magenta's
                      ink is the lavender in light and the high-contrast ink in
                      dark; the neutral shape is --ask-surface with a white edge
@@ -332,8 +333,10 @@
                      sequence node is not a filled shape: it takes no fill
                      paint or ink and keeps its own paint, solid or not (a
                      review state square, a key's marker dot). The interactive
-                     spine's and radial's state marks keep their engines' own
-                     translucent wash, which this module does not govern. A
+                     spine's and radial's state marks take this paint; a
+                     radial mark that asserts no state is structure, not a
+                     filled shape, and keeps its engine's own neutral wash,
+                     which this module does not govern. A
                      structural diagram node (diagram-static-H, -V, -SEQ,
                      -FLOW) keeps its own neutral paint. A geometric cutout is
                      the composing shape's own, drawn as a hole, never painted.
@@ -470,10 +473,12 @@
    in the same color unless the composing meaning claims the outline for
    another meaning (Three Functions gives function the fill and state the
    outline), and any text on it in its color's ink. The inks are three
-   existing colors: the high-contrast ink on orange and cyan; the lavender
-   on red and violet; the theme foreground's light value on yellow, green,
-   white and lavender, the two brightest fills taking the softer ink so that
-   no member of the set outweighs the others. Magenta is the one color whose ink follows the theme:
+   existing colors: the theme foreground's light value, #6A637F, on yellow,
+   green, orange, cyan, white and lavender, so that the bright fills read as
+   one family and no member of the set outweighs the others; the lavender on
+   red and violet. The set is consistent in ink, not in contrast: #6A637F
+   measures 5.07 on yellow and 4.02 on green, 2.65 on cyan and 2.25 on
+   orange. Magenta is the one color whose ink follows the theme:
    the lavender in light, the high-contrast ink in dark. The neutral shape is
    the static diagrams' own node in light, --ask-surface inside a white edge,
    and the lavender in dark, its ink #6A637F in both; it is a paint of its
@@ -808,8 +813,8 @@
 :root {
   --surface-fill-ink-on-yellow:   var(--ask-fg-light);
   --surface-fill-ink-on-green:    var(--ask-fg-light);
-  --surface-fill-ink-on-orange:   var(--fg-high-contrast);
-  --surface-fill-ink-on-cyan:     var(--fg-high-contrast);
+  --surface-fill-ink-on-orange:   var(--ask-fg-light);
+  --surface-fill-ink-on-cyan:     var(--ask-fg-light);
   --surface-fill-ink-on-red:      var(--ask-lavender-ask);
   --surface-fill-ink-on-violet:   var(--ask-lavender-ask);
   --surface-fill-ink-on-magenta:  var(--ask-lavender-ask);

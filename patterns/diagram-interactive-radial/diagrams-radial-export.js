@@ -71,6 +71,9 @@
   /* a property the engine also writes as an attribute is a rule only where the stylesheet decides it */
   var ANCHOR = [['text-anchor', 'start', 'end'], ['dominant-baseline', 'auto', 'hanging']];
   var SENTINEL = 'rgb(1, 2, 3)';
+  /* a state mark's fill paint (surface-treatments.css, FILL PAINT) reads --surface-fill-color, which
+     the engine sets beside --st on the node; it is probed as its own sentinel and kept a reference */
+  var SENTINEL_FILL = 'rgb(1, 2, 4)';
   /* the plate chrome: the owner's own design, in the export families */
   var CHROME = [
     ['mark', 'sans', 26, 500, 'fg-1'], ['title', 'sans', 30, 500, 'fg-1', '-0.3px'], ['subtitle', 'mono', 14, 400, 'fg-2'],
@@ -355,6 +358,7 @@
       sigs.forEach(function (s) {
         var top = el('g', s.world ? { 'class': 'radial-world' } : null), parent = top;
         top.style.setProperty('--st', SENTINEL);
+        top.style.setProperty('--surface-fill-color', SENTINEL_FILL);
         if (s.world) { parent = el('g'); top.appendChild(parent); }
         if (s.anc) { var a = el(s.anc.tag, { 'class': s.anc.tokens.join(' ') }); parent.appendChild(a); parent = a; }
         var e = el(s.tag, s.tokens.length ? { 'class': s.tokens.join(' ') } : null);
@@ -365,6 +369,7 @@
           (s.tag === 'g' ? GROUP : s.tag === 'text' ? TEXT : SHAPE).forEach(function (p) {
             var v = cs.getPropertyValue(p).trim();
             if (v === SENTINEL) v = 'var(--st)';
+            else if (v === SENTINEL_FILL) v = 'var(--surface-fill-color)';
             if (v) out.push(p + ':' + v);
           });
           if (s.tag === 'text') {
@@ -398,6 +403,8 @@
     function worldCopy(fit) {
       var w = api.world(), g = w.world.cloneNode(true);
       Array.prototype.slice.call(g.querySelectorAll('.radial-raise')).forEach(function (x) { x.parentNode.removeChild(x); });
+      /* a mark's frame is interaction only (hover, relation, selection); a plate draws the resting state */
+      Array.prototype.slice.call(g.querySelectorAll('.radial-frame')).forEach(function (x) { x.parentNode.removeChild(x); });
       [g].concat(Array.prototype.slice.call(g.querySelectorAll('*'))).forEach(neutral);
       g.setAttribute('transform', 'translate(' + num(fit.x) + ' ' + num(fit.y) + ') scale(' + num(fit.k) + ')');
       var mk = null;
@@ -517,6 +524,7 @@
       var M = api.measurer(), count = 0;
       var sol = R.labels.solve({ nodes: L.nodes, view: view, W: FA.w, H: FA.h, tier: P.tier,
         visible: function (id) { return !model.hidden.has(id); }, shownCount: function (n) { return n.count || 0; },
+        clearance: function (n) { return api.nameClearance ? api.nameClearance(n.id, view.k) : null; },
         held: null, measure: M.measure, font: M.font, crowding: LC.crowding, bands: {},
         countText: function (n) { return R.labels.countText(LC, n); } });
       var gArea = el('g', { transform: 'translate(' + num(FA.x) + ' ' + num(FA.y) + ')' }), gLead = el('g'), gText = el('g');
@@ -660,7 +668,10 @@
           if (m.states.length) {
             heading(m.headings.state);
             m.states.forEach(function (s) {
-              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: 'fill: var(--state-' + s.role + ')' }));
+              /* no asserted state is drawn as the marks' wash, a state as its fill */
+              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: s.role === 'neutral'
+                ? 'fill: var(--state-neutral); fill-opacity: 0.15; stroke: var(--state-neutral); stroke-width: 1.5'
+                : 'fill: var(--state-' + s.role + ')' }));
               rowText('label', s.label, 19, 14);
               if (note(s.meaning)) rowText('meaning', s.meaning, 16, 12);
               y += 7;
