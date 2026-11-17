@@ -8,12 +8,16 @@ It is a **surface pattern**, not an artifact scaffold: a consumer takes it as pi
 
 **Geometry claim bound.** Radial distance grows with containment depth along each lineage. A wedge's width is its unit's weight. Angle and adjacency encode nothing. Relations are encoded only through declared planes, drawn by line style. Level of detail hides names and never changes membership.
 
+**Paint and emphasis.** Color encodes state only. A mark that asserts a state is filled at 100% of its color through the surface treatments' fill paint ([`surface-treatments.css`](../../surface-treatments.css), FILL PAINT), its boundary in the same color and a ring's inner chip cut out as a hole. A mark that asserts none, the root included, is structure: it keeps the pattern's neutral wash, the theme foreground at 15% inside its own line, so the sparse state colors stay the salient layer. Emphasis never steps a fill. One neutral frame outside the mark, which follows its shape, shows it: 1px on hover, a preview included; 1px at half strength on a node related to the selection, full when hovered; 2px on the locked selection, which keeps it when hovered. Leaves outside the selection's relations dim, except the one under the pointer, which shows in full while hovered. A directed relation into a filled mark ends just past the mark's furthest painted reach, its mitered corners included, cut wherever along its curve that falls, so its tip clears the mark on every bearing; into a washed mark it keeps its full curve, the head showing through the wash. Where filled marks overlap, a head can have no visible place: the source's center inside the target's reach, or the tip within the outline's half-width of a filled source or neighbor. Such a head stays under the fill, and `report().obscuredHeads` names its relation, as drawn at mount. The keyboard focus ring stands 3px clear outside the frame, so focus and selection read apart at every zoom. The legend, the chooser, the facets and the inspector's dot draw a state's swatch as its fill and no asserted state as the wash.
+
 ## Files and load order
 
 ```text
 diagrams-radial.css             the stylesheet; after colors_and_type.css, surface-panel.css,
-                                surface-treatments.css and spectral-state.css (the treatments supply the inks
-                                Spectral State binds, and the chrome module uses them)
+                                surface-treatments.css and spectral-state.css (the treatments paint the state
+                                marks, supply the inks Spectral State binds, and the chrome module uses them).
+                                Re-sync them with the pattern's own files from one design-system commit: a
+                                newer engine against older treatments draws its state marks black
 diagrams-radial-contract.js     validation and assembly                         DOM-free
 diagrams-radial-layout.js       the layout grammar                              DOM-free
 diagrams-radial-labels.js       label placement, level of detail, the Fit's population   DOM-free
@@ -28,7 +32,7 @@ diagrams-radial-export.js       optional module: the PNG page and diagram plates
 diagrams-radial-theme.js        optional module: the reader's theme control, for the instance that owns it
 ```
 
-Load the scripts in that order, each as a classic script, then mount. The engine checks its dependencies at mount and fails closed with `MODULE_MISSING <name>` when one is absent. Foundation files the modules take: with the inspector, `surface-text-link.css` (its source links); with the facets or the export, `surface-action.css` (their controls in the bar); with the chrome or the inspector, `surface-panel.css` then `surface-treatments.css` (their disclosure triggers); with the export and its default font route, `fonts-embedded.js` before the module.
+Load the scripts in that order, each as a classic script, then mount. The engine checks its script dependencies at mount and fails closed with `MODULE_MISSING <name>` when one is absent. It does not check stylesheets: the foundation files are prerequisites the page loads, from the same owner commit as the scripts, and without `surface-treatments.css` a state mark draws black rather than failing. Foundation files the core takes, besides `colors_and_type.css` and `spectral-state.css`: `surface-panel.css` then `surface-treatments.css`, whose fill paint paints every state mark (the chrome's and the inspector's disclosure triggers use them too). Foundation files the modules take: with the inspector, `surface-text-link.css` (its source links); with the facets or the export, `surface-action.css` (their controls in the bar); with the export and its default font route, `fonts-embedded.js` before the module.
 
 **Modules.** The contract names six optional modules, and this package ships all six: `inspector`, `facets` (with search), `legend`, `chrome`, `export` and `theme`. An instance lists the ones it uses; listing one whose file is not loaded fails closed with `MODULE_MISSING <name>`.
 
@@ -273,7 +277,7 @@ keep    every name the tier calls for is placed and clamped into the canvas; nam
 
 **The Fit's population.** At a whole-map Fit, where names would sit under reserved chrome, outside the canvas or over one another, the Fit leaves some to the next tier: count lines before names; the depth-1 names and the root's name only as whole tiers, never one of several; deeper names kept largest first only while every kept name still stands clear. The deferral holds through pan and zoom, rests at other tiers, and ends at the next Fit. A tier with `defer: false` is never thinned this way. Level of detail never removes a node.
 
-**One solver, any target.** `DIAGRAM_RADIAL.labels.solve` is pure: the screen calls it with the reader's view, tier and deferral, and another target can call it at its own size and tier without touching the reader's state.
+**One solver, any target.** `DIAGRAM_RADIAL.labels.solve` is pure: the screen calls it with the reader's view, tier and deferral, and another target can call it at its own size and tier without touching the reader's state. A target that draws frames around its marks passes `clearance(node)`, each leaf's frame reach plus half its line, in screen pixels from the node's center, and the leaf's name starts 2px past it; the engine and the export plates both do. Without it the solver clears the mark's reach and a fixed 12px, which keeps a name off its mark but does not follow a frame drawn at the target's zoom.
 
 ## Interaction
 
@@ -351,7 +355,9 @@ service(name)             what a module offers the page: inspector, facets, expo
 setMembership(leaves, relations)   a membership without the facets module: a Set of item ids and a Set of relation
                           keys (a relation's key is its index in the data's edges, model.relations[i].key), or null
 report()                  { fit, covered, unresolved, unsupported, hiddenRefs, hidden, undrawnRelations,
-                            ignoredAdapterSections, arrival, modules }
+                            obscuredHeads, ignoredAdapterSections, arrival, modules }; obscuredHeads lists
+                            { key, from, to, plane } for each directed relation into a filled mark whose
+                            head has no visible place, as drawn at mount
 labels()                  the current label placement
 project(id) · hits(x, y) · tap(x, y)    stage coordinates; tap() is the click's own resolution:
                           { action: select, id } · { action: choose, ids, shown } · { action: clear }
@@ -404,6 +410,7 @@ node tests/radial-contract.test.mjs                 # contract, layout and label
 node tests/radial-behavior.mjs                      # the browser behavior harness (headless Chrome)
 node tests/radial-stack.mjs                         # the complete stack: inspector, facets, export, theme, both compositions
 node tests/radial-export.mjs                        # the export plates in depth
+node tests/fill-paint-engines.mjs                   # the fill paint, frames, focus and arrowheads in both engines
 node tools/check-radial-neutrality.mjs --self-test  # the neutrality check's own controls
 node tools/check-radial-neutrality.mjs              # the owner allowlist; add --deny FILE for a consumer's tokens
 node tools/gen-radial-specimen.mjs --check          # the specimen source is current

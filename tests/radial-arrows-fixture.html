@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>radial arrows fixture</title>
+<!-- The arrowhead fixture of the interactive radial pattern. Served from the repository root by
+     tests/fill-paint-engines.mjs. A synthetic composition built for directed relations into filled
+     marks: close neighbors, so a relation's cut falls in its first half; a large filled triangle,
+     so its true reach decides where a head may stop; and neighbors whose filled marks overlap, so a
+     head has no visible place and the engine reports it: the source's center inside the target's
+     reach, the cut inside a filled source, the tip on a filled neighbor. The core in its load order, the chrome module's script
+     (loaded, not mounted: it defines the layout properties the radial stylesheet's chrome rules read) and
+     the export module; the instance is window.RADIAL_MAP. -->
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
+<link rel="stylesheet" href="../surface-action.css">
+</head>
+<body class="radial-page">
+<div class="radial-shell" data-radial id="X">
+  <header class="radial-bar">
+    <div class="title-block" data-radial-slot="title"><div class="t">arrows</div></div>
+    <div class="spacer"></div>
+    <div data-radial-slot="export"></div>
+  </header>
+  <main class="radial-canvas" data-radial-slot="canvas">
+    <div class="radial-stage" data-radial-slot="stage"></div>
+    <div class="radial-sr-only" data-radial-slot="live" aria-live="polite"></div>
+  </main>
+</div>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-pointer.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-fit.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-engine.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-chrome.js"></script>
+<script src="../fonts-embedded.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagrams-radial-export.js"></script>
+<script>
+(function () {
+  /* W, S and T hold one leaf each, so the layout sets them side by side and their 76-unit marks
+     overlap; F, G and P hold many, so they stand apart. W, F and G assert no state (the wash); S is a
+     filled circle, T a filled triangle, P a filled pill (a top-level group with no kind), and the leaf
+     F-20 a filled triangle at leaf size, where a mitered corner reaches furthest past the reach. */
+  function leaves(group, n) {
+    var out = [];
+    for (var i = 1; i <= n; i++) out.push({ id: group + '-' + i, label: group.toLowerCase() + ' ' + i, parent: group, kind: 'dot' });
+    if (group === 'F') { out[19].kind = 'tri'; out[19].state = 'earned'; }
+    return out;
+  }
+  var data = {
+    root: { id: 'ROOT', label: 'arrows' },
+    nodes: [
+      { id: 'W', label: 'washed neighbor', container: true, kind: 'dot' },
+      { id: 'S', label: 'filled circle', container: true, kind: 'dot', state: 'earned' },
+      { id: 'T', label: 'filled triangle', container: true, kind: 'tri', state: 'earned' },
+      { id: 'F', label: 'far group', container: true, kind: 'dot' },
+      { id: 'G', label: 'second far group', container: true, kind: 'dot' },
+      { id: 'P', label: 'filled pill', container: true, state: 'earned' }
+    ].concat(leaves('W', 1), leaves('S', 1), leaves('T', 1), leaves('F', 40), leaves('G', 30), leaves('P', 20)),
+    states: [{ role: 'earned', label: 'filled', meaning: 'a mark that asserts a state' }],
+    kinds: [{ id: 'dot', label: 'circle', shape: 'circle' }, { id: 'tri', label: 'triangle', shape: 'tri' }],
+    planes: [{ id: 'to', label: 'directed relation', drawn: 'always', directed: true }],
+    edges: [
+      { id: 'short', from: 'W', to: 'S', plane: 'to' },        /* close neighbors: cut in the first half; the wash shows the head */
+      { id: 'far-tri', from: 'F', to: 'T', plane: 'to' },      /* into the triangle from far off */
+      { id: 'leaf-tri', from: 'G-27', to: 'T', plane: 'to' },  /* into the triangle on another bearing */
+      { id: 'neighbor', from: 'P-5', to: 'T', plane: 'to' },   /* reported: the tip falls on S, which overlaps the triangle */
+      { id: 'within', from: 'S', to: 'T', plane: 'to' },       /* reported: the source's center inside the triangle's reach */
+      { id: 'inside', from: 'T', to: 'S', plane: 'to' },       /* reported: the cut falls inside the filled source */
+      { id: 'pill', from: 'G', to: 'P', plane: 'to' },         /* into the filled pill */
+      { id: 'small-tri', from: 'G', to: 'F-20', plane: 'to' }  /* into the leaf-size filled triangle */
+    ]
+  };
+  var adapter = { export: { filenameBase: 'radial-arrows', profiles: { page: true, diagram: true }, mark: 'none' } };
+  window.RADIAL_ARROWS = data;
+  window.RADIAL_MAP = window.DIAGRAM_RADIAL.mount({ host: document.getElementById('X'), data: data, adapter: adapter, modules: ['export'] });
+  document.documentElement.dataset.ready = '1';
+})();
+</script>
+</body>
+</html>

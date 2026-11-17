@@ -311,7 +311,9 @@
         var st = t.state;
         if (!st) return null;
         var row = el('div', 'radial-insp-state');
-        var dot = el('span', 'radial-insp-dot'); dot.style.setProperty('--st', 'var(--state-' + st.role + ')');
+        /* no asserted state shows as the marks show it: the wash, not a solid dot */
+        var dot = el('span', 'radial-insp-dot' + (st.role === 'neutral' ? ' radial-sw--wash' : ''));
+        dot.style.setProperty('--st', 'var(--state-' + st.role + ')');
         row.appendChild(dot);
         row.appendChild(el('span', 'radial-insp-state-name', st.label));
         row.appendChild(el('span', 'radial-insp-state-mean', st.meaning));

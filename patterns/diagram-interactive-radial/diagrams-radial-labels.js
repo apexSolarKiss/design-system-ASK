@@ -42,6 +42,12 @@
     { k: 2.30, name: 'identifiers', containers: 'all', leaves: true,  ids: true }
   ];
   var TIER_KEYS = ['k', 'name', 'containers', 'leaves', 'ids', 'minLeaves', 'defer'];
+  /* a leaf name's clearance from its mark. A caller that draws frames passes `clearance(n)`, the
+     frame's reach plus half its line, in screen pixels from the node's center, and the name starts 2px
+     past it. Where the caller gives none: the largest leaf mark's reach as a multiple of its radius
+     (the triangle's, in the engine's shape table) and a fixed 12px, which keeps the name off its mark
+     but does not follow a frame (whose painted-edge offset and miters grow with the zoom). */
+  var LEAF_REACH = 1.48, LEAF_CLEAR = 12;
   var LABEL_KEYS = ['tiers', 'count', 'countFiltered', 'crowding'];
 
   function LabelError(code, detail) {
@@ -165,10 +171,18 @@
         return;
       }
       if (n.kind === 'leaf') {
-        var left = Math.cos(n.ang) < 0, deg = n.ang * 180 / Math.PI;
-        var lx = p.x + (left ? -9 : 9), ly = p.y + 3.5, rot = left ? deg + 180 : deg;
+        /* a leaf's name starts on its own ray, past its mark and the frame drawn outside it: a filled
+           mark would hide text set on it. Never nearer than 9px. The name and its identifier line
+           step off the ray across the text's own direction (3.5px to center the name's glyphs, 11px
+           more for the identifier), so neither slides back toward the mark on a steep ray. */
+        var left = Math.cos(n.ang) < 0, deg = n.ang * 180 / Math.PI, rot = left ? deg + 180 : deg;
+        var clr = inp.clearance ? inp.clearance(n) : null;
+        var off = Math.max(9, clr === null || clr === undefined ? n.r * LEAF_REACH * view.k + LEAF_CLEAR : clr + 2);
+        var nx = -Math.sin(rot * Math.PI / 180), ny = Math.cos(rot * Math.PI / 180);
+        var lx = p.x + Math.cos(n.ang) * off + nx * 3.5, ly = p.y + Math.sin(n.ang) * off + ny * 3.5;
         e.name = { x: lx, y: ly, anchor: left ? 'end' : 'start', text: n.label, rotate: { deg: rot, cx: lx, cy: ly } };
-        if (tier.ids) e.idLine = { x: lx, y: ly + 11, anchor: left ? 'end' : 'start', text: n.id, rotate: { deg: rot, cx: lx, cy: ly + 11 } };
+        if (tier.ids) e.idLine = { x: lx + nx * 11, y: ly + ny * 11, anchor: left ? 'end' : 'start', text: n.id,
+                                   rotate: { deg: rot, cx: lx + nx * 11, cy: ly + ny * 11 } };
         return;
       }
       /* containers: an upright callout, its side chosen by the mark's bearing. A container below

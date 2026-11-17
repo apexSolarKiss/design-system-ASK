@@ -102,7 +102,8 @@
     if (m.states.length) {
       frag.appendChild(div('radial-legend-h', m.headings.state));
       m.states.forEach(function (s) {
-        var sw = span('radial-legend-sw');
+        /* no asserted state draws as the marks' wash, a state as its fill */
+        var sw = span('radial-legend-sw' + (s.role === 'neutral' ? ' radial-sw--wash' : ''));
         sw.style.setProperty('--st', 'var(--state-' + s.role + ')');
         frag.appendChild(row(sw, s.label, s.meaning));
       });

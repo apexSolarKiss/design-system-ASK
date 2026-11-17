@@ -2,12 +2,16 @@
 
    design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
    byte-identical, never hand-edit in a consumer. Load after colors_and_type.css and
-   spectral-state.css. It owns the pattern's own metrics (label sizes, marks, chrome), so it
+   spectral-state.css, with surface-panel.css then surface-treatments.css: the fill paint that
+   paints every state mark is theirs, so the core needs them as the modules' triggers do. It
+   owns the pattern's own metrics (label sizes, marks, chrome), so it
    stands outside the type-role checker's governed set by declared disposition, as the other
    diagram patterns do.
 
    ENCODING
-     color   state only: one --st custom property per mark, set to a --state-* role
+     color   state only: one --st custom property per mark, set to a --state-* role. A mark that
+             asserts a state is filled at 100% by FILL PAINT (surface-treatments.css, .surface-fill);
+             a mark that asserts none is structure and keeps this sheet's neutral wash
      shape   a declared kind
      line    a relation's plane: drawn always (solid), drawn on selection (dashed)
      radius  containment depth; never importance
@@ -77,14 +81,26 @@ body.radial-page {
 .radial-edge--selection.is-on { opacity: 0.5; }
 .radial-arrow path { fill: var(--fg-1); }
 
-/* ---- marks ---- */
+/* ---- marks ----
+   A state mark takes FILL PAINT through .surface-fill, which the engine sets; its chip is a hole,
+   the engine's mask. A mark with no asserted state keeps the neutral wash, steady through hover,
+   relation and selection. Emphasis never steps a fill: one neutral frame outside the mark, which
+   follows its shape, shows it — 1px on hover (a preview included), 1px at half strength on a
+   related node (full when hovered), 2px on the locked selection, which keeps it when hovered. A
+   dimmed mark under the pointer shows in full. */
 .radial-node { transition: opacity var(--dur-2) var(--ease-out); }
-.radial-node .radial-mark { fill: var(--st); fill-opacity: 0.15; stroke: var(--st); stroke-width: 1.5; }
+.radial-node .radial-mark { stroke-width: 1.5; }
+.radial-node .radial-mark:not(.surface-fill) { fill: var(--st); fill-opacity: 0.15; stroke: var(--st); }
 .radial-node .radial-chip { fill: var(--st); }
+.radial-node .radial-chip--hole { fill: none; }
 .radial-node.is-dim { opacity: 0.14; }                     /* faded, never removed */
-.radial-node:hover .radial-mark { stroke-width: 2.4; fill-opacity: 0.24; }
-.radial-node.is-near .radial-mark { stroke-width: 2.1; fill-opacity: 0.24; }
-.radial-node.is-selected .radial-mark { stroke-width: 2.8; fill-opacity: 0.32; }
+.radial-frame { display: none; fill: none; stroke: var(--fg-1); stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; }
+.radial-node:hover .radial-frame { display: inline; stroke-width: 1px; stroke-opacity: 1; }
+.radial-node.is-near .radial-frame { display: inline; stroke-width: 1px; stroke-opacity: 0.5; }
+.radial-node.is-near:hover .radial-frame { stroke-opacity: 1; }
+.radial-node.is-selected .radial-frame { display: inline; stroke-width: 2px; stroke-opacity: 1; }
+.radial-node.is-selected.is-preview .radial-frame { stroke-width: 1px; }   /* a preview, not yet locked */
+.radial-node.is-dim:hover { opacity: 1; }                 /* a dimmed mark under the pointer shows in full */
 .radial-raise { pointer-events: none; }
 
 /* ---- names: upright callouts; leaves read along their own radius ---- */
@@ -98,7 +114,8 @@ body.radial-page {
 .radial-halo { stroke: var(--bg-from); stroke-width: 4.2; stroke-linejoin: round; stroke-opacity: 0.85; paint-order: stroke fill; }
 .radial-probe { visibility: hidden; }
 
-/* ---- keyboard focus: a ring at screen size, so an overlapped or tiny mark is still found ---- */
+/* ---- keyboard focus: a ring at screen size, so an overlapped or tiny mark is still found; it
+   stands 3px clear outside the mark's frame, so focus and selection read apart ---- */
 .radial-focus { pointer-events: none; }
 .radial-focus-ring { fill: none; stroke: var(--fg-1); stroke-width: 2; paint-order: stroke; }
 
@@ -135,6 +152,11 @@ body.radial-page {
 .radial-legend-lbl { color: var(--fg-1); display: block; }
 .radial-legend-sub { color: var(--fg-2); font-size: 10px; display: block; line-height: 1.28; }
 .radial-legend-sw { width: 11px; height: 11px; border-radius: 3px; flex: none; margin-top: 3px; background: var(--st); }
+/* a swatch for no asserted state shows the marks' wash: the color at 15% inside its own line */
+:is(.radial-legend-sw, .radial-chooser-sw, .radial-facet-sw, .radial-insp-dot).radial-sw--wash {
+  position: relative; background: transparent; box-shadow: inset 0 0 0 1.5px var(--st); }
+:is(.radial-legend-sw, .radial-chooser-sw, .radial-facet-sw, .radial-insp-dot).radial-sw--wash::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--st); opacity: 0.15; }
 .radial-legend-line { flex: none; width: 26px; height: 0; margin-top: 8px; border-top: 1px solid transparent; position: relative; }
 .radial-legend-line--always { border-top: 1.9px solid var(--fg-1); }
 .radial-legend-line--selection { border-top: 1.15px dashed var(--fg-2); }
