@@ -11,9 +11,9 @@ layout and pointer input, each for the target set its row below declares. Files 
 target set**, and that declaration — not this folder's name — decides which patterns
 consume it. A future member may serve a different set, or one pattern only.
 
-This matters because the owner's Class A static family is **five** patterns —
-[`diagram-static-H`](../diagram-static-H/README.md), [`diagram-static-V`](../diagram-static-V/README.md), [`diagram-static-SEQ`](../diagram-static-SEQ/README.md), **[`diagram-static-FLOW`](../diagram-static-FLOW/README.md)** and
-**[`diagram-static-peer`](../diagram-static-peer/README.md)** — and FLOW and peer each carry a different grammar. A member that
+This matters because the owner's Class A static family is **six** patterns —
+[`diagram-static-H`](../diagram-static-H/README.md), [`diagram-static-V`](../diagram-static-V/README.md), [`diagram-static-SEQ`](../diagram-static-SEQ/README.md), **[`diagram-static-FLOW`](../diagram-static-FLOW/README.md)**,
+**[`diagram-static-peer`](../diagram-static-peer/README.md)** and **[`diagram-static-network`](../diagram-static-network/README.md)** — and FLOW, peer and network each carry a different grammar. A member that
 governs only some of them must say so, or a later maintainer reads an absence as partial
 vendoring and "completes" it.
 
@@ -21,8 +21,8 @@ vendoring and "completes" it.
 
 | Member | Target set | Excluded |
 | --- | --- | --- |
-| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-static-peer` · `diagram-interactive-spine` · `diagram-interactive-radial` |
-| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` · `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` · `diagram-static-FLOW` | `diagram-static-peer` |
+| `diagrams-text-layout.js` | `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` | `diagram-static-FLOW` · `diagram-static-peer` · `diagram-static-network` · `diagram-interactive-spine` · `diagram-interactive-radial` |
+| `diagrams-pointer.js` | `diagram-interactive-radial` · `diagram-interactive-spine` · `diagram-static-H` · `diagram-static-V` · `diagram-static-SEQ` · `diagram-static-FLOW` | `diagram-static-peer` · `diagram-static-network` |
 
 ## Canonical and mirrors
 

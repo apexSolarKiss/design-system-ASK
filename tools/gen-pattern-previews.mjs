@@ -52,6 +52,8 @@ const SHELLS = [
   // The peer specimen draws its plates from the canonical source and engine, and follows the system
   // theme; its register modules resolve through the `_dsa-surface/` branch like the other shells'.
   { src: 'diagram-static-peer/diagram-static-peer.html',           dir: 'diagram-static-peer',        out: 'diagram-static-peer.html' },
+  // The network specimen, likewise: its plates from the canonical sources and engine, the system theme.
+  { src: 'diagram-static-network/diagram-static-network.html',     dir: 'diagram-static-network',     out: 'diagram-static-network.html' },
   // The spine preview takes the canonical Fit unchanged: it shows what a consumer receives.
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
   // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured
@@ -316,6 +318,7 @@ const HOST_SPECS = {
   'diagram-static-FLOW-static.html':         { stage: 'viewport', why: FIXED_APP, note: 'static view' },
   'diagram-static-FLOW-interactive.html':    { stage: 'viewport', why: FIXED_APP, note: 'interactive view' },
   'diagram-static-peer.html':                { stage: 'flow', why: 'a complete document with its own main landmark, h1 and page script' },
+  'diagram-static-network.html':             { stage: 'flow', why: 'a complete document with its own main landmark, h1 and page script' },
   'diagram-interactive-spine.html':          { stage: 'viewport', why: FIXED_APP },
   'diagram-interactive-radial.html':         { stage: 'viewport', why: FIXED_APP, note: 'Consciousness + free will, the captured research reference' },
   'diagram-interactive-radial.neutral.html': { stage: 'viewport', why: FIXED_APP, note: 'Vellmark parks, the synthetic composition' },

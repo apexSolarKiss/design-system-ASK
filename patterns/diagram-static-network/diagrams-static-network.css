@@ -1,0 +1,79 @@
+/* diagrams-static-network.css — the specimen page's own geometry and its mode selector.
+
+   design-system-ASK Class A static scaffold `diagram-static-network`. DS-owned: re-vendor byte-identical.
+   Loads after colors_and_type.css, surface-text-link.css and surface-document.css.
+
+   TEXT IS THE DOCUMENT REGISTER'S. Every title, paragraph, label, metadata value and table cell on the
+   page carries its register role and takes that role's style; this file sets no type metric and no
+   foreground on text. It owns the column, the figure stack, the plate's frame and the mode selector.
+   The plates draw their own nodes, connectors, notation and credit in SVG (the engine), and follow the
+   page's theme through the foundation roles: the page has no theme selector.
+
+   THE MODE SELECTOR. A quiet pill that reports its state, as diagram-static-peer's do: "view:
+   annotated" or "view: art". It is not a compact action: hover drops opacity with no color shift,
+   press is scale(0.97) at --dur-1, and focus is the README's white glow, never the browser default. */
+
+.network-page {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-9);
+}
+
+.network-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.network-mode {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-normal);
+  text-transform: none;
+  color: var(--fg-2);
+  background: var(--surface-glass);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.network-mode:hover { opacity: 0.92; }
+.network-mode:active { transform: scale(0.97); }
+.network-mode:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--ask-white), 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+@media (prefers-reduced-motion: reduce) {
+  .network-mode { transition: none; }
+  .network-mode:active { transform: none; }
+}
+
+@media (max-width: 640px) {
+  .network-page { padding: var(--space-6) var(--space-4) var(--space-8); }
+}
+
+.network-figure {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+/* A narrow specimen's caption keeps to the plate's width rather than the column's. */
+.network-figure--narrow { max-width: 880px; }
+
+/* The plate keeps its own field; a hairline frames it on the page. A plate draws at its own size and
+   scales down to the column when it is wider, never up. */
+.network-host svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-xs);
+  outline: 1px solid var(--line-2);
+}

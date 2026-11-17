@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/diagram-static-network.html
+     GENERATED from patterns/diagram-static-network/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../diagram-static-network/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->
+<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/diagram-static-network/">
+<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layered networks // diagram-static-network</title>
+<meta name="description" content="Ordered layers of neutral nodes joined by declared connections between adjacent layers, in one or two panels with their own direction, signals and notation. The forward and backward passes of a feed-forward network are the reference specimen; a sparse network is the second.">
+<meta name="generator" content="conforms to apexSolarKiss/design-system-ASK Tier 1 + Tier 2 by reference at generation time">
+<!-- design-system-ASK foundations — local mirror.
+     DOWNSTREAM: adjust the paths if your mirrors live elsewhere. -->
+<link rel="stylesheet" href="../../colors_and_type.css">
+<!-- The document register, from the consumer's surface-module mirror, in this order. -->
+<link rel="stylesheet" href="../../surface-text-link.css">
+<link rel="stylesheet" href="../../surface-document.css">
+<link rel="stylesheet" href="../diagram-static-network/diagrams-static-network.css">
+</head>
+<body>
+
+<main class="network-page doc-flow">
+
+  <!-- DOWNSTREAM: replace the title, lede and every section's words with your own. -->
+  <header class="doc-titled">
+    <h1 class="doc-title">Layered networks</h1>
+    <p class="doc-lede">Ordered layers of neutral nodes, joined by the connections a source declares, in panels that run forward or backward. The topology, the notation and what a connection means belong to the source.</p>
+  </header>
+
+  <!-- The page follows the system theme. Its mode selector changes what the plates draw. -->
+  <div class="network-modes" role="group" aria-label="Display">
+    <button type="button" class="network-mode" data-mode="view">view: <span data-mode-value aria-live="polite" aria-atomic="true">annotated</span></button>
+  </div>
+
+  <section class="doc-section" id="reference">
+    <h2 class="doc-section-title">Forward and backward passes</h2>
+    <p class="doc-body">A feed-forward network with two hidden layers. Forward, signals run from the input units to the outputs, and each unit's total input is a weighted sum of the outputs below it. Backward, error derivatives run from the outputs down. Each panel draws the same 23 connections; the marked units and weights carry the notation the equations use. The art view keeps the graph, the placement and the credit, and drops the annotation.</p>
+    <figure class="network-figure" data-spec="network.forward-backward">
+      <div class="network-host"></div>
+      <figcaption class="doc-labeled">
+        <span class="doc-label">Reference // forward and backward</span>
+        <span class="doc-meta" data-summary></span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="doc-section" id="second">
+    <h2 class="doc-section-title">A sparse network</h2>
+    <p class="doc-body">Five inputs, two hidden units and three outputs, joined sparsely: a different structure drawn by the same engine with no specimen-specific branch. Its labels, marks, weight and equation are generic, set in the same notation. It has no source, so it carries no credit.</p>
+    <figure class="network-figure network-figure--narrow" data-spec="network.sparse-5-2-3">
+      <div class="network-host"></div>
+      <figcaption class="doc-labeled">
+        <span class="doc-label">Second specimen // 5-2-3, sparse</span>
+        <span class="doc-meta" data-summary></span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="doc-section" id="checks">
+    <h2 class="doc-section-title">Checks</h2>
+    <p class="doc-body">Derived from the sources when the page loads.</p>
+    <div class="doc-table-scroll" role="region" aria-label="Checks" tabindex="0">
+      <table class="doc-table doc-dense-table">
+        <thead><tr><th class="doc-label" scope="col">Source</th><th class="doc-label" scope="col">Valid</th><th class="doc-label" scope="col">Layers</th><th class="doc-label" scope="col">Connections</th><th class="doc-label" scope="col">Least label clearance</th></tr></thead>
+        <tbody data-checks></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- DOWNSTREAM: replace with your own network sources. -->
+<script src="../diagram-static-network/diagram-static-network.source.js"></script>
+<!-- DS-owned and generated: advance widths and ink bounds of the notation's characters. -->
+<script src="../diagram-static-network/diagrams-static-network-glyphs.js"></script>
+<!-- DS-owned engine. Re-vendor byte-identical; do not hand-edit. -->
+<script src="../diagram-static-network/diagrams-static-network-engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var NET = window.DIAGRAM_NETWORK, GLYPHS = window.DIAGRAM_NETWORK_GLYPHS, SPECS = window.NETWORK_DIAGRAMS;
+  var byId = {};
+  SPECS.forEach(function (s) { byId[s.id] = s; });
+  // The selector cycles its values; nothing is stored, so the page opens annotated.
+  var MODES = { view: ['annotated', 'art'] };
+  var state = { view: 'annotated' };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function draw() {
+    document.querySelectorAll('.network-figure').forEach(function (fig) {
+      var spec = byId[fig.getAttribute('data-spec')];
+      NET.mount(fig.querySelector('.network-host'), spec, { glyphs: GLYPHS, mode: state.view });
+      fig.querySelector('[data-summary]').textContent = spec.layers.map(function (L) { return L.n; }).join('-') + ' // ' + spec.edges.length + ' connections';
+    });
+    // The selector's own buttons: a plate's <svg> carries data-mode too.
+    document.querySelectorAll('.network-mode[data-mode]').forEach(function (b) {
+      b.querySelector('[data-mode-value]').textContent = state[b.getAttribute('data-mode')];
+    });
+  }
+
+  function checks() {
+    var body = document.querySelector('[data-checks]');
+    SPECS.forEach(function (spec) {
+      var v = NET.validate(spec, GLYPHS), tr = body.appendChild(el('tr'));
+      var cells = [spec.id, v.ok ? 'yes' : 'no: ' + v.errors.map(function (e) { return e.code; }).join(', ')];
+      if (v.ok) {
+        var L = NET.layout(spec, GLYPHS);
+        cells.push(spec.layers.map(function (x) { return x.n; }).join('-'), String(spec.edges.length),
+          L.weights.length ? Math.min.apply(null, L.weights.map(function (w) { return w.clear; })).toFixed(1) + ' units' : 'no weights');
+      } else cells.push('', '', '');
+      cells.forEach(function (c) { tr.appendChild(el('td', 'doc-table-cell', c)); });
+    });
+  }
+
+  document.querySelectorAll('.network-mode[data-mode]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-mode'), values = MODES[k];
+      state[k] = values[(values.indexOf(state[k]) + 1) % values.length];
+      draw();
+    });
+  });
+  checks();
+  draw();
+})();
+</script>
+
+</body>
+</html>
