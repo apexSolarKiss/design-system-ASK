@@ -37,6 +37,8 @@
      scroll restoration on a reload is left alone. */
   :root[data-surface-nav-mode="desktop"] [id] { scroll-margin-top: calc(var(--surface-nav-top-depth) + var(--space-5)); }
   .key-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+  /* The representations list: framing only; its items take the register's metadata role. */
+  .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 </style>
 </head>
 <body>
@@ -66,7 +68,7 @@
   </header>
 
   <section class="doc-section" aria-labelledby="questions-title">
-    <h2 class="doc-section-title" id="questions-title">Five questions, five owners</h2>
+    <h2 class="doc-section-title" id="questions-title">Scope // five questions, five owners</h2>
     <div class="doc-table-scroll" role="region" aria-label="The five questions" tabindex="0">
       <table class="doc-table">
         <thead><tr><th class="doc-label" scope="col">Question</th><th class="doc-label" scope="col">Answered by</th><th class="doc-label" scope="col">It cannot establish</th></tr></thead>
@@ -82,7 +84,7 @@
   </section>
 
   <section class="doc-section" aria-labelledby="review-title">
-    <h2 class="doc-section-title" id="review-title">Review State // the five roles</h2>
+    <h2 class="doc-section-title" id="review-title">Roles and colors // Review State, the five roles</h2>
     <div class="doc-table-scroll" role="region" aria-label="Review marks" tabindex="0">
       <table class="doc-table">
         <thead><tr><th class="doc-label" scope="col">Mark</th><th class="doc-label" scope="col">Meaning</th><th class="doc-label" scope="col">Value and relationship</th></tr></thead>
@@ -99,7 +101,7 @@
   </section>
 
   <section class="doc-section" aria-labelledby="other-title">
-    <h2 class="doc-section-title" id="other-title">The other marks, basis and checks</h2>
+    <h2 class="doc-section-title" id="other-title">Roles and colors // the other marks, basis and checks</h2>
     <dl class="doc-annotation-list">
       <dt class="doc-label">State</dt>
       <dd>
@@ -125,12 +127,25 @@
       <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
     </dl>
     <div class="doc-prose">
-      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, a whole list item's included, or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved both name something not yet settled: Open question takes the emphasis cyan and Unresolved keeps its own value, and their geometry and their words say which axis is speaking.</p>
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, a whole list item's included, or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved both name something not yet settled, and both take the emphasis cyan: their geometry and their words say which axis is speaking.</p>
     </div>
   </section>
 
+  <section class="doc-section" aria-labelledby="representations-title">
+    <h2 class="doc-section-title" id="representations-title">Representations // where the roles are drawn, and their status</h2>
+    <p class="doc-body">In a reviewed document a judgment takes the review mark, the scope rail of its range and the scope underline of its passage mark, and each shown decision names what it concerns, who decided and its scope. A filled decision record for a standalone summary is a candidate, not a shipped form. The rows are the README's application coverage.</p>
+    <ul class="avail-list" aria-label="Review Semantics representations and their status">
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> review mark: the bordered label in its role's value · a document annotation · <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> the scope rail of an annotation range · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> passage mark: the scope underline · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> decision record: what, who and scope beside the mark · a document annotation · <code class="doc-code">review-semantics.md</code>, The decision record: a composition beside the shared mark · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> filled decision record · a standalone review summary, status board or decision node · adopted; no review role binds a fill · candidate C, described in the <a class="surface-text-link" href="preview/styleguide.html#candidate-decision-record">style guide</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> color behind reviewed words · any · a judgment is recorded, never painted onto the content</li>
+    </ul>
+  </section>
+
   <section class="doc-section" aria-labelledby="roles-title">
-    <h2 class="doc-section-title" id="roles-title">Document roles stay as they are</h2>
+    <h2 class="doc-section-title" id="roles-title">Rules // document roles stay as they are</h2>
     <blockquote class="doc-quote">
       <p>A quotation: someone's words, on the violet rail.</p>
       <footer>Represented voice</footer>
@@ -145,7 +160,7 @@
   </section>
 
   <section class="doc-section" aria-labelledby="scope-title">
-    <h2 class="doc-section-title" id="scope-title">The composition at its scopes</h2>
+    <h2 class="doc-section-title" id="scope-title">Worked applications // the composition at its scopes</h2>
 
     <div class="doc-section">
       <h3 class="doc-subsection-title">Paragraphs and their neighbors // one range per judgment</h3>
@@ -377,7 +392,7 @@
   </section>
 
   <section class="doc-section" aria-labelledby="compare-title">
-    <h2 class="doc-section-title" id="compare-title">Comparisons</h2>
+    <h2 class="doc-section-title" id="compare-title">Worked applications // comparisons</h2>
 
     <div class="doc-section">
       <h3 class="doc-subsection-title">One value, two axes</h3>
@@ -444,6 +459,12 @@
         <p class="doc-body">The review mark and the chip share one box, the bordered label: the same padding, corner and edge. Its small corner keeps an inert mark from looking like a control beside a compact action. The mark differs from the chip in its fainter label words, its review vocabulary and its place, leading the range it opens, a whole list item included (whose scope rail sits outside the content edge), or a prompt before a range, or sitting in the cell, note, list or document record that bounds its scope, not in its color: a Proposed mark and a thesis chip share the emphasis magenta. The chip names why a unit is emphasized and heads a panel.</p>
       </div>
     </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="usage-title">
+    <h2 class="doc-section-title" id="usage-title">Usage and owners // load order and who decides what</h2>
+    <p class="doc-body">After the foundation, load the four register modules, then <code class="doc-code">spectral-state.css</code>, <code class="doc-code">evidence-state.css</code> and <code class="doc-code">review-semantics.css</code>, all from one design-system commit, in the order the contract gives. The module owns the review vocabulary, its value bindings, the marks that present it and their checking. The adopting project owns which passages and items carry which review state, the decisions and open questions themselves, and their attribution, evidence, actors and scopes. No mark creates authority: the display reports a decision and never makes one.</p>
+    <p class="doc-meta"><a class="surface-text-link" href="review-semantics.md">the contract</a> · <a class="surface-text-link" href="README.md#application-coverage">application coverage</a> · <a class="surface-text-link" href="preview/styleguide.html#candidate-decision-record">candidate C, in the style guide</a></p>
   </section>
 
   <footer class="doc-titled">

@@ -7,11 +7,11 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>ASK Design System // canonical styleguide</title>
-<meta name="description" content="Canonical token review surface: color, type, spacing, and roles.">
+<meta name="description" content="Canonical token review surface and visual catalog: color, type, spacing, roles, treatments by color, and semantic coverage.">
 <link rel="canonical" href="https://design-system.a-s-k.studio/styleguide/">
 <meta property="og:site_name" content="design-system-ASK">
 <meta property="og:title" content="ASK Design System // canonical styleguide">
-<meta property="og:description" content="Canonical token review surface: color, type, spacing, and roles.">
+<meta property="og:description" content="Canonical token review surface and visual catalog: color, type, spacing, roles, treatments by color, and semantic coverage.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://design-system.a-s-k.studio/styleguide/">
 <meta property="og:image" content="https://design-system.a-s-k.studio/og-image.png">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="ASK wordmark on lavender background">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ASK Design System // canonical styleguide">
-<meta name="twitter:description" content="Canonical token review surface: color, type, spacing, and roles.">
+<meta name="twitter:description" content="Canonical token review surface and visual catalog: color, type, spacing, roles, treatments by color, and semantic coverage.">
 <meta name="twitter:image" content="https://design-system.a-s-k.studio/og-image.png">
 <meta name="twitter:image:alt" content="ASK wordmark on lavender background">
 
@@ -37,14 +37,24 @@
      remain maintained and may require conformance when the contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
 
+<!-- The panel, textual-link, document-register and treatment rules, then the
+     semantic modules, in the load order the Review Semantics and Criterion
+     Assessment contracts state. The catalog sections below draw every
+     specimen from these modules: the fill paint, the bordered label, the
+     markers, the rails, the scope underline, the emphasis and the panels. The
+     page restates none of their recipes; where an owner leaves a binding to
+     the composing surface (a fill color and its ink), a specimen sets that
+     binding inline and nothing else. -->
+<link rel="stylesheet" href="../surface-panel.css">
 <!-- The canonical textual-link contract, loaded so the specimen below RENDERS
      from the module rather than from a local restatement. -->
 <link rel="stylesheet" href="../surface-text-link.css">
-<!-- The canonical panel and treatment rules, in their documented load order, so
-     the two authorial notes below take the shared magenta callout rail
-     (.surface-emphasis-rail) rather than a locally drawn neutral border. -->
-<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-document.css">
 <link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../evidence-state.css">
+<link rel="stylesheet" href="../review-semantics.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
 <!-- Page chrome: the canonical surface-shell pattern, consumed by same-repo
      reference. The mode selector below is NOT part of that pattern — it is this
      inspection surface's own control, styled here and driven by
@@ -125,6 +135,31 @@
   .spec-caption { font-size: var(--fs-caption); color: var(--fg-3); }
   .meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); white-space: nowrap; }
 
+  /* Catalog framing — layout only. Each specimen in a cell is drawn by its
+     owner module. A cell sets the geometry its owner leaves to the composing
+     surface (a filled shape's size, corner and border width) and, where the
+     owner asks the composer for it, the color binding: --surface-fill-color
+     and --surface-fill-ink for a filled shape. Nothing here sets a paint, an
+     edge, an ink or a dose. */
+  .cat-family { margin: var(--space-7) 0 0; }
+  .cat-family > .doc-meta { margin: var(--space-2) 0 0; }
+  .cat-grid { display: grid; gap: var(--space-4) var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(176px, 100%), 1fr)); margin-top: var(--space-4); }
+  .cat-cell { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line-2); min-width: 0; }
+  .cat-spec { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-2); min-height: 46px; }
+  .cat-cell .note { margin: 0; }
+  .cat-family > .cat-grid + .note, .cat-family > .note + .note { margin-top: var(--space-4); }
+  .cat-box { box-sizing: border-box; width: 108px; height: 46px; border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .cat-svg { display: block; width: 108px; height: 46px; }
+  .cat-svg rect { stroke-width: 1.5; }
+  .cat-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; dominant-baseline: central; }
+  /* A scope rail hangs 14px outside the content edge; this keeps its lane
+     inside the cell, as the labeled range's contract asks of its host. */
+  .cat-lane { padding-left: var(--space-5); }
+  .cat-stack { display: flex; flex-direction: column; gap: var(--space-4); }
+  .cat-candidate { margin: var(--space-6) 0 0; }
+  .cat-links { margin: var(--space-3) 0 0; padding-left: var(--space-5); }
+  .cat-links li { margin: 0 0 var(--space-2); }
+
   /* Mode selector — this surface's own control, occupying the shell's optional
      header slot. It is style-guide-only, so it is styled here rather than in the
      vendorable shell. Interaction per the repo README (Hover, press, focus):
@@ -168,7 +203,7 @@
       <nav class="surface-breadcrumb" aria-label="Breadcrumb">
         <h1 class="surface-title"><a class="org" href="https://a-s-k.studio/">ASK</a> <span class="sep" aria-hidden="true">//</span> <a href="https://a-s-k.studio/apex-solar-kiss">apex solar kiss</a> <span class="sep" aria-hidden="true">//</span> <a href="../index.html">design-system-ASK</a> <span class="sep" aria-hidden="true">//</span> <span class="page" aria-current="page">style guide</span></h1>
       </nav>
-      <p class="surface-lede">Canonical token review surface, live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical. Theme follows the system by default; select light or dark to verify a fixed mode. This is a reference/preview surface, not a sealed deliverable.</p>
+      <p class="surface-lede">Canonical token review surface and visual catalog, live-linked to <span class="mono">colors_and_type.css</span> and rendered with <span class="mono">var()</span> roles, so its token values resolve live from the canonical; the catalog draws each shared treatment from the module that owns it. Theme follows the system by default; select light or dark to verify a fixed mode. This is a reference/preview surface, not a sealed deliverable.</p>
     </div>
     <div class="surface-head-aside">
       <!-- The accessible name is the VISIBLE text, deliberately. A static
@@ -318,6 +353,20 @@
     </div>
   </section>
 
+  <!-- ============ BROWSER / UNDER-PAGE EDGE ============ -->
+  <section>
+    <h2>Browser / under-page edge</h2>
+    <p class="note" style="margin: 0 0 var(--space-4);">The area a browser paints <em>beyond</em> the document — the over-scroll pocket above and below the page — plus how it renders scrollbars and form controls. A browser derives the first from a <b>solid</b> background color, not from a gradient, and the second from <code>color-scheme</code>. Both are page-wide, so the foundation owns both <b>on the root</b>. <code>--bg-edge</code> is the semantic role; it binds existing palette values and creates none. It is painted on <code>html</code> <em>beneath</em> the gradient, so nothing visible on the page changes.</p>
+    <div class="card">
+      <div class="row"><span class="mono">--bg-edge</span><span class="meta" data-computed="bg-edge">&mdash;</span></div>
+      <div class="row"><span class="mono">:root color-scheme</span><span class="meta" data-computed="root-color-scheme">&mdash;</span></div>
+      <div class="row"><span class="mono">html background-color</span><span class="meta" data-computed="html-bg">&mdash;</span></div>
+      <div class="row"><span class="mono">body background-color</span><span class="meta" data-computed="body-bg">&mdash;</span></div>
+    </div>
+    <p class="note" style="margin: var(--space-4) 0 0;">Use the mode selector above to check all three theme paths. <code>body</code> stays transparent on purpose: the root carries the solid, and the root's background is what propagates to the canvas.</p>
+    <p class="note surface-emphasis-rail" style="margin: var(--space-3) 0 0;"><strong>These readouts are necessary, not sufficient.</strong> They show the values the browser is being handed. The pocket itself sits outside the viewport and cannot be judged in a desktop window — <b>confirm it on a real device</b> by over-scrolling past the top and bottom of the page in both light and dark.</p>
+  </section>
+
   <!-- ============ COMPONENTS ============ -->
   <section>
     <p class="sg-h">Components</p>
@@ -381,20 +430,370 @@
     </div>
   </section>
 
-  <section>
-    <h2>Browser / under-page edge</h2>
-    <p class="note" style="margin: 0 0 var(--space-4);">The area a browser paints <em>beyond</em> the document — the over-scroll pocket above and below the page — plus how it renders scrollbars and form controls. A browser derives the first from a <b>solid</b> background color, not from a gradient, and the second from <code>color-scheme</code>. Both are page-wide, so the foundation owns both <b>on the root</b>. <code>--bg-edge</code> is the semantic role; it binds existing palette values and creates none. It is painted on <code>html</code> <em>beneath</em> the gradient, so nothing visible on the page changes.</p>
-    <div class="card">
-      <div class="row"><span class="mono">--bg-edge</span><span class="meta" data-computed="bg-edge">&mdash;</span></div>
-      <div class="row"><span class="mono">:root color-scheme</span><span class="meta" data-computed="root-color-scheme">&mdash;</span></div>
-      <div class="row"><span class="mono">html background-color</span><span class="meta" data-computed="html-bg">&mdash;</span></div>
-      <div class="row"><span class="mono">body background-color</span><span class="meta" data-computed="body-bg">&mdash;</span></div>
+  <!-- ============ TREATMENTS // BY PHYSICAL COLOR ============ -->
+  <!-- The catalog: each shared treatment in each physical color a governed
+       meaning admits, drawn by its owner module. A caption names the physical
+       color and the application that draws it there, never a state, evidence
+       or review role. A color with no application is listed, not drawn. -->
+  <section id="treatments">
+    <p class="sg-h">Treatments // by physical color</p>
+    <p class="note" style="margin: 0;">Each shared treatment, in each physical color a governed meaning admits, drawn by the module that owns it. A caption names the physical color and the application that draws it there. A color with no application is listed, not drawn. The status words are the README's <a class="surface-text-link" href="../README.md#application-coverage">application coverage</a> statuses: <span class="surface-bordered-label doc-label">supported</span>, <span class="surface-bordered-label doc-label">proposed extension</span>, <span class="surface-bordered-label doc-label">not implemented</span> and <span class="surface-bordered-label doc-label">not applicable</span>. Painting a color does not admit a meaning.</p>
+
+    <div class="cat-family" id="treatment-fill">
+      <h3 class="spec-role">Filled shape <span class="spec-role-meta">FILL PAINT · <code>surface-treatments.css</code></span></h3>
+      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. The Criterion Assessment and Evidence State fills are adopted and not implemented; their colors' inks are the ones below, brown's excepted.</p>
+      <div class="cat-grid">
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-green); --surface-fill-ink: var(--surface-fill-ink-on-green);">
+            <span class="cat-box surface-fill">green</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">green</text></svg>
+          </div>
+          <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span> · ink <span data-fg="--surface-fill-ink-on-green"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-yellow); --surface-fill-ink: var(--surface-fill-ink-on-yellow);">
+            <span class="cat-box surface-fill">yellow</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">yellow</text></svg>
+          </div>
+          <p class="doc-meta">yellow <span data-fg="--ask-state-value-yellow"></span> · ink <span data-fg="--surface-fill-ink-on-yellow"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-orange); --surface-fill-ink: var(--surface-fill-ink-on-orange);">
+            <span class="cat-box surface-fill">orange</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">orange</text></svg>
+          </div>
+          <p class="doc-meta">orange <span data-fg="--ask-state-value-orange"></span> · ink <span data-fg="--surface-fill-ink-on-orange"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-red); --surface-fill-ink: var(--surface-fill-ink-on-red);">
+            <span class="cat-box surface-fill">red</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">red</text></svg>
+          </div>
+          <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span> · ink <span data-fg="--surface-fill-ink-on-red"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><p class="note">No shape is drawn: brown has no ink.</p></div>
+          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span> · no ink</p>
+          <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> Evidence State weakened: adopted, and brown has no ink</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><p class="note">No shape is drawn.</p></div>
+          <p class="doc-meta">lavender-gray <span data-fg="--ask-state-value-lavender-gray"></span> · no ink</p>
+          <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> its one role, Evidence State not yet testable, is drawn hollow, dashed and labeled, never filled</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-magenta); --surface-fill-ink: var(--surface-fill-ink-on-magenta);">
+            <span class="cat-box surface-fill">magenta</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">magenta</text></svg>
+          </div>
+          <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span> · ink <span data-fg="--surface-fill-ink-on-magenta"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-violet); --surface-fill-ink: var(--surface-fill-ink-on-violet);">
+            <span class="cat-box surface-fill">violet</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">violet</text></svg>
+          </div>
+          <p class="doc-meta">violet <span data-fg="--ask-emphasis-violet"></span> · ink <span data-fg="--surface-fill-ink-on-violet"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-cyan); --surface-fill-ink: var(--surface-fill-ink-on-cyan);">
+            <span class="cat-box surface-fill">cyan</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">cyan</text></svg>
+          </div>
+          <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span> · ink <span data-fg="--surface-fill-ink-on-cyan"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-white); --surface-fill-ink: var(--surface-fill-ink-on-white);">
+            <span class="cat-box surface-fill">white</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">white</text></svg>
+          </div>
+          <p class="doc-meta">white <span data-fg="--ask-white"></span> · ink <span data-fg="--surface-fill-ink-on-white"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Three Functions executive, light theme</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-lavender-ask); --surface-fill-ink: var(--surface-fill-ink-on-lavender);">
+            <span class="cat-box surface-fill">lavender</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">lavender</text></svg>
+          </div>
+          <p class="doc-meta">lavender <span data-fg="--ask-lavender-ask"></span> · ink <span data-fg="--surface-fill-ink-on-lavender"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Three Functions executive, dark theme</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec">
+            <span class="cat-box surface-fill surface-fill--neutral">neutral</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><g class="surface-fill--neutral"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">neutral</text></g></svg>
+          </div>
+          <p class="doc-meta">neutral <span data-fg="--surface-fill-neutral"></span> · ink <span data-fg="--surface-fill-ink-on-neutral"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a node that asserts no state: the spine, the keys</p>
+        </div>
+      </div>
     </div>
-    <p class="note" style="margin: var(--space-4) 0 0;">Use the mode selector above to check all three theme paths. <code>body</code> stays transparent on purpose: the root carries the solid, and the root's background is what propagates to the canvas.</p>
-    <p class="note surface-emphasis-rail" style="margin: var(--space-3) 0 0;"><strong>These readouts are necessary, not sufficient.</strong> They show the values the browser is being handed. The pocket itself sits outside the viewport and cannot be judged in a desktop window — <b>confirm it on a real device</b> by over-scrolling past the top and bottom of the page in both light and dark.</p>
+
+    <div class="cat-family" id="treatment-label">
+      <h3 class="spec-role">Bordered label <span class="spec-role-meta">BORDERED LABEL · <code>surface-treatments.css</code></span></h3>
+      <p class="note">One inert box for every short label: a word that is read, never operated. Its edge takes a color only from a governed meaning, the emphasis chip or a review mark; a neutral label keeps the tertiary foreground. The edge is an apparent 2px in light and 1px in dark.</p>
+      <div class="cat-grid">
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-bordered-label doc-label">draft</span></div>
+          <p class="doc-meta">neutral <span data-fg="--fg-3"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a neutral status word; Review State's no decision recorded</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
+          <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--violet">finding</span></div>
+          <p class="doc-meta">violet <span data-fg="--ask-emphasis-violet"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--cyan">aside</span><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div>
+          <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div>
+          <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></div>
+          <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+        </div>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> green, yellow, orange, red, cyan, violet and magenta as Spectral State labels; green, orange, cyan and brown as Evidence State labels. Both are adopted, and described below as candidates A and B.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> lavender-gray alone: Evidence State's not yet testable keeps its hollow marker and dashed rail with its label. No application: white, lavender.</p>
+    </div>
+
+    <div class="cat-family" id="treatment-marker">
+      <h3 class="spec-role">Marker <span class="spec-role-meta">dot · square · hollow dashed dot · <code>review-semantics.css</code></span></h3>
+      <p class="note">A 10px dot carries evidence and a 10px square carries state, each beside its visible label; not yet testable takes a hollow dashed dot. The anatomy is <code>review-semantics.css</code>'s today, used in the document annotation composition. A shared marker anatomy in <code>surface-treatments.css</code> is adopted and <span class="surface-bordered-label doc-label">not implemented</span>; the Evidence and Spectral keys draw their own swatches.</p>
+      <div class="cat-stack">
+        <div class="cat-cell">
+          <div class="cat-spec">
+            <span class="doc-mark doc-label" data-evidence="supported">Supported</span>
+            <span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span>
+            <span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span>
+            <span class="doc-mark doc-label" data-evidence="weakened">Weakened</span>
+            <span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span>
+          </div>
+          <p class="doc-meta">dot // green · orange · cyan · brown · lavender-gray, hollow and dashed</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Evidence State, in a document annotation</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec">
+            <span class="doc-mark doc-label" data-state="earned">Earned</span>
+            <span class="doc-mark doc-label" data-state="structural">Structural</span>
+            <span class="doc-mark doc-label" data-state="partial">Partial</span>
+            <span class="doc-mark doc-label" data-state="deflated">Deflated</span>
+            <span class="doc-mark doc-label" data-state="held">Held</span>
+            <span class="doc-mark doc-label" data-state="external">External</span>
+            <span class="doc-mark doc-label" data-state="proposed">Proposed</span>
+            <span class="doc-mark doc-label" data-state="neutral">Neutral</span>
+          </div>
+          <p class="doc-meta">square // green · yellow · orange · red · cyan · violet · magenta · the foreground</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State, in a document annotation</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-family" id="treatment-rail">
+      <h3 class="spec-role">Rails <span class="spec-role-meta">five families · <code>surface-treatments.css</code> · <code>surface-document.css</code></span></h3>
+      <p class="note">Rails share paint, not place or meaning. A passage rail sits at the content edge and insets its text; a scope rail sits in the outer lane beside the range its label governs; an assessment rail marks one summary in a comparison table; the hierarchy rail is a quiet 1px rule; not yet testable takes a 2px dashed rail. Rail paint keyed by physical color, with the earned, structural and deflated names kept as aliases, is adopted and <span class="surface-bordered-label doc-label">not implemented</span>.</p>
+      <div class="cat-grid">
+        <div class="cat-cell">
+          <div class="cat-stack">
+            <p class="surface-emphasis-rail note">magenta // the authorial callout</p>
+            <p class="surface-emphasis-rail surface-emphasis--violet note">violet // a quotation's rail, and an emphasis rail outside document text</p>
+            <p class="surface-emphasis-rail surface-emphasis--cyan note">cyan // an emphasis rail outside document text</p>
+          </div>
+          <p class="doc-meta">passage rail // content edge · 2px</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> content emphasis · the document register</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-lane">
+            <div class="doc-group surface-labeled-range">
+              <span class="surface-bordered-label doc-label">draft</span>
+              <p class="doc-meta">neutral // a range under a neutral label</p>
+            </div>
+            <div class="doc-group doc-annotation-range surface-labeled-range">
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></span></div>
+              <p class="doc-meta">magenta</p>
+            </div>
+            <div class="doc-group doc-annotation-range surface-labeled-range">
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></span></div>
+              <p class="doc-meta">cyan</p>
+            </div>
+            <div class="doc-group doc-annotation-range surface-labeled-range">
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></span></div>
+              <p class="doc-meta">green</p>
+            </div>
+            <div class="doc-group doc-annotation-range surface-labeled-range">
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></span></div>
+              <p class="doc-meta">red</p>
+            </div>
+          </div>
+          <p class="doc-meta">scope rail // outer lane · 2px</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a neutral range · Review State ranges</p>
+        </div>
+        <div class="cat-cell">
+          <ul class="doc-compare-key" aria-label="Assessment rails by color">
+            <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">green</p></li>
+            <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">yellow</p></li>
+            <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">red</p></li>
+          </ul>
+          <p class="doc-meta">assessment rail // a comparison table · 2px</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Criterion Assessment</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-stack">
+            <div class="doc-hierarchy doc-group"><p class="doc-meta">neutral // a level inside a level</p></div>
+            <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
+              <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></span></div>
+              <p class="doc-meta">lavender-gray // dashed</p>
+            </div>
+          </div>
+          <p class="doc-meta">hierarchy rail · 1px; evidence rail · 2px dashed</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the document register · Evidence State, in a document annotation</p>
+        </div>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> a scope rail in a Spectral State or an Evidence State value, beside a label naming its axis: the labeled range admits neutral and the review values only today. Both are adopted, and described below as candidates A and B.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> a solid lavender-gray scope rail: Evidence State's not yet testable keeps its dashed rail.</p>
+    </div>
+
+    <div class="cat-family" id="treatment-underline">
+      <h3 class="spec-role">Scope underline <span class="spec-role-meta">SCOPE UNDERLINE · <code>surface-treatments.css</code></span></h3>
+      <p class="note">The exact words one label governs, under one solid 2px line; the words keep their color. It is inert, and it is never a link's line. A colored line arrives only with a Review State passage mark, which sits in body text and names the note that records its judgment.</p>
+      <div class="cat-grid">
+        <div class="cat-cell">
+          <p class="small" style="margin: 0;">keep <span class="surface-scope-underline">these exact words</span> in view</p>
+          <p class="doc-meta">neutral <span data-fg="--fg-3"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a neutral scope</p>
+        </div>
+      </div>
+      <div class="cat-cell" style="margin-top: var(--space-4);">
+        <div class="doc-group">
+          <p class="doc-body">Each frame keeps <mark class="doc-passage-mark surface-scope-underline" data-review="proposed" aria-describedby="sg-note-proposed">two props or fewer</mark>, is lit <mark class="doc-passage-mark surface-scope-underline" data-review="open" aria-describedby="sg-note-open">before the end of each month</mark>, follows <mark class="doc-passage-mark surface-scope-underline" data-review="accepted" aria-describedby="sg-note-accepted">the paper plan agreed in round one</mark> and avoids <mark class="doc-passage-mark surface-scope-underline" data-review="declined" aria-describedby="sg-note-declined">a glossy stock</mark>.</p>
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="sg-note-proposed">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">on “two props or fewer” · editor, round 2</span></span></div>
+          </div>
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="sg-note-open">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="doc-meta">on “before the end of each month” · awaiting the owner</span></span></div>
+          </div>
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="sg-note-accepted">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">on “the paper plan agreed in round one” · owner, round 2 · this copy</span></span></div>
+          </div>
+          <div class="doc-hierarchy doc-group doc-annotation-note" id="sg-note-declined">
+            <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">on “a glossy stock” · owner, round 2</span></span></div>
+          </div>
+        </div>
+        <p class="doc-meta">magenta · cyan · green · red // a passage mark and the note that records it</p>
+        <p class="note"><span class="surface-bordered-label doc-label">supported</span> Review State, in a reviewed document</p>
+      </div>
+    </div>
+
+    <div class="cat-family" id="treatment-emphasis">
+      <h3 class="spec-role">Content emphasis <span class="spec-role-meta">CONTENT EMPHASIS · <code>surface-treatments.css</code></span></h3>
+      <p class="note">Persistent attention a unit's role assigns: a perimeter with a soft bloom, the chip that names why, and the passage rail shown above. Never a status and never an interaction.</p>
+      <div class="cat-grid">
+        <div class="cat-cell">
+          <div class="surface-separate surface-material-page surface-attach-free surface-elevation-flush surface-emphasis surface-emphasis--magenta"><span class="surface-emphasis-chip">thesis</span></div>
+          <p class="doc-meta">magenta</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> content emphasis</p>
+        </div>
+        <div class="cat-cell">
+          <div class="surface-separate surface-material-page surface-attach-free surface-elevation-flush surface-emphasis surface-emphasis--violet"><span class="surface-emphasis-chip">finding</span></div>
+          <p class="doc-meta">violet</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> content emphasis</p>
+        </div>
+        <div class="cat-cell">
+          <div class="surface-separate surface-material-page surface-attach-free surface-elevation-flush surface-emphasis surface-emphasis--cyan"><span class="surface-emphasis-chip">aside</span></div>
+          <p class="doc-meta">cyan</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> content emphasis</p>
+        </div>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> compact actions and the CTA, shown under Components: neither takes a state, evidence or review color.</p>
+    </div>
   </section>
 
-  <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> · all colors via <code>var()</code> + computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>
+  <!-- ============ INTERACTION ============ -->
+  <section id="interaction">
+    <p class="sg-h">Interaction // states by role</p>
+    <p class="note" style="margin: 0 0 var(--space-4);">Hover, press and focus follow the role, as the README's <a class="surface-text-link" href="../README.md#hover-press-focus">Hover, press, focus</a> sets them. The compact action, the CTA and the textual link are shown under Components; these are the other operated roles. Hover or Tab to each. A bordered label, an emphasis chip, a filled shape, a marker, a rail and a scope underline are inert and take none of these states. Selection belongs to the diagram patterns: open the <a class="surface-text-link" href="../patterns/view/diagram-interactive-spine.html">spine</a> or the <a class="surface-text-link" href="../patterns/view/diagram-interactive-radial.html">radial</a> preview.</p>
+    <div class="grid cols-2">
+      <a class="surface-panel" href="#interaction">
+        <p class="surface-panel-title">Full-panel link</p>
+        <p class="surface-panel-support">The whole panel is the link. Hover and focus draw the attention edge over its resting shadow.</p>
+      </a>
+      <article class="surface-panel">
+        <h3 class="surface-panel-title">Inert panel</h3>
+        <p class="surface-panel-support">The panel takes no interaction; the action inside it does.</p>
+        <div class="spec-actions"><a class="surface-action" href="#interaction">compact action</a></div>
+      </article>
+    </div>
+    <details class="surface-disclosure surface-material-panel surface-attach-free surface-elevation-flush" style="margin-top: var(--space-5);">
+      <summary><span class="surface-disclosure-label">disclosure trigger</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></summary>
+      <p class="surface-disclosure-body note">The trigger's foreground rises on hover; focus draws a 2px outline and turns the indicator magenta.</p>
+    </details>
+  </section>
+
+  <!-- ============ SEMANTIC APPLICATIONS ============ -->
+  <section id="semantic-applications">
+    <p class="sg-h">Semantic applications // coverage and candidates</p>
+    <p class="note" style="margin: 0;">A shared treatment is reusable; a semantic system uses it only where its contract binds it. The README's <a class="surface-text-link" href="../README.md#application-coverage">application coverage</a> is the one map of which representations each system has, in which context, and in which status. Each key presents its system in one order: scope, roles and colors, representations, rules, worked applications, usage and owners.</p>
+    <ul class="cat-links note">
+      <li><a class="surface-text-link" href="../spectral-state.html">Spectral State</a> // the state of an architectural element</li>
+      <li><a class="surface-text-link" href="../evidence-state.html">Evidence State</a> // what the evidence supports</li>
+      <li><a class="surface-text-link" href="../review-semantics.html">Review Semantics</a> // the judgment asked or made on a document's own content</li>
+      <li><a class="surface-text-link" href="../criterion-assessment.html">Criterion Assessment</a> // how a characteristic serves a stated criterion</li>
+      <li><a class="surface-text-link" href="../three-functions.html">Three Functions</a> // the legislative, executive and judicial roles of an apparatus</li>
+    </ul>
+
+    <h3 class="spec-role" id="candidates">Adopted candidates <span class="spec-role-meta">three applications · not implemented</span></h3>
+    <p class="note" style="margin: 0;">Three applications of existing treatments, adopted and not implemented. None is part of any module, and none is drawn here: the bordered label, the labeled range and the fill paint do not admit these bindings until the change that implements each one updates the named contracts and their checks, and this page draws only what its modules admit.</p>
+
+    <div class="cat-candidate" id="candidate-state-labels">
+      <h4 class="spec-role">A // Spectral State labels and rails</h4>
+      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> an architecture document, a figure caption or a table that names an element's state in words, outside a review annotation. <b>Binding:</b> the role's Spectral State value on the label's edge and on the range's rail; the words stay in the label role, and nothing fills, so no ink is needed. The label names its axis, so a green edge never reads as an accepted review. <b>Implementing it changes:</b> BORDERED LABEL in <code>surface-treatments.css</code>, which admits a color today only from the emphasis chip and a review mark, LABELED RANGE, which admits only neutral and a review range's value, and the representations in <code>spectral-state.md</code>.</p>
+    </div>
+
+    <div class="cat-candidate" id="candidate-evidence-labels">
+      <h4 class="spec-role">B // Evidence State labels and rails</h4>
+      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a statement in a report or a figure that records what the evidence supports, outside a multi-axis review annotation; inside one, the dot keeps the evidence channel. <b>Binding:</b> the role's Evidence State value on the label's edge and the range's rail, the label naming its axis. Not yet testable keeps its whole contract, so its standalone form is the existing note: lavender-gray, a dashed rail, a hollow marker and the visible label. <b>Implementing it changes:</b> BORDERED LABEL and LABELED RANGE in <code>surface-treatments.css</code>, and the representations in <code>evidence-state.md</code>.</p>
+    </div>
+
+    <div class="cat-candidate" id="candidate-decision-record">
+      <h4 class="spec-role">C // A filled decision record</h4>
+      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a standalone decision record, such as a review summary, a status board or a decision node in a figure. Inside a reviewed document the review mark, the range and the passage mark stay the channels; this replaces none of them. <b>Binding:</b> the role's Review State value as FILL PAINT's color, and that color's existing ink. Each record still names what it concerns, who decided and the scope; no decision recorded draws no record. <b>Implementing it changes:</b> <code>review-semantics.md</code> and <code>.css</code>, which bind a review role to a fill, and FILL PAINT's population in <code>surface-treatments.css</code>.</p>
+    </div>
+  </section>
+
+  <!-- ============ PATTERN DEMONSTRATIONS ============ -->
+  <section id="pattern-demonstrations">
+    <p class="sg-h">Pattern demonstrations // compositions that use these treatments</p>
+    <ul class="cat-links note">
+      <li><a class="surface-text-link" href="../surface-document.html">Document register and surface treatments</a> // labels, paragraphs, ranges, quotations, comparisons and disclosures composed together</li>
+      <li><a class="surface-text-link" href="../review-semantics.html">Review Semantics</a> // the annotation composition at every scope</li>
+      <li><a class="surface-text-link" href="../criterion-assessment.html">Criterion Assessment</a> // the comparison table and its rails</li>
+      <li><a class="surface-text-link" href="../patterns/view/diagram-interactive-spine.html">Interactive spine</a> // filled state nodes, selection and export</li>
+      <li><a class="surface-text-link" href="../patterns/view/diagram-interactive-radial.html">Interactive radial</a> // filled state marks beside washed structure</li>
+      <li><a class="surface-text-link" href="../patterns/view/diagram-static-peer.html">Peer relations</a> // neutral rings; its Criterion Assessment and Three Functions examples are adopted and not implemented</li>
+      <li><a class="surface-text-link" href="../patterns/view/diagram-static-network.html">Layered networks</a> // neutral nodes in ordered layers</li>
+    </ul>
+  </section>
+
+
+  <p class="note" style="margin-top: var(--space-9); border-top: 1px solid var(--line-2); padding-top: var(--space-4);">Live preview · links <code>../colors_and_type.css</code> and the shared and semantic modules · all colors via <code>var()</code> and computed labels (never hardcoded) · supersedes the retired per-aspect <code>preview/*.html</code> fragments.</p>
 
   </main>
 

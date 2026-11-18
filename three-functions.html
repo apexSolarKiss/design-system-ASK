@@ -38,6 +38,7 @@
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .map  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
   .demo { margin-top: 44px; }
+  .demo .avail-caption { margin-top: 36px; }
   .demo p { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); margin: 0 0 16px; }
   .parts { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
   /* Widened from 92px when the labels moved to the Caption step: `legislative`
@@ -64,6 +65,8 @@
   .chan .cell { width: 108px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
                 font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
   .chan .legend { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.7; color: var(--fg-2); }
+  /* The representations list: framing only; its items take the register's metadata role. */
+  .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 </style>
 </head>
 <body>
@@ -87,6 +90,21 @@
   <h2 class="doc-title">Three Functions</h2>
   <div class="sub">v0.3 // function color on the ASK field, solid</div>
 
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="scope">Scope // the function an apparatus performs</h2>
+      <p>a sibling of Spectral State on the function axis // legislative, executive and judicial roles, read as color</p>
+      <p>three fixed roles // never an arbitrary triad, a fourth role or general interface color</p>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="roles">Roles and colors // three roles on existing ASK values</h2>
+      <p>magenta, the neutral white or lavender, and cyan // only executive changes with the theme</p>
+    </div>
+  </div>
+
   <div class="grid">
     <div class="arc-label">Three functions · one spine</div>
     <div class="swatch"><div class="dot" style="background:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta // makes the governing standard operative</span></div></div>
@@ -96,7 +114,7 @@
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title">Rendering contract</h2>
+      <h2 class="doc-section-title" id="representations">Representations // the rendering contract</h2>
       <p>every role-bearing apparatus → solid fill at the full role value, edged in the same value · text on it in the role's ink · field vs object is geometry + negative space, not opacity · structure neutral</p>
     </div>
     <div class="parts">
@@ -121,11 +139,21 @@
       </svg>
       <span class="flabel">executive field // solid fill · variance as negative cutouts</span>
     </div>
+    <p class="avail-caption">every representation the roles have, and its status // the same rows as the README's application coverage</p>
+    <ul class="avail-list" aria-label="Three Functions representations and their status">
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> role-filled part or field, in its role's ink · an apparatus figure · <code class="doc-code">three-functions.css</code> binds the role and FILL PAINT paints it · Three Functions key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> executive field with negative cutouts · an apparatus figure · <code class="doc-code">three-functions.md</code>: a composition the consumer draws with FILL PAINT · Three Functions key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as an outline on a function fill · an apparatus figure whose state color differs from its fill · shared: FILL PAINT's <code class="doc-code">--surface-fill-edge</code>, under <code class="doc-code">three-functions.md</code>, Coexistence · no key specimen; the key's cell is schematic</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as a badge or a separate state marker on a function fill · an apparatus figure; required where the state color matches the fill, such as a proposed legislative or a held judicial part, where an outline cannot be seen · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits, and requires in the same-color case: the consumer draws it with its state label visible, and no shared badge or marker ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence as a marker, rail, dash or labeled annotation beside a function fill · an apparatus figure · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits: the consumer draws it in the evidence role's value with its label visible, not yet testable only with its whole contract, and no shared figure rail ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> peer functional-role example · the peer pattern · adopted; the peer pattern draws no function</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a fourth role or a governance color · any · three fixed roles</li>
+    </ul>
   </div>
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title">Outside the three functions</h2>
+      <h2 class="doc-section-title" id="rules">Rules // outside the three functions</h2>
       <p>a consequential non-function element (downstream governance) is keyed by ONE neutral pill — its visual treatment, not the surface's topology</p>
     </div>
     <div class="gov">
@@ -136,14 +164,32 @@
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title">Channel discipline</h2>
+      <h2 class="doc-section-title">Rules // channel discipline</h2>
       <p>function ≠ state ≠ evidence · reused hue is not identity · labels stay mandatory</p>
     </div>
     <div class="chan">
       <div class="cell leg surface-fill" style="border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
       <div class="legend">one element · three channels //
-        <b>fill</b> = function · <b>outline</b> = element state · <b>rail</b> = evidence state<br>
+        <b>fill</b> = function · <b>outline</b> = element state, or a badge or separate marker, which a state in its function's own color requires · <b>rail</b> = evidence state, or a marker, dash or labeled annotation<br>
         state + evidence shown schematic — they would carry Spectral State / Evidence State values</div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="worked">Worked applications // the roles in use</h2>
+      <p><a href="three-functions.md#worked-example--bounded-generativity-binding">the bounded-generativity binding</a> // legislative on the source of intent and the grammar, executive on the realization chamber, judicial on the selection ring</p>
+      <p><a href="CONSUMERS.md#public-consumers">the consumer registry</a> // asset-pipeline-ASK and method-ASK figures drawn with these roles</p>
+      <p>the peer pattern's functional-role example // adopted, and not implemented</p>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="usage">Usage and owners // load order and who decides what</h2>
+      <p>load colors_and_type.css first, then surface-panel.css and surface-treatments.css, then three-functions.css, all from one design-system commit // the fill paint supplies each role's ink</p>
+      <p>three-functions.css owns the roles, their values and their inks' bindings // surface-treatments.css owns the fill paint and every ink // the consumer owns which apparatus performs which function</p>
+      <p><a href="three-functions.md">the contract</a> · <a href="README.md#application-coverage">application coverage</a> · <a href="preview/styleguide.html#treatment-fill">the filled shapes by color</a></p>
     </div>
   </div>
   </main>

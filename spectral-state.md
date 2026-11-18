@@ -69,7 +69,7 @@ Each role also names its ink, `--state-<role>-ink` (`--state-earned-ink` … `--
 
 ## How to use it
 
-1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*`, emphasis colors and reserved state values), then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name), then `spectral-state.css`, all from one design-system commit.
+1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*`, emphasis colors and reserved state values), then `spectral-state.css` with `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name), all from one design-system commit. `spectral-state.css` declares custom properties only, so its place beside the other two, which keep their own order, changes no resolved value; the rendered key loads it directly after the foundation.
 2. On a consuming element, set color or stroke from a single role token, e.g. `stroke: var(--state-held)` or `color: var(--state-held)`. A shape filled in a role takes FILL PAINT: `.surface-fill` with the role's value and its ink.
 3. Leave an element with no asserted state neutral, and apply a neon role only to mark a state. A neutral filled shape takes FILL PAINT's neutral shape (`.surface-fill--neutral`), never `--state-neutral`, which is a foreground: in light it would leave the neutral node the darkest shape.
 

@@ -40,6 +40,8 @@
      options sharing the rest. Column widths are the consumer's. */
   #worked-table { table-layout: fixed; }
   #worked-table col.key-criterion { width: 9rem; }
+  /* The representations list: framing only; its items take the register's metadata role. */
+  .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 </style>
 </head>
 <body>
@@ -68,8 +70,13 @@
     <p class="doc-lede">How does this characteristic serve the stated criterion? Favorable, caution or adverse, against a criterion the author declares, or unassessed. The profile owns what each role means and how it is drawn; the author owns the criterion and every assignment.</p>
   </header>
 
+  <section class="doc-section" aria-labelledby="scope-title">
+    <h2 class="doc-section-title key-prose" id="scope-title">Scope // how a characteristic serves a stated criterion</h2>
+    <p class="doc-body key-prose">A profile under Spectral State for comparisons: each assessment answers one criterion the author declares, with its direction, its scope and the basis of the rating. A rating never comes from a letter, a position or a neighboring figure, and a characteristic with no declared criterion stays unassessed.</p>
+  </section>
+
   <section class="doc-section" aria-labelledby="roles-title">
-    <h2 class="doc-section-title key-prose" id="roles-title">Four roles, three colors</h2>
+    <h2 class="doc-section-title key-prose" id="roles-title">Roles and colors // four roles, three colors</h2>
     <ul class="doc-compare-key" aria-label="The four roles">
       <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // value of state-earned</p></li>
       <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // value of state-structural</p></li>
@@ -90,8 +97,63 @@
     <p class="doc-body key-prose">The three colors are Spectral State's, by reference: one value each, the same in both themes, and each rail is a plain 2px stroke on either field. They are visual-role mappings, not aliases: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, structural or deflated for them.</p>
   </section>
 
+  <section class="doc-section" aria-labelledby="representations-title">
+    <h2 class="doc-section-title key-prose" id="representations-title">Representations // where the roles are drawn, and their status</h2>
+    <p class="doc-body key-prose">The table application is rail-only: a rail and its word, a legend-led key, or a value field, never a fill or a tint. A filled node for a diagram, the peer example's included, is adopted and not implemented. The rows are the README's application coverage.</p>
+    <ul class="avail-list key-prose" aria-label="Criterion Assessment representations and their status">
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> assessment rail and word; legend-led; value field · a comparison table · <code class="doc-code">criterion-assessment.css</code> with <code class="doc-code">surface-document.css</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> unassessed: nothing drawn · any · <code class="doc-code">criterion-assessment.md</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> filled node in favorable, caution or adverse, in the existing inks · a diagram, the peer example included · adopted; no binding ships</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> cell fill, tint or backplate · a comparison table · the table application is rail-only</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> the labeled range · any · its rail admits neutral and the review values only</li>
+    </ul>
+  </section>
+
+  <section class="doc-section" aria-labelledby="coexist-title">
+    <h2 class="doc-section-title key-prose" id="coexist-title">Rules // an assessment beside a review mark</h2>
+    <div class="doc-prose key-prose">
+      <p class="doc-body">In the worked comparison below, the PDF's fidelity cell carries two judgments, and each keeps its own form. Its caution rail says how the PDF serves the row's criterion. Its open question is a review mark from Review Semantics: its own bordered box, its own color and its own words. The mark does not make the caution a review decision, and the rail does not answer the question.</p>
+      <p class="doc-body">The same holds for an evidence mark. A favorable characteristic is not a supported claim, and a supported disadvantage is still adverse.</p>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="paint-title">
+    <h2 class="doc-section-title key-prose" id="paint-title">Rules // one paint per rail color</h2>
+    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's. Here a declined range and an adverse assessment share one red, and an accepted range and a favorable assessment one green, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">The shipment is not split across two carriers.</p>
+    </div>
+    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-accepted">
+      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
+      <p class="doc-body">Each parcel is tracked from its first scan.</p>
+    </div>
+    <ul class="doc-compare-key" aria-label="The rails' three paints">
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the one yellow rail</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
+    </ul>
+    <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and it is the same plain stroke beside a summary, in a value field and in a key on this page. A review range is never yellow.</p>
+  </section>
+
+  <!-- PLAIN ON BOTH FIELDS — the three assessment rails as they ship. The account
+       is surface-treatments.css, RAIL PAINT and THE RAIL'S PAINT. -->
+  <section class="doc-section" aria-labelledby="calibration-title">
+    <h2 class="doc-section-title key-prose" id="calibration-title">Rules // plain on both fields</h2>
+    <p class="doc-body key-prose">Each rail is a plain 2px stroke in its color, on the light lavender field and the dark ink alike. Spectral State gives each color one value in both themes, and in it every rail reads on both fields. Until Spectral State v1.2 the light theme took a deeper yellow, which as a bare rail all but disappeared on the lavender, so caution's rail took a 1px same-color ring there; that ring is retired with the value it answered.</p>
+    <div class="doc-group key-prose" id="calibration-shipped">
+      <p class="doc-label">as shipped // the plain stroke</p>
+      <ul class="doc-compare-key" aria-label="The three assessment rails, as shipped">
+        <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // plain</p></li>
+        <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // plain</p></li>
+        <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // plain</p></li>
+      </ul>
+    </div>
+    <p class="doc-meta key-prose">A rail's paint is the surface treatments' one rail paint, so a review range in green or red takes the same paint as favorable and adverse. Each color's paint is none today; a dose added there later would be measured on the field it answers and would reach every rail in its color. Not this rule: a bordered label's edge, which every label takes per theme, a diagram's stroke, a dot or a square.</p>
+  </section>
+
   <section class="doc-section" aria-labelledby="worked-title">
-    <h2 class="doc-section-title key-prose" id="worked-title">A worked comparison</h2>
+    <h2 class="doc-section-title key-prose" id="worked-title">Worked applications // a worked comparison</h2>
     <p class="doc-body key-prose">Three ways to deliver a reviewed document, against four rows. Each assessed summary carries one rail in its cell's lane, beginning on the edge its column's header begins on, and the word that names it; the rail is as tall as the summary and its word, never the row. The last row declares no criterion, so its summaries carry no rail, and their text sits where the others' does.</p>
     <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document" tabindex="0">
       <table class="doc-table doc-compare-table" id="worked-table">
@@ -166,16 +228,8 @@
     </ul>
   </section>
 
-  <section class="doc-section" aria-labelledby="coexist-title">
-    <h2 class="doc-section-title key-prose" id="coexist-title">An assessment beside a review mark</h2>
-    <div class="doc-prose key-prose">
-      <p class="doc-body">The PDF's fidelity cell carries two judgments, and each keeps its own form. Its caution rail says how the PDF serves the row's criterion. Its open question is a review mark from Review Semantics: its own bordered box, its own color and its own words. The mark does not make the caution a review decision, and the rail does not answer the question.</p>
-      <p class="doc-body">The same holds for an evidence mark. A favorable characteristic is not a supported claim, and a supported disadvantage is still adverse.</p>
-    </div>
-  </section>
-
   <section class="doc-section" aria-labelledby="legend-title">
-    <h2 class="doc-section-title key-prose" id="legend-title">A legend-led comparison</h2>
+    <h2 class="doc-section-title key-prose" id="legend-title">Worked applications // a legend-led comparison</h2>
     <p class="doc-body key-prose">The same three options, with a row of summaries and two rows of figures. The table is legend-led: its key names each rail, so the words stay in the cells as text for assistive technology and draw nothing, and each rail is as tall as its summary or figure. Each summary spans its family's columns, so its rail begins where the family's header does. The figures share a value field, as wide as the template 000.00 that their widest needs: each sits at its column's end, and in each column the rails share one line, 12px before the field, however wide the figure. A sighted reader reads these assessments from the rails' colors against the key, so the worked comparison above keeps its words.</p>
     <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document, with figures" tabindex="0">
       <table class="doc-table doc-compare-table doc-compare-legend-led" id="legend-table">
@@ -215,7 +269,7 @@
   </section>
 
   <section class="doc-section" aria-labelledby="numeric-title">
-    <h2 class="doc-section-title key-prose" id="numeric-title">A numeric comparison, unassessed</h2>
+    <h2 class="doc-section-title key-prose" id="numeric-title">Worked applications // a numeric comparison, unassessed</h2>
     <p class="doc-body key-prose">Figures are assessed only where their author rated them, or under a rule their author declares. Without either, a comparison keeps its figures neutral: no rail marks the largest value, and no threshold is read from a neighbor. These are the comparison roles' own metrics, beside the roles they sit between, under a grouped header.</p>
     <div class="doc-table-scroll" role="region" aria-label="The comparison roles beside their neighbors" tabindex="0">
       <table class="doc-table doc-compare-table">
@@ -236,39 +290,10 @@
     </div>
   </section>
 
-  <section class="doc-section" aria-labelledby="paint-title">
-    <h2 class="doc-section-title key-prose" id="paint-title">One paint per rail color</h2>
-    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's. Here a declined range and an adverse assessment share one red, and an accepted range and a favorable assessment one green, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
-    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
-      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
-      <p class="doc-body">The shipment is not split across two carriers.</p>
-    </div>
-    <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-accepted">
-      <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
-      <p class="doc-body">Each parcel is tracked from its first scan.</p>
-    </div>
-    <ul class="doc-compare-key" aria-label="The rails' three paints">
-      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the one yellow rail</p></li>
-      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
-    </ul>
-    <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and it is the same plain stroke beside a summary, in a value field and in a key, above. A review range is never yellow.</p>
-  </section>
-
-  <!-- PLAIN ON BOTH FIELDS — the three assessment rails as they ship. The account
-       is surface-treatments.css, RAIL PAINT and THE RAIL'S PAINT. -->
-  <section class="doc-section" aria-labelledby="calibration-title">
-    <h2 class="doc-section-title key-prose" id="calibration-title">Plain on both fields</h2>
-    <p class="doc-body key-prose">Each rail is a plain 2px stroke in its color, on the light lavender field and the dark ink alike. Spectral State gives each color one value in both themes, and in it every rail reads on both fields. Until Spectral State v1.2 the light theme took a deeper yellow, which as a bare rail all but disappeared on the lavender, so caution's rail took a 1px same-color ring there; that ring is retired with the value it answered.</p>
-    <div class="doc-group key-prose" id="calibration-shipped">
-      <p class="doc-label">as shipped // the plain stroke</p>
-      <ul class="doc-compare-key" aria-label="The three assessment rails, as shipped">
-        <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // plain</p></li>
-        <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // plain</p></li>
-        <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // plain</p></li>
-      </ul>
-    </div>
-    <p class="doc-meta key-prose">A rail's paint is the surface treatments' one rail paint, so a review range in green or red takes the same paint as favorable and adverse. Each color's paint is none today; a dose added there later would be measured on the field it answers and would reach every rail in its color. Not this rule: a bordered label's edge, which every label takes per theme, a diagram's stroke, a dot or a square.</p>
+  <section class="doc-section" aria-labelledby="usage-title">
+    <h2 class="doc-section-title key-prose" id="usage-title">Usage and owners // load order and who decides what</h2>
+    <p class="doc-body key-prose">Load <code class="doc-code">criterion-assessment.css</code> after <code class="doc-code">spectral-state.css</code>, <code class="doc-code">surface-document.css</code> and <code class="doc-code">surface-treatments.css</code>, whose rail paint it binds, all from one design-system commit, in the order its contract gives. The profile owns what each role means and how a table draws it; the surface treatments own each rail's paint; the author owns the criterion, its direction and scope, and every assignment.</p>
+    <p class="doc-meta key-prose"><a class="surface-text-link" href="criterion-assessment.md">the contract</a> · <a class="surface-text-link" href="README.md#application-coverage">application coverage</a> · <a class="surface-text-link" href="preview/styleguide.html#treatment-rail">the rails by color</a></p>
   </section>
 
   <footer class="doc-group key-prose">
