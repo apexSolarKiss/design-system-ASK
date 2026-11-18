@@ -301,10 +301,13 @@ only the tables that show their words.
 ## rail-paint-fixture.html
 
 Guards **the rail paint** in `surface-treatments.css`: a rail in one governed color takes the
-same paint whichever meaning draws it. The fixture sets five review ranges, one per review
-judgment, and a neutral range; a comparison that shows its words, with a favorable, a caution
-and an adverse summary; a legend-led comparison with the same three as rated figures in value
-fields, and their key; a caution summary inside a `.theme-dark` subtree; and a quotation.
+same paint whichever meaning draws it. Each paint is keyed by its color,
+`--surface-rail-paint-green`, `-yellow` and `-red`, and the meaning-named `-earned`, `-structural`
+and `-deflated` are aliases that read their color's paint. The fixture sets five review ranges,
+one per review judgment, and a neutral range; a comparison that shows its words, with a
+favorable, a caution and an adverse summary; a legend-led comparison with the same three as rated
+figures in value fields, and their key; a caution summary inside a `.theme-dark` subtree; and a
+quotation.
 
 The page measures each case once the fonts are ready and reports one overall verdict, with a row
 per case:
@@ -318,10 +321,11 @@ one       the declined range's rail and every adverse rail share one color and o
           field, in the key and in the dark subtree, a third
 label     the declined review mark keeps the bordered label's own edge, a 1px reinforcement in
           light and a 0px one in dark
-follows   with the shared paints changed on the root (green 3px, yellow 2px, red 1.5px), every
-          rail bound to one follows it, and the proposed, open, no-decision and neutral ranges'
-          rails stay bare; the declined mark's edge and the quotation's rail do not move; once the
-          change is removed, every rail paints as before
+alias     on the root, earned reads green's paint, structural yellow's and deflated red's
+follows   with the color-named paints changed on the root (green 3px, yellow 2px, red 1.5px),
+          every rail bound to one follows it, and the proposed, open, no-decision and neutral
+          ranges' rails stay bare; each alias follows its color; the declined mark's edge and the
+          quotation's rail do not move; once the change is removed, every rail paints as before
 ```
 
 **Run it** from the repo root:
@@ -347,11 +351,14 @@ rule; it fails only the cases named, in every one of those six settings.
                           paint and follows cases fail
 ?control=unbound-range    the review ranges lose their binding to the shared paint: the accepted
                           and declined ranges' follows cases fail
-?control=label-reach      the red rail paint is put on the declined review mark: the mark's own-
-                          edge case and its untouched case fail
+?control=label-reach      the red rail paint, --surface-rail-paint-red, is put on the declined
+                          review mark: the mark's own-edge case and its untouched case fail
 ?field=ask-lavender&control=field-dose
-                          a declared field gives yellow a dose, as the retired ring did: the four
-                          caution rails' paint cases fail; without ?field= the control is inert
+                          a declared field gives yellow a dose, as the retired ring did, through
+                          --surface-rail-paint-yellow: the four caution rails' paint cases fail;
+                          without ?field= the control is inert
+?control=alias-value      the earned alias carries a value of its own instead of reading green's
+                          paint: its alias follows case fails
 ```
 
 Until the yellow ring was retired (Spectral State v1.2), the fixture carried two controls for the

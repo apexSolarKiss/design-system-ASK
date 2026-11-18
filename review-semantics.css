@@ -486,11 +486,11 @@
 .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="open"])     { --surface-labeled-range-color: var(--review-open); }
 .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="accepted"]) {
   --surface-labeled-range-color: var(--review-accepted);
-  --surface-labeled-range-paint: var(--surface-rail-paint-earned);
+  --surface-labeled-range-paint: var(--surface-rail-paint-green);
 }
 .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="declined"]) {
   --surface-labeled-range-color: var(--review-declined);
-  --surface-labeled-range-paint: var(--surface-rail-paint-deflated);
+  --surface-labeled-range-paint: var(--surface-rail-paint-red);
 }
 .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review="none"])     { --surface-labeled-range-color: var(--review-none); }
 

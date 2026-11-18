@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // rail paint regression fixture</title>
-<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, and the bordered label and the passage rail keep their own treatments.">
+<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, the meaning-named paints read their color's paint, and the bordered label and the passage rail keep their own treatments.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/rail-paint-fixture.html
      The foundation, the register and the surface treatments, then the state modules, Review Semantics and
      Criterion Assessment, in their load order.
      ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
      ?field=<name> declares a root field (data-surface-field): the rail paint must not read it.
-     ?control=local-dose, ?control=unbound-range, ?control=label-reach or ?control=field-dose loads one
-     regression, which must fail only the cases tests/README.md names for it. -->
+     ?control=local-dose, ?control=unbound-range, ?control=label-reach, ?control=field-dose or
+     ?control=alias-value loads one regression, which must fail only the cases tests/README.md names for it. -->
 <script>
   (function () {
     var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control'), f = q.get('field');
@@ -40,8 +40,9 @@
   /* The regressions. Each outranks the rule it replaces. */
   html.fx-control-local-dose .doc-compare-assessed[data-assessment="caution"] { --doc-compare-rail-paint: 0 0 0 1px; }
   html.fx-control-unbound-range .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review]) { --surface-labeled-range-paint: none; }
-  html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-deflated); }
-  html.fx-control-field-dose[data-surface-field] { --surface-rail-paint-structural: 0 0 0 1px; }
+  html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-red); }
+  html.fx-control-field-dose[data-surface-field] { --surface-rail-paint-yellow: 0 0 0 1px; }
+  html.fx-control-alias-value { --surface-rail-paint-earned: none !important; }
 </style>
 </head>
 <body>
@@ -52,18 +53,19 @@
     <p class="doc-body">Each case is measured once the fonts are ready. A rail in one governed color takes the same
       paint whichever meaning draws it: a review range's scope rail and a comparison's assessment rail in green or
       red are painted alike, and caution's yellow is the same plain stroke beside a summary, in a value field, in a key
-      and in a dark subtree. When the shared paint changes, every rail bound to it follows; the bordered label and the
-      passage rail keep their own treatments.</p>
+      and in a dark subtree. Each paint is keyed by its color, and the meaning-named paints are aliases that read it.
+      When the shared paint changes, every rail bound to it follows; the bordered label and the passage rail keep their
+      own treatments.</p>
     <p class="doc-label" id="overall">not run</p>
   </section>
 
   <section class="doc-section">
     <h2 class="doc-section-title">Review ranges</h2>
-    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-declined" data-paint="deflated">
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-declined" data-paint="red">
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined" id="l-declined">Declined</span><span class="doc-meta">this paragraph</span></span></div>
       <p class="doc-body">A range whose judgment is declined.</p>
     </div>
-    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-accepted" data-paint="earned">
+    <div class="doc-group doc-annotation-range surface-labeled-range" id="r-accepted" data-paint="green">
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">this paragraph</span></span></div>
       <p class="doc-body">A range whose judgment is accepted.</p>
     </div>
@@ -92,9 +94,9 @@
         <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option one</th><th class="doc-compare-head" scope="col">Option two</th><th class="doc-compare-head" scope="col">Option three</th></tr></thead>
         <tbody>
           <tr><th class="doc-compare-head" scope="row">Effort</th>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable" id="a-fav" data-paint="earned"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="a-cau" data-paint="structural"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td>
-            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse" id="a-adv" data-paint="deflated"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="favorable" id="a-fav" data-paint="green"><p class="doc-compare-summary">low</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="a-cau" data-paint="yellow"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="adverse" id="a-adv" data-paint="red"><p class="doc-compare-summary">high</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -103,16 +105,16 @@
         <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head doc-table-num" scope="col">Figure one</th><th class="doc-compare-head doc-table-num" scope="col">Figure two</th><th class="doc-compare-head doc-table-num" scope="col">Figure three</th></tr></thead>
         <tbody>
           <tr><th class="doc-compare-head" scope="row">Size</th>
-            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="00.0" id="f-fav" data-paint="earned"><p class="doc-compare-summary">4.5</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
-            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="00.0" id="f-cau" data-paint="structural"><p class="doc-compare-summary">17.0</p><p class="doc-meta doc-compare-word">caution</p></div></td>
-            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="00.0" id="f-adv" data-paint="deflated"><p class="doc-compare-summary">62.5</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="favorable" data-value-field="00.0" id="f-fav" data-paint="green"><p class="doc-compare-summary">4.5</p><p class="doc-meta doc-compare-word">favorable</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="caution" data-value-field="00.0" id="f-cau" data-paint="yellow"><p class="doc-compare-summary">17.0</p><p class="doc-meta doc-compare-word">caution</p></div></td>
+            <td class="doc-compare-cell doc-table-num"><div class="doc-compare-assessed" data-assessment="adverse" data-value-field="00.0" id="f-adv" data-paint="red"><p class="doc-compare-summary">62.5</p><p class="doc-meta doc-compare-word">adverse</p></div></td></tr>
         </tbody>
       </table>
     </div>
     <ul class="doc-compare-key" aria-label="Key to the rated figures' rails">
-      <li class="doc-compare-assessed" data-assessment="favorable" id="k-fav" data-paint="earned"><p class="doc-meta">favorable</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution" id="k-cau" data-paint="structural"><p class="doc-meta">caution</p></li>
-      <li class="doc-compare-assessed" data-assessment="adverse" id="k-adv" data-paint="deflated"><p class="doc-meta">adverse</p></li>
+      <li class="doc-compare-assessed" data-assessment="favorable" id="k-fav" data-paint="green"><p class="doc-meta">favorable</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution" id="k-cau" data-paint="yellow"><p class="doc-meta">caution</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse" id="k-adv" data-paint="red"><p class="doc-meta">adverse</p></li>
     </ul>
   </section>
 
@@ -126,7 +128,7 @@
           <thead><tr><th class="doc-compare-head" scope="col">Row</th><th class="doc-compare-head" scope="col">Option</th></tr></thead>
           <tbody>
             <tr><th class="doc-compare-head" scope="row">Effort</th>
-              <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="s-cau" data-paint="structural"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td></tr>
+              <td class="doc-compare-cell"><div class="doc-compare-assessed" data-assessment="caution" id="s-cau" data-paint="yellow"><p class="doc-compare-summary">moderate</p><p class="doc-meta doc-compare-word">caution</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -169,7 +171,7 @@
       return { stroke: b.borderLeftWidth + ' ' + b.borderLeftStyle, color: b.borderLeftColor, shadow: shadow(b.boxShadow) };
     };
     /* Every color's paint is none, the plain stroke, on both fields. */
-    var dose = { earned: 'none', structural: 'none', deflated: 'none', '': 'none' };
+    var dose = { green: 'none', yellow: 'none', red: 'none', '': 'none' };
     var want = function (el, doses) {
       var d = doses[el.getAttribute('data-paint')];
       return d === 'none' ? 'none' : d + ' in ' + paint(el).color;
@@ -195,14 +197,19 @@
     var label = $('l-declined'), lc = cs(label);
     expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);
     var labelBefore = shadow(lc.boxShadow), quoteBefore = cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth;
+    /* Each meaning-named paint is an alias: it reads its color's paint and carries no value of its own. */
+    var aliases = [['earned', 'green'], ['structural', 'yellow'], ['deflated', 'red']];
+    var root = function (name) { return cs(document.documentElement).getPropertyValue('--surface-rail-paint-' + name).trim(); };
+    aliases.forEach(function (a) { expect('alias / ' + a[0] + ' reads ' + a[1], root(a[0]), root(a[1])); });
 
     /* Change the shared paint: every rail bound to it follows, and nothing else moves. */
     var perturb = document.createElement('style');
-    perturb.textContent = ':root { --surface-rail-paint-earned: 0 0 0 3px !important; --surface-rail-paint-structural: 0 0 0 2px !important; --surface-rail-paint-deflated: 0 0 0 1.5px !important; }';
+    perturb.textContent = ':root { --surface-rail-paint-green: 0 0 0 3px !important; --surface-rail-paint-yellow: 0 0 0 2px !important; --surface-rail-paint-red: 0 0 0 1.5px !important; }';
     document.head.appendChild(perturb);
     await tick();
-    var changed = { earned: '0px 0px 0px 3px', structural: '0px 0px 0px 2px', deflated: '0px 0px 0px 1.5px', '': 'none' };
+    var changed = { green: '0px 0px 0px 3px', yellow: '0px 0px 0px 2px', red: '0px 0px 0px 1.5px', '': 'none' };
     rails.forEach(function (el) { expect('follows / ' + el.id, paint(el).shadow, want(el, changed)); });
+    aliases.forEach(function (a) { expect('alias follows / ' + a[0] + ' reads ' + a[1], root(a[0]), root(a[1])); });
     expect('label / the shared paint does not reach the declined mark', shadow(cs(label).boxShadow), labelBefore);
     expect('quote / the shared paint does not reach the passage rail', cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth, quoteBefore);
     perturb.remove();

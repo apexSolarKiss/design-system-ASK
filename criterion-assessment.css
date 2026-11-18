@@ -91,13 +91,13 @@
 .doc-compare-assessed:is([data-assessment="favorable"], [data-assessment="caution"], [data-assessment="adverse"])::before { content: ""; }
 .doc-compare-assessed[data-assessment="favorable"] {
   --doc-compare-rail-color: var(--assessment-favorable);
-  --doc-compare-rail-paint: var(--surface-rail-paint-earned);
+  --doc-compare-rail-paint: var(--surface-rail-paint-green);
 }
 .doc-compare-assessed[data-assessment="caution"] {
   --doc-compare-rail-color: var(--assessment-caution);
-  --doc-compare-rail-paint: var(--surface-rail-paint-structural);
+  --doc-compare-rail-paint: var(--surface-rail-paint-yellow);
 }
 .doc-compare-assessed[data-assessment="adverse"] {
   --doc-compare-rail-color: var(--assessment-adverse);
-  --doc-compare-rail-paint: var(--surface-rail-paint-deflated);
+  --doc-compare-rail-paint: var(--surface-rail-paint-red);
 }
