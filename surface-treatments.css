@@ -326,8 +326,9 @@
                      draws it
      population      role- and state-bearing filled shapes and fields: a
                      state node, an evidence-bearing shape, an assessment
-                     node, a function's part or field, a key's filled
-                     specimen. One ink per fill color, keyed by the color:
+                     node, a decision record, a function's part or field, a
+                     key's filled specimen. One ink per fill color, keyed by
+                     the color:
                      --surface-fill-ink-on-yellow, -on-green, -on-orange,
                      -on-cyan, -on-red, -on-brown, -on-violet, -on-magenta,
                      -on-white and -on-lavender; and the neutral filled
@@ -337,7 +338,8 @@
                      the neutral shape's paint and every theme exception. The
                      semantic systems own each color and bind each role to its
                      color's ink: Spectral State (--state-*-ink), Evidence
-                     State (--evidence-*-ink), Criterion Assessment
+                     State (--evidence-*-ink), Review Semantics
+                     (--review-*-ink), Criterion Assessment
                      (--assessment-*-ink) and Three Functions
                      (--function-*-ink). The composing surface or engine owns
                      the shape: its geometry, stroke width, cutouts, layout
@@ -369,8 +371,8 @@
                      step in its fill. Lavender-gray has no ink and takes no
                      fill paint: its one role, Evidence State's not yet
                      testable, is drawn hollow, dashed and labeled
-     example         a held node and a judicial part: one cyan, one ink, two
-                     meanings
+     example         a held node, an open decision record and a judicial
+                     part: one cyan, one ink, three meanings
      counterexample  a meaning restating an ink for its own role; a semantic
                      fill at 30% beside one at 100%; text on a fill in the
                      theme foreground; a neutral node drawn in --fg-1, the

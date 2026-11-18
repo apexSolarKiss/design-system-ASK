@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // fill paint regression fixture</title>
-<meta name="description" content="Regression fixture for the fill paint in surface-treatments.css as Evidence State and Criterion Assessment bind it: brown's ink is the lavender, #D4C6E1, in both themes; each evidence and assessment ink is its fill color's ink and follows it; a shape filled from each role takes the role's value and its ink; not yet testable and unassessed have no ink, and no filled shape on the keys or the style guide is painted lavender-gray.">
+<meta name="description" content="Regression fixture for the fill paint in surface-treatments.css as Evidence State, Review Semantics and Criterion Assessment bind it: brown's ink is the lavender, #D4C6E1, in both themes; each evidence, review and assessment ink is its fill color's ink and follows it; a shape filled from each role takes the role's value and its ink, a decision record through Review Semantics' own binding; not yet testable, no decision recorded and unassessed have no ink, a record for no decision recorded takes no fill, and no filled shape on the keys or the style guide is painted lavender-gray.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/fill-paint-fixture.html
-     The foundation, the panel and the surface treatments, then the state modules and Criterion Assessment.
+     The foundation, the panel and the surface treatments, then the state modules, Review Semantics and
+     Criterion Assessment.
      ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
-     ?control=brown-theme, ?control=restated-ink, ?control=nyt-ink or ?control=nyt-fill loads one
-     regression, which must fail only the cases tests/README.md names for it. -->
+     ?control=brown-theme, ?control=restated-ink, ?control=restated-review-ink, ?control=nyt-ink or
+     ?control=nyt-fill loads one regression, which must fail only the cases tests/README.md names for it. -->
 <script>
   (function () {
     var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control');
@@ -22,6 +23,7 @@
 <link rel="stylesheet" href="../surface-treatments.css">
 <link rel="stylesheet" href="../spectral-state.css">
 <link rel="stylesheet" href="../evidence-state.css">
+<link rel="stylesheet" href="../review-semantics.css">
 <link rel="stylesheet" href="../criterion-assessment.css">
 <style>
   body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
@@ -54,6 +56,7 @@
     :root.fx-control-brown-theme:not([data-theme="light"]):not([data-theme="dark"]) { --surface-fill-ink-on-brown: var(--ask-fg-light); }
   }
   html.fx-control-restated-ink { --evidence-weakened-ink: #D4C6E1; }
+  html.fx-control-restated-review-ink { --review-open-ink: #6A637F; }
   html.fx-control-nyt-ink { --evidence-not-yet-testable-ink: var(--surface-fill-ink-on-lavender); }
 </style>
 </head>
@@ -63,10 +66,10 @@
   <section>
     <h1>Fill paint</h1>
     <p>Each case is measured once the fonts and the shipped surfaces below are ready. Brown's ink is the lavender,
-      #D4C6E1, in both themes. Each Evidence State and Criterion Assessment ink is its fill color's ink, by reference,
-      and follows it when it changes; a shape filled from each role takes the role's value and its ink. Not yet
-      testable and unassessed have no ink, and no filled shape on the keys or the style guide is painted
-      lavender-gray.</p>
+      #D4C6E1, in both themes. Each Evidence State, Review Semantics and Criterion Assessment ink is its fill color's
+      ink, by reference, and follows it when it changes; a shape filled from each role takes the role's value and its
+      ink. Not yet testable, no decision recorded and unassessed have no ink, a record for no decision recorded takes
+      no fill, and no filled shape on the keys or the style guide is painted lavender-gray.</p>
     <p id="overall">not run</p>
   </section>
 
@@ -83,6 +86,24 @@
       <g data-evidence="partially-supported" id="es-partially-supported"><rect class="surface-fill" x="123" y="8" width="184" height="46" rx="8"/><text class="surface-fill-ink" x="215" y="36">partially supported</text></g>
       <g data-evidence="unresolved" id="es-unresolved"><rect class="surface-fill" x="321" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="375" y="36">unresolved</text></g>
       <g data-evidence="weakened" id="es-weakened"><rect class="surface-fill" x="443" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="497" y="36">weakened</text></g>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Review Semantics</h2>
+    <p>Decision records: Review Semantics binds each record's value and ink on .review-record; the page sets neither.</p>
+    <div class="fx-row">
+      <div class="fx-node review-record surface-fill" data-review="proposed" id="r-proposed">proposed</div>
+      <div class="fx-node review-record surface-fill" data-review="open" id="r-open">open</div>
+      <div class="fx-node review-record surface-fill" data-review="accepted" id="r-accepted">accepted</div>
+      <div class="fx-node review-record surface-fill" data-review="declined" id="r-declined">declined</div>
+      <div class="fx-node review-record surface-fill" data-review="none" id="r-none">none</div>
+    </div>
+    <svg class="fx-svg" viewBox="0 0 552 62" role="img" aria-label="The four review fills in SVG">
+      <g class="review-record" data-review="proposed" id="rs-proposed"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">proposed</text></g>
+      <g class="review-record" data-review="open" id="rs-open"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">open</text></g>
+      <g class="review-record" data-review="accepted" id="rs-accepted"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">accepted</text></g>
+      <g class="review-record" data-review="declined" id="rs-declined"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="421" y="36">declined</text></g>
     </svg>
   </section>
 
@@ -104,6 +125,7 @@
     <h2>The shipped surfaces</h2>
     <p>Every filled shape these pages draw, .surface-fill on an HTML box or an SVG shape, is read for its fill.</p>
     <iframe class="fx-frame" src="../evidence-state.html" title="Evidence State key" data-surface="evidence-state.html"></iframe>
+    <iframe class="fx-frame" src="../review-semantics.html" title="Review Semantics key" data-surface="review-semantics.html"></iframe>
     <iframe class="fx-frame" src="../criterion-assessment.html" title="Criterion Assessment key" data-surface="criterion-assessment.html"></iframe>
     <iframe class="fx-frame" src="../spectral-state.html" title="Spectral State key" data-surface="spectral-state.html"></iframe>
     <iframe class="fx-frame" src="../three-functions.html" title="Three Functions key" data-surface="three-functions.html"></iframe>
@@ -143,7 +165,10 @@
       p.remove();
       return v;
     };
-    var LIGHT_INK = 'rgb(106, 99, 127)', LAVENDER = 'rgb(212, 198, 225)';
+    var LIGHT_INK = 'rgb(106, 99, 127)', LAVENDER = 'rgb(212, 198, 225)', HIGH_CONTRAST = 'rgb(32, 29, 38)';
+    /* The root theme, as the foundation reads it: magenta's ink is FILL PAINT's one theme exception among the inks. */
+    var held = document.documentElement.getAttribute('data-theme');
+    var dark = held ? held === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
     var root = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
 
     /* Brown's ink is the lavender in both themes. */
@@ -153,6 +178,8 @@
     var inks = [
       ['--evidence-supported-ink', 'green', LIGHT_INK], ['--evidence-partially-supported-ink', 'orange', LIGHT_INK],
       ['--evidence-unresolved-ink', 'cyan', LIGHT_INK], ['--evidence-weakened-ink', 'brown', LAVENDER],
+      ['--review-proposed-ink', 'magenta', dark ? HIGH_CONTRAST : LAVENDER], ['--review-open-ink', 'cyan', LIGHT_INK],
+      ['--review-accepted-ink', 'green', LIGHT_INK], ['--review-declined-ink', 'red', LAVENDER],
       ['--assessment-favorable-ink', 'green', LIGHT_INK], ['--assessment-caution-ink', 'yellow', LIGHT_INK],
       ['--assessment-adverse-ink', 'red', LAVENDER]
     ];
@@ -163,6 +190,8 @@
       ['supported', '--evidence-supported'], ['partially-supported', '--evidence-partially-supported'],
       ['unresolved', '--evidence-unresolved'], ['weakened', '--evidence-weakened']
     ].map(function (r) { return ['e', r[0], r[1]]; }).concat([
+      ['proposed', '--review-proposed'], ['open', '--review-open'], ['accepted', '--review-accepted'], ['declined', '--review-declined']
+    ].map(function (r) { return ['r', r[0], r[1]]; })).concat([
       ['favorable', '--assessment-favorable'], ['caution', '--assessment-caution'], ['adverse', '--assessment-adverse']
     ].map(function (r) { return ['a', r[0], r[1]]; }));
     shapes.forEach(function (s) {
@@ -178,11 +207,13 @@
 
     /* No ink for the two roles that are never filled. */
     expect('no ink / not yet testable', root('--evidence-not-yet-testable-ink'), '');
+    expect('no ink / no decision recorded', root('--review-none-ink'), '');
+    expect('no fill / a record for no decision recorded', getComputedStyle($('r-none')).backgroundColor, 'rgba(0, 0, 0, 0)');
     expect('no ink / unassessed', root('--assessment-unassessed-ink'), '');
     expect('no ink / lavender-gray', root('--surface-fill-ink-on-lavender-gray'), '');
 
     /* Change each fill color's ink: every binding follows its own color's. */
-    var sentinel = { green: 'rgb(1, 2, 3)', yellow: 'rgb(4, 5, 6)', orange: 'rgb(7, 8, 9)', cyan: 'rgb(10, 11, 12)', red: 'rgb(13, 14, 15)', brown: 'rgb(16, 17, 18)' };
+    var sentinel = { green: 'rgb(1, 2, 3)', yellow: 'rgb(4, 5, 6)', orange: 'rgb(7, 8, 9)', cyan: 'rgb(10, 11, 12)', red: 'rgb(13, 14, 15)', brown: 'rgb(16, 17, 18)', magenta: 'rgb(19, 20, 21)' };
     var perturb = document.createElement('style');
     perturb.textContent = ':root { ' + Object.keys(sentinel).map(function (c) { return '--surface-fill-ink-on-' + c + ': ' + sentinel[c] + ' !important;'; }).join(' ') + ' }';
     document.head.appendChild(perturb);

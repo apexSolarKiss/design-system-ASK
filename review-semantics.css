@@ -19,16 +19,18 @@
         reference, keeps its own labels and meanings, and mints no value. Its
         scope is narrow: the review condition of an identified item or
         request. It owns no evidence judgment, no authority and no workflow.
-        Its module also carries the document marks for the other two state
-        axes (facet 2).
+        Outside a reviewed document's annotation, its filled decision record
+        shows one decision on its own. Its module also carries the document
+        marks for the other two state axes (facet 2).
      2  ANNOTATION // the inert marks, items, rows, lists, ranges, passage
         marks and notes that attach review, evidence, state and basis to the
         exact content they concern, without repainting that content's role.
 
    APPLICABILITY. Every rule here applies to elements carrying this module's
-   classes: .doc-mark, mark.doc-passage-mark, .doc-annotation-note,
-   .doc-annotation-item, .doc-annotations, .doc-annotation-list and
-   .doc-annotation-range. A
+   classes: the annotation composition's .doc-mark, mark.doc-passage-mark,
+   .doc-annotation-note, .doc-annotation-item, .doc-annotations,
+   .doc-annotation-list and .doc-annotation-range, and the filled decision
+   record's .review-record, which is never an element of that composition. A
    data-review, data-evidence or data-state attribute alone opts nothing in
    and paints nothing. Evidence State and Spectral State presentations
    authored outside this composition, such as a consumer's own evidence
@@ -49,8 +51,9 @@
    prefers-color-scheme model: every color resolves through a foundation or
    Spectral token. Since Spectral State v1.2 only none flips with the theme,
    through --fg-3: proposed and open take the fixed emphasis magenta and cyan,
-   and accepted and declined take Spectral's single values. This file sets no
-   value per theme.
+   and accepted and declined take Spectral's single values. A filled record's
+   inks are FILL PAINT's (surface-treatments.css), whose one theme exception
+   among them is magenta's. This file sets no value per theme.
 
    STATUS: v0.1 // first version. Opt-in. A consumer takes it through its own
    gates; no existing document is recolored by its arrival. Contract:
@@ -104,6 +107,57 @@
    unresolved take the same foundation cyan: an open question shares their
    meaning, a matter not yet settled, and their value, and remains its own
    review role.
+
+   FILLED DECISION RECORD
+     meaning         one decision, pending or decided, shown on its own
+                     outside a reviewed document's annotation: in a
+                     standalone review summary, a decision or status board, or
+                     a decision node in a figure. It reports the decision; its
+                     color confers no authority and no evidence
+     population      .review-record with data-review proposed, open, accepted
+                     or declined, on a shape the consumer fills with the
+                     surface treatments' FILL PAINT: an HTML record carries
+                     .surface-fill itself, and words in an element that sets
+                     its own color, such as a paragraph, take
+                     .surface-fill-ink; an SVG g.review-record holds one
+                     .surface-fill shape, and its text takes .surface-fill-ink.
+                     It states its outcome in words (Proposed or Correction
+                     requested, Open question, Accepted, Declined) and, each
+                     in a field of its own marked data-record-field, what it
+                     concerns ("object", the object or its version), who
+                     decided or decides ("actor", the actor or role), its
+                     scope ("scope") and any condition where it is material
+                     ("condition")
+     owner           this module for the record's color and ink: the role's
+                     value as --surface-fill-color and its ink,
+                     --review-<role>-ink, as --surface-fill-ink, bound on
+                     .review-record. Each ink is FILL PAINT's for the role's
+                     color, keyed by that color: proposed on magenta, open on
+                     cyan, accepted on green, declined on red; this module
+                     defines no ink value. surface-treatments.css (FILL PAINT)
+                     for the paint: the fill at 100%, its boundary in the same
+                     color and the ink. The consumer for the shape, its
+                     geometry, layout and type, and the record's values
+     exclusions      no decision recorded draws no record: none has no ink and
+                     binds no fill, and a missing record is no decision. One
+                     record, one decision: its words name one outcome, and no
+                     record holds another. It is inert: never a link or a
+                     control (an a, a button, the compact action, the larger
+                     call to action), holding none and set inside none, with
+                     no hover, press, focus or selection; a link to the
+                     reviewed object sits beside it. Never an element of the
+                     annotation composition and never inside its rows, items,
+                     lists, notes or ranges: in a reviewed document the mark,
+                     the range and the passage mark stay the channels. Never a
+                     bordered label, a chip, a marker or a text role; its words
+                     take the fill's ink, never the role's value or a text
+                     role's color. The DECISION RECORD obligation (facet 2)
+                     binds it as it binds every shown decision
+     example         an Accepted record naming the storage plan v3, the owner
+                     and the write path
+     counterexample  a green box reading "approved" that names no object,
+                     actor or scope; a record that is the link to the
+                     document it accepts
 
    ---------------------------------------------------------------------------
    FACET 2 // ANNOTATION
@@ -285,7 +339,9 @@
      A shown decision names what it concerns (object or version), who decided
      (actor or role) and its scope, and any condition where it is material.
      Consumers supply those values; the display reports an authority relation
-     and never creates one. A missing record is no decision.
+     and never creates one. A missing record is no decision. The obligation
+     binds every shown decision, a mark's record beside it and the filled
+     decision record (facet 1) alike.
 
    PASSAGE MARK
      meaning         the exact words inside a block that one review judgment
@@ -375,7 +431,12 @@
    rule C14 a range's scope rail, lane, host, clearance and buffer as it
    checks every labeled range, an item host's included, and rule C15 a
    passage mark's line and unchanged words as it checks every scope
-   underline.
+   underline. Rule C18 checks a filled decision record: its role (never
+   none), its outcome words, its object, actor and scope fields, that it is
+   inert and outside the annotation composition, its one filled shape in the
+   role's value, and its words in the role's ink. It proves that a record
+   names an object, an actor and a scope, not that they are the right ones
+   or that the decision was made.
    C12 never judges semantic assignment, whether an item's role is the right
    one, or scope: a pass does not show that a range was opened wherever a
    judgment needed one or that it holds the right blocks. A review row left
@@ -398,7 +459,26 @@
   --review-accepted: var(--state-earned);    /* a recorded decision to adopt */
   --review-declined: var(--state-deflated);  /* a recorded decision not to adopt */
   --review-none:     var(--fg-3);            /* no decision recorded */
+
+  /* Each pending or decided role's ink: the color of words set on a record
+     filled in that role's color, bound to the surface treatments' FILL PAINT,
+     which keys each ink by the fill color. None draws no record and has no ink. */
+  --review-proposed-ink: var(--surface-fill-ink-on-magenta);
+  --review-open-ink:     var(--surface-fill-ink-on-cyan);
+  --review-accepted-ink: var(--surface-fill-ink-on-green);
+  --review-declined-ink: var(--surface-fill-ink-on-red);
 }
+
+/* The filled decision record: one decision shown on its own, outside a
+   reviewed document's annotation. The consumer's shape carries .surface-fill
+   (FILL PAINT, surface-treatments.css): the record itself in HTML, or the one
+   shape inside an SVG g.review-record, whose text takes .surface-fill-ink.
+   This module binds the role's value and its ink, and nothing else; none
+   binds nothing, since no decision recorded draws no record. */
+.review-record[data-review="proposed"] { --surface-fill-color: var(--review-proposed); --surface-fill-ink: var(--review-proposed-ink); }
+.review-record[data-review="open"]     { --surface-fill-color: var(--review-open);     --surface-fill-ink: var(--review-open-ink); }
+.review-record[data-review="accepted"] { --surface-fill-color: var(--review-accepted); --surface-fill-ink: var(--review-accepted-ink); }
+.review-record[data-review="declined"] { --surface-fill-color: var(--review-declined); --surface-fill-ink: var(--review-declined-ink); }
 
 /* ---- Facet 2: Annotation --------------------------------------------- */
 

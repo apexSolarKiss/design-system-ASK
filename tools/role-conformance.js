@@ -23,7 +23,7 @@
                   assignment fails C0 when this is omitted.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C17) and a reason
+   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C18) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -486,6 +486,43 @@
                         the runner once it is open, as C12's elements are; one
                         still collapsed then fails C17.box. A rendered or held
                         marker counts as a governed element
+     C18 record         (Review Semantics) applies to every .review-record in
+                        scope: one decision shown on its own, outside a
+                        reviewed document's annotation, on a shape the
+                        consumer fills with FILL PAINT. Syntax: its
+                        data-review is proposed, open, accepted or declined,
+                        never none, which draws no record (C18.vocab); in
+                        fields of its own (data-record-field) it names exactly
+                        one object, one actor and one scope, and any
+                        conditions, each in words that no style inside the
+                        record hides, with no other field and no field inside
+                        another (C18.fields); it is inert: never a link, a
+                        control, a focusable or editable element, a compact
+                        action, a call to action or an attention edge, holding
+                        none and set inside none (C18.inert); and it stands on
+                        its own: never an element of the annotation
+                        composition or inside one, never inside another
+                        record, never also a bordered label, a chip, a keyed
+                        label, a marker, a range, an underline, a sequence, a
+                        rail, a panel, the neutral shape or a text role, and
+                        carrying no evidence, state or assessment attribute
+                        (C18.attach). A record whose role is outside that
+                        vocabulary is judged no further. Its words outside its
+                        fields that no style hides name its outcome, Proposed
+                        or Correction requested, Open question, Accepted or
+                        Declined, and no other review outcome (C18.words).
+                        Computed: it is one filled shape, the record itself
+                        carrying .surface-fill or its single .surface-fill
+                        descendant, whose fill and every drawn edge take the
+                        role's value, --review-<role>, never transparent, with
+                        no image or filter, at full opacity, the record's
+                        included (C18.fill); a record without one shape is
+                        judged for that alone. Every element holding its words
+                        takes the role's ink, --review-<role>-ink, as its text
+                        color, or as its fill in SVG (C18.ink). A record is
+                        judged at rest wherever it sits, a closed disclosure
+                        included, is never held, and counts as a governed
+                        element
 
    STATUS
      pass       no finding, and at least one governed element was checked
@@ -668,6 +705,22 @@
      a filled marker in lavender-gray, which the owner draws only hollow,
      passes here. It admits the one 1px solid edge on any filled marker, not
      only on one whose color is its field's, which it cannot tell.
+   - C18 judges a record at rest, from its markup and its computed styles,
+     wherever it sits: one a closed disclosure holds, or one that renders no
+     box, is judged as it rests, so it does not show that a record or its
+     words are seen. It reads the outcome and the fields as text, and a field
+     is hidden to it only through display, visibility or zero opacity inside
+     the record. It proves that a record names an object, an actor and a
+     scope, not that they are the right ones, that a condition it omits is
+     immaterial, or that the decision was made. It compares the fill with
+     --review-<role> and the words with --review-<role>-ink as each resolves
+     at the record, so it proves that a record is drawn in its role's
+     binding, not that the binding is FILL PAINT's ink for that color
+     (tests/fill-paint-fixture.html holds that). It reads an HTML shape's
+     background and border and an SVG shape's fill and stroke, not paint a
+     pseudo-element or another element lays over the record. It knows
+     controls by element, role, tabindex, contenteditable and class, and does
+     not judge a cursor or a hover, press or focus rule.
 */
 (function (global) {
   'use strict';
@@ -2064,6 +2117,83 @@
       if (!renders(el)) continue;   /* it renders no box: nothing is drawn to judge */
       governed++;
       marked(el, add);
+    }
+
+    /* C18 the filled decision record (Review Semantics): one decision shown on its own, outside a
+       reviewed document's annotation, on one shape the consumer fills with FILL PAINT. It is judged
+       at rest wherever it sits, from its markup and computed paint, and never held. */
+    const RECORD_ROLES = ['proposed', 'open', 'accepted', 'declined'];
+    const RECORD_ATTACH = COMPOSITION + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', ' + SEQUENCE + ', ' + SEQUENCE_STEP + ', ' +
+      RAILED + ', ' + PANEL + ', ' + KEYED + ', ' + MARKED + ', .surface-separate, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+    const RECORD_CONTROLS = CONTROLS + ', .surface-cta, .surface-attention-edge';
+    /* Hosts that make whatever they hold part of a control. A scrolling box's tabindex is not one. */
+    const RECORD_HOSTS = 'a, button, summary, label, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta';
+    const OUTCOME = { proposed: ['proposed', 'correction requested'], open: ['open question'], accepted: ['accepted'], declined: ['declined'], none: ['no decision recorded'] };
+    const phrase = (words, p) => new RegExp('(^|[^\\p{L}\\p{N}])' + p.replace(/ /g, '\\s+') + '(?=$|[^\\p{L}\\p{N}])', 'iu').test(words);
+    const own = (rec, node) => (node.nodeType === 1 ? node : node.parentElement).closest('.review-record') === rec;
+    const isSvg = (el) => typeof SVGElement !== 'undefined' && el instanceof SVGElement;
+    for (const rec of all('.review-record')) {
+      counts['review-record'] = (counts['review-record'] || 0) + 1;
+      governed++;
+      const v = rec.getAttribute('data-review');
+      const known = RECORD_ROLES.includes(v || '');
+      if (!known) {
+        add('C18', 'vocab', rec, { basis: 'syntax', value: v, message: v === 'none' ? 'no decision recorded draws no record: none binds no fill and has no ink, and a missing record is no decision' : 'a record carries data-review proposed, open, accepted or declined: the pending or decided role it reports' });
+      }
+      /* Its fields, its own: a nested record's are that record's. */
+      const fields = [...rec.querySelectorAll('[data-record-field]')].filter((f) => own(rec, f));
+      const names = fields.map((f) => f.getAttribute('data-record-field'));
+      const tally = (n) => names.filter((k) => k === n).length;
+      const hidden = (f) => { for (let e = f; e && e !== rec; e = e.parentElement) { const c = getComputedStyle(e); if (c.display === 'none' || parseFloat(c.opacity) === 0) return true; } return getComputedStyle(f).visibility !== 'visible'; };
+      const blank = fields.filter((f) => !VISIBLE.test(f.textContent || '') || hidden(f));
+      const unknown = names.filter((n) => !['object', 'actor', 'scope', 'condition'].includes(n));
+      const nested = fields.filter((f) => f.parentElement && f.parentElement.closest('[data-record-field]') && rec.contains(f.parentElement.closest('[data-record-field]')));
+      if (tally('object') !== 1 || tally('actor') !== 1 || tally('scope') !== 1 || unknown.length || nested.length || blank.length) {
+        add('C18', 'fields', rec, { basis: 'syntax', message: 'a record names, each once in a field of its own (data-record-field), what it concerns (object), who decided or decides (actor) and its scope (scope), and any material condition (condition), each in words no style inside the record hides, and no field holds another', fields: names, unknown, blank: blank.map(path), nested: nested.map(path) });
+      }
+      if (rec.matches(RECORD_CONTROLS) || rec.querySelector(RECORD_CONTROLS) || (rec.parentElement && rec.parentElement.closest(RECORD_HOSTS))) {
+        add('C18', 'inert', rec, { basis: 'syntax', message: 'a record is inert: never a link, a control, a focusable or editable element, an action or an attention edge, holding none and set inside none; a link to the reviewed object sits beside it' });
+      }
+      const facets = ['evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
+      if (rec.matches(RECORD_ATTACH) || (rec.parentElement && rec.parentElement.closest(COMPOSITION + ', .review-record')) || facets.length) {
+        add('C18', 'attach', rec, { basis: 'syntax', message: 'a record stands on its own: never an element of the annotation composition or inside one, where the mark, the range and the passage mark stay the channels; never inside another record; never a bordered label, a chip, a marker, a range, an underline, a sequence, a rail, a panel, the neutral shape or a text role; and it carries no evidence, state or assessment attribute', facets });
+      }
+      if (!known) continue;   /* with no role there is no outcome, value or ink to judge */
+      /* Its outcome, in the words outside its fields: its own role's, and no other. */
+      const loose = [];
+      const walker = document.createTreeWalker(rec, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const host = n.parentElement;
+        if (host && own(rec, n) && !hidden(host) && !(host.closest('[data-record-field]') && rec.contains(host.closest('[data-record-field]')))) loose.push(n.textContent);
+      }
+      const words = loose.join(' ').replace(/\s+/g, ' ').trim();
+      const others = Object.keys(OUTCOME).filter((k) => k !== v && OUTCOME[k].some((p) => phrase(words, p)));
+      if (!OUTCOME[v].some((p) => phrase(words, p)) || others.length) {
+        add('C18', 'words', rec, { basis: 'syntax', message: 'a record states its one outcome in words outside its fields: Proposed or Correction requested, Open question, Accepted or Declined, and no other', role: v, words: words.slice(0, 80), others });
+      }
+      /* Its one filled shape: the record itself, or its single .surface-fill descendant. */
+      const shapes = [...(rec.matches('.surface-fill') ? [rec] : []), ...[...rec.querySelectorAll('.surface-fill')].filter((s) => own(rec, s))];
+      const at = rec.closest('svg') || rec;
+      const want = probe(at, 'color:var(--review-' + v + ')').color;
+      if (shapes.length !== 1) {
+        add('C18', 'fill', rec, { basis: 'computed', message: 'a record is one filled shape: the record itself carries .surface-fill, or an SVG record holds exactly one .surface-fill shape', shapes: shapes.length });
+        continue;   /* with no one shape, its paint is not judged, nor the words a missing fill leaves */
+      }
+      const s = shapes[0], c = getComputedStyle(s), rc = getComputedStyle(rec);
+      const sides = ['Top', 'Right', 'Bottom', 'Left'];
+      const fill = isSvg(s) ? c.fill : c.backgroundColor;
+      const edge = isSvg(s) ? (none(c.stroke) || (c.stroke === want && parseFloat(c.strokeOpacity) >= 1)) : sides.every((d) => !drawn(c, d) || c['border' + d + 'Color'] === want);
+      const plain = none(c.backgroundImage) && none(c.filter) && parseFloat(c.opacity) >= 1 && parseFloat(rc.opacity) >= 1 && (!isSvg(s) || parseFloat(c.fillOpacity) >= 1);
+      if (clear(want) || fill !== want || !edge || !plain) {
+        add('C18', 'fill', s, { basis: 'computed', message: 'a record\'s shape takes its role\'s value at 100% as its fill and its drawn edge, never transparent, with no image or filter and at full opacity, the record\'s included', expected: want, fill, edge: isSvg(s) ? c.stroke : sides.map((d) => c['border' + d + 'Color']).join(' / '), image: c.backgroundImage, filter: c.filter, opacity: c.opacity + ' / ' + rc.opacity });
+      }
+      /* Its words: every element holding them takes the role's ink, as text color or an SVG text's fill. */
+      const ink = probe(at, 'color:var(--review-' + v + '-ink)').color;
+      const bearers = [rec, ...rec.querySelectorAll('*')].filter((e) => own(rec, e) && ownText(e) && [...e.childNodes].some((n) => n.nodeType === 3 && VISIBLE.test(n.textContent)));
+      const off = bearers.filter((e) => clear(ink) || (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color) !== ink);
+      if (off.length) {
+        add('C18', 'ink', rec, { basis: 'computed', message: 'a record\'s words take its role\'s ink, --review-' + v + '-ink, FILL PAINT\'s for its color: never the role\'s value, a text role\'s color or the theme foreground', expected: ink, examples: off.slice(0, 3).map((e) => path(e) + ' ' + (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color)) });
+      }
     }
 
     for (const [el, h] of heldHere) held.set(el, h);

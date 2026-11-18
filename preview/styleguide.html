@@ -167,7 +167,21 @@
   .cat-cell--wide { margin-top: var(--space-4); }
   .cat-range-set { display: grid; gap: var(--space-5) var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
   .cat-range-set > .surface-labeled-range { margin-top: 0; }
-  .cat-candidate > :is(.cat-spec, .cat-lane, .doc-table-scroll), .cat-candidate > :not(h4) + .note { margin-top: var(--space-4); }
+  /* The filled decision records: the record is the shape, and review-semantics.css binds its color and ink.
+     This sets its geometry and type, which the contract leaves to the composing surface, and lays the records
+     out; no rule here sets a paint, an edge or an ink. Its border is set by width and style, never by a
+     shorthand that would reset the color FILL PAINT gives it. */
+  .cat-records { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); align-items: start; }
+  .cat-record { box-sizing: border-box; min-width: 0; margin: 0; padding: var(--space-3) var(--space-4); border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm);
+                display: flex; flex-direction: column; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); line-height: 1.4; }
+  .cat-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); line-height: var(--lh-tight); }
+  .cat-record-fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); margin: 0; }
+  .cat-record-fields > * { margin: 0; min-width: 0; }
+  .cat-record-node { display: block; width: 100%; max-width: 340px; height: auto; }
+  .cat-record-node rect { stroke-width: 1.5; }
+  .cat-record-node text { font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); }
+  .cat-record-node .cat-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); }
+  .cat-candidate > :is(.cat-spec, .cat-lane, .doc-table-scroll, .cat-records, .cat-record-node), .cat-candidate > :not(h4) + .note { margin-top: var(--space-4); }
   .cat-candidate > .cat-spec { min-height: 0; }
   .cat-links { margin: var(--space-3) 0 0; padding-left: var(--space-5); }
   .cat-links li { margin: 0 0 var(--space-2); }
@@ -453,7 +467,7 @@
 
     <div class="cat-family" id="treatment-fill">
       <h3 class="spec-role">Filled shape <span class="spec-role-meta">FILL PAINT · <code>surface-treatments.css</code></span></h3>
-      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. Spectral State, Evidence State, Criterion Assessment and Three Functions bind each role to its color's ink; lavender-gray has none.</p>
+      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. Spectral State, Evidence State, Review Semantics, Criterion Assessment and Three Functions bind each role to its color's ink; lavender-gray has none.</p>
       <div class="cat-grid">
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-green); --surface-fill-ink: var(--surface-fill-ink-on-green);">
@@ -461,7 +475,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">green</text></svg>
           </div>
           <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span> · ink <span data-fg="--surface-fill-ink-on-green"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Criterion Assessment</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Review Semantics decision record · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-yellow); --surface-fill-ink: var(--surface-fill-ink-on-yellow);">
@@ -485,7 +499,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">red</text></svg>
           </div>
           <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span> · ink <span data-fg="--surface-fill-ink-on-red"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Criterion Assessment</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Review Semantics decision record · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-brown); --surface-fill-ink: var(--surface-fill-ink-on-brown);">
@@ -506,7 +520,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">magenta</text></svg>
           </div>
           <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span> · ink <span data-fg="--surface-fill-ink-on-magenta"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Review Semantics decision record · Three Functions</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-violet); --surface-fill-ink: var(--surface-fill-ink-on-violet);">
@@ -522,7 +536,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">cyan</text></svg>
           </div>
           <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span> · ink <span data-fg="--surface-fill-ink-on-cyan"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Three Functions</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Review Semantics decision record · Three Functions</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-white); --surface-fill-ink: var(--surface-fill-ink-on-white);">
@@ -824,7 +838,7 @@
 
   <!-- ============ SEMANTIC APPLICATIONS ============ -->
   <section id="semantic-applications">
-    <p class="sg-h">Semantic applications // coverage and candidates</p>
+    <p class="sg-h">Semantic applications // coverage and admitted applications</p>
     <p class="note" style="margin: 0;">A shared treatment is reusable; a semantic system uses it only where its contract binds it. The README's <a class="surface-text-link" href="../README.md#application-coverage">application coverage</a> is the one map of which representations each system has, in which context, and in which status. Each key presents its system in one order: scope, roles and colors, representations, rules, worked applications, usage and owners.</p>
     <ul class="cat-links note">
       <li><a class="surface-text-link" href="../spectral-state.html">Spectral State</a> // the state of an architectural element</li>
@@ -834,8 +848,8 @@
       <li><a class="surface-text-link" href="../three-functions.html">Three Functions</a> // the legislative, executive and judicial roles of an apparatus</li>
     </ul>
 
-    <h3 class="spec-role" id="candidates">Adopted applications <span class="spec-role-meta">three applications · A and B supported · C not implemented</span></h3>
-    <p class="note" style="margin: 0;">Three applications of existing treatments, each bound by its own system. A and B are drawn here by the modules that bind them, and each keeps its system's words beside its color. C is adopted and not implemented: the fill paint does not admit its binding until the change that implements it updates the named contracts and their checks, and this page draws only what its modules admit. None applies inside a multi-axis review annotation, where the square, the dot, the outline, the range and the passage mark stay the channels.</p>
+    <h3 class="spec-role" id="candidates">Admitted applications <span class="spec-role-meta">three applications · supported</span></h3>
+    <p class="note" style="margin: 0;">Three applications of existing treatments, each bound by its own system and drawn here by the modules that bind them. Each keeps its system's words beside its color. None applies inside a multi-axis review annotation, where the square, the dot, the outline, the range and the passage mark stay the channels.</p>
 
     <div class="cat-candidate" id="candidate-state-labels">
       <h4 class="spec-role">A // Spectral State labels and rails</h4>
@@ -880,7 +894,35 @@
 
     <div class="cat-candidate" id="candidate-decision-record">
       <h4 class="spec-role">C // A filled decision record</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a standalone decision record, such as a review summary, a status board or a decision node in a figure. Inside a reviewed document the review mark, the range and the passage mark stay the channels; this replaces none of them. <b>Binding:</b> the role's Review State value as FILL PAINT's color, and that color's existing ink. Each record still names what it concerns, who decided and the scope; no decision recorded draws no record. <b>Implementing it changes:</b> <code>review-semantics.md</code> and <code>.css</code>, which bind a review role to a fill, and FILL PAINT's population in <code>surface-treatments.css</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> a standalone decision record, such as a review summary, a status board or a decision node in a figure. Inside a reviewed document the review mark, the range and the passage mark stay the channels; this replaces none of them. <b>Binding:</b> <code>review-semantics.css</code> binds each pending or decided role's Review State value as FILL PAINT's color on <code>.review-record</code>, and that color's existing ink as <code>--review-*-ink</code>. Each record states its outcome in words and names, in fields of its own, what it concerns, who decided or decides and the scope, and any material condition. It is inert, and its color confers no authority.</p>
+      <div class="cat-records">
+        <div class="cat-record review-record surface-fill" data-review="accepted">
+          <div class="cat-record-outcome">Accepted</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">storage plan, v3</dd><dt>actor</dt><dd data-record-field="actor">owner</dd><dt>scope</dt><dd data-record-field="scope">the write path</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="declined">
+          <div class="cat-record-outcome">Declined</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">search index in the primary store, architecture note v2</dd><dt>actor</dt><dd data-record-field="actor">architecture review</dd><dt>scope</dt><dd data-record-field="scope">this release</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="proposed">
+          <div class="cat-record-outcome">Proposed</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">a separate search service, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">platform lead</dd><dt>scope</dt><dd data-record-field="scope">the read path</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="open">
+          <div class="cat-record-outcome">Open question</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">search index placement, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">owner decides</dd><dt>scope</dt><dd data-record-field="scope">the whole note</dd><dt>condition</dt><dd data-record-field="condition">until read latency is measured in the third region</dd></dl>
+        </div>
+      </div>
+      <svg class="cat-record-node" viewBox="0 0 340 104" role="img" aria-label="A decision node in a figure: an open question on the search index placement, which the owner decides, over the whole note">
+        <g class="review-record" data-review="open">
+          <rect class="surface-fill" x="0.75" y="0.75" width="338.5" height="102.5" rx="8"/>
+          <text class="surface-fill-ink cat-record-outcome" x="16" y="30">Open question</text>
+          <text class="surface-fill-ink" x="16" y="56">object</text><text class="surface-fill-ink" x="96" y="56" data-record-field="object">search index placement, v3</text>
+          <text class="surface-fill-ink" x="16" y="74">actor</text><text class="surface-fill-ink" x="96" y="74" data-record-field="actor">owner decides</text>
+          <text class="surface-fill-ink" x="16" y="92">scope</text><text class="surface-fill-ink" x="96" y="92" data-record-field="scope">the whole note</text>
+        </g>
+      </svg>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> no decision recorded, which draws no record; a record as a link or a control, or inside a review annotation, where the mark, the range and the passage mark stay the channels.</p>
     </div>
   </section>
 
