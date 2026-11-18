@@ -39,6 +39,8 @@
   .hue  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
   .demo { margin-top: 44px; }
   .demo p { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); margin: 0 0 16px; }
+  /* The representations table is the register's own table; this only spaces it from the shapes above. */
+  .demo .avail-caption { margin-top: 36px; }
   .nodes { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   /* A node is a filled shape: it carries .surface-fill (surface-treatments.css, FILL PAINT), and a node with no
      asserted state .surface-fill--neutral. This page binds each state and nothing else. */
@@ -58,6 +60,8 @@
   .filled-svg { display: block; width: 100%; max-width: 976px; height: auto; margin-top: 18px; }
   .filled-svg rect { stroke-width: 1.5; }
   .filled-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; }
+  /* The representations list: framing only; its items take the register's metadata role. */
+  .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 </style>
 </head>
 <body>
@@ -81,6 +85,21 @@
   <h2 class="doc-title">Spectral State</h2>
   <div class="sub">v1.3 // every value defined in the foundation · neon on the lavender field</div>
 
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="scope">Scope // the state of an architectural element</h2>
+      <p>one color per asserted state // for state-bearing diagrams, and for a document's state marks through Review Semantics</p>
+      <p>not interface color // no button, link, alert or status chip takes it</p>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="roles">Roles and colors // seven fixed colors and a theme-dependent neutral</h2>
+      <p>a health ramp, three orthogonal categories and neutral // labels stay Spectral State's</p>
+    </div>
+  </div>
+
   <div class="grid">
     <div class="arc-label">Health ramp // green → yellow → orange → red</div>
     <div class="swatch"><div class="dot" style="background:var(--state-earned)"></div><div class="meta"><span class="role">state-earned</span><span class="hue">120° green</span></div></div>
@@ -97,27 +116,7 @@
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title">Sparse-signal discipline</h2>
-      <p>most nodes neutral // neon only to say something</p>
-    </div>
-    <div class="nodes">
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill" data-state="earned"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill" data-state="held"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill" data-state="deflated"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-      <div class="node surface-fill" data-state="external"></div>
-      <div class="node surface-fill surface-fill--neutral"></div>
-    </div>
-  </div>
-
-  <div class="demo">
-    <div class="doc-section">
-      <h2 class="doc-section-title">Filled shapes</h2>
+      <h2 class="doc-section-title" id="representations">Representations // filled shapes, and where else the roles are drawn</h2>
       <p>each state at 100% // its ink on it // no state, the neutral shape</p>
     </div>
     <div class="nodes filled">
@@ -140,6 +139,56 @@
       <g data-state="proposed"><rect class="surface-fill" x="733" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="787" y="36">proposed</text></g>
       <g class="surface-fill--neutral"><rect class="surface-fill" x="855" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="909" y="36">neutral</text></g>
     </svg>
+    <p class="avail-caption">every representation the roles have, and its status // the same rows as the README's application coverage</p>
+    <ul class="avail-list" aria-label="Spectral State representations and their status">
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled node or mark, in its role's ink · a consumer-composed state-bearing figure, such as the interactive spine and radial and the key · <code class="doc-code">spectral-state.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · Spectral State key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> the neutral filled shape · a node that asserts no state in a state-bearing figure, such as the spine and the keys; not the radial's no-state marks, which keep the pattern's wash, or a structural diagram's node · FILL PAINT's neutral shape · Spectral State key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state square, with its label · a document annotation · <code class="doc-code">review-semantics.css</code> · Review Semantics key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> stroke or text in one role's value · a consumer's own figure · <code class="doc-code">spectral-state.md</code>, How to use it: a composition from the role tokens · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> standalone state label, and its range rail · a document, caption or table naming an element's state in words · adopted; the bordered label and labeled range admit no state color · candidate A, described in the style guide</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> any state color · <code class="doc-code">diagram-static-H</code>, <code class="doc-code">-V</code>, <code class="doc-code">-SEQ</code> and <code class="doc-code">-FLOW</code> · those patterns are state-free</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a button, link, alert or status chip · any interface · the closed palette</li>
+    </ul>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="rules">Rules // sparse-signal discipline</h2>
+      <p>most nodes neutral // neon only to say something</p>
+      <p>a shared value is not a shared meaning // Evidence State, Review State and Criterion Assessment reuse these values under their own words</p>
+    </div>
+    <div class="nodes">
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="earned"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="held"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="deflated"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+      <div class="node surface-fill" data-state="external"></div>
+      <div class="node surface-fill surface-fill--neutral"></div>
+    </div>
+  </div>
+
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="worked">Worked applications // the roles in use</h2>
+      <p><a href="patterns/view/diagram-interactive-spine.html">interactive spine</a> // filled state nodes beside neutral ones, with selection and export</p>
+      <p><a href="patterns/view/diagram-interactive-radial.html">interactive radial</a> // state marks filled, structure washed</p>
+      <p><a href="review-semantics.html#other-title">Review Semantics</a> // state squares in a document annotation</p>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="usage">Usage and owners // load order and who decides what</h2>
+      <p>load colors_and_type.css first, then spectral-state.css with surface-panel.css and surface-treatments.css, all from one design-system commit // spectral-state.css declares custom properties only, so its place beside the other two changes no resolved value; this key loads it directly after the foundation</p>
+      <p>spectral-state.css owns the roles and their values // surface-treatments.css owns the fill paint and every ink // the consumer owns which element carries which state, and its evidence</p>
+      <p><a href="spectral-state.md">the contract</a> · <a href="README.md#application-coverage">application coverage</a> · <a href="preview/styleguide.html#treatments">the treatments by color</a></p>
+    </div>
   </div>
   </main>
 
