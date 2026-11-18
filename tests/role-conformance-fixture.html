@@ -118,6 +118,22 @@
   [data-control="steps spaced by a margin of their own"] .doc-sequence-step { margin-bottom: var(--space-3); }
   [data-control="a last step whose body runs past the rail"] .doc-sequence-step:last-child { height: 20px; }
   @media print { [data-control="step kept whole only in columns"] .doc-sequence > .doc-sequence-step { break-inside: avoid-column; } }
+  /* C17: consumer overrides of the marker the rendered check must catch. Each reaches only its own control. */
+  [data-control="large marker drawn at the small size"] .surface-marker { width: 10px; height: 10px; }
+  [data-control="hollow marker sized by its content box"] .surface-marker { box-sizing: content-box; }
+  [data-control="marker a flex row may shrink"] .surface-marker { flex-shrink: 1; }
+  [data-control="marker moved by a transform"] .surface-marker { transform: scale(1.5); }
+  [data-control="marker under a redefined large size"] { --surface-marker-size-lg: 40px; }
+  [data-control="square marker drawn round"] .surface-marker { border-radius: 50%; }
+  [data-control="dot drawn square"] .surface-marker { border-radius: 2px; }
+  [data-control="filled marker made transparent"] .surface-marker { --surface-marker-color: transparent; }
+  [data-control="filled marker painted by a local rule"] .surface-marker { background-color: var(--ask-emphasis-cyan); }
+  [data-control="filled marker given a dashed edge"] .surface-marker { border: 1px dashed var(--fg-3); }
+  [data-control="filled marker given a glow"] .surface-marker { box-shadow: 0 0 6px var(--ask-emphasis-magenta); }
+  [data-control="hollow marker filled"] .surface-marker { background-color: var(--fg-3); }
+  [data-control="hollow marker drawn solid"] .surface-marker { border-style: solid; }
+  [data-control="hollow marker edged in another color"] .surface-marker { border-color: var(--ask-emphasis-cyan); }
+  [data-control="marker in a closed disclosure drawn square"] .surface-marker { border-radius: 0; }
 </style>
 </head>
 <body>
@@ -249,6 +265,9 @@ keeps the one violet rail</pre>
         <tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><div>A range in a table's only column.</div></div></td></tr></tbody>
       </table>
     </div>
+    <div class="fx-row" style="flex-wrap: wrap"><span class="surface-marker"></span><span class="doc-label">a neutral dot</span><span class="surface-marker surface-marker--square surface-marker--md"></span><span class="doc-label">a square</span><span class="surface-marker surface-marker--hollow surface-marker--lg"></span><span class="doc-label">a hollow dot</span></div>
+    <div class="fx-row" style="flex-wrap: wrap"><span class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color: var(--ask-emphasis-cyan)"></span><span class="doc-label">a dot in a meaning's color</span><span class="surface-marker surface-marker--lg" style="--surface-marker-color: var(--ask-surface); border: 1px solid var(--fg-3)"></span><span class="doc-label">a dot in its field's color, edged</span></div>
+    <p class="doc-body">An inline <span class="surface-marker surface-marker--square"></span> marker sits on the middle of the line beside its word.</p>
   </section>
 
   <section class="doc-section" id="controls">
@@ -1039,6 +1058,76 @@ another</pre></div></div>
     </div>
     <div data-control="sequence in a closed disclosure whose node is filled" data-expect="" data-expect-open="C16.fill">
       <details><summary>Steps</summary><ol class="doc-sequence"><li class="doc-sequence-step doc-group"><p class="doc-label">step 1</p><p class="doc-body">Its body.</p></li></ol></details>
+    </div>
+    <!-- C17 marker -->
+    <div data-control="large marker drawn at the small size" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="hollow marker sized by its content box" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker a flex row may shrink" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker holding words" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--lg">E</span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker moved by a transform" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker under a redefined large size" data-expect="C17.box">
+      <div class="fx-row"><span class="surface-marker surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="square marker drawn round" data-expect="C17.corner">
+      <div class="fx-row"><span class="surface-marker surface-marker--square surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="dot drawn square" data-expect="C17.corner">
+      <div class="fx-row"><span class="surface-marker surface-marker--dot surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="filled marker made transparent" data-expect="C17.fill">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="filled marker painted by a local rule" data-expect="C17.fill">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="filled marker given a dashed edge" data-expect="C17.fill">
+      <div class="fx-row"><span class="surface-marker surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="filled marker given a glow" data-expect="C17.fill">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="hollow marker filled" data-expect="C17.hollow">
+      <div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="hollow marker drawn solid" data-expect="C17.hollow">
+      <div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="hollow marker edged in another color" data-expect="C17.hollow">
+      <div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="hollow square" data-expect="C17.shape">
+      <div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--square surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker at two sizes" data-expect="C17.shape">
+      <div class="fx-row"><span class="surface-marker surface-marker--sm surface-marker--lg"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker with an unknown modifier" data-expect="C17.shape">
+      <div class="fx-row"><span class="surface-marker surface-marker--xl"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker composed with an annotation item" data-expect="C12.rail C17.attach">
+      <div class="fx-row"><span class="surface-marker doc-annotation-item"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker composed with a fill" data-expect="C17.attach">
+      <div class="fx-row"><span class="surface-marker surface-marker--lg surface-fill"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker made focusable" data-expect="C17.attach">
+      <div class="fx-row"><span class="surface-marker" tabindex="0"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="marker in a closed disclosure, judged open" data-expect="">
+      <details><summary>Key</summary><div class="fx-row"><span class="surface-marker surface-marker--hollow surface-marker--md"></span><span class="doc-label">a role</span></div></details>
+    </div>
+    <div data-control="marker in a closed disclosure drawn square" data-expect="" data-expect-open="C17.corner">
+      <details><summary>Key</summary><div class="fx-row"><span class="surface-marker surface-marker--lg"></span><span class="doc-label">a role</span></div></details>
     </div>
     <div data-control="two labeled ranges with no buffer" data-expect="C14.buffer">
       <div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">The paragraph it marks.</p></div><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label">held</span><p class="doc-body">The paragraph it marks.</p></div></div>

@@ -1,7 +1,7 @@
 /* =========================================================================
    surface-treatments — separate surfaces composed from three axes; the
    disclosure; content emphasis; the bordered label; the labeled range; rail
-   paint; fill paint; the scope underline.
+   paint; fill paint; the scope underline; the marker.
 
    An OPT-IN VISUAL RULE under Foundations. It owns PRESENTATION ONLY: no
    markup, no semantics, no template, and no generated preview. A consuming
@@ -333,10 +333,11 @@
                      same in both themes, as the colors are. The root theme
                      decides, as it does for the colors; a .theme-dark subtree
                      is not a field this module paints
-     exclusions      a dot, chip, rail, bordered label, range, underline or
-                     sequence node is not a filled shape: it takes no fill
-                     paint or ink and keeps its own paint, solid or not (a
-                     review state square, a key's marker dot). The interactive
+     exclusions      a marker (MARKER, below: an evidence dot, a state
+                     square, a key's swatch), chip, rail, bordered label,
+                     range, underline or sequence node is not a filled shape:
+                     it takes no fill paint or ink and keeps its own paint,
+                     solid or not. The interactive
                      spine's and radial's state marks take this paint; a
                      radial mark that asserts no state is structure, not a
                      filled shape, and keeps its engine's own neutral wash,
@@ -384,6 +385,48 @@
      counterexample  a tinted field behind the words; the words recolored; an
                      underline that brightens on hover; a text link's 1px line
                      reused to mark scope
+
+   MARKER
+     meaning         a small inert shape beside the visible label that names
+                     its role: one anatomy wherever it appears, so a dot, a
+                     square or a hollow dot measures the same in a document,
+                     a key and a legend, and only its meaning changes its color
+     population      .surface-marker with one shape and one size: the shape
+                     .surface-marker--dot (the default), --square, or --hollow,
+                     a hollow dashed dot; the size .surface-marker--sm (the
+                     default, 10px, beside a label in the reading flow), --md
+                     (12px, a key's or a legend's row) or --lg (30px, a key's
+                     swatch). Neutral by default. Review Semantics' evidence
+                     and state marks draw the same anatomy on their own
+                     ::before at the small size, reading this module's marker
+                     properties, so their markup carries no marker class
+     owner           this module: the box, its three sizes, the dot's and the
+                     square's corners, the hollow marker's dashed edge and
+                     the neutral color. The color comes from the composing
+                     meaning, through --surface-marker-color; which shape an
+                     axis takes is the composing meaning's (Review Semantics
+                     gives evidence the dot, state the square and not yet
+                     testable the hollow dot)
+     reuses          --fg-3 for the neutral marker
+     variation       the shape and the size, by modifier; the color, set only
+                     by a governed meaning
+     exclusions      never alone: the visible label beside it names its role,
+                     and color never carries it alone. No text, ink, shadow,
+                     bloom, hover, press, focus or cursor, and never a control
+                     or a focusable element. Never also a bordered label, a
+                     chip, a filled shape (FILL PAINT), a rail, a range, an
+                     underline, a sequence node or an element of an
+                     annotation composition, whose mark draws its own marker.
+                     A hollow marker is never filled and never square, and
+                     lavender-gray is drawn only as a hollow marker, never
+                     filled. A bare data-state or data-evidence opts nothing
+                     in
+     example         a key's 30px green swatch beside "state-earned"; a 10px
+                     square beside EARNED in a document annotation: one
+                     anatomy at two sizes
+     counterexample  a hollow swatch drawn larger than the filled swatches
+                     beside it because its dashed edge sits outside its box;
+                     a colored dot standing for a role with no label beside it
 
    THE BORDERED LABEL'S EDGE. An apparent 2px edge in light and the plain
    1px border in dark: the fixed 1px border plus a same-color, zero-blur
@@ -513,6 +556,25 @@
    keeps its own clearance (Review Semantics gives a note in a list item its
    attachment space).
 
+   THE MARKER'S BOX. One empty border-box square, so a hollow marker's 2px
+   dashed edge sits inside its size and a filled and a hollow marker of one
+   size measure the same. The three sizes are the ones each place draws: 10px
+   beside a label in the reading flow, 12px on a key's or a legend's row and
+   30px for a key's swatch. A dot's corner is 50%, a circle; a square keeps a
+   2px corner, which softens it without reading as a dot. A filled marker is
+   its color at 100%, with no edge of its own; where its color is its own
+   field's, such as Spectral State's neutral or Three Functions' executive,
+   the composing surface may draw one 1px solid line around it, inside its
+   box. A hollow marker is a transparent box inside a 2px dashed edge in its
+   color: Evidence State's not yet testable draws it. A flex row neither
+   stretches nor squeezes a marker, and it sits on the middle of the line of
+   text beside it. Review Semantics' evidence and state marks keep their own
+   ::before and read its size, corners and dashed edge from the custom
+   properties this module declares (--surface-marker-size-sm, -md and -lg,
+   --surface-marker-corner-dot and -square, --surface-marker-hollow-edge), so
+   a document's marks and a key's swatches are one anatomy and no existing
+   markup changes.
+
    THE EMPHASIS DOSE. The themes are deliberately not numerically equal,
    because equal numbers do not read as equal emphasis: light has an apparent
    1.5px edge (the 1px border plus a 0.5px zero-blur ring, which grows the edge
@@ -545,6 +607,11 @@
                            not load diagrams.css
      2px, 0.36em           the scope underline's thickness and its offset
                            below the baseline
+     10px, 12px, 30px      the marker's three sizes: beside a label, on a key's
+                           or a legend's row, and a key's swatch
+     50%, 2px              the marker's corners: the dot's (a circle) and the
+                           square's
+     2px                   the hollow marker's dashed edge
 
    LIMITS
      - Hover and focus colors on the disclosure trigger depend on the
@@ -575,6 +642,10 @@
        text link, draws it beside the scope line. The 0.36em offset follows
        the font's metrics, so the line sits a little differently in another
        family.
+     - A filled marker is a background. Where a browser suppresses
+       backgrounds (forced colors, a print without backgrounds) it may not
+       paint, and the label beside it still names the role; a hollow marker's
+       dashed edge is a border and still draws.
    ========================================================================= */
 
 /* ---- Surface axes ----------------------------------------------------- */
@@ -944,3 +1015,42 @@ li.surface-labeled-range + li.surface-labeled-range { margin-top: 0; }
   text-decoration-skip-ink: none;
   text-decoration-color: var(--surface-scope-underline-color, var(--fg-3));
 }
+
+/* ---- Marker ----------------------------------------------------------- */
+
+/* The marker's sizes, corners and dashed edge (THE MARKER'S BOX, above).
+   Review Semantics' evidence and state marks read them on their own
+   ::before. */
+:root {
+  --surface-marker-size-sm:       10px;
+  --surface-marker-size-md:       12px;
+  --surface-marker-size-lg:       30px;
+  --surface-marker-corner-dot:    50%;
+  --surface-marker-corner-square: 2px;
+  --surface-marker-hollow-edge:   2px;
+}
+/* One empty border-box square beside its label: a filled dot at the small
+   size by default, in the neutral color. A flex row neither stretches nor
+   squeezes it. A governed meaning sets --surface-marker-color and nothing
+   else; the modifiers set the shape and the size. */
+.surface-marker {
+  display: inline-block;
+  flex: none;
+  box-sizing: border-box;
+  width: var(--surface-marker-size-sm);
+  height: var(--surface-marker-size-sm);
+  vertical-align: middle;
+  border-radius: var(--surface-marker-corner-dot);
+  background-color: var(--surface-marker-color, var(--fg-3));
+}
+.surface-marker--dot    { border-radius: var(--surface-marker-corner-dot); }
+.surface-marker--square { border-radius: var(--surface-marker-corner-square); }
+/* The hollow dashed dot: no fill, and its dashed edge inside its box. */
+.surface-marker--hollow {
+  border-radius: var(--surface-marker-corner-dot);
+  background-color: transparent;
+  border: var(--surface-marker-hollow-edge) dashed var(--surface-marker-color, var(--fg-3));
+}
+.surface-marker--sm { width: var(--surface-marker-size-sm); height: var(--surface-marker-size-sm); }
+.surface-marker--md { width: var(--surface-marker-size-md); height: var(--surface-marker-size-md); }
+.surface-marker--lg { width: var(--surface-marker-size-lg); height: var(--surface-marker-size-lg); }

@@ -33,7 +33,6 @@
   .arc-label { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
                color: var(--fg-2); grid-column: 1 / -1; margin: 18px 0 0; }
   .swatch { display: flex; align-items: center; gap: 12px; }
-  .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
   .meta { display: flex; flex-direction: column; }
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .hue  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
@@ -102,16 +101,16 @@
 
   <div class="grid">
     <div class="arc-label">Health ramp // green → yellow → orange → red</div>
-    <div class="swatch"><div class="dot" style="background:var(--state-earned)"></div><div class="meta"><span class="role">state-earned</span><span class="hue">120° green</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-structural)"></div><div class="meta"><span class="role">state-structural</span><span class="hue">60° yellow</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-partial)"></div><div class="meta"><span class="role">state-partial</span><span class="hue">30° orange</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-deflated)"></div><div class="meta"><span class="role">state-deflated</span><span class="hue">0° red</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-earned)"></div><div class="meta"><span class="role">state-earned</span><span class="hue">120° green</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-structural)"></div><div class="meta"><span class="role">state-structural</span><span class="hue">60° yellow</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-partial)"></div><div class="meta"><span class="role">state-partial</span><span class="hue">30° orange</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-deflated)"></div><div class="meta"><span class="role">state-deflated</span><span class="hue">0° red</span></div></div>
 
     <div class="arc-label">Orthogonal categories · Neutral — the field</div>
-    <div class="swatch"><div class="dot" style="background:var(--state-held)"></div><div class="meta"><span class="role">state-held</span><span class="hue">195° cyan // emphasis cyan</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-external)"></div><div class="meta"><span class="role">state-external</span><span class="hue">273° violet // emphasis violet</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-proposed)"></div><div class="meta"><span class="role">state-proposed</span><span class="hue">300° magenta // emphasis magenta</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--state-neutral);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">state-neutral</span><span class="hue">lavender field</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-held)"></div><div class="meta"><span class="role">state-held</span><span class="hue">195° cyan // emphasis cyan</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-external)"></div><div class="meta"><span class="role">state-external</span><span class="hue">273° violet // emphasis violet</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-proposed)"></div><div class="meta"><span class="role">state-proposed</span><span class="hue">300° magenta // emphasis magenta</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--state-neutral);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">state-neutral</span><span class="hue">lavender field</span></div></div>
   </div>
 
   <div class="demo">
@@ -143,7 +142,7 @@
     <ul class="avail-list" aria-label="Spectral State representations and their status">
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled node or mark, in its role's ink · a consumer-composed state-bearing figure, such as the interactive spine and radial and the key · <code class="doc-code">spectral-state.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · Spectral State key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> the neutral filled shape · a node that asserts no state in a state-bearing figure, such as the spine and the keys; not the radial's no-state marks, which keep the pattern's wash, or a structural diagram's node · FILL PAINT's neutral shape · Spectral State key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state square, with its label · a document annotation · <code class="doc-code">review-semantics.css</code> · Review Semantics key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state square, with its label · a document annotation · <code class="doc-code">review-semantics.css</code>, on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) · Review Semantics key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> stroke or text in one role's value · a consumer's own figure · <code class="doc-code">spectral-state.md</code>, How to use it: a composition from the role tokens · no key specimen</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> standalone state label, and its range rail · a document, caption or table naming an element's state in words · adopted; the bordered label and labeled range admit no state color · candidate A, described in the style guide</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> any state color · <code class="doc-code">diagram-static-H</code>, <code class="doc-code">-V</code>, <code class="doc-code">-SEQ</code> and <code class="doc-code">-FLOW</code> · those patterns are state-free</li>
@@ -186,7 +185,7 @@
     <div class="doc-section">
       <h2 class="doc-section-title" id="usage">Usage and owners // load order and who decides what</h2>
       <p>load colors_and_type.css first, then spectral-state.css with surface-panel.css and surface-treatments.css, all from one design-system commit // spectral-state.css declares custom properties only, so its place beside the other two changes no resolved value; this key loads it directly after the foundation</p>
-      <p>spectral-state.css owns the roles and their values // surface-treatments.css owns the fill paint and every ink // the consumer owns which element carries which state, and its evidence</p>
+      <p>spectral-state.css owns the roles and their values // surface-treatments.css owns the fill paint, every ink and the marker // the consumer owns which element carries which state, and its evidence</p>
       <p><a href="spectral-state.md">the contract</a> · <a href="README.md#application-coverage">application coverage</a> · <a href="preview/styleguide.html#treatments">the treatments by color</a></p>
     </div>
   </div>

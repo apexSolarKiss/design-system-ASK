@@ -156,6 +156,9 @@
      inside the cell, as the labeled range's contract asks of its host. */
   .cat-lane { padding-left: var(--space-5); }
   .cat-stack { display: flex; flex-direction: column; gap: var(--space-4); }
+  /* The marker anatomy's specimen: each size's three shapes on one center line. */
+  .cat-spec--markers { align-items: center; gap: var(--space-5); }
+  .cat-marker-set { display: inline-flex; align-items: center; gap: var(--space-3); }
   .cat-candidate { margin: var(--space-6) 0 0; }
   .cat-links { margin: var(--space-3) 0 0; padding-left: var(--space-5); }
   .cat-links li { margin: 0 0 var(--space-2); }
@@ -576,9 +579,18 @@
     </div>
 
     <div class="cat-family" id="treatment-marker">
-      <h3 class="spec-role">Marker <span class="spec-role-meta">dot · square · hollow dashed dot · <code>review-semantics.css</code></span></h3>
-      <p class="note">A 10px dot carries evidence and a 10px square carries state, each beside its visible label; not yet testable takes a hollow dashed dot. The anatomy is <code>review-semantics.css</code>'s today, used in the document annotation composition. A shared marker anatomy in <code>surface-treatments.css</code> is adopted and <span class="surface-bordered-label doc-label">not implemented</span>; the Evidence and Spectral keys draw their own swatches.</p>
+      <h3 class="spec-role">Marker <span class="spec-role-meta">dot · square · hollow dashed dot · <code>surface-treatments.css</code> · <code>review-semantics.css</code></span></h3>
+      <p class="note">One anatomy at three sizes, <code>surface-treatments.css</code>'s marker: a dot, a square and a hollow dashed dot, each an empty border-box square, so a hollow marker measures what a filled one of its size does. A governed meaning sets its color and which shape its axis takes. In a document annotation a 10px dot carries evidence and a 10px square carries state, each beside its visible label, and not yet testable takes the hollow dashed dot: Review Semantics draws those marks on the shared anatomy. The Evidence, Spectral and Three Functions keys draw their swatches with it.</p>
       <div class="cat-stack">
+        <div class="cat-cell">
+          <div class="cat-spec cat-spec--markers">
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--sm"></span><span class="surface-marker surface-marker--square surface-marker--sm"></span><span class="surface-marker surface-marker--hollow surface-marker--sm"></span></span>
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--md"></span><span class="surface-marker surface-marker--square surface-marker--md"></span><span class="surface-marker surface-marker--hollow surface-marker--md"></span></span>
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--lg"></span><span class="surface-marker surface-marker--square surface-marker--lg"></span><span class="surface-marker surface-marker--hollow surface-marker--lg"></span></span>
+          </div>
+          <p class="doc-meta">the anatomy // dot · square · hollow dashed dot, at 10px, 12px and 30px · neutral; a meaning sets the color</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the shared marker: the Evidence, Spectral and Three Functions keys' swatches, and the anatomy Review Semantics' marks read</p>
+        </div>
         <div class="cat-cell">
           <div class="cat-spec">
             <span class="doc-mark doc-label" data-evidence="supported">Supported</span>

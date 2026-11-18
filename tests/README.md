@@ -438,12 +438,14 @@ range lane, one in each of a first, an interior and a last column and one in a t
 only column, and a list that opens on two item hosts after a range, keeping the passage
 buffer from it; and the scope underline without Review Semantics: a neutral underline in
 body text, and one under a phrase holding a link, which keeps its own line and states;
-and an ordered sequence of three steps, each opening on its label — which must return no
-finding at rest or in any link state, on screen or under print media.
-After it come **controls**: 217 negative controls, one per failure branch, and two more
+an ordered sequence of three steps, each opening on its label; and the marker: a neutral
+dot, a square and a hollow dot at the three sizes, a dot in a meaning's color, a dot in
+its field's color inside its 1px edge, and a square inline in body text — which must
+return no finding at rest or in any link state, on screen or under print media.
+After it come **controls**: 239 negative controls, one per failure branch, and two more
 under print media,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
-17 positive controls (15 under print media) — an unmarked prose table, a complete profile declaration, a
+18 positive controls (16 under print media) — an unmarked prose table, a complete profile declaration, a
 declared presentation assignment's own foreground with a bordered label under it, an
 emphasis rail off document text keeping a sanctioned violet accent, six declared
 peer-group blocks (two, five and ten groups, a question set out as three groups, a single
@@ -455,7 +457,8 @@ wrapper, and item hosts in two neighboring table cells, which owe no buffer acro
 row, and three ordered sequences — one in a closed disclosure, judged once the runner
 opens it, one whose step a local print rule lets break and one whose step it keeps whole
 only in columns (`avoid-column`), which on screen draw as they should and under print
-media are the two more negative controls (`C16.print`) — which must return no finding:
+media are the two more negative controls (`C16.print`), and a marker in a closed
+disclosure, judged once the runner opens it — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -658,6 +661,26 @@ C16.ring · C16.ring
 C16.print · C16.print       under print media only (data-expect-print): a step a local
                             print rule lets break · one it keeps whole only in columns
                             (avoid-column), which does not hold on paper
+C17.box · C17.box ·         a large marker drawn at the small size · a hollow marker
+C17.box · C17.box ·         sized by its content box, its dashed edge outside its 30px ·
+C17.box · C17.box           a marker a flex row may shrink · one holding a word · one
+                            moved by a transform · a page that redefines
+                            --surface-marker-size-lg, where the check holds the owner's
+                            30px, not the page's property
+C17.corner · C17.corner     a square marker drawn round · a dot drawn square
+C17.fill · C17.fill ·       a filled marker made transparent · painted by a local rule
+C17.fill · C17.fill         in a color that is not its own · given a dashed edge ·
+                            given a glow
+C17.hollow · C17.hollow ·   a hollow marker filled · its edge drawn solid · its edge in
+C17.hollow                  another color
+C17.shape · C17.shape ·     a hollow square · a marker at two sizes · a marker with an
+C17.shape                   unknown modifier; none is judged further
+C12.rail C17.attach ·       a marker composed with an annotation item, which C12 also
+C17.attach · C17.attach     reports for its fill · composed with a fill · made
+                            focusable; none is judged further
+C17.corner                  a marker in a closed disclosure drawn square, which only the
+                            runner returns, once it opens the disclosure
+                            (data-expect-open)
 ```
 
 The page judges each case's **resting** codes itself and writes them to

@@ -23,7 +23,7 @@
                   assignment fails C0 when this is omitted.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C16) and a reason
+   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C17) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -32,7 +32,7 @@
    runner drives them through ASKRoleConformance.interaction and adds its C9
    findings to the same report. The runner also opens every disclosure in
    scope and, after its link-state pass, judges there what each collapsed C12,
-   C13, C14, C15 or C16 element presents (see C12 to C16).
+   C13, C14, C15, C16 or C17 element presents (see C12 to C17).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -420,13 +420,54 @@
                         disclosure holds is judged open by the runner, as
                         C12's elements are; one still collapsed then fails
                         C16.rail
+     C17 marker         (surface-treatments) applies to every .surface-marker
+                        in scope: one anatomy for every dot, square and hollow
+                        dot a surface draws beside a label. Review Semantics'
+                        evidence and state marks draw it on their own ::before,
+                        which C12 judges. Syntax: a marker takes at most one
+                        shape (--dot, --square or --hollow) and one size (--sm,
+                        --md or --lg), and no other modifier, so a hollow
+                        marker is never square (C17.shape); it is inert and one
+                        treatment: never a link, a control or a focusable or
+                        editable element, and never also an element of the
+                        annotation composition (a .doc-mark among them), a
+                        bordered label or emphasis chip, a filled shape or its
+                        ink, a labeled range, a scope underline, a sequence or
+                        its step, a rail, a panel, a compact action or a text
+                        role (C17.attach). A marker that fails either is not
+                        judged further: conflicting modifiers name no one
+                        anatomy, and a marker composed onto another element
+                        is that element. Computed, on each rendered marker: one
+                        empty box, holding no element and no visible text, an
+                        inline-block or a block where a flex or grid parent
+                        blockifies it, border-box sized, neither grown nor
+                        shrunk by a flex row and moved by no transform, and
+                        square at the registered size its modifier names:
+                        10px with --sm or none, 12px with --md, 30px with --lg
+                        (C17.box); a dot's and a hollow dot's every corner at
+                        least half the side, and a square's at most the
+                        registered 2px, a percentage resolved against the box
+                        (C17.corner); a filled marker its color at 100% —
+                        --surface-marker-color as it resolves at the marker, or
+                        the tertiary foreground — never transparent, with no
+                        background image, shadow, outline or filter, and no
+                        border but one 1px solid edge alike on all four sides,
+                        which a composing surface may draw where the marker's
+                        color is its field's (C17.fill); a hollow marker
+                        unfilled, inside a 2px dashed border on all four sides
+                        in that color, never transparent, with no background
+                        image, shadow, outline or filter (C17.hollow). A marker
+                        a closed disclosure keeps from being seen is judged by
+                        the runner once it is open, as C12's elements are; one
+                        still collapsed then fails C17.box. A rendered or held
+                        marker counts as a governed element
 
    STATUS
      pass       no finding, and at least one governed element was checked
      fail       one or more findings
      vacuous    no governed element in scope: nothing was proven. A page that
                 has not adopted the register is not a passing page.
-     incomplete no finding, but C12 to C16 elements collapsed in closed
+     incomplete no finding, but C12 to C17 elements collapsed in closed
                 disclosures (listed under collapsed) await the runner's
                 open-state judgment, so nothing yet proves what they present.
    Neither vacuous nor incomplete is a pass.
@@ -453,7 +494,7 @@
      child of the step, is outside it.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
-   - check() alone does not judge what a collapsed C12, C13, C14, C15 or C16 element
+   - check() alone does not judge what a collapsed C12, C13, C14, C15, C16 or C17 element
      presents: it lists the element under collapsed and never reports pass. The runner
      judges every element held this way, once it has opened every disclosure
      in scope and judged the link states; each ends in a judgment or a
@@ -463,8 +504,8 @@
      C12.note for a note, C12.rail for a row, an item, a list or a list's
      key or value, C12.range for an annotation range, C13.box for a
      bordered label or an emphasis chip, C14.rail for a neutral
-     labeled range, C15.line for a neutral scope underline, and C16.rail for an
-     ordered sequence. One
+     labeled range, C15.line for a neutral scope underline, C16.rail for an
+     ordered sequence and C17.box for a marker. One
      that left the page as its disclosure opened fails it
      marked "removed", since what it presents cannot be proven. A page that
      changes a disclosure's content after that judgment is outside this
@@ -480,7 +521,7 @@
      rest.
    - The open-state judgment covers what the C12 composition presents, the
      hierarchy rail of its elements included, and the C13 labels, C14
-     ranges and C15 underlines a closed disclosure holds. Every other rule judges content
+     ranges, C15 underlines and C17 markers a closed disclosure holds. Every other rule judges content
      in a closed disclosure at rest, the role metrics of a mark's or a list
      key's words (C1, C8) among them: a page that restyles such content only
      once a disclosure opens is not exercised there, one that restyles it
@@ -583,6 +624,19 @@
    - A valid profile exempts its members' own text from C8: check()
      reports each member with its computed metrics under `profiles` but
      compares it against no role, so a profile narrows what a pass proves.
+   - C17 compares a marker's size, its square corner and its edges with the
+     owner's literal values (10px, 12px, 30px, 2px and 1px), not with the
+     page's --surface-marker-* properties, so a page that redefines one
+     cannot move the expectation with the defect. It reads the marker's own
+     box and computed paint: a pseudo-element on the marker, or another
+     element laid over it, is outside it, and it does not measure pixels.
+     It compares the paint with --surface-marker-color as it resolves at the
+     marker, so it proves that a marker is drawn in its own color, not that
+     the color is the one its meaning assigns, and it does not judge whether
+     a visible label stands beside the marker: both stay with the author. So
+     a filled marker in lavender-gray, which the owner draws only hollow,
+     passes here. It admits the one 1px solid edge on any filled marker, not
+     only on one whose color is its field's, which it cannot tell.
 */
 (function (global) {
   'use strict';
@@ -900,6 +954,13 @@
   const UNDERLINED = '.surface-scope-underline';
   const SCOPE_LINE = { thickness: 2, offset: 0.36 };
   const NOTE_ATTACH = 12;
+  /* C17: the marker (surface-treatments.css). The owner's values, as literals: its three sizes, the
+     square's corner, the hollow marker's dashed edge, and the one solid edge a composing surface may
+     draw around a filled marker whose color is its own field's. */
+  const MARKED = '.surface-marker';
+  const MARKER = { sizes: { sm: 10, md: 12, lg: 30 }, square: 2, hollow: 2, edge: 1 };
+  const MARKER_SHAPES = ['dot', 'square', 'hollow'];
+  const MARKER_SIZES = ['sm', 'md', 'lg'];
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
     'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
@@ -908,6 +969,7 @@
     'surface-emphasis-chip': ['an emphasis chip', 'box', 'computed', 'C13'], 'surface-bordered-label': ['a bordered label', 'box', 'computed', 'C13'],
     'surface-scope-underline': ['a scope underline', 'line', 'computed', 'C15'],
     'doc-sequence': ['an ordered sequence', 'rail', 'computed', 'C16'],
+    'surface-marker': ['a marker', 'box', 'computed', 'C17'],
     'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
   const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
 
@@ -1847,6 +1909,76 @@
       sequenced(el, add);
     }
 
+    /* C17 the marker (surface-treatments.css): one anatomy for every dot, square and hollow dot a
+       surface draws beside a label, at three sizes, its color the composing meaning's. Review
+       Semantics' evidence and state marks draw it on their own ::before, which C12 judges. */
+    const MARKER_ATTACH = COMPOSITION + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', ' + SEQUENCE + ', ' + SEQUENCE_STEP + ', ' +
+      RAILED + ', ' + PANEL + ', .surface-separate, .surface-fill, .surface-fill-ink, .surface-action, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+    function marked(el, add) {
+      const cmp = (reason, detail) => add('C17', reason, el, { basis: 'computed', ...detail });
+      const c = getComputedStyle(el);
+      const shape = MARKER_SHAPES.find((k) => el.classList.contains('surface-marker--' + k)) || 'dot';
+      const sizeKey = MARKER_SIZES.find((k) => el.classList.contains('surface-marker--' + k)) || 'sm';
+      const size = MARKER.sizes[sizeKey];
+      const parent = el.parentElement ? getComputedStyle(el.parentElement).display : '';
+      const item = /(flex|grid)$/.test(parent);
+      const r = el.getBoundingClientRect();
+      const moved = [c.transform, c.translate, c.rotate, c.scale].some((v) => !none(v));
+      const empty = !el.firstElementChild && !VISIBLE.test(el.textContent || '');
+      if (!empty || !(c.display === 'inline-block' || (item && c.display === 'block')) || c.boxSizing !== 'border-box' || c.flexGrow !== '0' || c.flexShrink !== '0' || moved ||
+          Math.abs(r.width - size) > TOL || Math.abs(r.height - size) > TOL) {
+        cmp('box', { message: 'a marker is one empty border-box square at the registered size its modifier names (' + MARKER.sizes.sm + 'px with --sm or none, ' + MARKER.sizes.md + 'px with --md, ' + MARKER.sizes.lg + 'px with --lg): an inline-block, or a block where a flex or grid parent blockifies it, that no flex row grows or shrinks and no transform moves',
+          size: sizeKey, expected: size, width: +r.width.toFixed(2), height: +r.height.toFixed(2), display: c.display, boxSizing: c.boxSizing, flex: c.flexGrow + ' ' + c.flexShrink, transform: [c.transform, c.translate, c.rotate, c.scale].join(' / '), empty });
+      }
+      const rad = corners(c).map((x) => radius(x, r.width, r.height));
+      const side = Math.min(r.width, r.height);
+      if (shape === 'square' ? !rad.every((x) => x <= MARKER.square + TOL) : !rad.every((x) => x >= side / 2 - TOL)) {
+        cmp('corner', { message: shape === 'square' ? 'a square marker keeps the registered ' + MARKER.square + 'px corner or less on every corner' : 'a dot and a hollow dot are round: every corner at least half the side', shape, got: corners(c) });
+      }
+      /* Its color: --surface-marker-color as it resolves at the marker, or the tertiary foreground. */
+      const raw = tokenAt(el, '--surface-marker-color');
+      const want = probe(el, 'border-left:1px solid ' + (raw || 'var(--fg-3)')).border;
+      const paint = { image: c.backgroundImage, shadow: c.boxShadow, filter: c.filter, outline: c.outlineWidth + ' ' + c.outlineStyle };
+      const painted = !none(c.backgroundImage) || !none(c.boxShadow) || !none(c.filter) || (c.outlineStyle !== 'none' && px(c.outlineWidth) > TOL);
+      const sides = ['Top', 'Right', 'Bottom', 'Left'];
+      const border = sides.map((s) => c['border' + s + 'Width'] + ' ' + c['border' + s + 'Style'] + ' ' + c['border' + s + 'Color']).join(' / ');
+      if (shape === 'hollow') {
+        const ring = !clear(want) && sides.every((s) => c['border' + s + 'Style'] === 'dashed' && Math.abs(px(c['border' + s + 'Width']) - MARKER.hollow) <= TOL && c['border' + s + 'Color'] === want);
+        if (!ring || !clear(c.backgroundColor) || painted) {
+          cmp('hollow', { message: 'a hollow marker is unfilled, inside a ' + MARKER.hollow + 'px dashed edge on all four sides in its color, never transparent, with no shadow, outline or filter', expected: want, background: c.backgroundColor, border, ...paint });
+        }
+      } else {
+        const edge = sides.every((s) => !drawn(c, s)) ||
+          sides.every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - MARKER.edge) <= TOL && c['border' + s + 'Color'] === c.borderTopColor);
+        if (clear(c.backgroundColor) || c.backgroundColor !== want || !edge || painted) {
+          cmp('fill', { message: 'a filled marker is its color at 100%, never transparent, with no image, shadow, outline or filter, and no edge but one ' + MARKER.edge + 'px solid line alike on all four sides', expected: want, background: c.backgroundColor, border, ...paint });
+        }
+      }
+    }
+    for (const el of all(MARKED)) {
+      counts['marker'] = (counts['marker'] || 0) + 1;
+      const mods = [...el.classList].filter((k) => k.startsWith('surface-marker--')).map((k) => k.slice('surface-marker--'.length));
+      const shapes = mods.filter((k) => MARKER_SHAPES.includes(k)), sizes = mods.filter((k) => MARKER_SIZES.includes(k));
+      const unknown = mods.filter((k) => !MARKER_SHAPES.includes(k) && !MARKER_SIZES.includes(k));
+      /* A marker whose modifiers conflict has no one anatomy to judge; one that is also another
+         treatment's or the composition's element, or a control, is that element. Either is reported
+         here, and its anatomy is not judged. */
+      let judgeable = true;
+      if (shapes.length > 1 || sizes.length > 1 || unknown.length) {
+        add('C17', 'shape', el, { basis: 'syntax', message: 'a marker takes at most one shape (--dot, --square or --hollow) and one size (--sm, --md or --lg), and no other modifier: a hollow marker is never square', shapes, sizes, unknown });
+        judgeable = false;
+      }
+      if (el.matches(MARKER_ATTACH) || el.matches(CONTROLS)) {
+        add('C17', 'attach', el, { basis: 'syntax', message: 'a marker is inert and stands alone beside its label: never a control or a focusable element, and never also an element of the annotation composition, a bordered label, a chip, a filled shape or its ink, a range, an underline, a sequence, a rail, a panel, a compact action or a text role' });
+        judgeable = false;
+      }
+      if (!judgeable) continue;
+      if (collapsed(el)) { hold(el, (sink) => { if (renders(el)) marked(el, sink); }, heldHere.has(el) ? undefined : 'surface-marker'); governed++; continue; }
+      if (!renders(el)) continue;   /* it renders no box: nothing is drawn to judge */
+      governed++;
+      marked(el, add);
+    }
+
     for (const [el, h] of heldHere) held.set(el, h);
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
     return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, assignment: assignmentReport, unmapped, collapsed: collapsedHere };
@@ -1858,8 +1990,8 @@
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
      read() on each governed link that takes focus; then judge(records).
-     Last, it calls collapsed(), which judges the C12, C13, C14, C15 and C16
-     elements a resting check held. */
+     Last, it calls collapsed(), which judges the C12, C13, C14, C15, C16 and
+     C17 elements a resting check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
   const rendered = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -1875,7 +2007,7 @@
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
     },
-    /* With every disclosure in scope open, judge what each C12 to C16 element a resting check held
+    /* With every disclosure in scope open, judge what each C12 to C17 element a resting check held
        presents, wherever it now sits, once the animations on it, inside it and on its ancestors
        have finished: its findings carry state "open". An element still collapsed fails its held
        reason marked "collapsed"; one no longer on the page fails it marked "removed". */

@@ -113,8 +113,12 @@
                      also carries .surface-bordered-label
      owner           surface-treatments.css for a review mark's box and edge:
                      the shared bordered label, the same box as the emphasis
-                     chip. This module for the review mark's color and for the
-                     evidence and state marks' geometry. surface-document.css
+                     chip; and for the evidence and state marks' marker
+                     anatomy (MARKER): its size, its corners and the hollow
+                     marker's dashed edge. This module for the review mark's
+                     color, each evidence and state role's color, which facet
+                     takes which shape, and the evidence and state marks' box
+                     beside their words. surface-document.css
                      for every mark's text, the operative label role ("for
                      labels and status"): a mark is status in the document's
                      reading flow, so its words take the register's status
@@ -126,10 +130,12 @@
                      Functions' channel allocation, so each axis reads in
                      monochrome:
        review        the bordered label's outline in the role value
-       evidence      a filled 10px dot (Three Functions: "evidence marker");
-                     not yet testable keeps its whole contract: a hollow
-                     dashed dot, a dashed rail and the visible label
-       state         a filled 10px square ("separate state marker")
+       evidence      the shared marker's filled 10px dot (Three Functions:
+                     "evidence marker"); not yet testable keeps its whole
+                     contract: the hollow dashed dot, a dashed rail and the
+                     visible label
+       state         the shared marker's filled 10px square ("separate state
+                     marker")
      corners         a review mark takes the bordered label's --radius-sm,
                      which keeps an inert mark from resembling the compact
                      action; an evidence or state mark draws no box
@@ -350,10 +356,9 @@
    REGISTERED LITERALS
      1px      the evidence and state marks' vertical padding and their
               transparent border
-     10px     the dot and square marker size
-     50%      the dot's corner (a circle)
-     2px      the square marker's corner; the not-yet-testable dashed rail and
-              hollow-dot border
+     2px      the not-yet-testable dashed rail
+   The marker's size, corners and hollow edge are surface-treatments.css's
+   registered literals (MARKER), which this module reads.
 
    CHECKING. tools/role-conformance.js rule C12 checks this composition where
    its classes appear: syntax (classes, attributes, vocabulary, a review
@@ -406,7 +411,10 @@
 
 /* Evidence and state: a marker beside the words, no outline. An inline flex
    box on the baseline, so the ::before marker is drawn as a box; its words
-   keep one line. */
+   keep one line. The marker is the shared marker's anatomy at its small size
+   (surface-treatments.css, MARKER): its size, corners and hollow edge are
+   that module's, read here; its color and which facet takes which shape are
+   this module's. */
 .doc-mark[data-evidence],
 .doc-mark[data-state] {
   display: inline-flex;
@@ -422,13 +430,13 @@
 .doc-mark[data-state]::before {
   content: "";
   flex: none;
-  width: 10px;
-  height: 10px;
+  width: var(--surface-marker-size-sm);
+  height: var(--surface-marker-size-sm);
   box-sizing: border-box;
   background: var(--review-mark-color, var(--fg-3));
 }
-.doc-mark[data-evidence]::before { border-radius: 50%; }
-.doc-mark[data-state]::before    { border-radius: 2px; }
+.doc-mark[data-evidence]::before { border-radius: var(--surface-marker-corner-dot); }
+.doc-mark[data-state]::before    { border-radius: var(--surface-marker-corner-square); }
 
 .doc-mark[data-evidence="supported"]           { --review-mark-color: var(--evidence-supported); }
 .doc-mark[data-evidence="partially-supported"] { --review-mark-color: var(--evidence-partially-supported); }
@@ -443,7 +451,7 @@
 }
 .doc-mark[data-evidence="not-yet-testable"]::before {
   background: transparent;
-  border: 2px dashed var(--evidence-not-yet-testable);
+  border: var(--surface-marker-hollow-edge) dashed var(--evidence-not-yet-testable);
 }
 
 .doc-mark[data-state="earned"]     { --review-mark-color: var(--state-earned); }

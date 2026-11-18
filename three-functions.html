@@ -33,7 +33,6 @@
   .arc-label { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
                color: var(--fg-2); grid-column: 1 / -1; margin: 4px 0 0; }
   .swatch { display: flex; align-items: center; gap: 12px; }
-  .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
   .meta { display: flex; flex-direction: column; }
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .map  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
@@ -107,9 +106,9 @@
 
   <div class="grid">
     <div class="arc-label">Three functions · one spine</div>
-    <div class="swatch"><div class="dot" style="background:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta // makes the governing standard operative</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--function-executive);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">function-executive</span><span class="map">neutral // realizes under it</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--function-judicial)"></div><div class="meta"><span class="role">function-judicial</span><span class="map">cyan // judges against it</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta // makes the governing standard operative</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-executive);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">function-executive</span><span class="map">neutral // realizes under it</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-judicial)"></div><div class="meta"><span class="role">function-judicial</span><span class="map">cyan // judges against it</span></div></div>
   </div>
 
   <div class="demo">
@@ -144,8 +143,8 @@
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> role-filled part or field, in its role's ink · an apparatus figure · <code class="doc-code">three-functions.css</code> binds the role and FILL PAINT paints it · Three Functions key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> executive field with negative cutouts · an apparatus figure · <code class="doc-code">three-functions.md</code>: a composition the consumer draws with FILL PAINT · Three Functions key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as an outline on a function fill · an apparatus figure whose state color differs from its fill · shared: FILL PAINT's <code class="doc-code">--surface-fill-edge</code>, under <code class="doc-code">three-functions.md</code>, Coexistence · no key specimen; the key's cell is schematic</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as a badge or a separate state marker on a function fill · an apparatus figure; required where the state color matches the fill, such as a proposed legislative or a held judicial part, where an outline cannot be seen · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits, and requires in the same-color case: the consumer draws it with its state label visible, and no shared badge or marker ships · no key specimen</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence as a marker, rail, dash or labeled annotation beside a function fill · an apparatus figure · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits: the consumer draws it in the evidence role's value with its label visible, not yet testable only with its whole contract, and no shared figure rail ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as a badge or a separate state marker on a function fill · an apparatus figure; required where the state color matches the fill, such as a proposed legislative or a held judicial part, where an outline cannot be seen · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits, and requires in the same-color case: the consumer draws it with its state label visible, a separate marker through the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) or a badge of its own, since no shared badge ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence as a marker, rail, dash or labeled annotation beside a function fill · an apparatus figure · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits: the consumer draws it in the evidence role's value with its label visible, a marker through the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER), not yet testable only with its whole contract, and no shared figure rail ships · no key specimen</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> peer functional-role example · the peer pattern · adopted; the peer pattern draws no function</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a fourth role or a governance color · any · three fixed roles</li>
     </ul>
