@@ -13,12 +13,15 @@
      - REUSES three Spectral State values by reference (see below), and
      - ADDS two evidence-specific roles (weakened, not-yet-testable).
 
-   Load order (each layers on the previous):
-     colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
-     spectral-state.css  →  evidence-state.css
-   surface-panel.css and surface-treatments.css supply the inks Spectral State
-   binds; this file reads none of them. Its two values are the foundation's reserved
-   state values (colors_and_type.css).
+   Load order: colors_and_type.css first, then spectral-state.css and this
+   file, in that order, with surface-panel.css and surface-treatments.css,
+   which keep their own order. surface-treatments.css's FILL PAINT supplies the
+   inks the --state-*-ink and --evidence-*-ink bindings name; surface-panel.css,
+   which surface-treatments.css extends, supplies none. spectral-state.css and
+   this file declare custom properties only, so their place beside those two
+   changes no resolved value; the rendered key loads them directly after the
+   foundation. Its two own values are the foundation's reserved state values
+   (colors_and_type.css).
 
    Offline; no CDN. One value per role in both themes: no theme block.
 
@@ -66,6 +69,20 @@
    for "evidence cannot exist yet at this stage". Color alone is NOT sufficient
    to express it. Its presentation contract on a consuming surface is:
        neutral lavender-gray  +  dashed rail  +  hollow marker  +  visible label
+
+   ---------------------------------------------------------------------------
+   EACH ROLE'S INK
+   ---------------------------------------------------------------------------
+   A shape filled in a chromatic role takes the surface treatments' FILL
+   PAINT: .surface-fill on the shape, with the role's value as
+   --surface-fill-color and its ink, --evidence-<role>-ink, as
+   --surface-fill-ink, and .surface-fill-ink on any text set on it. Each ink
+   is FILL PAINT's for the role's color, keyed by that color: supported on
+   green, partially supported on orange, unresolved on cyan and weakened on
+   brown. This file binds each role to its color's ink and defines no ink
+   value. The evidence label stays visible, on the shape or beside it.
+   Not yet testable has no ink and is never filled: its contract above is
+   hollow, dashed and labeled.
    ========================================================================= */
 
 /* ---------- The five roles, one value each, in both themes ---------- */
@@ -78,6 +95,14 @@
   /* new Evidence State roles — one value each, in both themes */
   --evidence-weakened:            var(--ask-state-value-brown);          /* muted 30° — brown */
   --evidence-not-yet-testable:    var(--ask-state-value-lavender-gray);  /* neutral lavender-gray (see contract above) */
+
+  /* Each chromatic role's ink: the color of text set on a shape filled in that
+     role's color, bound to the surface treatments' FILL PAINT, which keys each
+     ink by the fill color. Not yet testable takes none: it is never filled. */
+  --evidence-supported-ink:           var(--surface-fill-ink-on-green);
+  --evidence-partially-supported-ink: var(--surface-fill-ink-on-orange);
+  --evidence-unresolved-ink:          var(--surface-fill-ink-on-cyan);
+  --evidence-weakened-ink:            var(--surface-fill-ink-on-brown);
 }
 
 /* No theme block. Through v0.1 the two new roles took a lighter brown and a

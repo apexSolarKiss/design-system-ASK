@@ -444,7 +444,7 @@
 
     <div class="cat-family" id="treatment-fill">
       <h3 class="spec-role">Filled shape <span class="spec-role-meta">FILL PAINT · <code>surface-treatments.css</code></span></h3>
-      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. The Criterion Assessment and Evidence State fills are adopted and not implemented; their colors' inks are the ones below, brown's excepted.</p>
+      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. Spectral State, Evidence State, Criterion Assessment and Three Functions bind each role to its color's ink; lavender-gray has none.</p>
       <div class="cat-grid">
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-green); --surface-fill-ink: var(--surface-fill-ink-on-green);">
@@ -452,7 +452,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">green</text></svg>
           </div>
           <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span> · ink <span data-fg="--surface-fill-ink-on-green"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-yellow); --surface-fill-ink: var(--surface-fill-ink-on-yellow);">
@@ -460,7 +460,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">yellow</text></svg>
           </div>
           <p class="doc-meta">yellow <span data-fg="--ask-state-value-yellow"></span> · ink <span data-fg="--surface-fill-ink-on-yellow"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-orange); --surface-fill-ink: var(--surface-fill-ink-on-orange);">
@@ -468,7 +468,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">orange</text></svg>
           </div>
           <p class="doc-meta">orange <span data-fg="--ask-state-value-orange"></span> · ink <span data-fg="--surface-fill-ink-on-orange"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-red); --surface-fill-ink: var(--surface-fill-ink-on-red);">
@@ -476,12 +476,15 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">red</text></svg>
           </div>
           <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span> · ink <span data-fg="--surface-fill-ink-on-red"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><p class="note">No shape is drawn: brown has no ink.</p></div>
-          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span> · no ink</p>
-          <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> Evidence State weakened: adopted, and brown has no ink</p>
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-brown); --surface-fill-ink: var(--surface-fill-ink-on-brown);">
+            <span class="cat-box surface-fill">brown</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">brown</text></svg>
+          </div>
+          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span> · ink <span data-fg="--surface-fill-ink-on-brown"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Evidence State</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec"><p class="note">No shape is drawn.</p></div>
@@ -510,7 +513,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">cyan</text></svg>
           </div>
           <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span> · ink <span data-fg="--surface-fill-ink-on-cyan"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Three Functions</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-white); --surface-fill-ink: var(--surface-fill-ink-on-white);">

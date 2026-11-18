@@ -66,7 +66,7 @@ const DEPENDENCIES = {
   'surface-treatments.css':                                            [FOUNDATION, 'surface-panel.css', SELF],
   'three-functions.css':                                               [FOUNDATION, 'surface-treatments.css', SELF],
   'spectral-state.css':                                                [FOUNDATION, 'surface-treatments.css', SELF],
-  'evidence-state.css':                                                [FOUNDATION, 'spectral-state.css', SELF],
+  'evidence-state.css':                                                [FOUNDATION, 'surface-treatments.css', 'spectral-state.css', SELF],
   'review-semantics.css':                                              [FOUNDATION, 'surface-treatments.css', 'spectral-state.css',
                                                                         'evidence-state.css', SELF],
   'criterion-assessment.css':                                          [FOUNDATION, 'surface-treatments.css', 'spectral-state.css', SELF],
@@ -637,15 +637,25 @@ function selfTest(root) {
   }
   {
     const carrier = 'evidence-state.css';
+    const TREATMENTS = 'surface-treatments.css';
     const foundationOnly = missesOf(checkCarrier(makeContext(root), carrier, [FOUNDATION]));
     const declared = missesOf(checkCarrier(makeContext(root), carrier, DEPENDENCIES[carrier]));
-    // Each reference's line is read from the carrier, so the case follows the file's own layout.
-    const lines = fs.readFileSync(path.join(root, carrier), 'utf8').split('\n');
-    const want = ['--state-earned', '--state-partial', '--state-held']
-      .map((name) => `${carrier}:${lines.findIndex((l) => l.includes(`var(${name})`)) + 1} ${name}`);
-    record('evidence-state.css: 3 misses against the foundation only, 0 with its declared dependencies',
-      JSON.stringify(foundationOnly) === JSON.stringify(want) && declared.length === 0,
-      { foundationOnly: want, declared: [] }, { foundationOnly, declared });
+    const lessTreatments = missesOf(checkCarrier(makeContext(root), carrier, DEPENDENCIES[carrier].filter((d) => d !== TREATMENTS)));
+    // The expected misses are read from the files' own bytes by a plain scan that shares nothing with
+    // analyze(): comments blanked in place, so every line keeps its number; a definition is a name
+    // followed by a colon; a reference is a var() with no fallback, one per occurrence, in file order.
+    const plain = (rel) => fs.readFileSync(path.join(root, rel), 'utf8').replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, ' '));
+    const defined = (rel) => new Set([...plain(rel).matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
+    const refs = plain(carrier).split('\n').flatMap((text, i) =>
+      [...text.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map((m) => ({ name: m[1], at: `${carrier}:${i + 1} ${m[1]}` })));
+    const want = refs.filter((r) => !defined(FOUNDATION).has(r.name)).map((r) => r.at);
+    // Without surface-treatments.css, exactly the references only it defines miss.
+    const others = DEPENDENCIES[carrier].filter((d) => d !== TREATMENTS).map((d) => (d === SELF ? carrier : d));
+    const wantLess = refs.filter((r) => defined(TREATMENTS).has(r.name) && !others.some((d) => defined(d).has(r.name))).map((r) => r.at);
+    record('evidence-state.css: every reference the foundation does not define misses against it alone, those only surface-treatments.css defines miss without it, and none miss with its declared dependencies',
+      want.length > 0 && wantLess.length > 0 && JSON.stringify(foundationOnly) === JSON.stringify(want) &&
+        JSON.stringify(lessTreatments) === JSON.stringify(wantLess) && declared.length === 0,
+      { foundationOnly: want, lessTreatments: wantLess, declared: [] }, { foundationOnly, lessTreatments, declared });
   }
 
   const failed = cases.filter((c) => !c.pass).length;

@@ -365,6 +365,62 @@ Until the yellow ring was retired (Spectral State v1.2), the fixture carried two
 ring's field and subtree logic; with every paint none, neither can fail, so both are gone. The
 `?field=` run and its control stand in their place, guarding that no field brings a dose back.
 
+## fill-paint-fixture.html
+
+Guards **the fill paint** in `surface-treatments.css` as Evidence State and Criterion Assessment
+bind it: each chromatic role names its ink, `--evidence-<role>-ink` and `--assessment-<role>-ink`,
+bound by reference to the ink FILL PAINT keys by the fill color, and brown's ink is the lavender in
+both themes. The fixture sets the four chromatic evidence roles and the three assessment roles as
+filled HTML boxes and SVG shapes, each composed by the recipe its contract documents, and loads
+the Evidence State, Criterion Assessment, Spectral State and Three Functions keys and the style
+guide in frames.
+
+The page measures each case once the fonts and the frames are ready and reports one overall
+verdict, with a row per case:
+
+```text
+ink       brown's ink, --surface-fill-ink-on-brown, is #D4C6E1
+value     each evidence and assessment ink is its color's: #6A637F on green, yellow, orange and
+          cyan, the lavender on red and brown
+box, svg  each filled box takes its role's value as fill and edge and its ink as text color; each
+          SVG shape its role's value as fill, and its text the ink
+no ink    not yet testable, unassessed and lavender-gray declare no ink
+follows   with each fill color's ink changed on the root, every role's ink reads its own color's
+never     no .surface-fill shape on this page or in a frame is painted lavender-gray, and each page
+filled    draws at least one filled shape, so the case cannot pass on a page that failed to load
+```
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/fill-paint-fixture.html
+# add ?theme=light or ?theme=dark to hold a mode
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
+also on `window.__fillPaintFixture` and the verdict on `body[data-result]`. Run it held light,
+held dark and following the browser, each with the browser's preference light and dark: brown's
+ink takes no theme exception, so every case expects the same value in all four. The frames follow
+the browser's preference; lavender-gray is one value in both themes, so their case is the same in
+each. The never-filled case reads `.surface-fill` shapes only: a lavender-gray swatch in the style
+guide's color tokens is a token's specimen, not a filled shape, and is not read.
+
+**Verifying the fixture still bites.** Each control below loads one regression; it fails only the
+cases named.
+
+```text
+?control=brown-theme      brown's ink takes a dark theme exception, #6A637F: in the held-dark and
+                          follow-dark settings the brown ink case and the weakened value case fail;
+                          in the light settings the control is inert
+?control=restated-ink     the weakened ink restates #D4C6E1 instead of reading brown's: its follows
+                          case fails, in every setting
+?control=nyt-ink          not yet testable declares an ink: its no-ink case fails, in every setting
+?control=nyt-fill         a filled not-yet-testable shape is added to the Evidence State key's
+                          frame, as a key that broke the contract would draw it: that frame's
+                          never-filled case fails, in every setting
+```
+
 ## doc-actions-end-fixture.html
 
 Guards **the action row at an item's end** in `surface-document.css`: `.doc-actions--end`,

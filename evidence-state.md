@@ -31,6 +31,10 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
   neutral lavender-gray  +  dashed rail  +  hollow marker  +  visible label
   ```
 
+## Each role's ink
+
+Each chromatic role also names its ink, `--evidence-<role>-ink` (`--evidence-supported-ink`, `--evidence-partially-supported-ink`, `--evidence-unresolved-ink` and `--evidence-weakened-ink`): the color of text set on a shape filled in that role's color. The bindings are here; the values are FILL PAINT's, in [`surface-treatments.css`](surface-treatments.css), which keys each ink by the fill color, so an unresolved shape and a held node, one cyan, take one ink, and weakened takes brown's. This file defines no ink value. A filled shape keeps its evidence label visible, on the shape or beside it. **`not-yet-testable` has no ink and is never filled:** its contract is hollow, dashed and labeled.
+
 ## Wheel logic (inherited)
 
 Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values come from it (`earned` 120°, `partial` 30°, and `held`, now the foundation's emphasis cyan at about 195°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
@@ -54,23 +58,23 @@ Evidence State derivation
 
 ## How to use it
 
-1. Load `colors_and_type.css`, then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks Spectral State binds), then `spectral-state.css`, then `evidence-state.css`, all from one design-system commit.
-2. On a consuming element, set color from a single role token, e.g. `fill: var(--evidence-supported)` or `color: var(--evidence-weakened)`.
+1. Load `colors_and_type.css` first, then `spectral-state.css` and `evidence-state.css`, in that order, with `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` and `--evidence-*-ink` bindings name), all from one design-system commit. `spectral-state.css` and `evidence-state.css` declare custom properties only, so their place beside the other two, which keep their own order, changes no resolved value; the rendered key loads them directly after the foundation.
+2. On a consuming element, set color or stroke from a single role token, e.g. `stroke: var(--evidence-supported)` or `color: var(--evidence-weakened)`. A shape filled in a chromatic role takes FILL PAINT: `.surface-fill` with the role's value and its ink, `--evidence-<role>-ink`. `not-yet-testable` is never filled.
 3. For `not-yet-testable`, apply the full presentation contract (lavender-gray + dashed rail + hollow marker + visible label) — never color alone.
 4. Keep the evidence labels visible; do not relabel reused roles by their Spectral State names.
 5. In a document, the [Review Semantics](review-semantics.md) annotation composition shows an evidence role as a labeled dot and keeps the `not-yet-testable` contract whole. Evidence State's other presentations are unaffected.
 
 ```css
-/* example — consuming surface */
-.node[data-evidence="supported"]           { color: var(--evidence-supported); }
-.node[data-evidence="partially-supported"] { color: var(--evidence-partially-supported); }
-.node[data-evidence="unresolved"]          { color: var(--evidence-unresolved); }
-.node[data-evidence="weakened"]            { color: var(--evidence-weakened); }
+/* example — consuming surface; each filled node also carries .surface-fill, and a not-yet-testable node never does */
+.node[data-evidence="supported"]           { --surface-fill-color: var(--evidence-supported);           --surface-fill-ink: var(--evidence-supported-ink); }
+.node[data-evidence="partially-supported"] { --surface-fill-color: var(--evidence-partially-supported); --surface-fill-ink: var(--evidence-partially-supported-ink); }
+.node[data-evidence="unresolved"]          { --surface-fill-color: var(--evidence-unresolved);          --surface-fill-ink: var(--evidence-unresolved-ink); }
+.node[data-evidence="weakened"]            { --surface-fill-color: var(--evidence-weakened);            --surface-fill-ink: var(--evidence-weakened-ink); }
 .node[data-evidence="not-yet-testable"]    { color: var(--evidence-not-yet-testable);
                                              border-left: 2px dashed var(--evidence-not-yet-testable); }
 ```
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the five role names, the two new values, the reuse-by-reference mapping, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
+- **Upstream (this repo):** the five role names, the two new values, the reuse-by-reference mapping, each chromatic role's ink binding (`--evidence-*-ink`) to FILL PAINT, and the `not-yet-testable` presentation contract. General; family-reusable. Consumers inherit by reference and do not mint a divergent palette.
 - **Consumer-local (e.g. [`urban-observatory`](https://github.com/apexSolarKiss/urban-observatory)):** which element carries which evidence state, evidence-depth qualifiers, change-state (revised / deferred) badges, source pointers, and the surface layout. Those are data and metadata, not part of this color profile. `urban-observatory` consumes Evidence State **by reference as a domain-partner consumer**; the surfaces stay separate sources of repo truth under one ASK source-of-intent.

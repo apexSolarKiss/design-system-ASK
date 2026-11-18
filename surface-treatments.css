@@ -308,20 +308,23 @@
                      same color filled takes the same ink, whichever meaning
                      draws it
      population      role- and state-bearing filled shapes and fields: a
-                     state node, a function's part or field, a key's filled
+                     state node, an evidence-bearing shape, an assessment
+                     node, a function's part or field, a key's filled
                      specimen. One ink per fill color, keyed by the color:
                      --surface-fill-ink-on-yellow, -on-green, -on-orange,
-                     -on-cyan, -on-red, -on-violet, -on-magenta, -on-white
-                     and -on-lavender; and the neutral filled shape,
-                     --surface-fill-neutral, --surface-fill-neutral-edge and
-                     --surface-fill-ink-on-neutral
+                     -on-cyan, -on-red, -on-brown, -on-violet, -on-magenta,
+                     -on-white and -on-lavender; and the neutral filled
+                     shape, --surface-fill-neutral, --surface-fill-neutral-edge
+                     and --surface-fill-ink-on-neutral
      owner           this module: the recipe (fill, boundary, ink), each ink,
                      the neutral shape's paint and every theme exception. The
                      semantic systems own each color and bind each role to its
-                     color's ink: Spectral State (--state-*-ink) and Three
-                     Functions (--function-*-ink). The composing surface or
-                     engine owns the shape: its geometry, stroke width,
-                     cutouts, layout and emphasis
+                     color's ink: Spectral State (--state-*-ink), Evidence
+                     State (--evidence-*-ink), Criterion Assessment
+                     (--assessment-*-ink) and Three Functions
+                     (--function-*-ink). The composing surface or engine owns
+                     the shape: its geometry, stroke width, cutouts, layout
+                     and emphasis
      reuses          --ask-fg-light (#6A637F), --ask-lavender-ask (#D4C6E1)
                      and, on magenta in dark only, --fg-high-contrast
                      (#201D26, README registered use 4) as inks;
@@ -346,7 +349,9 @@
                      -FLOW) keeps its own neutral paint. A geometric cutout is
                      the composing shape's own, drawn as a hole, never painted.
                      A filled shape's emphasis (hover, selection) is never a
-                     step in its fill
+                     step in its fill. Lavender-gray has no ink and takes no
+                     fill paint: its one role, Evidence State's not yet
+                     testable, is drawn hollow, dashed and labeled
      example         a held node and a judicial part: one cyan, one ink, two
                      meanings
      counterexample  a meaning restating an ink for its own role; a semantic
@@ -526,9 +531,9 @@
    existing colors: the theme foreground's light value, #6A637F, on yellow,
    green, orange, cyan, white and lavender, so that the bright fills read as
    one family and no member of the set outweighs the others; the lavender on
-   red and violet. The set is consistent in ink, not in contrast: #6A637F
-   measures 5.07 on yellow and 4.02 on green, 2.65 on cyan and 2.25 on
-   orange. Magenta is the one color whose ink follows the theme:
+   red, violet and brown. The set is consistent in ink, not in contrast:
+   #6A637F measures 5.07 on yellow and 4.02 on green, 2.65 on cyan and 2.25
+   on orange. Magenta is the one color whose ink follows the theme:
    the lavender in light, the high-contrast ink in dark. The neutral shape is
    the static diagrams' own node in light, --ask-surface inside a white edge,
    and the lavender in dark, its ink #6A637F in both; it is a paint of its
@@ -900,6 +905,7 @@
   --surface-fill-ink-on-cyan:     var(--ask-fg-light);
   --surface-fill-ink-on-red:      var(--ask-lavender-ask);
   --surface-fill-ink-on-violet:   var(--ask-lavender-ask);
+  --surface-fill-ink-on-brown:    var(--ask-lavender-ask);
   --surface-fill-ink-on-magenta:  var(--ask-lavender-ask);
   --surface-fill-ink-on-white:    var(--ask-fg-light);
   --surface-fill-ink-on-lavender: var(--ask-fg-light);
