@@ -140,7 +140,7 @@ Which representations each semantic system has, in which context, and in which s
 | the neutral filled shape | a node that asserts no state in a state-bearing figure, such as the spine and the keys; not the radial's no-state marks, which keep the pattern's wash, or a structural diagram's node | supported | FILL PAINT's neutral shape · [Spectral State key](spectral-state.html) |
 | state square, with its label | a document annotation | supported | `review-semantics.css` · [Review Semantics key](review-semantics.html) |
 | stroke or text in one role's value | a consumer's own figure | supported | `spectral-state.md`, How to use it: a composition from the role tokens · no key specimen |
-| standalone state label, and its range rail | a document, caption or table naming an element's state in words | not implemented | adopted; the bordered label and labeled range admit no state color · candidate A, described in the [style guide](preview/styleguide.html#candidate-state-labels) |
+| standalone state label, and its range rail | a document, caption or table naming an element's state in words | not implemented | adopted; the bordered label and labeled range admit no state color · candidate A, described in the [style guide](preview/styleguide.html) |
 | any state color | `diagram-static-H`, `-V`, `-SEQ` and `-FLOW` | not applicable | those patterns are state-free |
 | a button, link, alert or status chip | any interface | not applicable | the closed palette |
 
@@ -155,7 +155,7 @@ Which representations each semantic system has, in which context, and in which s
 | filled shape with text on it in its role's ink, through FILL PAINT: supported, partially supported, unresolved | a standalone evidence-bearing figure | not implemented | adopted; no ink binding ships, and the green, orange and cyan inks exist |
 | filled shape with text on it in its role's ink, through FILL PAINT: weakened | a standalone evidence-bearing figure | not implemented | adopted; brown has no ink |
 | filled shape: not yet testable | any | not applicable | its contract is hollow, dashed and labeled |
-| keyed standalone label, `Evidence // Supported`, and its range rail | a statement outside a multi-axis review annotation | not implemented | adopted; the bordered label and labeled range admit no evidence color · candidate B, described in the [style guide](preview/styleguide.html#candidate-evidence-labels) |
+| keyed standalone label, `Evidence // Supported`, and its range rail | a statement outside a multi-axis review annotation | not implemented | adopted; the bordered label and labeled range admit no evidence color · candidate B, described in the [style guide](preview/styleguide.html) |
 | a label in place of the dot | inside a Review Semantics annotation | not applicable | the composition gives evidence the dot |
 
 **Review State // Review Semantics**
@@ -166,7 +166,7 @@ Which representations each semantic system has, in which context, and in which s
 | the scope rail of an annotation range | a document annotation | supported | `surface-treatments.css`, bound by `review-semantics.css` · [Review Semantics key](review-semantics.html) |
 | passage mark: the scope underline | a document annotation | supported | `surface-treatments.css`, bound by `review-semantics.css` · [Review Semantics key](review-semantics.html) |
 | decision record: what, who and scope beside the mark | a document annotation | supported | `review-semantics.md`, The decision record: a composition beside the shared mark · [Review Semantics key](review-semantics.html) |
-| filled decision record | a standalone review summary, status board or decision node | not implemented | adopted; no review role binds a fill · candidate C, described in the [style guide](preview/styleguide.html#candidate-decision-record) |
+| filled decision record | a standalone review summary, status board or decision node | not implemented | adopted; no review role binds a fill · candidate C, described in the [style guide](preview/styleguide.html) |
 | color behind reviewed words | any | not applicable | a judgment is recorded, never painted onto the content |
 
 **Criterion Assessment**
