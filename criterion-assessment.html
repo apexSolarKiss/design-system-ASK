@@ -136,7 +136,7 @@
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled node in favorable, caution or adverse, any text on it in its role's ink · a consumer-composed assessment-bearing figure, each node showing its word or the figure a key, and the key · <code class="doc-code">criterion-assessment.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> filled node in favorable, caution or adverse · the peer pattern's example · adopted; the peer pattern draws no assessment</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> cell fill, tint or backplate · a comparison table · the table application is rail-only</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> the labeled range · any · its rail admits neutral and the review values only</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> the labeled range · any · its rail takes neutral, a review value or a keyed state or evidence value, never an assessment</li>
     </ul>
   </section>
 
@@ -150,7 +150,7 @@
 
   <section class="doc-section" aria-labelledby="paint-title">
     <h2 class="doc-section-title key-prose" id="paint-title">Rules // one paint per rail color</h2>
-    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's. Here a declined range and an adverse assessment share one red, and an accepted range and a favorable assessment one green, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
+    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's and Spectral State a keyed range's. Here a declined range and an adverse assessment share one red, an accepted range and a favorable assessment one green, and a structural state range and a caution assessment one yellow, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
     <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
       <p class="doc-body">The shipment is not split across two carriers.</p>
@@ -159,12 +159,16 @@
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
       <p class="doc-body">Each parcel is tracked from its first scan.</p>
     </div>
+    <div class="doc-group surface-labeled-range key-prose" id="paint-structural">
+      <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
+      <p class="doc-body">The tracking schema is proven; the full flow has not yet run under load.</p>
+    </div>
     <ul class="doc-compare-key" aria-label="The rails' three paints">
       <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the one yellow rail</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the structural range's yellow</p></li>
       <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
     </ul>
-    <p class="doc-body key-prose">Caution's yellow is the one yellow drawn as a rail, and it is the same plain stroke beside a summary, in a value field and in a key on this page. A review range is never yellow.</p>
+    <p class="doc-body key-prose">Caution's yellow is the same plain stroke beside a summary, in a value field and in a key on this page, and beside the structural state range above. A review range is never yellow, and an assessment never opens a range.</p>
   </section>
 
   <!-- PLAIN ON BOTH FIELDS — the three assessment rails as they ship. The account

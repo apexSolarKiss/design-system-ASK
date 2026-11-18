@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // rail paint regression fixture</title>
-<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key and in a dark subtree, every bound rail follows the shared paint when it changes, the meaning-named paints read their color's paint, and the bordered label and the passage rail keep their own treatments.">
+<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail, a keyed state or evidence range's and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key, in a dark subtree and beside a structural state range, every bound rail follows the shared paint when it changes, the meaning-named paints read their color's paint, and the bordered label and the passage rail keep their own treatments.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/rail-paint-fixture.html
      The foundation, the register and the surface treatments, then the state modules, Review Semantics and
      Criterion Assessment, in their load order.
      ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
      ?field=<name> declares a root field (data-surface-field): the rail paint must not read it.
-     ?control=local-dose, ?control=unbound-range, ?control=label-reach, ?control=field-dose or
-     ?control=alias-value loads one regression, which must fail only the cases tests/README.md names for it. -->
+     ?control=local-dose, ?control=unbound-range, ?control=unbound-keyed, ?control=label-reach,
+     ?control=field-dose or ?control=alias-value loads one regression, which must fail only the cases
+     tests/README.md names for it. -->
 <script>
   (function () {
     var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control'), f = q.get('field');
@@ -40,6 +41,7 @@
   /* The regressions. Each outranks the rule it replaces. */
   html.fx-control-local-dose .doc-compare-assessed[data-assessment="caution"] { --doc-compare-rail-paint: 0 0 0 1px; }
   html.fx-control-unbound-range .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review]) { --surface-labeled-range-paint: none; }
+  html.fx-control-unbound-keyed .surface-labeled-range:has(> :is(.state-label, .evidence-label):first-child) { --surface-labeled-range-paint: none !important; }
   html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-red); }
   html.fx-control-field-dose[data-surface-field] { --surface-rail-paint-yellow: 0 0 0 1px; }
   html.fx-control-alias-value { --surface-rail-paint-earned: none !important; }
@@ -51,9 +53,9 @@
   <section class="doc-section">
     <h1 class="doc-title">Rail paint</h1>
     <p class="doc-body">Each case is measured once the fonts are ready. A rail in one governed color takes the same
-      paint whichever meaning draws it: a review range's scope rail and a comparison's assessment rail in green or
-      red are painted alike, and caution's yellow is the same plain stroke beside a summary, in a value field, in a key
-      and in a dark subtree. Each paint is keyed by its color, and the meaning-named paints are aliases that read it.
+      paint whichever meaning draws it: a review range's scope rail, a keyed state or evidence range's and a
+      comparison's assessment rail in green or red are painted alike, and caution's yellow is the same plain stroke
+      beside a summary, in a value field, in a key, in a dark subtree and beside a structural state range. Each paint is keyed by its color, and the meaning-named paints are aliases that read it.
       When the shared paint changes, every rail bound to it follows; the bordered label and the passage rail keep their
       own treatments.</p>
     <p class="doc-label" id="overall">not run</p>
@@ -84,6 +86,30 @@
     <div class="doc-group surface-labeled-range" id="r-neutral" data-paint="">
       <span class="doc-label surface-bordered-label">draft</span>
       <p class="doc-body">A neutral range.</p>
+    </div>
+  </section>
+
+  <section class="doc-section">
+    <h2 class="doc-section-title">Keyed ranges</h2>
+    <div class="doc-group surface-labeled-range" id="kr-earned" data-paint="green">
+      <span class="doc-label surface-bordered-label state-label" data-state="earned">State // Earned</span>
+      <p class="doc-body">A range whose label names an earned state.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-structural" data-paint="yellow">
+      <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
+      <p class="doc-body">A range whose label names a structural state.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-deflated" data-paint="red">
+      <span class="doc-label surface-bordered-label state-label" data-state="deflated">State // Deflated</span>
+      <p class="doc-body">A range whose label names a deflated state.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-supported" data-paint="green">
+      <span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span>
+      <p class="doc-body">A range whose label names supported evidence.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-held" data-paint="">
+      <span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span>
+      <p class="doc-body">A range in a color with no rail paint, a held state's cyan.</p>
     </div>
   </section>
 
@@ -190,9 +216,9 @@
       var first = before[ids[0]], all = ids.every(function (id) { return before[id].color === first.color && before[id].shadow === first.shadow; });
       expect(name, all ? 'one paint' : ids.map(function (id) { return id + ' ' + before[id].color + ' ' + before[id].shadow; }).join(' / '), 'one paint');
     };
-    same('one red / the declined range and every adverse rail', ['r-declined', 'a-adv', 'f-adv', 'k-adv']);
-    same('one green / the accepted range and every favorable rail', ['r-accepted', 'a-fav', 'f-fav', 'k-fav']);
-    same('one yellow / caution beside a summary, in a field, in the key and in a dark subtree', ['a-cau', 'f-cau', 'k-cau', 's-cau']);
+    same('one red / the declined range, the deflated range and every adverse rail', ['r-declined', 'kr-deflated', 'a-adv', 'f-adv', 'k-adv']);
+    same('one green / the accepted range, the earned and supported ranges and every favorable rail', ['r-accepted', 'kr-earned', 'kr-supported', 'a-fav', 'f-fav', 'k-fav']);
+    same('one yellow / caution beside a summary, in a field, in the key and in a dark subtree, and the structural range', ['a-cau', 'f-cau', 'k-cau', 's-cau', 'kr-structural']);
     /* The bordered label and the passage rail keep their own treatments. */
     var label = $('l-declined'), lc = cs(label);
     expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);

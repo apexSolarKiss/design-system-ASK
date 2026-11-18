@@ -140,7 +140,9 @@ Which representations each semantic system has, in which context, and in which s
 | the neutral filled shape | a node that asserts no state in a state-bearing figure, such as the spine and the keys; not the radial's no-state marks, which keep the pattern's wash, or a structural diagram's node | supported | FILL PAINT's neutral shape · [Spectral State key](spectral-state.html) |
 | state square, with its label | a document annotation | supported | `review-semantics.css`, on the shared marker (`surface-treatments.css`, MARKER) · [Review Semantics key](review-semantics.html) |
 | stroke or text in one role's value | a consumer's own figure | supported | `spectral-state.md`, How to use it: a composition from the role tokens · no key specimen |
-| standalone state label, and its range rail | a document, caption or table naming an element's state in words | not implemented | adopted; the bordered label and labeled range admit no state color · candidate A, described in the [style guide](preview/styleguide.html) |
+| standalone state label, `State // Held`, and its range rail | an architecture description, caption or table naming an element's state in words, outside a multi-axis review annotation | supported | `spectral-state.css` binds the role to the bordered label's edge and the labeled range's rail, which `surface-treatments.css` draws · [Spectral State key](spectral-state.html) |
+| a keyed label: neutral | any | not applicable | neutral asserts no state |
+| a label in place of the square | inside a Review Semantics annotation | not applicable | the composition gives state the square |
 | any state color | `diagram-static-H`, `-V`, `-SEQ` and `-FLOW` | not applicable | those patterns are state-free |
 | a button, link, alert or status chip | any interface | not applicable | the closed palette |
 
@@ -154,7 +156,8 @@ Which representations each semantic system has, in which context, and in which s
 | swatches and contract rows | the Evidence State key | supported | the shared marker, `surface-treatments.css` MARKER, at its large and medium sizes, in each role's value · [Evidence State key](evidence-state.html) |
 | filled shape, any text on it in its role's ink: supported, partially supported, unresolved, weakened | a consumer-composed evidence-bearing figure, with the evidence label visible, and the key | supported | `evidence-state.css` binds the role and `surface-treatments.css` FILL PAINT paints it · [Evidence State key](evidence-state.html) |
 | filled shape: not yet testable | any | not applicable | its contract is hollow, dashed and labeled |
-| keyed standalone label, `Evidence // Supported`, and its range rail | a statement outside a multi-axis review annotation | not implemented | adopted; the bordered label and labeled range admit no evidence color · candidate B, described in the [style guide](preview/styleguide.html) |
+| keyed standalone label, `Evidence // Supported`, and its range rail: supported, partially supported, unresolved, weakened | a statement outside a multi-axis review annotation | supported | `evidence-state.css` binds the role to the bordered label's edge and the labeled range's rail, which `surface-treatments.css` draws · [Evidence State key](evidence-state.html) |
+| a keyed label or scope rail: not yet testable | any | not applicable | its contract is hollow, dashed and labeled |
 | a label in place of the dot | inside a Review Semantics annotation | not applicable | the composition gives evidence the dot |
 
 **Review State // Review Semantics**
@@ -177,7 +180,7 @@ Which representations each semantic system has, in which context, and in which s
 | filled node in favorable, caution or adverse, any text on it in its role's ink | a consumer-composed assessment-bearing figure, each node showing its word or the figure a key, and the key | supported | `criterion-assessment.css` binds the role and `surface-treatments.css` FILL PAINT paints it · [Criterion Assessment key](criterion-assessment.html) |
 | filled node in favorable, caution or adverse | the peer pattern's example | not implemented | adopted; the peer pattern draws no assessment |
 | cell fill, tint or backplate | a comparison table | not applicable | the table application is rail-only |
-| the labeled range | any | not applicable | its rail admits neutral and the review values only |
+| the labeled range | any | not applicable | its rail takes neutral, a review value or a keyed state or evidence value, never an assessment |
 
 **Three Functions**
 

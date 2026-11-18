@@ -16,12 +16,15 @@
    Load order: colors_and_type.css first, then spectral-state.css and this
    file, in that order, with surface-panel.css and surface-treatments.css,
    which keep their own order. surface-treatments.css's FILL PAINT supplies the
-   inks the --state-*-ink and --evidence-*-ink bindings name; surface-panel.css,
-   which surface-treatments.css extends, supplies none. spectral-state.css and
-   this file declare custom properties only, so their place beside those two
-   changes no resolved value; the rendered key loads them directly after the
-   foundation. Its two own values are the foundation's reserved state values
-   (colors_and_type.css).
+   inks the --state-*-ink and --evidence-*-ink bindings name, and its bordered
+   label and labeled range draw the keyed labels and ranges the two files bind;
+   surface-panel.css, which surface-treatments.css extends, supplies none.
+   spectral-state.css and this file declare custom properties only: role
+   values and inks on :root, and the keyed label's and range's color and
+   paint properties on their own selectors, which no other module sets on
+   those elements. So their place beside those two changes no resolved
+   value; the rendered key loads them directly after the foundation. Its two
+   own values are the foundation's reserved state values (colors_and_type.css).
 
    Offline; no CDN. One value per role in both themes: no theme block.
 
@@ -83,6 +86,29 @@
    value. The evidence label stays visible, on the shape or beside it.
    Not yet testable has no ink and is never filled: its contract above is
    hollow, dashed and labeled.
+
+   ---------------------------------------------------------------------------
+   AN EVIDENCE ROLE IN WORDS
+   ---------------------------------------------------------------------------
+   Outside a multi-axis review annotation, for a statement in a report, a
+   figure or a table, what the evidence supports may be named in words on the
+   surface treatments' bordered label: .evidence-label on a
+   .surface-bordered-label (.doc-label in a document) with data-evidence, its
+   words exactly the axis and the role's word, "Evidence // Supported" or
+   "Evidence // Partially supported". Its edge takes the role's value. A
+   labeled range whose first child is that label takes the same value on its
+   scope rail, and supported takes green's rail paint; partially supported,
+   unresolved and weakened keep the plain stroke. The label is a word that is
+   read: inert and unfilled.
+
+   Not yet testable takes no keyed label and no scope rail, never a solid edge
+   or a solid rail: it keeps its whole contract above, lavender-gray, a dashed
+   rail, a hollow marker and its visible label. Inside Review Semantics'
+   annotation composition evidence keeps its dot: a keyed label never sits in
+   its rows, items, lists or notes. The class and the attribute opt in
+   together, and only with the words: a bare data-evidence keys nothing, and a
+   label whose words do not name its axis and role is not an evidence label
+   (tools/role-conformance.js, C13).
    ========================================================================= */
 
 /* ---------- The five roles, one value each, in both themes ---------- */
@@ -104,6 +130,24 @@
   --evidence-unresolved-ink:          var(--surface-fill-ink-on-cyan);
   --evidence-weakened-ink:            var(--surface-fill-ink-on-brown);
 }
+
+/* ---------- An evidence role in words: the keyed label and the range it opens ----------
+   Each chromatic role colors the bordered label's edge and, through the label at
+   a range's head, the labeled range's scope rail (surface-treatments.css), with
+   green's rail paint for supported. Not yet testable takes no keyed label and no
+   scope rail (AN EVIDENCE ROLE IN WORDS, above). */
+.evidence-label[data-evidence="supported"]           { --surface-bordered-label-color: var(--evidence-supported); }
+.evidence-label[data-evidence="partially-supported"] { --surface-bordered-label-color: var(--evidence-partially-supported); }
+.evidence-label[data-evidence="unresolved"]          { --surface-bordered-label-color: var(--evidence-unresolved); }
+.evidence-label[data-evidence="weakened"]            { --surface-bordered-label-color: var(--evidence-weakened); }
+
+.surface-labeled-range:has(> .evidence-label[data-evidence="supported"]:first-child) {
+  --surface-labeled-range-color: var(--evidence-supported);
+  --surface-labeled-range-paint: var(--surface-rail-paint-green);
+}
+.surface-labeled-range:has(> .evidence-label[data-evidence="partially-supported"]:first-child) { --surface-labeled-range-color: var(--evidence-partially-supported); }
+.surface-labeled-range:has(> .evidence-label[data-evidence="unresolved"]:first-child)          { --surface-labeled-range-color: var(--evidence-unresolved); }
+.surface-labeled-range:has(> .evidence-label[data-evidence="weakened"]:first-child)            { --surface-labeled-range-color: var(--evidence-weakened); }
 
 /* No theme block. Through v0.1 the two new roles took a lighter brown and a
    lighter gray on the dark field; v0.2 gives each one value in both themes: the

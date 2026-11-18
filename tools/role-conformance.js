@@ -194,11 +194,15 @@
                         composition's rows, items, lists, ranges or other
                         notes; no
                         composition class combines with a content role, a rail,
-                        a panel, a compact action or an emphasis chip; and only
+                        a panel, a compact action or an emphasis chip; only
                         a review mark is a bordered label, so an evidence or
                         state mark, a passage mark, a note, a row, an item, a
-                        list or a range never carries .surface-bordered-label
-                        (C12.attach).
+                        list or a range never carries .surface-bordered-label;
+                        and a keyed state or evidence label (Spectral State's
+                        .state-label, Evidence State's .evidence-label) is
+                        never an element of the composition and never sits in
+                        its rows, items, lists or notes, where state keeps its
+                        square and evidence its dot (C12.attach).
                         Computed: a mark is a rendered box, and an evidence or
                         state mark an inline-flex one; a review mark's outline,
                         where it is drawn, is its role token on all four sides
@@ -264,11 +268,26 @@
                         judges)
      C13 bordered label (surface-treatments) applies to every
                         .surface-bordered-label and .surface-emphasis-chip in
-                        scope: a neutral label, the emphasis chip and a review
-                        mark share one box. An evidence or state mark carrying
-                        the class is C12.attach's, not judged here. On each
-                        rendered label: one inline-block box on the text
-                        baseline, or a block where a flex or grid parent
+                        scope: a neutral label, the emphasis chip, a review
+                        mark and a keyed state or evidence label share one
+                        box. An evidence or state mark carrying the class is
+                        C12.attach's, not judged here. Syntax: a keyed label,
+                        Spectral State's .state-label or Evidence State's
+                        .evidence-label, names exactly one axis by its class;
+                        it is a .surface-bordered-label and never an emphasis
+                        chip or an annotation mark; it carries its own axis's
+                        attribute and no other facet, naming a role in that
+                        axis's keyed vocabulary (state: earned, structural,
+                        partial, deflated, held, external or proposed, never
+                        neutral; evidence: supported, partially-supported,
+                        unresolved or weakened, never not-yet-testable); and
+                        its words, whitespace collapsed and case aside, are
+                        exactly its axis and its role's word, "State // Held"
+                        or "Evidence // Partially supported" (C13.key). A label
+                        whose key fails is not judged for its color: the key
+                        is the defect. On each rendered label: one
+                        inline-block box on the text baseline, or a block
+                        where a flex or grid parent
                         blockifies it, border-box sized, as wide as its words
                         on one line (width max-content) and never wider than
                         its container less its margins (max-width
@@ -286,8 +305,9 @@
                         (C13.edge); 1px of inline margin, so a clipping box
                         never cuts the edge's inline sides (C13.clearance);
                         and the color its meaning allows: a neutral label
-                        --fg-3, a chip an emphasis accent or --fg-3, never
-                        transparent (C13.color). A review mark's color,
+                        --fg-3, a chip an emphasis accent or --fg-3, a keyed
+                        label its role's value, never transparent
+                        (C13.color). A review mark's color,
                         transparency included, is C12's. A label a closed
                         disclosure keeps from being seen is judged by the
                         runner once it is open, as C12's elements are, and one
@@ -297,10 +317,11 @@
                         judged. A rendered or held label counts as a governed
                         element
      C14 labeled range (surface-treatments) applies to every
-                        .surface-labeled-range in scope: a neutral range and
-                        Review Semantics' annotation range share one scope
-                        rail. Syntax: it opens with its label — a neutral
-                        range's first child is a neutral bordered label with
+                        .surface-labeled-range in scope: a neutral range,
+                        Review Semantics' annotation range and a keyed state
+                        or evidence range share one scope rail. Syntax: it
+                        opens with its label — a neutral or keyed range's
+                        first child is a neutral or keyed bordered label with
                         words, never a chip or a mark, and an annotation
                         range's first child is the row that holds its label
                         (C14.label); it sits inside no other range (C14.nest),
@@ -345,16 +366,20 @@
                         spacing, and a range beside this one rather than above
                         it, in a neighboring cell or column, is not counted
                         (C14.buffer); for a
-                        neutral range, the tertiary foreground, never
-                        transparent (C14.color); and, where the page shows a
-                        neutral range, its label shown too: some of its words
-                        in an element that renders a box, is seen (not hidden,
+                        neutral range, the tertiary foreground, and for a
+                        keyed range, the value of the role its label names,
+                        never transparent (C14.color); and, where the page
+                        shows a neutral or keyed range, its label shown too:
+                        some of its words in an element that renders a box,
+                        is seen (not hidden,
                         not at zero opacity, not skipped, its ancestors'
                         included) and whose text color is not transparent
                         (C14.label; see LIMITS). An annotation range's color
-                        and its label's words are C12's. A range a closed
-                        disclosure keeps from being seen is judged, its scope
-                        rail and a neutral range's label, by the runner once it
+                        and its label's words are C12's; a keyed range whose
+                        label fails C13.key is not judged for its color. A
+                        range a closed disclosure keeps from being seen is
+                        judged, its scope rail and a neutral or keyed range's
+                        label, by the runner once it
                         is open; one still collapsed then fails C14.rail (an
                         annotation range C12 holds too fails C12.range); one
                         that renders no box draws nothing and is not judged. A
@@ -543,9 +568,15 @@
      judged, so a page whose only governed element is such a label or range
      is not reported vacuous.
    - C13 judges a label's color against the meanings this file knows: a
-     neutral label and the emphasis chip. A review mark's color is C12's. A
-     label another owner composes with a color of its own fails C13.color
-     until that owner is added here.
+     neutral label, the emphasis chip, and Spectral State's and Evidence
+     State's keyed labels. A review mark's color is C12's. A label another
+     owner composes with a color of its own fails C13.color until that owner
+     is added here.
+   - C13.key compares a keyed label's role with the keyed vocabulary written
+     here and its words, whitespace collapsed and case aside, with its axis
+     and role. It reads the words as text, so it does not show that they are
+     seen (C14.label does, for a range's label), and it does not judge whether
+     the role is the right one for the element the label names.
    - C14 proves the computed scope rail and its lane. It reads the rail from
      the range's ::before and the range's own box, so it does not see paint a
      consumer adds elsewhere (an ::after, an outline or a border-image on the
@@ -961,6 +992,33 @@
   const MARKER = { sizes: { sm: 10, md: 12, lg: 30 }, square: 2, hollow: 2, edge: 1 };
   const MARKER_SHAPES = ['dot', 'square', 'hollow'];
   const MARKER_SIZES = ['sm', 'md', 'lg'];
+  /* C13: a keyed label, Spectral State's or Evidence State's state or evidence in words on the shared
+     bordered label (spectral-state.css, evidence-state.css). Per axis: its class, the word that names
+     it and its keyed roles; neutral and not yet testable take no keyed label. */
+  const KEYED = '.state-label, .evidence-label';
+  const KEYED_AXES = {
+    state: { cls: 'state-label', word: 'State', roles: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed'] },
+    evidence: { cls: 'evidence-label', word: 'Evidence', roles: ['supported', 'partially-supported', 'unresolved', 'weakened'] } };
+  /* A keyed label's key: its axis and role where its class, attributes and words agree, or the
+     defect that keeps it from being one. */
+  function keyOf(el) {
+    const axes = Object.keys(KEYED_AXES).filter((a) => el.classList.contains(KEYED_AXES[a].cls));
+    if (axes.length !== 1) return { defect: 'a keyed label names exactly one axis: .state-label or .evidence-label, never both' };
+    const axis = axes[0], k = KEYED_AXES[axis];
+    if (!el.classList.contains('surface-bordered-label')) return { defect: 'a keyed label is the shared bordered label: it carries .surface-bordered-label' };
+    if (el.matches('.surface-emphasis-chip, .doc-mark')) return { defect: 'a keyed label is neither an emphasis chip nor an annotation mark: inside the composition state keeps its square and evidence its dot' };
+    const others = ['review', 'evidence', 'state'].filter((f) => f !== axis && el.hasAttribute('data-' + f));
+    if (others.length) return { defect: 'a keyed label carries its own axis\'s attribute and no other facet', facets: others };
+    const v = el.getAttribute('data-' + axis);
+    if (axis === 'state' && v === 'neutral') return { defect: 'neutral asserts no state: it takes no keyed label', value: v };
+    if (axis === 'evidence' && v === 'not-yet-testable') return { defect: 'not yet testable takes no keyed label: it keeps its whole contract, lavender-gray, a dashed rail, a hollow marker and its visible label', value: v };
+    if (!k.roles.includes(v || '')) return { defect: 'a keyed ' + axis + ' label names a role in its keyed vocabulary', value: v };
+    const role = v.replace(/-/g, ' ');
+    const want = k.word + ' // ' + role.charAt(0).toUpperCase() + role.slice(1);
+    const words = el.textContent.replace(/\s+/g, ' ').trim();
+    if (words.toLowerCase() !== want.toLowerCase()) return { defect: 'a keyed label\'s words are its axis and its role, "' + want + '": color never names the axis alone', words };
+    return { axis, v };
+  }
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
     'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
@@ -1421,6 +1479,15 @@
       if (el.matches(RAILED + ', ' + PANEL + ', .surface-separate, .surface-action, .surface-emphasis-chip, ' + CONTENT_ROLES)) syn('C12', 'attach', el, { message: 'an annotation class never combines with a content role, a rail, a panel, a compact action or an emphasis chip' });
       else if (el.matches('.surface-bordered-label') && !el.matches('.doc-mark[data-review]')) syn('C12', 'attach', el, { message: 'only a review mark is a bordered label: an evidence or state mark draws its marker, and no other element of the composition takes the box' });
     }
+    /* A keyed state or evidence label is its owner's presentation outside the composition: no element
+       of the composition is one, and none sits in a row, an item, a list or a note, where state keeps its
+       square and evidence its dot. A keyed label in a range's content is that content's. */
+    const IN_ANNOTATION = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-note';
+    for (const el of all(KEYED)) {
+      if (el.matches(COMPOSITION) || (el.parentElement && el.parentElement.closest(IN_ANNOTATION))) {
+        syn('C12', 'attach', el, { message: 'a keyed state or evidence label stays outside the annotation composition: inside a row, item, list or note state keeps its square and evidence its dot, and no element of the composition is a keyed label' });
+      }
+    }
     for (const pm of all('mark.doc-passage-mark')) {
       counts['doc-passage-mark'] = (counts['doc-passage-mark'] || 0) + 1;
       const v = pm.getAttribute('data-review');
@@ -1572,11 +1639,24 @@
       if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin to reserve its reinforcement at the inline sides; block-axis clearance belongs to its host', got: c.marginLeft + ' ' + c.marginRight });
       if (!el.matches('.doc-mark[data-review]')) {
         const chip = el.matches('.surface-emphasis-chip');
-        const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
-        if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
-          cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip or a review mark', got: color });
+        /* A keyed label takes its role's value; one whose key fails is C13.key's alone. */
+        const key = el.matches(KEYED) ? keyOf(el) : null;
+        if (key && !key.defect) {
+          const want = probe(el, `border-left:1px solid var(--${key.axis}-${key.v}, transparent)`).border;
+          if (clear(color) || color !== want) cmp('color', { message: 'a keyed label\'s border is the value of the role its words name, and not transparent', expected: want, got: color });
+        } else if (!key) {
+          const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
+          if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
+            cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip, a review mark or a keyed state or evidence label', got: color });
+          }
         }
       }
+    }
+    /* C13.key: a keyed label's class, axis, role and words, judged as syntax at rest. */
+    for (const el of all(KEYED)) {
+      counts['keyed-label'] = (counts['keyed-label'] || 0) + 1;
+      const { defect, axis, v, ...detail } = keyOf(el);
+      if (defect) add('C13', 'key', el, { basis: 'syntax', message: defect, ...detail });
     }
     for (const el of all(BORDERED)) {
       if (el.matches('.doc-mark[data-evidence], .doc-mark[data-state]')) continue;   /* C12.attach reports it */
@@ -1610,14 +1690,14 @@
       if (s.clipPath && s.clipPath !== 'none') return { x0: q.left, y0: q.top, w: q.width, h: q.height, x: true, y: true, scrollLeft: 0 };
       return null;
     }
-    /* A shown neutral range shows its label: some of the words that name it sit in an element that
-       renders, is seen and is not transparent. The words are judged where they render, so words a child
-       of the label hides count as hidden. A range the page does not show presents no label to judge. An
-       annotation range's label is its review mark, whose words C12.label judges. */
-    const NEUTRAL_LABEL = '.surface-bordered-label:not(.doc-mark):not(.surface-emphasis-chip)';
+    /* A shown neutral or keyed range shows its label: some of the words that name it sit in an element
+       that renders, is seen and is not transparent. The words are judged where they render, so words a
+       child of the label hides count as hidden. A range the page does not show presents no label to judge.
+       An annotation range's label is its review mark, whose words C12.label judges. */
+    const RANGE_LABEL = '.surface-bordered-label:not(.doc-mark):not(.surface-emphasis-chip)';
     function opener(el, add) {
       const head = el.firstElementChild;
-      if (el.matches('.doc-annotation-range') || !head || !head.matches(NEUTRAL_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label at rest reports it */
+      if (el.matches('.doc-annotation-range') || !head || !head.matches(RANGE_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label at rest reports it */
       if (!seen(el)) return;
       let shows = false;
       const walk = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
@@ -1727,8 +1807,15 @@
           ? 'a list that opens or closes on an item host keeps the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) from a range or another such list beside it, so their rails never read as one'
           : 'two labeled ranges in a row keep the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) between them, so their rails never read as one', gap: +(r.top - before.getBoundingClientRect().bottom).toFixed(2) });
       }
-      if (!el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
-        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range', got: color });
+      /* A keyed range's rail takes the role its label names; a range whose keyed label fails its key is
+         C13.key's alone. Any other range outside the composition is neutral. */
+      const head = el.firstElementChild;
+      const key = !el.matches('.doc-annotation-range') && head && head.matches(KEYED) ? keyOf(head) : null;
+      if (key && !key.defect) {
+        const want = probe(el, `border-left:1px solid var(--${key.axis}-${key.v}, transparent)`).border;
+        if (clear(want) || color !== want) cmp('color', { message: 'a keyed range\'s scope rail takes the value of the role its label names, and is not transparent', expected: want, got: color });
+      } else if (!key && !el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
+        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range or a keyed state or evidence range', got: color });
       }
     }
     for (const el of all(LABELED)) {
@@ -1737,8 +1824,8 @@
       const head = el.firstElementChild;
       const review = el.matches('.doc-annotation-range');
       const labeled = review ? head && head.matches('.doc-annotations') && head.querySelector(BORDERED)
-        : head && head.matches(NEUTRAL_LABEL);
-      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral bordered label');
+        : head && head.matches(RANGE_LABEL);
+      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral or keyed bordered label');
       else if (!review && !VISIBLE.test(head.textContent)) s14('label', 'a labeled range\'s label names it in words: a label with none opens nothing');
       const parent = el.parentElement;
       if (parent && parent.closest(LABELED)) s14('nest', 'a labeled range never sits inside another');

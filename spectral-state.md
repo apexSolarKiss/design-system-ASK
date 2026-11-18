@@ -2,7 +2,7 @@
 
 A semantic **state-color system**: a small, identity-free vocabulary of state *roles* — seven mapped to a neon hue drawn from a 12-step wheel, plus a `neutral` field role that resolves to the theme foreground — one value per role in both themes. Defined in [`spectral-state.css`](spectral-state.css); rendered visual key in [`spectral-state.html`](spectral-state.html).
 
-It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds ([`patterns/diagram-static-H/`](patterns/diagram-static-H/README.md) / [`-V/`](patterns/diagram-static-V/README.md) / [`-SEQ/`](patterns/diagram-static-SEQ/README.md) / [`-FLOW/`](patterns/diagram-static-FLOW/README.md)) do **not** use it — those are structural and assert no state. The interactive [`diagram-interactive-spine`](patterns/diagram-interactive-spine/README.md) is the state-bearing member that does, and a document that adopts [Review Semantics](review-semantics.md) shows its state marks beside review and evidence marks.
+It is a **specialized, opt-in foundation primitive** — for surfaces that encode the *state* of architectural elements (e.g. an interactive state diagram where a node's color says "this is earned / held / deflated"). It is **not** general UI color, and the static diagram scaffolds ([`patterns/diagram-static-H/`](patterns/diagram-static-H/README.md) / [`-V/`](patterns/diagram-static-V/README.md) / [`-SEQ/`](patterns/diagram-static-SEQ/README.md) / [`-FLOW/`](patterns/diagram-static-FLOW/README.md)) do **not** use it — those are structural and assert no state. The interactive [`diagram-interactive-spine`](patterns/diagram-interactive-spine/README.md) is the state-bearing member that does, and a document that adopts [Review Semantics](review-semantics.md) shows its state marks beside review and evidence marks. Outside that composition, an architecture description, a caption or a table may name an element's state in words, in a keyed state label: a word that is read, not an interface status chip.
 
 **Profiles.** Sanctioned *profiles* may build on this primitive for adjacent semantic domains. The first is [`evidence-state.md`](evidence-state.md) (epistemic evidence-state), which reuses three of the roles below by reference and adds two evidence-specific roles. The second is Review State, in [`review-semantics.md`](review-semantics.md), which reuses two of the roles below (`earned`, `deflated`) and the foundation's emphasis magenta, emphasis cyan and `--fg-3` by reference for the five review roles of a document annotation composition, and adds no value. Its Open question shares `held`'s meaning, a matter not yet settled, and since v1.2 its value: both are the emphasis cyan. Spectral State's own eight-role architectural-element vocabulary is unchanged by any profile.
 
@@ -54,6 +54,15 @@ No theme block redefines a chromatic role. Through v1.1 the light theme took dee
 
 Each role also names its ink, `--state-<role>-ink` (`--state-earned-ink` … `--state-neutral-ink`): the color of text set on a shape filled in that role's color. The bindings are here; the values are FILL PAINT's, in [`surface-treatments.css`](surface-treatments.css), which keys each ink by the fill color, so a held node and a judicial part, one cyan, take one ink. This file defines no ink value.
 
+## A state in words
+
+Outside a multi-axis review annotation, an element's state may be named in words on the surface treatments' **bordered label** ([`surface-treatments.css`](surface-treatments.css), BORDERED LABEL): `.state-label` on a `.surface-bordered-label`, `.doc-label` in a document, with `data-state`. Its words are exactly the axis and the role's word, `State // Held`, so a green edge never reads as an accepted review. Its edge takes the role's value. A **labeled range** whose first child is that label takes the same value on its scope rail (LABELED RANGE), and that color's rail paint where the surface treatments give one (RAIL PAINT): `earned` green, `structural` yellow and `deflated` red. `partial`, `held`, `external` and `proposed` keep the plain stroke. The bindings are here; the box, the rail and each paint are the surface treatments'.
+
+- **Words, not a control.** The label is inert and unfilled: no ink, hover, press or focus, and never a status chip, a button or a link.
+- **Neutral takes no keyed label.** It asserts no state.
+- **Inside Review Semantics, the square.** Within a multi-axis review annotation state keeps its square, beside its label: a keyed label never sits in the composition's rows, items, lists or notes.
+- **The class, the attribute and the words together.** A bare `data-state` keys nothing, and a label whose words do not name its axis and role is not a state label. `tools/role-conformance.js` checks the key (C13.key), the label's edge (C13.color) and the range's rail (C14.color).
+
 ## Discipline the system preserves
 
 - **Lavender is the identity field; neon is the sparse signal.** Meaning comes from sparse, intentional coloring against the neutral lavender field — ASK's restrained-accent discipline, not a rainbow.
@@ -63,15 +72,17 @@ Each role also names its ink, `--state-<role>-ink` (`--state-earned-ink` … `--
 
 ## Tiers
 
-- **Tier 1 (identity-free):** the eight `--state-*` role names — a stable vocabulary other ASK-family repos can reuse.
+- **Tier 1 (identity-free):** the eight `--state-*` role names and the `.state-label` class — a stable vocabulary other ASK-family repos can reuse.
 - **Tier 2 (ASK design language):** the seven role values — four of the foundation's reserved state values and its three emphasis colors, each defined there and referenced here — and the wheel logic.
 - **No Tier 3.** This primitive carries no instance identity.
 
 ## How to use it
 
-1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*`, emphasis colors and reserved state values), then `spectral-state.css` with `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name), all from one design-system commit. `spectral-state.css` declares custom properties only, so its place beside the other two, which keep their own order, changes no resolved value; the rendered key loads it directly after the foundation.
+1. Load `colors_and_type.css` first (Spectral State relies on its theme resolution, `--fg-*`, emphasis colors and reserved state values), then `spectral-state.css` with `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks the `--state-*-ink` bindings name, and whose bordered label and labeled range draw the state label and its range), all from one design-system commit. `spectral-state.css` declares custom properties only: role values and inks on `:root`, and the state label's and its range's color and paint properties on their own selectors, which no other module sets on those elements. So its place beside the other two, which keep their own order, changes no resolved value; the rendered key loads it directly after the foundation.
 2. On a consuming element, set color or stroke from a single role token, e.g. `stroke: var(--state-held)` or `color: var(--state-held)`. A shape filled in a role takes FILL PAINT: `.surface-fill` with the role's value and its ink.
 3. Leave an element with no asserted state neutral, and apply a neon role only to mark a state. A neutral filled shape takes FILL PAINT's neutral shape (`.surface-fill--neutral`), never `--state-neutral`, which is a foreground: in light it would leave the neutral node the darkest shape.
+
+4. To name a state in words outside a review annotation, put `.state-label` and `data-state` on the document's bordered label, its words `State // <Role>`. To mark the blocks it governs, make it the first child of a `.surface-labeled-range`: the range's scope rail takes the role's value. Neutral takes no keyed label, and inside a Review Semantics annotation state keeps its square.
 
 ```css
 /* example — consuming surface; each node also carries .surface-fill, and a node with no state .surface-fill--neutral */
@@ -80,7 +91,15 @@ Each role also names its ink, `--state-<role>-ink` (`--state-earned-ink` … `--
 .node[data-state="deflated"] { --surface-fill-color: var(--state-deflated); --surface-fill-ink: var(--state-deflated-ink); }
 ```
 
+```html
+<!-- example — a held architectural question, named in words over the blocks it governs -->
+<div class="doc-group surface-labeled-range">
+  <span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span>
+  <p class="doc-body">Whether the search index belongs in the primary store or in a separate service is not yet settled.</p>
+</div>
+```
+
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the eight roles, their values, the wheel logic. General; family-reusable. Consumers **inherit by reference and do not mint a divergent palette.**
+- **Upstream (this repo):** the eight roles, their values, the wheel logic, each role's ink binding and the state label's and its range's bindings. General; family-reusable. Consumers **inherit by reference and do not mint a divergent palette.**
 - **Consumer-local (e.g.** [**asset-pipeline-ASK**](https://github.com/apexSolarKiss/asset-pipeline-ASK)**):** which element gets which state, evidence-depth qualifiers, risk flags, substrate markers, mode coverage, and evidence pointers. Those are data and metadata, not part of this color system.

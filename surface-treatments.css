@@ -164,11 +164,15 @@
                      label measures the same wherever it appears and only its
                      meaning changes its color
      population      .surface-bordered-label, neutral by default: a status
-                     word such as DRAFT. Two governed meanings take the same
+                     word such as DRAFT. Four governed meanings take the same
                      box: the emphasis chip, by selector grouping in this file,
-                     its border the emphasis accent; and Review Semantics'
-                     review mark, which carries the class, its border the
-                     review role's value
+                     its border the emphasis accent; Review Semantics' review
+                     mark, which carries the class, its border the review
+                     role's value; and, outside a multi-axis review
+                     annotation, Spectral State's .state-label and Evidence
+                     State's .evidence-label, which carry the class and name
+                     their axis and role in their words (State // Held,
+                     Evidence // Supported), each border the role's value
      owner           this module: display, size, baseline, wrapping, padding,
                      corners, the 1px layout border, the per-theme edge
                      reinforcement, the clearance that keeps the reinforcement
@@ -184,13 +188,16 @@
                      not --radius-pill; corner shape alone assigns no
                      interaction. Never a color chosen for contrast or
                      decoration: a neutral label stays --fg-3, and a color
-                     arrives only with the emphasis chip or a review mark.
-                     Evidence dots, state squares and the not-yet-testable
-                     rail are not bordered labels, and the status badge
-                     (surface-shell) is an unbordered note
+                     arrives only with the emphasis chip, a review mark or a
+                     keyed state or evidence label whose words name its axis
+                     and role. Spectral State's neutral and Evidence State's
+                     not yet testable take no keyed label. Evidence dots,
+                     state squares and the not-yet-testable rail are not
+                     bordered labels, and the status badge (surface-shell) is
+                     an unbordered note
      example         a neutral DRAFT; a THESIS chip in the emphasis magenta; a
-                     PROPOSED review mark in its role value — one box, three
-                     meanings
+                     PROPOSED review mark in its role value; STATE // HELD in
+                     the held role's cyan — one box, four meanings
      counterexample  a review module or a consumer setting its own padding,
                      edge width or corner for a label; a bordered label used as
                      a button
@@ -207,10 +214,13 @@
                      child is the label itself, a
                      neutral bordered label such as DRAFT, over the blocks it
                      marks; a neutral range claims no judgment, and content
-                     inside it keeps its own marks. One governed meaning sets
-                     its color: Review Semantics' annotation range, whose first
-                     child is the row naming its one review judgment, and whose
-                     rail takes that judgment's value
+                     inside it keeps its own marks. Three governed meanings
+                     set its color: Review Semantics' annotation range, whose
+                     first child is the row naming its one review judgment,
+                     and whose rail takes that judgment's value; and Spectral
+                     State's and Evidence State's keyed range, whose first
+                     child is a keyed state or evidence label, and whose rail
+                     takes that label's role value
      owner           this module: the rail's stroke, its lane outside the
                      content edge, its reach past the range's first child, the
                      label or its row, and its last block (whose outer margins
@@ -243,15 +253,19 @@
                      range it takes no content role, so its words sit in its
                      own blocks. No ornament at the rail's ends: no foot, cap,
                      dot or arrow. Never the cue for words inside a block:
-                     that is the scope underline. Colors other than neutral
-                     and the governed review value are not admitted: emphasis
-                     keeps its own rail
+                     that is the scope underline. Colors other than neutral,
+                     the governed review value and a keyed label's role value
+                     are not admitted: emphasis keeps its own rail, an
+                     assessment its own, and not yet testable's lavender-gray
+                     is never a scope rail
      example         two paragraphs beside a magenta scope rail under
                      PROPOSED, then one beside a green rail under ACCEPTED; a
                      quotation and the sentence that reads it, beside one
                      scope rail that runs outside the quotation's own violet
                      rail; two judged items of one list, each beside its own
-                     rail in that same lane, outside the bullets
+                     rail in that same lane, outside the bullets; an
+                     unsettled architectural question beside a cyan rail
+                     under STATE // HELD
      counterexample  a review color on a paragraph's own rail; a scope rail
                      with no label at its head; one annotation range over
                      blocks whose judgments differ
@@ -273,9 +287,10 @@
      owner           this module: each paint and its dose. The semantic
                      systems own each color. The composing meaning
                      binds a role to its color and to that color's paint:
-                     Review Semantics for a range, Criterion Assessment for an
-                     assessment. Each rail's composition keeps its place,
-                     length, gap and containment
+                     Review Semantics for an annotation range, Spectral State
+                     and Evidence State for a keyed range, Criterion
+                     Assessment for an assessment. Each rail's composition
+                     keeps its place, length, gap and containment
      reuses          the rail's own color, through currentColor
      variation       none today: every color takes none, the plain 2px stroke,
                      on both fields. Each paint stays the one place a measured
@@ -287,15 +302,17 @@
                      diagram's stroke, a dot or a square. It assigns no
                      color: a meaning paints only colors it is already
                      admitted. A rail in a color with no paint here, such as
-                     a passage rail's emphasis accent, a proposed or open
-                     range's, or a neutral, keeps the plain stroke; a paint
-                     for one of those colors would bind every rail drawn in
-                     it. A meaning binds the color's paint, never an alias:
-                     an alias is read-only, and setting one reaches no rail
+                     a passage rail's emphasis accent, a range's magenta,
+                     cyan, violet, orange or brown, or a neutral, keeps the
+                     plain stroke; a paint for one of those colors would bind
+                     every rail drawn in it. A meaning binds the color's
+                     paint, never an alias: an alias is read-only, and
+                     setting one reaches no rail
      example         a declined range's scope rail and an adverse
                      assessment's rail: one red, one paint, in two places;
                      caution's yellow the same plain stroke beside a summary, a
-                     value field and the key
+                     value field and the key, and beside a structural state
+                     range
      counterexample  a meaning setting its own dose or theme branch for a
                      color this module paints; the bordered label's edge
                      recipe copied onto a rail; a rail's dose that follows a
@@ -436,8 +453,8 @@
    THE BORDERED LABEL'S EDGE. An apparent 2px edge in light and the plain
    1px border in dark: the fixed 1px border plus a same-color, zero-blur
    reinforcement of 1px in light and 0px in dark, the same layer drawing
-   nothing. One recipe for the whole
-   family, review marks, neutral labels and emphasis chips alike, calibrated
+   nothing. One recipe for the whole family, review marks, keyed state and
+   evidence labels, neutral labels and emphasis chips alike, calibrated
    by field: a 1px line in a bright color reads strongly on the dark ink and
    quietly on the light lavender, so the light field takes the stronger edge.
    The colors are the same in both themes; only the edge's
@@ -632,10 +649,10 @@
        14px of space left of the content edge, or a clipping box at the
        content edge, cuts it. The rail is drawn on the left: a right-to-left
        document is not yet served.
-     - The rail's color for an annotation range comes through :has(). A
-       browser without :has() draws the neutral rail beside the colored
-       label. The buffer at a list's edge comes through :has() too: without
-       it, an item host's rail can meet a neighboring range's. It counts
+     - The rail's color for an annotation range or a keyed range comes
+       through :has(). A browser without :has() draws the neutral rail beside
+       the colored label. The buffer at a list's edge comes through :has()
+       too: without it, an item host's rail can meet a neighboring range's. It counts
        siblings, so a wrapper laid out beside its neighbor, a grid or flex
        column, takes the margin too; a host that sets such lists side by side
        composes its own spacing.

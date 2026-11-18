@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>design-system-ASK // review semantics conformance fixture</title>
-<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, for rule C13 where a review mark takes the shared bordered label, for rule C14 where an annotation range takes the shared labeled range, and for rule C15 where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure: a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
+<meta name="description" content="Regression fixture for rule C12 of tools/role-conformance.js, for rule C13 where a review mark takes the shared bordered label, for rule C14 where an annotation range takes the shared labeled range, and for rule C15 where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure, and for Spectral State's and Evidence State's keyed labels and the ranges they open (C13, C14 and C12.attach): a conforming specimen of the Review Semantics annotation composition must pass, and each control must return exactly its own reason codes.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/review-semantics-fixture.html
      Headless:  node tools/check-role-conformance.mjs --fixture http://127.0.0.1:8080/tests/review-semantics-fixture.html
      The fixture for rule C12, in the owner fixture's format: each
@@ -17,7 +17,8 @@
      a list's keys and values, and ranges), bordered labels, labeled ranges and
      scope underlines the resting check must report collapsed. A control that names no code is a positive case:
      conforming material, inside the composition or outside it, that C12, C13,
-     C14 and C15 must pass. Every review mark carries .surface-bordered-label, the
+     C14 and C15 must pass. The keyed-label controls load nothing more: this page
+     already loads spectral-state.css and evidence-state.css, which bind them. Every review mark carries .surface-bordered-label, the
      shared box C13 judges, and every passage mark .surface-scope-underline,
      the shared line C15 judges, unless a control omits it. Loads the owner modules
      in the contract's order, then tools/role-conformance.js. -->
@@ -88,6 +89,7 @@
   [data-control="annotation range rail in another role's color"] .doc-annotation-range::before { border-color: var(--review-accepted); }
   [data-control="quotation inside a range repainted in the range's color"] .doc-quote { border-left-color: var(--review-declined); }
   [data-control="collapsed annotation range drawn at the content edge once open"] details[open] .doc-annotation-range::before { left: 0; }
+  [data-control="collapsed keyed range repainted once open"] details[open] .surface-labeled-range { --surface-labeled-range-color: var(--state-earned) !important; }
 </style>
 </head>
 <body>
@@ -637,6 +639,104 @@
     </div>
     <div data-control="labeled range a review judgment opens, without the annotation class" data-expect="C12.base C14.label">
       <div class="doc-group surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="doc-meta">round 1</span></span></div><p class="doc-body">The paragraph it covers.</p></div>
+    </div>
+    <!-- Spectral State's and Evidence State's keyed labels and the ranges they open (C13.key, C13.color, C14.color, C12.attach) -->
+    <div data-control="keyed state labels, one per role" data-expect="">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="earned">State // Earned</span> <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span> <span class="doc-label surface-bordered-label state-label" data-state="partial">State // Partial</span> <span class="doc-label surface-bordered-label state-label" data-state="deflated">State // Deflated</span> <span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span> <span class="doc-label surface-bordered-label state-label" data-state="external">State // External</span> <span class="doc-label surface-bordered-label state-label" data-state="proposed">State // Proposed</span></div>
+    </div>
+    <div data-control="keyed evidence labels, one per role" data-expect="">
+      <div><span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span> <span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span> <span class="doc-label surface-bordered-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span> <span class="doc-label surface-bordered-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+    </div>
+    <div data-control="keyed state ranges in the flow" data-expect="">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span><p class="doc-body">Whether the search index belongs in the primary store or in a separate service is not yet settled.</p></div>
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="earned">State // Earned</span><p class="doc-body">Every write reaches the primary store through one queue, exercised at full load.</p></div>
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span><p class="doc-body">The tracking schema is proven; the full flow has not yet run under load.</p></div>
+    </div>
+    <div data-control="keyed evidence ranges in the flow" data-expect="">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span><p class="doc-body">Writes survive the loss of one zone: shown in three failover drills.</p></div>
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span><p class="doc-body">Read latency stays under 40 ms at the expected load: measured in two of three regions.</p></div>
+    </div>
+    <div data-control="keyed item host" data-expect="">
+      <ul class="fx-list"><li class="surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="external">State // External</span><p class="doc-body">The identity provider, owned upstream.</p></li><li class="doc-body">An item that names no state.</li></ul>
+    </div>
+    <div data-control="keyed range in a table's first column, with the range lane" data-expect="">
+      <div class="doc-table-scroll doc-table-scroll--range-lane"><table class="doc-table"><thead><tr><th class="doc-label">component</th><th class="doc-label">owner</th></tr></thead><tbody><tr><td class="doc-body"><div class="surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="deflated">State // Deflated</span><div>The second cache, removed under load.</div></div></td><td class="doc-body">platform</td></tr></tbody></table></div>
+    </div>
+    <div data-control="keyed label in a table cell" data-expect="">
+      <div class="doc-table-scroll"><table class="doc-table"><thead><tr><th class="doc-label">component</th><th class="doc-label">state</th></tr></thead><tbody><tr><td class="doc-body">identity provider</td><td class="doc-body"><span class="doc-label surface-bordered-label state-label" data-state="external">State // External</span></td></tr></tbody></table></div>
+    </div>
+    <div data-control="keyed label in an annotation range's content" data-expect="">
+      <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">architecture note v3 · owner · this paragraph</span></span></div><p class="doc-body">The identity provider stays <span class="doc-label surface-bordered-label state-label" data-state="external">State // External</span>, and the note says so.</p></div>
+    </div>
+    <div data-control="a data-state or data-evidence attribute alone keys no label" data-expect="">
+      <div><span class="doc-label surface-bordered-label" data-state="held">held</span> <span class="doc-label surface-bordered-label" data-evidence="supported">supported</span></div>
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label" data-state="earned">draft</span><p class="doc-body">A neutral range whose label carries a state attribute and no key.</p></div>
+    </div>
+    <div data-control="keyed range in a closed disclosure" data-expect="" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">State</span></summary><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span><p class="doc-body">Whether the search index belongs in the primary store is not yet settled.</p></div></details>
+    </div>
+    <div data-control="plain bordered label in a state value" data-expect="C13.color">
+      <div><span class="doc-label surface-bordered-label" style="--surface-bordered-label-color: var(--state-held)">held</span></div>
+    </div>
+    <div data-control="neutral label in not yet testable's lavender-gray" data-expect="C13.color">
+      <div><span class="doc-label surface-bordered-label" style="--surface-bordered-label-color: var(--evidence-not-yet-testable)">not yet testable</span></div>
+    </div>
+    <div data-control="keyed label without its axis in its words" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="held">Held</span></div>
+    </div>
+    <div data-control="keyed label whose words name another role" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="held">State // Earned</span></div>
+    </div>
+    <div data-control="evidence label for not yet testable" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label evidence-label" data-evidence="not-yet-testable">Evidence // Not yet testable</span></div>
+    </div>
+    <div data-control="state label for neutral" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="neutral">State // Neutral</span></div>
+    </div>
+    <div data-control="keyed label outside its vocabulary" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="approved">State // Approved</span></div>
+    </div>
+    <div data-control="keyed label that is not a bordered label" data-expect="C13.key">
+      <div><span class="doc-label state-label" data-state="held">State // Held</span></div>
+    </div>
+    <div data-control="keyed label on an emphasis chip" data-expect="C13.key">
+      <div class="doc-group"><p class="surface-emphasis-chip state-label" data-state="held">State // Held</p></div>
+    </div>
+    <div data-control="keyed label naming both axes" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label evidence-label" data-state="held">State // Held</span></div>
+    </div>
+    <div data-control="state label carrying an evidence attribute" data-expect="C13.key">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="held" data-evidence="unresolved">State // Held</span></div>
+    </div>
+    <div data-control="keyed label repainted in another role" data-expect="C13.color">
+      <div><span class="doc-label surface-bordered-label state-label" data-state="held" style="--surface-bordered-label-color: var(--state-earned)">State // Held</span></div>
+    </div>
+    <div data-control="keyed range repainted in another role" data-expect="C14.color">
+      <div class="doc-group surface-labeled-range" style="--surface-labeled-range-color: var(--state-earned)"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span><p class="doc-body">Whether the search index belongs in the primary store is not yet settled.</p></div>
+    </div>
+    <div data-control="neutral range in not yet testable's lavender-gray" data-expect="C14.color">
+      <div class="doc-group surface-labeled-range" style="--surface-labeled-range-color: var(--evidence-not-yet-testable)"><span class="doc-label surface-bordered-label">draft</span><p class="doc-body">A statement no evidence can yet exist for.</p></div>
+    </div>
+    <div data-control="keyed role token made transparent" data-expect="C13.color C14.color" style="--state-held: transparent">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span><p class="doc-body">Whether the search index belongs in the primary store is not yet settled.</p></div>
+    </div>
+    <div data-control="keyed range opened by a label whose key fails" data-expect="C13.key">
+      <div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Earned</span><p class="doc-body">A range whose label names one role while its attribute names another.</p></div>
+    </div>
+    <div data-control="keyed label in an annotation row" data-expect="C12.attach">
+      <div class="doc-group"><p class="doc-body">The identity provider.</p><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-label surface-bordered-label state-label" data-state="external">State // External</span></span></div></div>
+    </div>
+    <div data-control="keyed label in an annotation list's value" data-expect="C12.attach">
+      <dl class="doc-annotation-list"><dt class="doc-label">Item</dt><dd><span class="doc-meta">the search index</span></dd><dt class="doc-label">State</dt><dd><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span></dd></dl>
+    </div>
+    <div data-control="keyed label in an annotation note" data-expect="C12.attach">
+      <div class="doc-hierarchy doc-group doc-annotation-note"><p class="doc-body">On the index: <span class="doc-label surface-bordered-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span></p></div>
+    </div>
+    <div data-control="keyed label carrying an annotation class" data-expect="C12.attach C12.rail C13.box">
+      <div class="doc-group"><span class="doc-annotation-item doc-label surface-bordered-label state-label" data-state="held">State // Held</span></div>
+    </div>
+    <div data-control="collapsed keyed range repainted once open" data-expect="" data-expect-open="C14.color" data-collapsed="2">
+      <details class="doc-group"><summary><span class="doc-label">State</span></summary><div class="doc-group surface-labeled-range"><span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span><p class="doc-body">Whether the search index belongs in the primary store is not yet settled.</p></div></details>
     </div>
   </section>
 

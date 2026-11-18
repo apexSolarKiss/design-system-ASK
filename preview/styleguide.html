@@ -147,7 +147,7 @@
   .cat-cell { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line-2); min-width: 0; }
   .cat-spec { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-2); min-height: 46px; }
   .cat-cell .note { margin: 0; }
-  .cat-family > .cat-grid + .note, .cat-family > .note + .note { margin-top: var(--space-4); }
+  .cat-family > .cat-grid + .note, .cat-family > .cat-cell + .note, .cat-family > .note + .note { margin-top: var(--space-4); }
   .cat-box { box-sizing: border-box; width: 108px; height: 46px; border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--fs-caption); }
   .cat-svg { display: block; width: 108px; height: 46px; }
   .cat-svg rect { stroke-width: 1.5; }
@@ -160,6 +160,15 @@
   .cat-spec--markers { align-items: center; gap: var(--space-5); }
   .cat-marker-set { display: inline-flex; align-items: center; gap: var(--space-3); }
   .cat-candidate { margin: var(--space-6) 0 0; }
+  /* The bordered labels' cells are wide enough for a keyed label's words on one line. */
+  .cat-grid--labels { grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
+  /* A full-width cell after a family's grid, and a set of ranges laid side by side in it. Side by side,
+     the ranges keep no stacked buffer; a row of them keeps the passage buffer from the next. */
+  .cat-cell--wide { margin-top: var(--space-4); }
+  .cat-range-set { display: grid; gap: var(--space-5) var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+  .cat-range-set > .surface-labeled-range { margin-top: 0; }
+  .cat-candidate > :is(.cat-spec, .cat-lane, .doc-table-scroll), .cat-candidate > :not(h4) + .note { margin-top: var(--space-4); }
+  .cat-candidate > .cat-spec { min-height: 0; }
   .cat-links { margin: var(--space-3) 0 0; padding-left: var(--space-5); }
   .cat-links li { margin: 0 0 var(--space-2); }
 
@@ -544,41 +553,55 @@
 
     <div class="cat-family" id="treatment-label">
       <h3 class="spec-role">Bordered label <span class="spec-role-meta">BORDERED LABEL · <code>surface-treatments.css</code></span></h3>
-      <p class="note">One inert box for every short label: a word that is read, never operated. Its edge takes a color only from a governed meaning, the emphasis chip or a review mark; a neutral label keeps the tertiary foreground. The edge is an apparent 2px in light and 1px in dark.</p>
-      <div class="cat-grid">
+      <p class="note">One inert box for every short label: a word that is read, never operated. Its edge takes a color only from a governed meaning: the emphasis chip, a review mark, or a Spectral State or Evidence State label whose words name its axis and role; a neutral label keeps the tertiary foreground. The edge is an apparent 2px in light and 1px in dark.</p>
+      <div class="cat-grid cat-grid--labels">
         <div class="cat-cell">
           <div class="cat-spec"><span class="surface-bordered-label doc-label">draft</span></div>
           <p class="doc-meta">neutral <span data-fg="--fg-3"></span></p>
           <p class="note"><span class="surface-bordered-label doc-label">supported</span> a neutral status word; Review State's no decision recorded</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span></div>
           <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark · a Spectral State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--violet">finding</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--violet">finding</span><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span></div>
           <p class="doc-meta">violet <span data-fg="--ask-emphasis-violet"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Spectral State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--cyan">aside</span><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--cyan">aside</span><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span></div>
           <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark · a Spectral State label · an Evidence State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div>
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="supported">Evidence // Supported</span></div>
           <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark · a Spectral State label · an Evidence State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></div>
+          <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span></div>
+          <p class="doc-meta">yellow <span data-fg="--ask-state-value-yellow"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Spectral State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span></div>
+          <p class="doc-meta">orange <span data-fg="--ask-state-value-orange"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Spectral State label · an Evidence State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span></div>
           <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark · a Spectral State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> an Evidence State label</p>
         </div>
       </div>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> green, yellow, orange, red, cyan, violet and magenta as Spectral State labels; green, orange, cyan and brown as Evidence State labels. Both are adopted, and described below as candidates A and B.</p>
-      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> lavender-gray alone: Evidence State's not yet testable keeps its hollow marker and dashed rail with its label. No application: white, lavender.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> lavender-gray: Evidence State's not yet testable is never a keyed label and keeps its hollow marker and dashed rail with its label. Spectral State's neutral takes no keyed label. No application: white, lavender.</p>
     </div>
 
     <div class="cat-family" id="treatment-marker">
@@ -624,7 +647,7 @@
 
     <div class="cat-family" id="treatment-rail">
       <h3 class="spec-role">Rails <span class="spec-role-meta">five families · <code>surface-treatments.css</code> · <code>surface-document.css</code></span></h3>
-      <p class="note">Rails share paint, not place or meaning. A passage rail sits at the content edge and insets its text; a scope rail sits in the outer lane beside the range its label governs; an assessment rail marks one summary in a comparison table; the hierarchy rail is a quiet 1px rule; not yet testable takes a 2px dashed rail. Rail paint is keyed by physical color: <code>--surface-rail-paint-green</code>, <code>-yellow</code> and <code>-red</code>, one paint per color whichever meaning draws it, each none today, the plain 2px stroke. The earned, structural and deflated names are aliases that read their color's paint.</p>
+      <p class="note">Rails share paint, not place or meaning. A passage rail sits at the content edge and insets its text; a scope rail sits in the outer lane beside the range its label governs, in the label's color: neutral, a review judgment's, or a keyed state or evidence role's; an assessment rail marks one summary in a comparison table; the hierarchy rail is a quiet 1px rule; not yet testable takes a 2px dashed rail. Rail paint is keyed by physical color: <code>--surface-rail-paint-green</code>, <code>-yellow</code> and <code>-red</code>, one paint per color whichever meaning draws it, each none today, the plain 2px stroke. The earned, structural and deflated names are aliases that read their color's paint.</p>
       <div class="cat-grid">
         <div class="cat-cell">
           <div class="cat-stack">
@@ -682,8 +705,45 @@
           <p class="note"><span class="surface-bordered-label doc-label">supported</span> the document register · Evidence State, in a document annotation</p>
         </div>
       </div>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> a scope rail in a Spectral State or an Evidence State value, beside a label naming its axis: the labeled range admits neutral and the review values only today. Both are adopted, and described below as candidates A and B.</p>
-      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> a solid lavender-gray scope rail: Evidence State's not yet testable keeps its dashed rail.</p>
+      <div class="cat-cell cat-cell--wide">
+        <div class="cat-lane cat-range-set">
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span>
+            <p class="doc-meta">green</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span>
+            <p class="doc-meta">yellow</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span>
+            <p class="doc-meta">orange</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span>
+            <p class="doc-meta">red</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span>
+            <p class="doc-meta">cyan</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span>
+            <p class="doc-meta">violet</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span>
+            <p class="doc-meta">magenta</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span>
+            <p class="doc-meta">brown</p>
+          </div>
+        </div>
+        <p class="doc-meta">scope rail // keyed ranges · outer lane · 2px</p>
+        <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State ranges · Evidence State ranges, each in its role's value; green, yellow and red take their color's rail paint</p>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> a solid lavender-gray scope rail: Evidence State's not yet testable keeps its dashed rail. A scope rail for an assessment: Criterion Assessment keeps its own rail.</p>
     </div>
 
     <div class="cat-family" id="treatment-underline">
@@ -774,17 +834,48 @@
       <li><a class="surface-text-link" href="../three-functions.html">Three Functions</a> // the legislative, executive and judicial roles of an apparatus</li>
     </ul>
 
-    <h3 class="spec-role" id="candidates">Adopted candidates <span class="spec-role-meta">three applications · not implemented</span></h3>
-    <p class="note" style="margin: 0;">Three applications of existing treatments, adopted and not implemented. None is part of any module, and none is drawn here: the bordered label, the labeled range and the fill paint do not admit these bindings until the change that implements each one updates the named contracts and their checks, and this page draws only what its modules admit.</p>
+    <h3 class="spec-role" id="candidates">Adopted applications <span class="spec-role-meta">three applications · A and B supported · C not implemented</span></h3>
+    <p class="note" style="margin: 0;">Three applications of existing treatments, each bound by its own system. A and B are drawn here by the modules that bind them, and each keeps its system's words beside its color. C is adopted and not implemented: the fill paint does not admit its binding until the change that implements it updates the named contracts and their checks, and this page draws only what its modules admit. None applies inside a multi-axis review annotation, where the square, the dot, the outline, the range and the passage mark stay the channels.</p>
 
     <div class="cat-candidate" id="candidate-state-labels">
       <h4 class="spec-role">A // Spectral State labels and rails</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> an architecture document, a figure caption or a table that names an element's state in words, outside a review annotation. <b>Binding:</b> the role's Spectral State value on the label's edge and on the range's rail; the words stay in the label role, and nothing fills, so no ink is needed. The label names its axis, so a green edge never reads as an accepted review. <b>Implementing it changes:</b> BORDERED LABEL in <code>surface-treatments.css</code>, which admits a color today only from the emphasis chip and a review mark, LABELED RANGE, which admits only neutral and a review range's value, and the representations in <code>spectral-state.md</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> an architecture description, a figure caption or a table that names an element's state in words, outside a multi-axis review annotation; inside one, the square keeps the state channel. <b>Binding:</b> <code>spectral-state.css</code> binds each chromatic role's value to the label's edge and, through the label at a range's head, to the range's scope rail, with green's, yellow's and red's rail paint. The words stay in the label role and nothing fills, so no ink is needed. The label names its axis, so a green edge never reads as an accepted review. Neutral takes no keyed label.</p>
+      <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span><span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span><span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span><span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span><span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span><span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span></div>
+      <div class="cat-lane">
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span>
+          <p class="doc-body">Whether the search index belongs in the primary store or in a separate service is not yet settled.</p>
+        </div>
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span>
+          <p class="doc-body">Every write reaches the primary store through one queue, exercised at full load.</p>
+        </div>
+      </div>
+      <div class="doc-table-scroll" role="region" aria-label="Components and their states" tabindex="0">
+        <table class="doc-table">
+          <thead><tr><th class="doc-label">component</th><th class="doc-label">state</th></tr></thead>
+          <tbody><tr><td class="doc-body">identity provider</td><td class="doc-body"><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span></td></tr></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="cat-candidate" id="candidate-evidence-labels">
       <h4 class="spec-role">B // Evidence State labels and rails</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a statement in a report or a figure that records what the evidence supports, outside a multi-axis review annotation; inside one, the dot keeps the evidence channel. <b>Binding:</b> the role's Evidence State value on the label's edge and the range's rail, the label naming its axis. Not yet testable keeps its whole contract, so its standalone form is the existing note: lavender-gray, a dashed rail, a hollow marker and the visible label. <b>Implementing it changes:</b> BORDERED LABEL and LABELED RANGE in <code>surface-treatments.css</code>, and the representations in <code>evidence-state.md</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> a statement in a report, a figure or a table that records what the evidence supports, outside a multi-axis review annotation; inside one, the dot keeps the evidence channel. <b>Binding:</b> <code>evidence-state.css</code> binds each chromatic role's value to the label's edge and the range's scope rail, supported with green's rail paint, the label naming its axis. Not yet testable keeps its whole contract, so its standalone form is the existing note: lavender-gray, a dashed rail, a hollow marker and the visible label.</p>
+      <div class="cat-spec"><span class="surface-bordered-label doc-label evidence-label" data-evidence="supported">Evidence // Supported</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+      <div class="cat-lane">
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span>
+          <p class="doc-body">Read latency stays under 40 ms at the expected load: measured in two of three regions.</p>
+        </div>
+      </div>
+      <div class="cat-lane">
+        <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></span></div>
+          <p class="doc-body">Whether a separate search service keeps that latency: no such service runs yet.</p>
+        </div>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> not yet testable as a keyed label, a solid edge or a scope rail: it keeps its hollow marker, its dashed rail and its label.</p>
     </div>
 
     <div class="cat-candidate" id="candidate-decision-record">

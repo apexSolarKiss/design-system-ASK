@@ -98,9 +98,10 @@
    never a table cell. The structural diagram scaffolds (diagram-static-H,
    -V, -SEQ, -FLOW) take no assessment fill, as FILL PAINT excludes them.
 
-   In any application, never the labeled range, whose rail admits only
-   neutral and review colors; never a review, evidence or state attribute
-   standing in for an assessment.
+   In any application, never the labeled range, whose rail takes neutral, a
+   review value or a keyed state or evidence value, never an assessment;
+   never a review, evidence or state attribute standing in for an
+   assessment.
    ========================================================================= */
 
 /* ---------- The three roles — both themes ----------

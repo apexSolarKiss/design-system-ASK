@@ -11,7 +11,8 @@
           [--assignment FILE.json] [--allow-vacuous]
      node tools/check-role-conformance.mjs --fixture URL [--scheme ...] [--media ...]
           load a role fixture (tests/role-conformance-fixture.html, or
-          tests/review-semantics-fixture.html for C12) from a served repo root and
+          tests/review-semantics-fixture.html for C12 and for the keyed state and
+          evidence labels and ranges in C13 and C14) from a served repo root and
           judge every case: its static reason codes from the page, its
           interaction reason codes from this runner. A case passes when the
           page's own resting verdict passes and the union of both equals its

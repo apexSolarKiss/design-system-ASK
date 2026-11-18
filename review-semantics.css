@@ -32,8 +32,12 @@
    data-review, data-evidence or data-state attribute alone opts nothing in
    and paints nothing. Evidence State and Spectral State presentations
    authored outside this composition, such as a consumer's own evidence
-   assignment or a separately authored not-yet-testable note with its own
-   rail, stay governed by those owners, not by this module.
+   assignment, a separately authored not-yet-testable note with its own
+   rail, or a keyed state or evidence label and the range it opens
+   (.state-label, .evidence-label), stay governed by those owners, not by
+   this module. A keyed label is never an element of this composition and
+   never sits in its rows, items, lists or notes: there state keeps its
+   square and evidence its dot.
 
    Load order: after the four register modules, the state modules, then this
    file. The order is part of the contract.
@@ -363,7 +367,8 @@
    CHECKING. tools/role-conformance.js rule C12 checks this composition where
    its classes appear: syntax (classes, attributes, vocabulary, a review
    mark's bordered label, a range's row, the one judgment that leads it and
-   its shared class, a passage mark's shared class) and computed
+   its shared class, a passage mark's shared class, and a keyed label kept
+   outside its rows, items, lists and notes) and computed
    presentation (the outline's, the scope rail's and the passage line's
    color, the marker, the rail and a note's attachment in a list item). Rule
    C13 checks a review mark's box and edge as it checks every bordered label,
