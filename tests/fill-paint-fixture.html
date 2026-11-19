@@ -91,19 +91,20 @@
 
   <section>
     <h2>Review Semantics</h2>
-    <p>Decision records: Review Semantics binds each record's value and ink on .review-record; the page sets neither.</p>
-    <div class="fx-row">
-      <div class="fx-node review-record surface-fill" data-review="proposed" id="r-proposed">proposed</div>
-      <div class="fx-node review-record surface-fill" data-review="open" id="r-open">open</div>
-      <div class="fx-node review-record surface-fill" data-review="accepted" id="r-accepted">accepted</div>
-      <div class="fx-node review-record surface-fill" data-review="declined" id="r-declined">declined</div>
-      <div class="fx-node review-record surface-fill" data-review="none" id="r-none">none</div>
+    <p>Decision nodes: Review Semantics binds each record's value and ink on .review-record; the page sets neither. A
+      record that is read is a panel, drawn with PERIMETER PAINT (tests/review-semantics-fixture.html).</p>
+    <div class="fx-row" role="img" aria-label="The five review fills in HTML">
+      <div class="fx-node review-record surface-fill" data-review="proposed" data-record-presentation="node" id="r-proposed">proposed</div>
+      <div class="fx-node review-record surface-fill" data-review="open" data-record-presentation="node" id="r-open">open</div>
+      <div class="fx-node review-record surface-fill" data-review="accepted" data-record-presentation="node" id="r-accepted">accepted</div>
+      <div class="fx-node review-record surface-fill" data-review="declined" data-record-presentation="node" id="r-declined">declined</div>
+      <div class="fx-node review-record surface-fill" data-review="none" data-record-presentation="node" id="r-none">none</div>
     </div>
     <svg class="fx-svg" viewBox="0 0 552 62" role="img" aria-label="The four review fills in SVG">
-      <g class="review-record" data-review="proposed" id="rs-proposed"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">proposed</text></g>
-      <g class="review-record" data-review="open" id="rs-open"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">open</text></g>
-      <g class="review-record" data-review="accepted" id="rs-accepted"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">accepted</text></g>
-      <g class="review-record" data-review="declined" id="rs-declined"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="421" y="36">declined</text></g>
+      <g class="review-record" data-review="proposed" data-record-presentation="node" id="rs-proposed"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">proposed</text></g>
+      <g class="review-record" data-review="open" data-record-presentation="node" id="rs-open"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">open</text></g>
+      <g class="review-record" data-review="accepted" data-record-presentation="node" id="rs-accepted"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">accepted</text></g>
+      <g class="review-record" data-review="declined" data-record-presentation="node" id="rs-declined"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="421" y="36">declined</text></g>
     </svg>
   </section>
 
