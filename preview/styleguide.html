@@ -30,12 +30,15 @@
      values resolve live from colors_and_type.css; the styleguide remains a maintained
      reference surface (specimen copy / coverage can still need maintenance). -->
 <link rel="stylesheet" href="../colors_and_type.css">
-<!-- The canonical compact-action contract, loaded so the specimen below RENDERS
-     from the real module rather than a local re-derivation. The specimen loads
-     the real module, so the module-owned control styling resolves from the
-     canonical contract. Consumer-owned specimen framing and descriptive copy
-     remain maintained and may require conformance when the contract changes. -->
+<!-- The canonical compact-action and call-to-action contracts, loaded so the
+     specimens below RENDER from the real modules rather than a local
+     re-derivation, and the module-owned control styling resolves from the
+     canonical contracts. A CTA takes its hover and focus edge from
+     surface-action.css, by class. Consumer-owned specimen framing and
+     descriptive copy remain maintained and may require conformance when a
+     contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-cta.css">
 
 <!-- The panel, textual-link, document-register and treatment rules, then the
      semantic modules, in the load order the Review Semantics and Criterion
@@ -88,14 +91,21 @@
   .role .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
   .note { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
   /* Specimen framing for the two interactive roles. Layout only — no control
-     value is restated in CSS, so the rendered compact-action specimen resolves
-     from surface-action.css. The prose beside it does restate values and is
-     maintained copy. `spec-actions-narrow` constrains the row, and
-     `spec-actions-fixed` gives both forms one explicit width, so the wrapping
-     and box-model cases the contract permits are actually exercised. */
+     value is restated in CSS, so the rendered compact-action and CTA specimens
+     resolve from surface-action.css and surface-cta.css. The prose beside them
+     does restate values and is maintained copy. `spec-actions-narrow`
+     constrains the row, and `spec-actions-fixed` gives both forms one explicit
+     width, so the wrapping and box-model cases the contract permits are
+     actually exercised. `spec-actions-cta` spaces the larger pills, and
+     `spec-roles` sets the named small roles side by side: the two labels
+     share a start-aligned group, since the chip keeps its own place at the
+     start of a flex row, and the group centers against the compact action. */
   .spec-role { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-small); font-weight: var(--fw-light); }
   .spec-role-meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); font-weight: var(--fw-light); }
   .spec-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-start; }
+  .spec-actions-cta { gap: var(--space-3); }
+  .spec-roles { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .spec-roles-labels { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3); }
   .spec-actions-narrow { max-width: 210px; }
   /* One EXPLICIT width on both semantic forms. A parent max-width only
      constrains the row; giving each control the same declared width is what
@@ -113,10 +123,6 @@
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
-  .badge { display: inline-block; font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
-  .btn { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-small); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-5); border: 1px solid var(--line-1); cursor: pointer; margin: 0 var(--space-3) var(--space-3) 0; }
-  .btn-primary { background: var(--ask-ui-accent-1); color: var(--ask-white); border-color: transparent; }
-  .btn-ghost { background: transparent; color: var(--fg-1); }
   .specimen { line-height: var(--lh-tight); }
   .row { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
   /* Wordmark specimen. Sizing only — visibility is the shell's own
@@ -402,17 +408,21 @@
         <p style="font-size: var(--fs-small); color: var(--fg-2); margin:0;">Frosted glass surface over the gradient // the canonical container.</p>
       </div>
       <div class="card">
-        <div style="margin-bottom: var(--space-3);"><button class="btn btn-primary">Primary</button><button class="btn btn-ghost">Ghost</button></div>
-        <div><span class="badge">badge</span><span class="badge">chip</span><span class="badge">tag</span></div>
+        <div class="spec-roles">
+          <span class="spec-roles-labels"><span class="surface-bordered-label doc-label">draft</span><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span></span>
+          <a class="surface-action" href="#compact-action">compact action</a>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">A short word or a small control is a named role, never a generic badge. Left: a neutral <a class="surface-text-link" href="#treatment-label">bordered label</a> and an emphasis chip, both inert: read, never operated. Right: the compact action, the operable small control, shown below. The shell's status badge is an unbordered note in a surface header and is not drawn here.</p>
       </div>
     </div>
 
     <!-- Two interactive roles, shown together so the boundary between them is
          visible on the surface designers are told to read before designing.
-         They are NOT variants of one another: the CTA is 18px Inter and is
-         styled locally here; the compact action is 14px mono and resolves from
-         the canonical surface-action.css. Conforming either to the other is the
-         mismatch this section exists to prevent. -->
+         They are NOT variants of one another: the CTA is 18px Inter and
+         resolves from the canonical surface-cta.css; the compact action is
+         14px mono and resolves from the canonical surface-action.css.
+         Conforming either to the other is the mismatch this section exists to
+         prevent. -->
     <h3 class="spec-role" id="compact-action">Compact action <span class="spec-role-meta">14px JetBrains Mono 300 · tracking 0 · canonical <code>.surface-action</code></span></h3>
     <p class="note" style="margin: 0 0 var(--space-3);">The label on a small control — a chip, a route action, a repo link. Caption-<em>sized</em>, not the Caption role: sentence-cased, zero tracking, weight 300. The contract styles a native anchor and a native button identically, so the consumer keeps whichever element the job actually calls for.</p>
     <div class="grid cols-2">
@@ -432,8 +442,24 @@
       </div>
     </div>
 
-    <h3 class="spec-role">CTA <span class="spec-role-meta">18px Inter 400 · a SEPARATE role — not a compact action</span></h3>
-    <p class="note" style="margin: 0 0 var(--space-3);">The Primary / Ghost pair above. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. It is not governed by <code>surface-action.css</code> and must not be conformed to it.</p>
+    <h3 class="spec-role" id="cta">CTA <span class="spec-role-meta">18px Inter 400 · tracking 0 · canonical <code>.surface-cta</code> · a SEPARATE role — not a compact action</span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">The larger call to action. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. Its type, geometry and paint are <code>surface-cta.css</code>'s; it adopts the attention edge by class, as any shaped interactive object may, and is never conformed to the compact action. The primary fills the pill with the UI accent and confers nothing: a CTA takes no state, evidence, review or assessment color. No disabled state is defined.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="spec-actions spec-actions-cta">
+          <button type="button" class="surface-cta surface-cta--primary surface-attention-edge">Primary</button>
+          <button type="button" class="surface-cta surface-attention-edge">Ghost</button>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">Native <code>&lt;button&gt;</code>: the primary on the UI accent, and the ghost on its <code>--line-1</code> border. Same geometry, same type — primary changes paint only.</p>
+      </div>
+      <div class="card">
+        <div class="spec-actions spec-actions-cta">
+          <a class="surface-cta surface-cta--primary surface-attention-edge" href="#cta">Primary</a>
+          <a class="surface-cta surface-attention-edge" href="#cta">Ghost</a>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">The same pair as native <code>&lt;a&gt;</code>. Each also carries <code>.surface-attention-edge</code>, so hover and keyboard focus turn the border magenta; hover adds the 0.92 opacity drop, and press the 0.97 scale.</p>
+      </div>
+    </div>
 
     <!-- The third interactive role, and the one with no geometry of its own.
          It sits directly after the two boxed roles because the boundary IS the

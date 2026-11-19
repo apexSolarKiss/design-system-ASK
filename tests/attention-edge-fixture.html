@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // attention edge adopted by class regression fixture</title>
-<meta name="description" content="Regression fixture for surface-action.css .surface-attention-edge: the attention edge on an adopting object's own border, on a borderless control, and on a marked shape inside an SVG link, beside the compact action and the full-panel link; unmarked, unlinked and persistent-state shapes unaffected.">
-<!-- Foundation, the compact-action and panel modules, then the diagram layer for the SVG
-     vocabulary (serve from the repo root:  python3 -m http.server 8080  →
+<meta name="description" content="Regression fixture for surface-action.css .surface-attention-edge: the attention edge on an adopting object's own border, a call to action's included, on a borderless control, and on a marked shape inside an SVG link, beside the compact action and the full-panel link; unmarked, unlinked and persistent-state shapes unaffected.">
+<!-- Foundation, the compact-action, call-to-action and panel modules, then the diagram layer
+     for the SVG vocabulary (serve from the repo root:  python3 -m http.server 8080  →
      /tests/attention-edge-fixture.html; add ?theme=dark or ?theme=light to hold a mode). -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-cta.css">
 <link rel="stylesheet" href="../surface-panel.css">
 <link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
 <script>
@@ -116,6 +117,12 @@
       <button class="fx-facade surface-attention-edge" type="button" data-case="facade" data-anatomy="bordered" aria-label="Media facade">
         <span class="fx-thumb" aria-hidden="true"></span><span class="fx-play" aria-hidden="true">&#9654;</span>
       </button>
+    </div>
+    <p>A call to action (<code>surface-cta.css</code>) takes the edge on its own border: the
+      primary's border is transparent at rest, and the ghost's is the hairline.</p>
+    <div class="row">
+      <button class="surface-cta surface-cta--primary surface-attention-edge" type="button" data-case="cta-primary" data-anatomy="bordered">Primary</button>
+      <a class="surface-cta surface-attention-edge" href="#overall" data-case="cta-ghost" data-anatomy="bordered">Ghost</a>
     </div>
   </section>
 

@@ -887,7 +887,10 @@ reference   a compact action and a full-panel link: the edge they already take
 bordered    an image card that lifts and raises its own shadow on hover, a launch
             card, and a media facade: the object's own border turns magenta, with
             the 0.5px ring outside it in light; the image card restates its hover
-            shadow with the ring, as an adopting object with a shadow must
+            shadow with the ring, as an adopting object with a shadow must. Two
+            calls to action from surface-cta.css, a primary button and a ghost
+            anchor, take the same edge: the primary's transparent rest border
+            turns magenta, as the ghost's hairline does
 borderless  three overlay controls with no border of their own
             (.surface-attention-edge--borderless): an inset 1px ring where a border
             would sit, with the 0.5px ring outside it in light
@@ -937,6 +940,10 @@ python3 -m http.server 8080
 remove the .surface-attention-edge selectors from the  every bordered, borderless and SVG
 shared hover and focus rule and its outline rule       case, on focus, with the browser's
                                                        own ring; the reference cases pass
+remove .surface-attention-edge from a CTA's markup     that CTA, on focus, with the
+                                                       browser's own ring
+set the primary CTA's transparent border at a          the primary CTA, on focus: its
+specificity above the shared edge rule                 border stays transparent
 remove the borderless rules                            the three overlay controls
 remove the SVG rules                                   the four linked SVG cards
 replace the scale-compensated SVG widths with plain    the half- and quarter-scale
