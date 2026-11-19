@@ -714,12 +714,18 @@
    - C18 judges a record at rest, from its markup and its computed styles,
      wherever it sits: one a closed disclosure holds, or one that renders no
      box, is judged as it rests, so it does not show that a record or its
-     words are seen. It reads the outcome and the fields as text, and a field
-     is hidden to it only through display, visibility or zero opacity inside
-     the record. It proves that a record names an object, an actor and a
-     scope, not that they are the right ones, that a condition it omits is
-     immaterial, or that the decision was made. It compares the fill with
-     --review-<role> and the words with --review-<role>-ink as each resolves
+     words are seen. It reads the outcome and the fields as text. Words are
+     hidden to it only through display or zero opacity on the element holding
+     them or on one between that element and the record in the document
+     tree, or through the visibility that element computes, which a style on
+     the record or around it can also set. A field names something only
+     through a letter or number it shows, so a field whose words a child
+     hides that way names nothing, punctuation left around them included. It
+     proves that a record names an object, an actor and a scope, not that
+     they are the right ones or that its letters form a name, that a
+     condition it omits is immaterial, or that the decision was made. It
+     compares the fill with --review-<role> and the words with
+     --review-<role>-ink as each resolves
      at the record, an unresolved one read as transparent, which fails, so
      it proves that a record is drawn in its role's
      binding, not that the binding is FILL PAINT's ink for that color
@@ -2154,7 +2160,12 @@
       const names = fields.map((f) => f.getAttribute('data-record-field'));
       const tally = (n) => names.filter((k) => k === n).length;
       const hidden = (f) => { for (let e = f; e && e !== rec; e = e.parentElement) { const c = getComputedStyle(e); if (c.display === 'none' || parseFloat(c.opacity) === 0) return true; } return getComputedStyle(f).visibility !== 'visible'; };
-      const blank = fields.filter((f) => !VISIBLE.test(f.textContent || '') || hidden(f));
+      /* A field is present only through a letter or number it shows: text inside it whose own element is not
+         display: none, computes visibility visible and, with every element from there up to the record, the
+         field's included, is not at zero opacity. Words a child hides that way do not count, and nor does
+         punctuation left around them. */
+      const shown = (f) => { const w = document.createTreeWalker(f, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) { if (/[\p{L}\p{N}]/u.test(n.textContent) && n.parentElement && !hidden(n.parentElement)) return true; } return false; };
+      const blank = fields.filter((f) => !shown(f));
       const unknown = names.filter((n) => !['object', 'actor', 'scope', 'condition'].includes(n));
       const nested = fields.filter((f) => f.parentElement && f.parentElement.closest('[data-record-field]') && rec.contains(f.parentElement.closest('[data-record-field]')));
       if (tally('object') !== 1 || tally('actor') !== 1 || tally('scope') !== 1 || unknown.length || nested.length || blank.length) {

@@ -810,6 +810,27 @@
     <div data-control="record whose scope field is hidden" data-expect="C18.fields">
       <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> <span data-record-field="scope" style="display: none">the write path</span></div></div>
     </div>
+    <div data-control="record whose fields hold their words in shown children" data-expect="">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object"><span>storage plan</span>, v3</span> · <span data-record-field="actor"><span>owner</span></span> · <span data-record-field="scope"><em>the write path</em></span></div></div>
+    </div>
+    <div data-control="record whose actor's only words are in a child not displayed" data-expect="C18.fields">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor"><span style="display: none">owner</span></span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
+    <div data-control="record whose actor's only words are in a child made invisible" data-expect="C18.fields">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor"><span style="visibility: hidden">owner</span></span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
+    <div data-control="record whose scope's only words are in a child at zero opacity" data-expect="C18.fields">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope"><span style="opacity: 0">the write path</span></span></div></div>
+    </div>
+    <div data-control="record whose actor field is at zero opacity around its child's words" data-expect="C18.fields">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor" style="opacity: 0"><span>owner</span></span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
+    <div data-control="record whose actor shows only punctuation around hidden words" data-expect="C18.fields">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">(<span style="display: none">owner</span>)</span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
+    <div data-control="record whose actor shows its words beside hidden ones" data-expect="">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner <span style="display: none">(platform)</span></span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
     <div data-control="record with an empty field" data-expect="C18.fields">
       <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor"> </span> · <span data-record-field="scope">the write path</span></div></div>
     </div>
