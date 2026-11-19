@@ -23,20 +23,39 @@
                                               the instance's wording: the key's label for each drawn
                                               type, 'X verb Y' and 'X and Y neutralPlain' in the
                                               description. Printable Basic Latin only
+       semantic?: { system, … }                only on a declared semantic example (below)
      }
 
    An undeclared pair is an error, never a neutral pair: completeness is explicit, and 'unspecified'
    is the one way to leave a pair open.
 
+   A plate is neutral unless its spec is a DECLARED SEMANTIC EXAMPLE, which applies one opt-in system
+   to its nodes and shows everything a reader needs to read the color:
+     semantic: { system: 'criterion-assessment', criterion, direction, scope, basis, rule }
+       each node: assessment 'favorable' | 'caution' | 'adverse' | 'unassessed', and figure?
+     semantic: { system: 'three-functions', scope }
+       each node: function 'legislative' | 'executive' | 'judicial' | 'none', and does (a role-bearing
+       node only)
+   system and each assignment are strings from their closed sets. Every declaration, figure and does is
+   a list of one or more lines of printable Basic Latin, each measured against its slot: the engine sets
+   the lines as declared and wraps nothing. A colored node is filled at 100% of its role's value, its
+   ring in the same value, and its letter takes the role's ink; an unassessed or 'none' node keeps the
+   neutral ring, and a figure an unassessed node gives stays as plain text. The assignments are the
+   example's own: they change no relation, matrix, signature or symmetry. An example is drawn keyed
+   only, with an explanation band under the key: its key and explanation are part of reading its color.
+
    API (window.DIAGRAM_PEER, or module.exports)
      validate(spec, glyphs?)   { ok, errors: [{ code, path, message }] } — never throws. With glyphs
                                it also checks the carrier, that each label's ink clears its ring,
-                               and the key's wording against its slot
+                               the key's wording against its slot, and a declared semantic
+                               example's lines against theirs
      render(spec, options)     a standalone SVG string; throws a PeerError (err.code, err.errors)
                                for an invalid spec or option
      mount(host, spec, opts)   renders into an element and returns the <svg>; unless opts names a
                                prefix, it takes one whose plate ids no element in the document carries
      idPrefixFor(text)         the default id prefix: distinct texts never share one
+     semanticSystem(spec)      the name of the system a spec declares as its own, or null: the rule
+                               render applies, for a caller that chooses how to export a spec
      matrix · signatures · symmetry · describe   derived from the declared relations
 
    options
@@ -47,9 +66,16 @@
                  carrier is GLYPHS_MALFORMED
      theme       'inherit' (default): the page's foundation roles, so the plate follows the page's
                  theme; or a resolved theme object for a standalone file:
-                 { name, fieldFrom, fieldTo, ink, fontFamily, labelWeight, keyWeight }, whose
-                 labelWeight must be the weight the glyph carrier measured
-     keyed       false (default) | true: add the relation key under the plate
+                 { name, fieldFrom, fieldTo, ink, fontFamily, labelWeight, keyWeight, roles? },
+                 whose labelWeight must be the weight the glyph carrier measured. A declared
+                 semantic example drawn with a resolved theme needs roles: its system's three
+                 colored roles and no other, each { fill, ink }, resolved from the system's own
+                 stylesheets, as the theme's own property: an inherited roles is not the theme's.
+                 A neutral plate takes no roles of its own and ignores inherited ones.
+                 With 'inherit' it reads --assessment-<role> and --assessment-<role>-ink, or
+                 --function-<role> and --function-<role>-ink, from the page
+     keyed       false (default) | true: add the relation key under the plate. A declared semantic
+                 example is keyed by default and refuses false
      arrowheads  'target' (default, the canonical presentation) | 'midpoint' (comparison)
      idPrefix    prefix for the plate's element ids; defaults to idPrefixFor(spec id)
      fontFaceCSS @font-face rules to embed (standalone files)
@@ -62,7 +88,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var VERSION = 1;
+  var VERSION = 2;
   var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
   function freeze(o) { Object.keys(o).forEach(function (k) { if (o[k] && typeof o[k] === 'object') freeze(o[k]); }); return Object.freeze(o); }
 
@@ -82,12 +108,48 @@
   var XML_UNSAFE = /[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/;
   // A resolved theme value is a color, a font stack or a weight: it never needs these.
   var THEME_UNSAFE = /[<>{};\\&@"]|\/\*|\*\/|url\(/i;
-  var SPEC_KEYS = ['id', 'preset', 'role', 'title', 'nodes', 'relations', 'meaning'];
+  // A role value is a color: it never needs a quote, which would open a CSS string in the plate's rules.
+  var ROLE_UNSAFE = /'/;
+  var SPEC_KEYS = ['id', 'preset', 'role', 'title', 'nodes', 'relations', 'meaning', 'semantic'];
   var NODE_KEYS = ['id', 'label'];
   var RELATION_KEYS = ['from', 'to', 'type'];
   var MEANING_KEYS = ['directed', 'neutral', 'verb', 'neutralPlain'];
   var OPTION_KEYS = ['glyphs', 'theme', 'keyed', 'arrowheads', 'idPrefix', 'fontFaceCSS', 'metadata'];
   var THEME_KEYS = ['name', 'fieldFrom', 'fieldTo', 'ink', 'fontFamily', 'labelWeight', 'keyWeight'];
+  var THEME_OPTIONAL = ['roles'];
+
+  // The two opt-in systems a declared semantic example may apply, one per plate. Each names its
+  // declarations (line lists, in the order the band shows them, with the band's label for each), the node
+  // field that carries its closed assignment, the assignments that color a node, the node's own text
+  // field, and the page tokens its colors and inks are read from. The systems' stylesheets own the
+  // values: Criterion Assessment and Three Functions bind each role to its color and to the surface
+  // treatments' FILL PAINT ink for that color. The engine owns none of them.
+  var SEMANTIC = freeze({
+    'criterion-assessment': {
+      name: 'Criterion Assessment',
+      declarations: ['criterion', 'direction', 'scope', 'basis', 'rule'],
+      labels: { criterion: 'Criterion', direction: 'Direction', scope: 'Scope', basis: 'Basis', rule: 'Rule' },
+      assignment: 'assessment',
+      values: ['favorable', 'caution', 'adverse', 'unassessed'],
+      colored: ['favorable', 'caution', 'adverse'],
+      text: 'figure',          // optional on any node; drawn beside it, above its assessment word
+      textRequired: false,
+      tokens: 'assessment',    // --assessment-<role>, --assessment-<role>-ink
+    },
+    'three-functions': {
+      name: 'Three Functions',
+      declarations: ['scope'],
+      labels: { scope: 'Scope' },
+      assignment: 'function',
+      values: ['legislative', 'executive', 'judicial', 'none'],
+      colored: ['legislative', 'executive', 'judicial'],
+      text: 'does',            // required on a role-bearing node, refused on 'none'; drawn in the band
+      textRequired: true,
+      tokens: 'function',      // --function-<role>, --function-<role>-ink
+    },
+  });
+  var SEMANTIC_NODE_KEYS = ['assessment', 'figure', 'function', 'does'];
+  var ROLE_KEYS = ['fill', 'ink'];
 
   // The plate's geometry, in viewBox units. Owned by the pattern; not an option.
   // Each node is one outlined ring centered on its vertex. Every connector stops a fixed gap outside the
@@ -112,6 +174,27 @@
     keySample: 84,         // length of each drawn sample
     keyGap: 22,            // sample end to wording
     keyTextMax: 242,       // widest wording a slot holds: keyPitch - keySample - keyGap - 12
+    // A declared semantic example only. Its notes sit beside each node, outside the ring: the figure's
+    // lines and the assessment word, or the function word, centered on the vertex, above a node in the
+    // plate's upper half and below one in its lower half. Its explanation band runs under the key: the
+    // system's name, then each declaration, and each role-bearing node's does, under a label in its
+    // own column. Both are set at 32 units or more, where the font's optical size is the one the carrier
+    // measured: a line's measured width is the unkerned sum of its advances at the weight and optical
+    // size it draws at, and kerning moves the drawn width by little.
+    noteFontSize: 34,
+    noteLeading: 40,
+    noteGap: 14,           // ring outer edge to the nearest note line's ink
+    noteTextMax: 360,      // widest note line, centered on its vertex
+    noteLinesMax: 2,       // a figure's lines; the assessment word adds one
+    bandFontSize: 32,
+    bandLeading: 44,
+    bandFirst: 110,        // the key's baseline to the band heading's baseline
+    bandHeadGap: 16,       // added below the heading
+    bandRowGap: 12,        // added between rows
+    bandFoot: 56,          // last baseline to the plate's foot
+    bandLabelWidth: 196,   // the label column, whose room holds every letter beside any function's name
+    bandRight: 920,        // the text column's right edge
+    bandLinesMax: 18,      // every row line a band holds, heading excluded
   });
 
   // What both text rules state, rather than inherit, beyond their family, weight, size, anchoring and optical
@@ -141,11 +224,36 @@
     });
   }
 
-  function textWidth(s, glyphs) {
+  function widthAt(s, glyphs, size) {
     var adv = glyphs.advances.em, w = 0;
     for (var i = 0; i < s.length; i++) w += own(adv, s[i]) ? adv[s[i]] : 0;
-    return w * GEOMETRY.keyFontSize;
+    return w * size;
   }
+  function textWidth(s, glyphs) { return widthAt(s, glyphs, GEOMETRY.keyFontSize); }
+
+  /** A human-readable field of a declared semantic example: one or more lines, each a string of printable
+      Basic Latin with at least one character that is not a space. Every index is read. Returns the
+      problem, or null. */
+  function lineProblem(v, maxLines) {
+    if (!Array.isArray(v) || v.length < 1) return 'a list of one or more lines';
+    if (maxLines && v.length > maxLines) return 'at most ' + maxLines + ' line' + (maxLines > 1 ? 's' : '');
+    for (var i = 0; i < v.length; i++)
+      if (typeof v[i] !== 'string' || !/[^ ]/.test(v[i]) || !PRINTABLE.test(v[i])) return 'line ' + i + ' is not a line of printable Basic Latin';
+    return null;
+  }
+
+  /** The name of the system a spec declares as its own, or null when the spec has no semantic of its own
+      naming a known system. A spec that only inherits one draws neutral; a malformed declaration of its
+      own is a validation error, so the answer is the plate's for a spec that validates. render and
+      describe read a spec's system through this rule, and so do the exporter and the specimen page. */
+  function semanticSystem(spec) {
+    return isObject(spec) && own(spec, 'semantic') && isObject(spec.semantic) && typeof spec.semantic.system === 'string' && own(SEMANTIC, spec.semantic.system)
+      ? spec.semantic.system : null;
+  }
+  function systemOf(spec) { var name = semanticSystem(spec); return name ? SEMANTIC[name] : null; }
+
+  // The band's text column, and each band label's room in its own column.
+  function bandTextMax() { return GEOMETRY.bandRight - (GEOMETRY.size - 2 * GEOMETRY.radius) / 2 - GEOMETRY.bandLabelWidth; }
 
   function finite(v) { return typeof v === 'number' && isFinite(v); }
 
@@ -189,12 +297,65 @@
     var preset = typeof spec.preset === 'string' && own(PRESETS, spec.preset) ? PRESETS[spec.preset] : null;
     if (!preset) err('PRESET_UNKNOWN', 'spec.preset', '"triangle" or "square"');
 
+    // A declared semantic example: one system, every declaration it names, each a measured line list.
+    var sys = null, bandLines = 0;
+    if (own(spec, 'semantic')) {
+      var sem = spec.semantic;
+      if (!isObject(sem)) err('SEMANTIC_NOT_OBJECT', 'spec.semantic', 'an object naming one system and its declarations');
+      else {
+        if (typeof sem.system !== 'string' || !own(SEMANTIC, sem.system))
+          err('SEMANTIC_SYSTEM', 'spec.semantic.system', '"criterion-assessment" or "three-functions"');
+        else {
+          sys = SEMANTIC[sem.system];
+          closedKeys(sem, ['system'].concat(sys.declarations), 'SEMANTIC_KEY', 'spec.semantic', errors);
+          sys.declarations.forEach(function (d) {
+            var p = 'spec.semantic.' + d;
+            if (!own(sem, d)) { err('SEMANTIC_DECLARATION', p, sys.name + ' declares its ' + d); return; }
+            var problem = lineProblem(sem[d]);
+            if (problem) { err('SEMANTIC_TEXT', p, problem); return; }
+            bandLines += sem[d].length;
+            if (measured) sem[d].forEach(function (line, k) {
+              var w = widthAt(line, glyphs, GEOMETRY.bandFontSize);
+              if (w > bandTextMax()) err('SEMANTIC_TEXT_WIDTH', p + '[' + k + ']', 'too wide for the band (' + Math.round(w) + ' of ' + bandTextMax() + ' units)');
+            });
+          });
+        }
+      }
+    }
+
     // Every index is read, so a hole in an array is a missing entry, never a skipped one.
     var ids = Object.create(null), labels = Object.create(null), valid = [];
+    function checkAssignment(n, p) {
+      var a = sys.assignment, t = sys.text;
+      if (!own(n, a)) { err('NODE_ASSIGNMENT', p + '.' + a, 'every node of a ' + sys.name + ' example declares its ' + a); return; }
+      if (typeof n[a] !== 'string' || sys.values.indexOf(n[a]) === -1) { err('NODE_ASSIGNMENT', p + '.' + a, '"' + sys.values.join('", "') + '"'); return; }
+      var colored = sys.colored.indexOf(n[a]) !== -1;
+      if (!own(n, t)) {
+        if (sys.textRequired && colored) err('NODE_TEXT', p + '.' + t, 'a role-bearing node says what it ' + t + ' in this example');
+        return;
+      }
+      if (sys.textRequired && !colored) { err('NODE_TEXT', p + '.' + t, 'a node that performs no function gives no ' + t); return; }
+      var problem = lineProblem(n[t], sys.textRequired ? 0 : GEOMETRY.noteLinesMax);
+      if (problem) { err('NODE_TEXT', p + '.' + t, problem); return; }
+      // A does goes in the band's text column; a figure beside its node.
+      var size = sys.textRequired ? GEOMETRY.bandFontSize : GEOMETRY.noteFontSize;
+      var max = sys.textRequired ? bandTextMax() : GEOMETRY.noteTextMax;
+      if (sys.textRequired) bandLines += n[t].length;
+      if (measured) n[t].forEach(function (line, k) {
+        var w = widthAt(line, glyphs, size);
+        if (w > max) err('NODE_TEXT_WIDTH', p + '.' + t + '[' + k + ']', 'too wide for its slot (' + Math.round(w) + ' of ' + max + ' units)');
+      });
+    }
     function checkNode(n, i) {
       var p = 'spec.nodes[' + i + ']';
       if (!isObject(n)) { err('NODE_NOT_OBJECT', p, 'a node is an object'); return; }
-      closedKeys(n, NODE_KEYS, 'NODE_KEY', p, errors);
+      var allowed = sys ? NODE_KEYS.concat([sys.assignment, sys.text]) : NODE_KEYS;
+      Object.keys(n).forEach(function (k) {
+        if (allowed.indexOf(k) !== -1) return;
+        err('NODE_KEY', p + '.' + k, SEMANTIC_NODE_KEYS.indexOf(k) !== -1
+          ? 'accepted only on a declared semantic example whose system assigns it' : 'unknown field');
+      });
+      if (sys) checkAssignment(n, p);
       if (typeof n.id !== 'string' || !NODE_ID.test(n.id)) err('NODE_ID', p + '.id', 'a letter, then letters, digits, "_" or "-"');
       else if (ids[n.id]) err('NODE_ID_DUPLICATE', p + '.id', '"' + n.id + '" is already a node');
       else { ids[n.id] = true; valid.push(n.id); }
@@ -213,6 +374,9 @@
       if (preset && nodeCount !== preset.n) err('NODE_COUNT', 'spec.nodes', spec.preset + ' takes ' + preset.n + ' nodes, not ' + nodeCount);
       for (var ni = 0; ni < nodeCount; ni++) checkNode(spec.nodes[ni], ni);
     }
+
+    if (sys && bandLines > GEOMETRY.bandLinesMax)
+      err('SEMANTIC_BAND', 'spec.semantic', 'the explanation takes ' + bandLines + ' lines; a band holds ' + GEOMETRY.bandLinesMax);
 
     var pairs = Object.create(null), types = Object.create(null);
     function checkRelation(r, i) {
@@ -328,7 +492,24 @@
       return lab[r.from] + ' and ' + lab[r.to] + ' unspecified';
     });
     var count = ['Three', 'Four'][spec.nodes.length - 3];
-    return count + ' equal nodes (' + spec.nodes.map(function (n) { return n.label; }).join(', ') + '). ' + rel.join('; ') + '.';
+    return count + ' equal nodes (' + spec.nodes.map(function (n) { return n.label; }).join(', ') + '). ' + rel.join('; ') + '.'
+      + describeSemantic(spec);
+  }
+
+  /** A declared semantic example's assignments and declarations, for <desc>: everything the plate
+      shows beside its nodes and in its band, as text. Empty for a neutral plate. */
+  function describeSemantic(spec) {
+    var sys = systemOf(spec);
+    if (!sys) return '';
+    var lines = function (v) { return v.map(function (x) { return x.trim(); }).join(' ').replace(/[.]+$/, ''); };
+    var nodes = spec.nodes.map(function (n) {
+      var a = n[sys.assignment], parts = [];
+      if (sys.textRequired) { if (a !== 'none') parts.push(a, lines(n[sys.text])); else parts.push('no function'); }
+      else { parts.push(a); if (own(n, sys.text)) parts.push('figure ' + lines(n[sys.text])); }
+      return n.label + ': ' + parts.join(', ');
+    });
+    var decl = sys.declarations.map(function (d) { return sys.labels[d] + ': ' + lines(spec.semantic[d]); });
+    return ' ' + sys.name + '. ' + nodes.join('; ') + '. ' + decl.join('. ') + '.';
   }
 
   // ------------------------------------------------------------------ geometry
@@ -404,15 +585,42 @@
     if (options.glyphs === undefined) err('GLYPHS_MISSING', 'options.glyphs', 'pass the DIAGRAM_PEER_GLYPHS carrier (diagrams-static-peer-glyphs.js)');
     else if (!measured) err('GLYPHS_MALFORMED', 'options.glyphs', GLYPHS_SHAPE);
     o.glyphs = options.glyphs;
-    o.keyed = own(options, 'keyed') ? options.keyed : false;
+    o.keyedGiven = own(options, 'keyed');
+    o.keyed = o.keyedGiven ? options.keyed : false;
     if (typeof o.keyed !== 'boolean') err('OPTION_KEYED', 'options.keyed', 'true or false');
     o.arrowheads = own(options, 'arrowheads') ? options.arrowheads : 'target';
     if (o.arrowheads !== 'target' && o.arrowheads !== 'midpoint') err('OPTION_ARROWHEADS', 'options.arrowheads', '"target" or "midpoint"');
     o.theme = own(options, 'theme') ? options.theme : 'inherit';
+    o.roles = null;
     if (o.theme !== 'inherit') {
       if (!isObject(o.theme)) err('OPTION_THEME', 'options.theme', '"inherit" or a resolved theme object');
       else {
-        closedKeys(o.theme, THEME_KEYS, 'OPTION_THEME', 'options.theme', errors);
+        closedKeys(o.theme, THEME_KEYS.concat(THEME_OPTIONAL), 'OPTION_THEME', 'options.theme', errors);
+        // A declared semantic example's resolved role values: each colored role a system names, as
+        // { fill, ink }, resolved values like every other in the theme. Only the theme's own roles are
+        // its roles: an inherited mapping is not the theme's, as an inherited semantic is not the spec's.
+        // Each value is read once, checked and kept, and render draws from what was kept, never from the
+        // theme again. Which roles a plate needs is its system's, checked when the spec is known.
+        if (own(o.theme, 'roles')) {
+          var roles = o.theme.roles, known = [];
+          Object.keys(SEMANTIC).forEach(function (n) { known = known.concat(SEMANTIC[n].colored); });
+          if (!isObject(roles)) err('OPTION_THEME', 'options.theme.roles', 'an object of resolved role values');
+          else {
+            o.roles = {};
+            Object.keys(roles).forEach(function (r) {
+              var rp = 'options.theme.roles.' + r, v = roles[r], kept = {};
+              if (known.indexOf(r) === -1) { err('OPTION_THEME', rp, 'not a colored role of a semantic system'); return; }
+              if (!isObject(v)) { err('OPTION_THEME', rp, '{ fill, ink }'); return; }
+              closedKeys(v, ROLE_KEYS, 'OPTION_THEME', rp, errors);
+              ROLE_KEYS.forEach(function (k) {
+                var x = v[k];
+                if (typeof x !== 'string' || !x.length || THEME_UNSAFE.test(x) || ROLE_UNSAFE.test(x) || XML_UNSAFE.test(x)) err('OPTION_THEME', rp + '.' + k, 'a resolved color value');
+                kept[k] = x;
+              });
+              o.roles[r] = kept;
+            });
+          }
+        }
         THEME_KEYS.forEach(function (k) {
           var v = o.theme[k];
           if (k === 'labelWeight' || k === 'keyWeight') { if (typeof v !== 'number' || !(v >= 1 && v <= 1000)) err('OPTION_THEME', 'options.theme.' + k, 'a font weight'); }
@@ -438,7 +646,26 @@
   function render(spec, options) {
     var o = readOptions(spec, options);
     check(spec, o.glyphs);
-    var G = GEOMETRY, S = G.size, H = S + (o.keyed ? G.keyBand : 0);
+    // A declared semantic example is drawn keyed, with its band: its key and explanation are part of
+    // reading its color, so no option strips them. Its resolved theme carries its system's role values.
+    var sys = systemOf(spec), band = sys ? bandRows(spec, sys) : null;
+    if (sys) {
+      if (o.keyedGiven && o.keyed === false)
+        throw PeerError([{ code: 'OPTION_KEYED', path: 'options.keyed', message: 'a declared semantic example is drawn keyed only: its key and explanation are part of reading its color' }]);
+      o.keyed = true;
+      if (o.theme !== 'inherit') {
+        var given = o.roles ? Object.keys(o.roles) : [];
+        var missing = sys.colored.filter(function (r) { return given.indexOf(r) === -1; });
+        var foreign = given.filter(function (r) { return sys.colored.indexOf(r) === -1; });
+        if (missing.length || foreign.length) throw PeerError(missing.map(function (r) {
+          return { code: 'OPTION_THEME', path: 'options.theme.roles.' + r, message: 'a ' + sys.name + ' example drawn with a resolved theme needs each of its roles resolved in the theme\'s own roles' };
+        }).concat(foreign.map(function (r) {
+          return { code: 'OPTION_THEME', path: 'options.theme.roles.' + r, message: 'not a role of ' + sys.name };
+        })));
+      }
+    } else if (o.roles)
+      throw PeerError([{ code: 'OPTION_THEME', path: 'options.theme.roles', message: 'roles belong to a declared semantic example; a neutral plate takes none' }]);
+    var G = GEOMETRY, S = G.size, H = S + (o.keyed ? G.keyBand : 0) + (band ? band.height : 0);
     var pts = vertices(spec.preset, S / 2, S / 2, G.radius);
     var ix = indexOf(spec), id = o.idPrefix, pid = plateIds(id), fixed = o.theme !== 'inherit';
     var c = fixed
@@ -468,6 +695,7 @@
       + s + '.peer-key{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.kw + ';font-size:' + G.keyFontSize + 'px;text-anchor:start;font-optical-sizing:auto;' + TEXT_RULES + '}'
       + s + '.peer-field{stroke:none}'
       + (fixed ? '' : s + '.peer-field-from{stop-color:' + c.from + '}' + s + '.peer-field-to{stop-color:' + c.to + '}')
+      + (sys ? semanticRules(spec, sys, s, c, fixed ? o.roles : null) : '')
       + '</style>');
 
     // The field: the foundation's 45-degree gradient, lighter end top right in light, bottom left in dark.
@@ -518,14 +746,92 @@
     out.push('<g class="peer-nodes">');
     spec.nodes.forEach(function (node, i) {
       var gm = o.glyphs.labels.em[node.label];
-      out.push('<circle class="peer-ring" data-node="' + esc(node.id) + '" cx="' + f(pts[i].x) + '" cy="' + f(pts[i].y) + '" r="' + f(G.ring.radius) + '"/>');
-      out.push('<text class="peer-glyph" data-node="' + esc(node.id) + '" x="' + f(pts[i].x + gm.dx * G.fontSize) + '" y="' + f(pts[i].y + gm.dy * G.fontSize) + '">' + esc(node.label) + '</text>');
+      // A declared semantic example's node carries its assignment; a colored one is painted by it.
+      var assigned = sys ? ' data-' + sys.assignment + '="' + esc(node[sys.assignment]) + '"' : '';
+      out.push('<circle class="peer-ring" data-node="' + esc(node.id) + '" cx="' + f(pts[i].x) + '" cy="' + f(pts[i].y) + '" r="' + f(G.ring.radius) + '"' + assigned + '/>');
+      out.push('<text class="peer-glyph" data-node="' + esc(node.id) + '" x="' + f(pts[i].x + gm.dx * G.fontSize) + '" y="' + f(pts[i].y + gm.dy * G.fontSize) + '"' + assigned + '>' + esc(node.label) + '</text>');
     });
     out.push('</g>');
 
+    if (sys) out.push(notes(spec, sys, pts));
     if (o.keyed) out.push(key(spec));
+    if (band) out.push(drawBand(band, S + G.keyBaseline + G.bandFirst));
     out.push('</svg>');
     return out.join('');
+  }
+
+  // ------------------------------------------------------------------ declared semantic examples
+
+  /** The paint of each colored role the plate's nodes carry: the ring filled at 100% of the role's
+      value, its stroke in the same value, and the letter in the role's ink. A page plate reads the
+      system's tokens; a standalone file its resolved roles. An unassessed or 'none' node matches no
+      rule and keeps the neutral ring. Every rule is scoped to the plate. */
+  function semanticRules(spec, sys, s, c, resolved) {
+    var used = sys.colored.filter(function (r) { return spec.nodes.some(function (n) { return n[sys.assignment] === r; }); });
+    var G = GEOMETRY, out = '';
+    used.forEach(function (r) {
+      var fill = resolved ? resolved[r].fill : 'var(--' + sys.tokens + '-' + r + ')';
+      var ink = resolved ? resolved[r].ink : 'var(--' + sys.tokens + '-' + r + '-ink)';
+      var on = '[data-' + sys.assignment + '="' + r + '"]';
+      out += s + '.peer-ring' + on + '{fill:' + fill + ';stroke:' + fill + '}'
+        + s + '.peer-glyph' + on + '{fill:' + ink + '}';
+    });
+    return out
+      + s + '.peer-note{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.kw + ';font-size:' + G.noteFontSize + 'px;text-anchor:middle;font-optical-sizing:auto;' + TEXT_RULES + '}'
+      + s + '.peer-band{fill:' + c.ink + ';font-family:' + c.font + ';font-weight:' + c.kw + ';font-size:' + G.bandFontSize + 'px;text-anchor:start;font-optical-sizing:auto;' + TEXT_RULES + '}';
+  }
+
+  /** Each node's note, outside its ring and centered on its vertex, in the plate's ink: a figure's lines
+      and the assessment word, or the function's name. Above a node in the plate's upper half, below one
+      in its lower half. An unassessed node shows its figure alone; a 'none' node shows nothing. */
+  function notes(spec, sys, pts) {
+    var G = GEOMETRY, S = G.size, out = [], cap = 2 * G.keyCapCenter * G.noteFontSize;
+    var rim = G.ring.radius + G.ring.stroke / 2 + G.noteGap;
+    spec.nodes.forEach(function (node, i) {
+      var a = node[sys.assignment], lines = [];
+      if (sys.textRequired) { if (a !== 'none') lines.push(a); }
+      else {
+        if (own(node, sys.text)) lines = lines.concat(node[sys.text]);
+        if (sys.colored.indexOf(a) !== -1) lines.push(a);
+      }
+      if (!lines.length) return;
+      var above = pts[i].y < S / 2;
+      // Above: the last line's baseline sits the gap above the ring, with room for a descender. Below:
+      // the first line's cap height sits the gap below it.
+      var first = above ? pts[i].y - rim - 0.24 * G.noteFontSize - (lines.length - 1) * G.noteLeading : pts[i].y + rim + cap;
+      lines.forEach(function (line, k) {
+        out.push('<text class="peer-note" data-node="' + esc(node.id) + '" x="' + f(pts[i].x) + '" y="' + f(first + k * G.noteLeading) + '">' + esc(line) + '</text>');
+      });
+    });
+    return '<g class="peer-notes">' + out.join('') + '</g>';
+  }
+
+  /** The band's rows: each declaration under its label, then, for Three Functions, each role-bearing
+      node's does under its letter and function. Its height runs from the key band's foot to the plate's
+      foot. */
+  function bandRows(spec, sys) {
+    var rows = sys.declarations.map(function (d) { return { label: sys.labels[d], lines: spec.semantic[d] }; });
+    if (sys.textRequired) spec.nodes.forEach(function (n) {
+      if (n[sys.assignment] !== 'none') rows.push({ label: n.label + ' ' + n[sys.assignment], lines: n[sys.text] });
+    });
+    var G = GEOMETRY, count = rows.reduce(function (t, r) { return t + r.lines.length; }, 0);
+    var last = G.keyBaseline + G.bandFirst + G.bandLeading + G.bandHeadGap + (count - 1) * G.bandLeading + (rows.length - 1) * G.bandRowGap;
+    return { name: sys.name, rows: rows, height: last + G.bandFoot - G.keyBand };
+  }
+
+  function drawBand(band, y) {
+    var G = GEOMETRY, x0 = (G.size - 2 * G.radius) / 2, xt = x0 + G.bandLabelWidth, out = [];
+    out.push('<text class="peer-band" x="' + f(x0) + '" y="' + f(y) + '">' + esc(band.name) + '</text>');
+    y += G.bandLeading + G.bandHeadGap;
+    band.rows.forEach(function (row, r) {
+      if (r) y += G.bandRowGap;
+      out.push('<text class="peer-band" x="' + f(x0) + '" y="' + f(y) + '">' + esc(row.label) + '</text>');
+      row.lines.forEach(function (line) {
+        out.push('<text class="peer-band" x="' + f(xt) + '" y="' + f(y) + '">' + esc(line) + '</text>');
+        y += G.bandLeading;
+      });
+    });
+    return '<g class="peer-band-group">' + out.join('') + '</g>';
   }
 
   /** The key: under the plate, starting at the left edge of the polygon's circumcircle, a drawn
@@ -569,8 +875,8 @@
   }
 
   return {
-    VERSION: VERSION, PRESETS: PRESETS, TYPES: TYPES, GEOMETRY: GEOMETRY,
-    validate: validate, render: render, mount: mount, idPrefixFor: idPrefixFor,
+    VERSION: VERSION, PRESETS: PRESETS, TYPES: TYPES, GEOMETRY: GEOMETRY, SEMANTIC: SEMANTIC,
+    validate: validate, render: render, mount: mount, idPrefixFor: idPrefixFor, semanticSystem: semanticSystem,
     matrix: matrix, signatures: signatures, symmetry: symmetry, describe: describe,
   };
 });

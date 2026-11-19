@@ -5,13 +5,15 @@
      node tests/peer-host-inheritance.mjs --out DIR    and keep results.json and the review PNGs in DIR
 
    It exports every spec as a consumer would (export-peer.mjs: art plate and keyed, light and dark, with the
-   heads at the target and at the midpoint), serves this repository read-only on 127.0.0.1 and opens the
+   heads at the target and at the midpoint; a declared semantic example keyed only, its roles resolved from
+   the systems' stylesheets), serves this repository read-only on 127.0.0.1 and opens the
    specimen page in headless Chrome (Node 22+, Chrome at $CHROME or the default locations; no npm
    dependency). Each exported SVG is inlined, unchanged, into a control host and into hosts that each carry
    ordinary inherited styles a page may set — text anchoring, baseline, direction, writing mode, white
    space, the face's style, weight, width, variants and size adjustment, spacing and case, kerning and
-   features, rendering, stroke and shadow — and into one host that sets all of them. One spec is also
-   mounted through the page's engine into the control and the combined host. After the fonts load it
+   features, rendering, stroke and shadow — and into one host that sets all of them. One spec, and each
+   declared semantic example, is also mounted through the page's engine into the control and the combined
+   host. After the fonts load it
    reads, for every text, where its first character starts, its length and box, its computed style and the
    platform font that drew it, and compares them with the control.
 
@@ -136,9 +138,13 @@ function check(id, name, ok, detail) {
 /* ---------------------------------------------------------- exports -- */
 const EXP = fs.mkdtempSync(path.join(os.tmpdir(), 'peer-host-inheritance-export-'));
 const PLATES = [];
+// The systems' stylesheets, in load order: the exporter resolves a declared semantic example's roles from
+// them, and the page takes them as it takes the token file.
+const SEMANTIC_SHEETS = ['surface-treatments.css', 'spectral-state.css', 'criterion-assessment.css', 'three-functions.css'];
 for (const heads of ['target', 'midpoint']) {
   const dir = path.join(EXP, heads);
-  execFileSync(process.execPath, [path.join(DIR, 'export-peer.mjs'), '--out', dir, '--tokens', path.join(ROOT, 'colors_and_type.css'), '--arrowheads', heads], { stdio: ['ignore', 'ignore', 'inherit'] });
+  execFileSync(process.execPath, [path.join(DIR, 'export-peer.mjs'), '--out', dir, '--tokens', path.join(ROOT, 'colors_and_type.css'), '--arrowheads', heads,
+    ...SEMANTIC_SHEETS.flatMap((f) => ['--semantic-css', path.join(ROOT, f)])], { stdio: ['ignore', 'ignore', 'inherit'] });
   for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.svg')).sort()) PLATES.push({ file: `${heads}/${f}`, svg: fs.readFileSync(path.join(dir, f), 'utf8') });
 }
 fs.rmSync(EXP, { recursive: true, force: true });
@@ -149,13 +155,17 @@ let p;
 const TOL = 0.01;
 try {
   p = await page(b, `${base}/patterns/diagram-static-peer/diagram-static-peer.html`);
-  // The specimen links its tokens at the vendored path a consumer copies them to (_dsa-tokens/), which the
-  // owner repository does not carry; a page plate takes the page's foundation roles, so give the page the
-  // owner's token file before anything is mounted.
-  const tokens = await p.evaluate(`new Promise((done) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/colors_and_type.css';
-    l.onload = () => document.fonts.ready.then(() => done(getComputedStyle(document.documentElement).getPropertyValue('--fw-extralight').trim()));
-    l.onerror = () => done(''); document.head.appendChild(l); })`);
-  if (tokens !== '200') throw new Error('the owner token file did not load: --fw-extralight is ' + JSON.stringify(tokens));
+  // The specimen links its tokens and the systems' stylesheets at the vendored paths a consumer copies them
+  // to (_dsa-tokens/, _dsa-surface/), which the owner repository does not carry; a page plate takes the
+  // page's foundation roles, and a declared semantic example its system's tokens, so give the page the
+  // owner's files, in load order, before anything is mounted.
+  const tokens = await p.evaluate(`(async () => { for (const href of ${JSON.stringify(['/colors_and_type.css', ...SEMANTIC_SHEETS.map((f) => '/' + f)])}) {
+      const ok = await new Promise((done) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href;
+        l.onload = () => done(true); l.onerror = () => done(false); document.head.appendChild(l); });
+      if (!ok) return 'MISSING ' + href; }
+    await document.fonts.ready; const cs = getComputedStyle(document.documentElement);
+    return cs.getPropertyValue('--fw-extralight').trim() + ' ' + cs.getPropertyValue('--assessment-favorable-ink').trim() + ' ' + cs.getPropertyValue('--function-judicial').trim(); })()`);
+  if (!/^200 \S+ \S+$/.test(tokens)) throw new Error('the owner stylesheets did not load: ' + JSON.stringify(tokens));
   await p.evaluate(`(() => { const c = document.createElement('div'); c.id = 'nhi';
     c.style.cssText = 'position:absolute;left:0;top:0;z-index:99;background:#fff;padding:0;margin:0';
     document.body.appendChild(c); return true; })()`);
@@ -224,16 +234,18 @@ try {
     control[P.file] = m;
     for (const t of m.texts) {
       runs++;
-      // a letter is centered on its x, a key's wording starts at its x; both sit on the baseline at y
-      const at = t.cls === 'peer-glyph' ? t.sx + t.len / 2 : t.sx;
+      // a letter and a semantic example's note are centered on their x, a key's wording and a band line
+      // start at theirs; all sit on the baseline at y
+      const at = t.cls === 'peer-glyph' || t.cls === 'peer-note' ? t.sx + t.len / 2 : t.sx;
       if (Math.abs(at - t.x) > TOL || Math.abs(t.sy - t.y) > TOL) I1bad.push(`${P.file}: ${t.text} ${at.toFixed(3)},${t.sy.toFixed(3)} for ${t.x},${t.y}`);
       faceNames.add(`${t.cls}=${t.font}`);
     }
     if (outside(m).length || !settled(m)) I1bad.push(`${P.file}: outside ${outside(m).length}, faces ${m.faces.join(',')}`);
   }
   faceNames = [...faceNames].sort();
-  check('I1', 'in the control host every exported plate draws its texts where its layout placed them: each letter centered on its x, each key wording starting at its x, both on the baseline at y; no text leaves the plate; and every face it needs has loaded',
-    PLATES.length === 48 && runs > 0 && I1bad.length === 0, { plates: PLATES.length, runs, bad: I1bad.slice(0, 5) });
+  check('I1', 'in the control host every exported plate draws its texts where its layout placed them: each letter and note centered on its x, each key wording and band line starting at its x, all on the baseline at y; no text leaves the plate; and every face it needs has loaded',
+    PLATES.length === 56 && runs > 0 && I1bad.length === 0 && [...faceNames].some((f) => f.startsWith('peer-note=')) && [...faceNames].some((f) => f.startsWith('peer-band=')),
+    { plates: PLATES.length, runs, bad: I1bad.slice(0, 5) });
   check('I2', 'the control draws every letter and key wording with an upright Inter face: no text is italic',
     faceNames.length > 0 && faceNames.every((f) => /=Inter/i.test(f) && !/italic/i.test(f)), { faces: faceNames });
   const REF = PLATES.find((x) => x.file === 'target/square.L-E-O-V_keyed-light.svg');
@@ -253,10 +265,10 @@ try {
   }
 
   /* --------------------------------------------- I4 mounted through the engine -- */
-  const mountIn = async (style) => {
+  const mountIn = async (style, id = 'square.L-E-O-V') => {
     await p.evaluate(`(() => { const c = document.getElementById('nhi'); c.innerHTML = '';
       const h = document.createElement('div'); h.id = 'nhi-host'; h.setAttribute('style', ${JSON.stringify(style)}); c.appendChild(h);
-      const spec = window.PEER_DIAGRAMS.find((s) => s.id === 'square.L-E-O-V');
+      const spec = window.PEER_DIAGRAMS.find((s) => s.id === ${JSON.stringify(id)});
       window.DIAGRAM_PEER.mount(h, spec, { glyphs: window.DIAGRAM_PEER_GLYPHS, keyed: true }); return true; })()`);
     return read(style);
   };
@@ -264,6 +276,29 @@ try {
   check('I4', 'mounted through the engine with the page\'s theme, a keyed plate under all the host styles at once starts, measures, boxes and faces as in the control host',
     mc.texts.length > 0 && mmv.which.length === 0 && outside(ma).length === 0 && faceOff(ma, mc).length === 0 && ink(ma) === 0 && outside(mc).length === 0 && ma.dropped.length === 0,
     { texts: mc.texts.length, moved: mmv.which.length, most: mmv.most, outside: outside(ma).length, face: faceOff(ma, mc).length });
+  // Each declared semantic example, mounted with the page's theme: its notes and band hold under every
+  // host style at once, and each colored ring and letter takes the value its system's tokens resolve to.
+  const rgb = (v) => p.evaluate(`(() => { const d = document.createElement('div'); d.style.color = ${JSON.stringify(v)}; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; })()`);
+  // Text rendering is outside the plate's guarantee: it is left to the page. Mounted on the page, where the
+  // page's own Inter draws the text, an inherited optimizeSpeed turns kerning off, so I6 applies every other
+  // host declaration and I7 holds the rendering host to faces and the plate's bounds.
+  const ALL_BUT_RENDERING = HOSTS.all.replace(`${HOSTS.rendering}; `, '');
+  if (ALL_BUT_RENDERING === HOSTS.all) throw new Error('the combined host no longer carries the rendering declaration I6 leaves out');
+  for (const [id, attr, roles] of [['triangle.A-S-K.assessment', 'assessment', ['favorable', 'caution', 'adverse']], ['triangle.L-E-J.functions', 'function', ['legislative', 'executive', 'judicial']]]) {
+    const sc = await mountIn('', id), sa = await mountIn(ALL_BUT_RENDERING, id), smv = moved(sa, sc);
+    const want = [];
+    for (const r of roles) want.push([r, await rgb(`var(--${attr}-${r})`), await rgb(`var(--${attr}-${r}-ink)`)]);
+    const got = await p.evaluate(`(() => ${JSON.stringify(roles)}.map((r) => { const ring = document.querySelector('#nhi-host .peer-ring[data-${attr}="' + r + '"]'),
+      glyph = document.querySelector('#nhi-host .peer-glyph[data-${attr}="' + r + '"]'), a = getComputedStyle(ring), b = getComputedStyle(glyph); return [r, a.fill, a.stroke, b.fill]; }))()`);
+    const painted = got.every(([r, fill, stroke, letter], i) => fill === want[i][1] && stroke === want[i][1] && letter === want[i][2] && !/rgb\(0, 0, 0\)/.test(fill + letter));
+    check(`I6.${attr}`, `mounted through the engine with the page's theme, ${id} draws each colored ring and its boundary in its role's value and its letter in the role's ink, and under all the host styles at once but text rendering its texts start, measure, box and face as in the control host`,
+      sc.texts.some((t) => t.cls === 'peer-band') && painted && smv.which.length === 0 && outside(sa).length === 0 && faceOff(sa, sc).length === 0 && ink(sa) === 0 && sa.dropped.length === 0,
+      { texts: sc.texts.length, moved: smv.which.length, painted: got.map(([r, f, , l]) => `${r} ${f} / ${l}`) });
+    const sr = await mountIn(HOSTS.rendering, id), srm = moved(sr, sc);
+    check(`I7.${attr}`, `under an inherited ${HOSTS.rendering}, which the plate leaves to the page, ${id}'s texts keep their faces and stay inside the plate`,
+      sr.texts.length === sc.texts.length && outside(sr).length === 0 && faceOff(sr, sc).length === 0 && sr.dropped.length === 0,
+      { moved: srm.which, most: srm.most });
+  }
 
   /* ----------------------------------------------- I5 white space in the content -- */
   // A text's own white space collapses, as an SVG text's does on its own: a key wording with edge and doubled
@@ -301,6 +336,15 @@ try {
     const st = await measure(HOSTS['stroke-shadow'], first);
     check('N5', 'I3 bites: with the former rules, an inherited stroke strokes the texts, the heads and the field', ink(st) > 0, { stroked: ink(st) });
   }
+  // I6 bites: with the page's criterion-assessment.css switched off, a colored ring is not its role's value.
+  const switched = await p.evaluate(`(() => { const l = [...document.querySelectorAll('link')].find((x) => x.getAttribute('href') === '/criterion-assessment.css'); if (!l) return false; l.disabled = true; return true; })()`);
+  if (switched) {
+    await mountIn('', 'triangle.A-S-K.assessment');
+    const off = await p.evaluate(`(() => { const ring = document.querySelector('#nhi-host .peer-ring[data-assessment="favorable"]'); return getComputedStyle(ring).fill; })()`);
+    const on = await rgb('var(--state-earned)');
+    await p.evaluate(`(() => { [...document.querySelectorAll('link')].find((x) => x.getAttribute('href') === '/criterion-assessment.css').disabled = false; return true; })()`);
+    check('N6', 'I6 bites: with the page\'s criterion-assessment.css switched off, the favorable ring no longer takes its role\'s value', off !== on, { off, on });
+  } else check('N6', 'I6 bites: the page carries the criterion-assessment.css it can switch off', false);
   check('P1', 'the page raised no exception', p.errors.length === 0, p.errors.slice(0, 3));
 } catch (e) {
   check('RUN', 'the harness completed', false, String(e && e.stack || e));
