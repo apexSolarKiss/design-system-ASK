@@ -4,7 +4,9 @@ A semantic state-color **profile** under the Spectral State family. It answers o
 
 It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** Spectral State's eight-role vocabulary is unchanged. This profile **reuses three Spectral State values by reference** and adds no value of its own.
 
-> **Status: v0.1.** Authorized by ASK source-of-intent (2026-11-05) as a shared capability, with colored rails selected for its table application. The role list may firm up as the profile sees more use.
+> **Status: v0.2 // the filled-node application.** A node in an assessment-bearing figure the consumer composes may be filled in its role through [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT: each role names its ink, `--assessment-<role>-ink`, favorable on green, caution on yellow and adverse on red. Each filled node shows its word, or the figure has a key, and an unassessed node takes no assessment fill (The filled-node application, below). The table application stays rail-only, and its rails bind the rail paint by color, green, yellow and red, with no change to what they draw. A labeled range takes neutral, a review value or a keyed state or evidence value, never an assessment. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
+>
+> **v0.1.** Authorized by ASK source-of-intent (2026-11-05) as a shared capability, with colored rails selected for its table application. The role list may firm up as the profile sees more use.
 
 ## The four roles
 

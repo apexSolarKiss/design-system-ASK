@@ -28,7 +28,22 @@
 
    Offline; no CDN. One value per role in both themes: no theme block.
 
-   STATUS: v0.3 — the two new values are defined once, in the foundation's reserved
+   STATUS: v0.4 — each role's ink, and an evidence role in words. Each
+   chromatic role names its ink on a fill, --evidence-<role>-ink, bound by
+   reference to the ink FILL PAINT (surface-treatments.css) keys by the fill
+   color: supported on green, partially-supported on orange, unresolved on
+   cyan and weakened on brown, whose ink is the lavender in both themes.
+   Not-yet-testable has no ink and is never filled (EACH ROLE'S INK, below).
+   Outside a multi-axis review annotation, a chromatic role may be named on a
+   keyed bordered label, .evidence-label with data-evidence, whose words are
+   exactly Evidence // <Role>, and a labeled range that label opens takes the
+   role's value on its scope rail, with green's rail paint for supported (AN
+   EVIDENCE ROLE IN WORDS, below). Not-yet-testable takes no keyed label and
+   keeps its note, and inside a Review Semantics annotation evidence keeps its
+   dot. The role values are unchanged. Re-sync this file with
+   surface-treatments.css from the same owner commit.
+
+   v0.3 — the two new values are defined once, in the foundation's reserved
    state values (colors_and_type.css: --ask-state-value-brown and
    --ask-state-value-lavender-gray), as Spectral State v1.3's are; the values are unchanged.
    Re-sync this file with colors_and_type.css from the same owner commit.

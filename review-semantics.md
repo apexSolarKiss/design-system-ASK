@@ -4,7 +4,9 @@ An opt-in composition for documents that are reviewed. It keeps five questions a
 
 Review State is **a sanctioned profile, not a separate palette and not a change to Spectral State or Evidence State.** It reuses existing values by reference, keeps its own labels and meanings, and mints no value. Spectral State's eight roles and Evidence State's five are unchanged.
 
-> **Status: v0.1 // first version.** Opt-in. A consumer takes it through its own gates; no existing document is recolored by its arrival.
+> **Status: v0.2 // the filled decision record.** Outside a reviewed document's own annotation, one decision may be shown on its own as a filled record, `.review-record` with `data-review` proposed, open, accepted or declined, on a shape the consumer fills with [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT; each of those roles names its ink, `--review-<role>-ink`, and `none` draws no record. The record states its outcome in words, names its object or version, its actor, its scope and any material condition in fields of its own, and is inert; its fill confers no authority (The filled decision record, below). The evidence and state marks now read the surface treatments' shared marker anatomy, and the accepted and declined ranges bind green's and red's rail paint by color, with no change to what either draws; a keyed state or evidence label is never an element of the composition. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
+>
+> **v0.1 // first version.** Opt-in. A consumer takes it through its own gates; no existing document is recolored by its arrival.
 
 ## Five questions, five owners
 

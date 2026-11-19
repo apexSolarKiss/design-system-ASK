@@ -23,7 +23,19 @@
    themes; its rails take surface-treatments.css's rail paint, and its filled
    nodes its fill paint (below).
 
-   STATUS: v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
+   STATUS: v0.2 — the filled-node application. A node in an
+   assessment-bearing figure the consumer composes may be filled in its role
+   through FILL PAINT (surface-treatments.css): each role names its ink,
+   --assessment-<role>-ink, favorable on green, caution on yellow and adverse
+   on red. Each filled node shows its word, or the figure has a key, and an
+   unassessed node takes no assessment fill (FILLED NODE APPLICATION, below).
+   The table application stays rail-only, and its rails bind the rail paint by
+   color, green, yellow and red, with no change to what they draw. A labeled
+   range takes neutral, a review value or a keyed state or evidence value,
+   never an assessment. The role values are unchanged. Re-sync this file with
+   surface-treatments.css from the same owner commit.
+
+   v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
    capability, with colored rails selected for its table application.
 
    ---------------------------------------------------------------------------

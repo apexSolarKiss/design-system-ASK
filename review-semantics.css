@@ -55,7 +55,22 @@
    inks are FILL PAINT's (surface-treatments.css), whose one theme exception
    among them is magenta's. This file sets no value per theme.
 
-   STATUS: v0.1 // first version. Opt-in. A consumer takes it through its own
+   STATUS: v0.2 // the filled decision record. Outside a reviewed document's
+   own annotation, one decision may be shown on its own as a filled record,
+   .review-record with data-review proposed, open, accepted or declined, on a
+   shape the consumer fills with FILL PAINT (surface-treatments.css); each of
+   those roles names its ink, --review-<role>-ink, and none draws no record.
+   The record states its outcome in words, names its object or version, its
+   actor, its scope and any material condition in fields of its own, and is
+   inert; its fill confers no authority (FILLED DECISION RECORD, below). The
+   evidence and state marks now read the surface treatments' shared marker
+   anatomy, and the accepted and declined ranges bind green's and red's rail
+   paint by color, with no change to what either draws; a keyed state or
+   evidence label is never an element of the composition. The role values are
+   unchanged. Re-sync this file with surface-treatments.css from the same owner
+   commit.
+
+   v0.1 // first version. Opt-in. A consumer takes it through its own
    gates; no existing document is recolored by its arrival. Contract:
    review-semantics.md; visual key: review-semantics.html.
 

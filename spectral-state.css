@@ -18,7 +18,17 @@
    labeled range draw the state label and the range it opens (A STATE IN WORDS, below).
    Offline; no CDN.
 
-   STATUS: v1.3 — green, yellow, orange and red are defined once, in the foundation's
+   STATUS: v1.4 — a state named in words. Outside a multi-axis review
+   annotation, an element's state may be named on a keyed bordered label,
+   .state-label with data-state, whose words are exactly State // <Role>, and
+   a labeled range that label opens takes the role's value on its scope rail,
+   with green's, yellow's or red's rail paint for earned, structural and
+   deflated (A STATE IN WORDS, below). Neutral takes no keyed label, and inside
+   a Review Semantics annotation state keeps its square. The role values are
+   unchanged. Re-sync this file with surface-treatments.css from the same owner
+   commit.
+
+   v1.3 — green, yellow, orange and red are defined once, in the foundation's
    reserved state values (colors_and_type.css), as the three emphasis colors already
    were; the role values are unchanged. Re-sync this file with colors_and_type.css from
    the same owner commit.
