@@ -110,9 +110,11 @@ In an **assessment-bearing figure** the consuming surface composes, a node judge
 | Concern | Rule |
 | --- | --- |
 | Words | Each filled node shows its word, on the node or beside it, or the figure carries a key that names each fill. The assessment never depends on color alone. |
-| Unassessed | No assessment fill and no word. The node keeps the figure's own node for one that asserts nothing, FILL PAINT's neutral shape (`.surface-fill--neutral`) where the figure fills its nodes, never a gray or a fourth color standing for a rating. |
+| Unassessed | No assessment fill and no word. The node keeps the figure's own node for one that asserts nothing: FILL PAINT's neutral shape (`.surface-fill--neutral`) where every node of the figure is a filled shape, or the figure's own unfilled node where its nodes are outlines, as the peer pattern's ring is; never a gray or a fourth color standing for a rating. |
 | One judgment | One node takes one assessment, against the figure's declared criterion. |
-| Where it applies | A figure the consumer composes. Never a table cell, which stays rail-only, and never the structural diagram scaffolds (`diagram-static-H`, `-V`, `-SEQ` and `-FLOW`), which FILL PAINT excludes. |
+| Where it applies | A figure the consumer composes, and a declared Criterion Assessment example of `diagram-static-peer`, whose engine draws it. Never a table cell, which stays rail-only, and never the structural diagram scaffolds (`diagram-static-H`, `-V`, `-SEQ` and `-FLOW`), which FILL PAINT excludes. |
+
+**In the peer pattern.** A declared Criterion Assessment example of [`diagram-static-peer`](patterns/diagram-static-peer/README.md#declared-semantic-examples) applies this application through its engine, which draws FILL PAINT's recipe itself in rules scoped to the plate rather than carrying `.surface-fill`. Each assessed node's ring is filled in its role's value, with its boundary in the same value and its letter in the role's ink. Its figure and word sit beside it in the plate's ink. The example's criterion, direction, scope, basis and threshold rule are drawn in a band under the key, and the plate is drawn keyed only. An unassessed node keeps the neutral ring and shows only a figure it gives, as plain text. On a page the engine reads `--assessment-<role>` and `--assessment-<role>-ink`, and its exporter resolves the same tokens for a standalone file. The example's criterion and every assignment are its author's.
 
 ## Tiers
 

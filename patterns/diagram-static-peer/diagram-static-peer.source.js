@@ -10,7 +10,12 @@
    carry numbered slots and no reading. The all-directed square and R-S-P are the specimen's comparison
    and relabeling examples. Every directed cycle here runs clockwise, the order the labels read, and its
    relations are listed in that order: a convention of these sources, not a rule of the engine, which
-   draws whichever direction a spec declares. */
+   draws whichever direction a spec declares.
+
+   Every plate above is neutral. The two declared semantic examples below are opt-ins: each names one
+   system in `semantic`, assigns every node, and declares what a reader needs to read the color. The
+   assignments and every word are these examples' own, never the letters': the neutral A-S-K above keeps
+   its game and no assessment. Each line is set as written and measured against its slot. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.PEER_DIAGRAMS = factory();
@@ -106,6 +111,53 @@
         { from: 'p', to: 'r', type: 'directed' },
       ],
       meaning: GAME,
+    },
+
+    // ---- declared semantic examples: opt-in, one system each
+
+    {
+      id: 'triangle.A-S-K.assessment', preset: 'triangle', role: 'semantic example',
+      title: 'A-S-K // Criterion Assessment: expected points against an assumed opponent mixture',
+      nodes: [
+        { id: 'a', label: 'A', assessment: 'caution', figure: ['0'] },
+        { id: 's', label: 'S', assessment: 'adverse', figure: ['-0.25'] },
+        { id: 'k', label: 'K', assessment: 'favorable', figure: ['+0.25'] },
+      ],
+      relations: [
+        { from: 'a', to: 's', type: 'directed' },
+        { from: 's', to: 'k', type: 'directed' },
+        { from: 'k', to: 'a', type: 'directed' },
+      ],
+      meaning: GAME,
+      semantic: {
+        system: 'criterion-assessment',
+        criterion: ['expected points per round from', 'choosing this letter: win +1, tie 0,', 'loss -1; identical choices tie'],
+        direction: ['higher is better'],
+        scope: ['A, S and K, each scored against', 'one assumed opponent mixture'],
+        basis: ['an illustrative calculation, not', 'observed play; the opponent plays', 'A 50%, S 25%, K 25%;', 'A wins 25%, loses 25%: 0;',
+          'S wins 25%, loses 50%: -0.25;', 'K wins 50%, loses 25%: +0.25'],
+        rule: ['above 0 favorable; 0 caution;', 'below 0 adverse'],
+      },
+    },
+    {
+      id: 'triangle.L-E-J.functions', preset: 'triangle', role: 'semantic example',
+      title: 'L-E-J // Three Functions in a fictional design commission',
+      nodes: [
+        { id: 'l', label: 'L', function: 'legislative', does: ['adopts the design criteria and', 'authorizes the brief'] },
+        { id: 'e', label: 'E', function: 'executive', does: ['generates candidate designs within', 'the brief'] },
+        { id: 'j', label: 'J', function: 'judicial', does: ['evaluates the candidates against the', 'brief, then selects and ratifies', 'the accepted result'] },
+      ],
+      relations: [
+        { from: 'l', to: 'e', type: 'neutral' },
+        { from: 'e', to: 'j', type: 'neutral' },
+        { from: 'j', to: 'l', type: 'neutral' },
+      ],
+      meaning: { neutral: 'interface', neutralPlain: 'coordinate' },
+      semantic: {
+        system: 'three-functions',
+        scope: ['a fictional design commission, for', 'illustration. Each line is an interface', 'where two roles coordinate, and none', 'ranks another: the brief (L-E),',
+          'candidates and findings (E-J), and', 'the acceptance criteria and questions', 'for a rule decision (J-L)'],
+      },
     },
   ];
 });

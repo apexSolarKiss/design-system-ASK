@@ -1029,7 +1029,9 @@ P  every specimen spec validates, and its derived structure is the one the page 
    node one of each and one neutral, fourfold; the all-directed square uneven, with no
    symmetry. Every shipped perimeter cycle steps one slot clockwise, the order the labels read,
    and is listed in that order (P6), and R-S-P keeps rock, paper, scissors' own winners (P7):
-   a reversed cycle keeps every degree count and symmetry order, so P2 and P3 cannot see it
+   a reversed cycle keeps every degree count and symmetry order, so P2 and P3 cannot see it.
+   The assessment example keeps the A-S-K game's relations and derived structure, L-E-J is three
+   neutral interfaces, threefold (P8), and the six neutral specs carry no semantic field (P9)
 V  every malformed spec or render option checked is its named error, and validate() never
    throws, even on a spec whose fields cannot be read (V9). V1 and V2 guard exact membership:
    a relation type or an endpoint that names a property every object inherits (constructor,
@@ -1061,7 +1063,36 @@ F  both font carriers match the canonical fonts/InterVariable.woff2, the embedde
    twice, and gives every exported file ids no other file shares (F10)
 E  the specimen's game reading, which is example content and not the contract: V weakly
    dominates L in the all-directed square, (0, 1/3, 1/3, 1/3) is an equilibrium there, and
-   every (a, 1/2 - a, a, 1/2 - a) is one in the neutral-opposites square, in exact fractions
+   every (a, 1/2 - a, a, 1/2 - a) is one in the neutral-opposites square, in exact fractions.
+   The assessment example's figures follow from its relations against A 1/2, S 1/4, K 1/4 (A 0,
+   S -1/4, K +1/4), each rating from its declared rule, and its basis declares that mixture (E7)
+S  declared semantic examples: every malformed declaration, assignment and line is its named
+   error, an inherited name included, and a semantic declaration the spec only inherits reads
+   as neutral to validate and to render alike (S1); an example draws the neutral plate's connectors,
+   heads, key, rings and letters exactly (S2); on a page a colored node takes its system's role
+   and ink tokens and no other, and in a file its resolved roles with no var() (S3, S4); a
+   neutral plate draws no assignment, fill rule, note or band, and its theme takes no roles of its
+   own (S4);
+   an example is keyed by default and refuses an art plate, and a resolved theme without its
+   system's roles, with the other system's, or with a malformed or quoted value, is refused
+   (S5, S6); notes show the figure then the word, or the function's
+   name (S7); an unassessed node keeps the neutral ring and its figure as plain text, and a node
+   of no function shows nothing (S8); every note and band line sits in its slot, inside the
+   plate and clear of every ring, at the most lines a source may give and on a square; every
+   letter beside any function's name fits the band's label column; the plate grows by its band
+   alone, and the band's last drawn baseline sits its foot above the plate's (S9); the
+   description, determinism, ids and scoping hold (S10); the exporter resolves each role through
+   the systems' stylesheets to the palette and the fill paint's inks and fails rather than guess
+   without them (S11); it writes each example keyed only, recording the sha256 of each
+   stylesheet its roles resolved through and no other, and a malformed stylesheet writes nothing
+   and is named (S12); with no --semantic-css it reads each system's stylesheets from the
+   mirrors beside it and draws what the owner's run draws (S13); a spec that only inherits a
+   declaration exports the neutral plate's four files byte for byte: alone it opens no
+   stylesheet, an absent --semantic-css never being read, and the same files come out with the
+   systems' stylesheets given and beside a declared example in one run (S14); on an example a
+   null role or a quoted fill is OPTION_THEME whether the theme owns its roles or inherits them,
+   a valid mapping the theme only inherits is not its roles, a neutral plate ignores inherited
+   roles, and each role value is drawn as it was checked, read once (S15)
 X  negative controls on mutated copies of the engine, the exporter and the relation sources: a
    membership test by property lookup (X1) and a plain-object id map (X2) let inherited names
    through, a removed completeness check lets an omitted pair through (X3), a moved vertex
@@ -1074,7 +1105,16 @@ X  negative controls on mutated copies of the engine, the exporter and the relat
    ignored (X11), every regular spec reversed keeps the counts and symmetry P2 and P3 check but
    fails P6 (X12), R-P-S left in its former places with its arrows turned clockwise passes P6
    but fails P7, since rock would then beat paper (X13), and R, S and P in place with the
-   game's winners reversed keep P7's node order but fail its winners (X14)
+   game's winners reversed keep P7's node order but fail its winners (X14). Semantic controls:
+   an engine without the keyed-only guard accepts an art plate of an example (X21), one without
+   the band width check validates a line wider than the band (X22), one that sets each letter in
+   its fill rather than its ink fails the paint check (X23), one that writes every assignment
+   beside its node draws "unassessed" as a rating (X24), S rated caution against its -1/4 fails
+   E7 (X25), an engine that sets each note from its vertex draws notes inside the rings (X26),
+   a band drawn without its row gaps ends off its foot (X27), an exporter that reads a spec's
+   semantic through its prototype, either to find the run's systems or to choose each spec's
+   files, fails a neutral plate and writes nothing (X28), and an engine that draws from the theme's roles rather than the ones it checked
+   throws a raw error on an inherited null role and writes an inherited quote into its rules (X29)
 ```
 
 **Determinism is within one runtime.** The engine rounds every coordinate to two decimals, so the
@@ -1088,8 +1128,10 @@ inherited styles is checked in Chrome by peer-host-inheritance.mjs.
 Guards the [`diagram-static-peer`](../patterns/diagram-static-peer/README.md) plate **under a host's
 inherited styles**, in headless Chrome (Node 22+, Chrome at `$CHROME` or the default locations; no
 npm dependency). It exports every spec as a consumer would, with the heads at the target and at the
-midpoint (48 files), opens the specimen page, gives it the owner's token file (the page links its
-tokens at the vendored `_dsa-tokens/` path, which this repository does not carry), and inlines each
+midpoint (56 files: a declared semantic example keyed only, its roles resolved from the systems'
+stylesheets), opens the specimen page, gives it the owner's token file and the systems' stylesheets
+(the page links them at the vendored `_dsa-tokens/` and `_dsa-surface/` paths, which this repository
+does not carry), and inlines each
 exported SVG, unchanged, into a control host and into hosts that each carry ordinary inherited
 styles. After the fonts load it reads every text's first-character position, length, box, computed
 style and the platform font that drew it.
@@ -1100,8 +1142,9 @@ node tests/peer-host-inheritance.mjs             # --out DIR keeps results.json 
 
 ```text
 I1  in the control host every exported plate draws its texts where its layout placed them: each
-    letter centered on its x, each key wording starting at its x, both on the baseline at y; no
-    text leaves the plate; and every face it needs has loaded
+    letter and a semantic example's note centered on its x, each key wording and band line
+    starting at its x, all on the baseline at y; no text leaves the plate; and every face it
+    needs has loaded
 I2  the control draws every letter and key wording with an upright Inter face
 I3  with every host declaration applied (each parsed into the host's style), under each host —
     text-anchor middle and end; dominant-baseline middle and hanging; italic; bold; condensed;
@@ -1115,6 +1158,13 @@ I4  a keyed spec mounted through the page's engine, with the page's theme, under
     styles at once measures and faces as in the control host
 I5  a key wording with edge and doubled spaces, rendered now, draws as the former rules draw it:
     its white space collapses, as an SVG text's does on its own
+I6  each declared semantic example, mounted through the page's engine with the page's theme,
+    draws each colored ring and its boundary in its role's value and its letter in the role's
+    ink, as the page's tokens resolve them, and under all the host styles at once except text
+    rendering, which the plate leaves to the page, its texts start, measure, box and face as in
+    the control host
+I7  under an inherited text-rendering: optimizeSpeed, each mounted example's texts keep their
+    faces and stay inside the plate
 N   negative controls on a plate whose rules declare only what the plate declared before it
     stated its text properties (its text rules with only family, weight, size, the letters'
     middle anchoring and optical sizing; no stroke rule on heads or the field), rebuilt from the
@@ -1122,7 +1172,8 @@ N   negative controls on a plate whose rules declare only what the plate declare
     identically painted in an ordinary host (N1); an inherited text-anchor: end moves the key's
     wording (N2); an inherited dominant-baseline: hanging moves the letters (N3); an inherited
     italic draws the texts in an italic style (N4); an inherited stroke strokes the texts, the
-    heads and the field (N5)
+    heads and the field (N5). With the page's criterion-assessment.css switched off, the
+    favorable ring no longer takes its role's value (N6)
 ```
 
 **The guarantee is about inheritance, and only the properties the rules state.** A stylesheet rule
@@ -1134,7 +1185,10 @@ joins and miters, nor paint opacity.
 **Not every host fails the plate's former rules.** They already pass the bold, condensed,
 white-space and rendering hosts. They declared the weight. The embedded face has one width. In
 Chrome an SVG text computes `white-space: nowrap` on its own, and the host's `pre-wrap` did not
-change it; the rule now states that value. Text rendering moves nothing the test measures. The
+change it; the rule now states that value. Text rendering moves nothing the test measures in the
+exported files; mounted on the page with the page's own Inter, an inherited `optimizeSpeed` turns
+kerning off and lengthens one band line of the Three Functions example by about one unit, which is
+why I6 leaves that one declaration to I7. The
 declarations for width and white space state the layout's assumptions; they do not repair an
 observed failure. The kerning-and-optical-sizing host is the peer's own: its key wording is kerned
 and optically sized as it renders alone, and the former rules let a host turn both off.
