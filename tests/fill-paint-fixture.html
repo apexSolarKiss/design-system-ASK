@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>design-system-ASK // fill paint regression fixture</title>
+<meta name="description" content="Regression fixture for the fill paint in surface-treatments.css as Evidence State, Review Semantics and Criterion Assessment bind it: brown's ink is the lavender, #D4C6E1, in both themes; each evidence, review and assessment ink is its fill color's ink and follows it; a shape filled from each role takes the role's value and its ink, a decision record through Review Semantics' own binding; not yet testable, no decision recorded and unassessed have no ink, a record for no decision recorded takes no fill, and no filled shape on the keys or the style guide is painted lavender-gray.">
+<!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/fill-paint-fixture.html
+     The foundation, the panel and the surface treatments, then the state modules, Review Semantics and
+     Criterion Assessment.
+     ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
+     ?control=brown-theme, ?control=restated-ink, ?control=restated-review-ink, ?control=nyt-ink or
+     ?control=nyt-fill loads one regression, which must fail only the cases tests/README.md names for it. -->
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    if (c) document.documentElement.classList.add('fx-control-' + c);
+  })();
+</script>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../surface-panel.css">
+<link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../evidence-state.css">
+<link rel="stylesheet" href="../review-semantics.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--bg-gradient); background-repeat: no-repeat;
+         background-size: 100% 100%; color: var(--fg-1); font-family: var(--font-sans); }
+  .page { max-width: 940px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  h1, h2 { font-weight: 300; }
+  p { max-width: 72ch; }
+  .fx-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin: var(--space-4) 0; }
+  .fx-node { box-sizing: border-box; min-width: 108px; height: 46px; padding: 0 12px; border-radius: 8px; border-width: 1.5px;
+             border-style: solid; display: flex; align-items: center; justify-content: center;
+             font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .fx-svg { display: block; width: 100%; max-width: 552px; height: auto; }
+  .fx-svg rect { stroke-width: 1.5; }
+  .fx-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; }
+  .fx-frame { display: block; width: 100%; height: 220px; margin: var(--space-3) 0; border: 1px solid var(--line-2); }
+  .verdict-box { overflow-x: auto; }
+  .verdict { font-family: var(--font-mono); font-size: var(--fs-caption); }
+  .verdict td { padding: 2px var(--space-3) 2px 0; vertical-align: top; }
+  /* Each specimen composes the recipe its contract documents: .surface-fill with the role's value and its ink. */
+  [data-evidence="supported"]           { --surface-fill-color: var(--evidence-supported);           --surface-fill-ink: var(--evidence-supported-ink); }
+  [data-evidence="partially-supported"] { --surface-fill-color: var(--evidence-partially-supported); --surface-fill-ink: var(--evidence-partially-supported-ink); }
+  [data-evidence="unresolved"]          { --surface-fill-color: var(--evidence-unresolved);          --surface-fill-ink: var(--evidence-unresolved-ink); }
+  [data-evidence="weakened"]            { --surface-fill-color: var(--evidence-weakened);            --surface-fill-ink: var(--evidence-weakened-ink); }
+  [data-assessment="favorable"] { --surface-fill-color: var(--assessment-favorable); --surface-fill-ink: var(--assessment-favorable-ink); }
+  [data-assessment="caution"]   { --surface-fill-color: var(--assessment-caution);   --surface-fill-ink: var(--assessment-caution-ink); }
+  [data-assessment="adverse"]   { --surface-fill-color: var(--assessment-adverse);   --surface-fill-ink: var(--assessment-adverse-ink); }
+  /* The regressions. Each outranks the rule it replaces. */
+  :root.fx-control-brown-theme[data-theme="dark"] { --surface-fill-ink-on-brown: var(--ask-fg-light); }
+  @media (prefers-color-scheme: dark) {
+    :root.fx-control-brown-theme:not([data-theme="light"]):not([data-theme="dark"]) { --surface-fill-ink-on-brown: var(--ask-fg-light); }
+  }
+  html.fx-control-restated-ink { --evidence-weakened-ink: #D4C6E1; }
+  html.fx-control-restated-review-ink { --review-open-ink: #6A637F; }
+  html.fx-control-nyt-ink { --evidence-not-yet-testable-ink: var(--surface-fill-ink-on-lavender); }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <section>
+    <h1>Fill paint</h1>
+    <p>Each case is measured once the fonts and the shipped surfaces below are ready. Brown's ink is the lavender,
+      #D4C6E1, in both themes. Each Evidence State, Review Semantics and Criterion Assessment ink is its fill color's
+      ink, by reference, and follows it when it changes; a shape filled from each role takes the role's value and its
+      ink. Not yet testable, no decision recorded and unassessed have no ink, a record for no decision recorded takes
+      no fill, and no filled shape on the keys or the style guide is painted lavender-gray.</p>
+    <p id="overall">not run</p>
+  </section>
+
+  <section>
+    <h2>Evidence State</h2>
+    <div class="fx-row">
+      <div class="fx-node surface-fill" data-evidence="supported" id="e-supported">supported</div>
+      <div class="fx-node surface-fill" data-evidence="partially-supported" id="e-partially-supported">partially supported</div>
+      <div class="fx-node surface-fill" data-evidence="unresolved" id="e-unresolved">unresolved</div>
+      <div class="fx-node surface-fill" data-evidence="weakened" id="e-weakened">weakened</div>
+    </div>
+    <svg class="fx-svg" viewBox="0 0 552 62" role="img" aria-label="The four evidence fills in SVG">
+      <g data-evidence="supported" id="es-supported"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">supported</text></g>
+      <g data-evidence="partially-supported" id="es-partially-supported"><rect class="surface-fill" x="123" y="8" width="184" height="46" rx="8"/><text class="surface-fill-ink" x="215" y="36">partially supported</text></g>
+      <g data-evidence="unresolved" id="es-unresolved"><rect class="surface-fill" x="321" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="375" y="36">unresolved</text></g>
+      <g data-evidence="weakened" id="es-weakened"><rect class="surface-fill" x="443" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="497" y="36">weakened</text></g>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Review Semantics</h2>
+    <p>Decision records: Review Semantics binds each record's value and ink on .review-record; the page sets neither.</p>
+    <div class="fx-row">
+      <div class="fx-node review-record surface-fill" data-review="proposed" id="r-proposed">proposed</div>
+      <div class="fx-node review-record surface-fill" data-review="open" id="r-open">open</div>
+      <div class="fx-node review-record surface-fill" data-review="accepted" id="r-accepted">accepted</div>
+      <div class="fx-node review-record surface-fill" data-review="declined" id="r-declined">declined</div>
+      <div class="fx-node review-record surface-fill" data-review="none" id="r-none">none</div>
+    </div>
+    <svg class="fx-svg" viewBox="0 0 552 62" role="img" aria-label="The four review fills in SVG">
+      <g class="review-record" data-review="proposed" id="rs-proposed"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">proposed</text></g>
+      <g class="review-record" data-review="open" id="rs-open"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">open</text></g>
+      <g class="review-record" data-review="accepted" id="rs-accepted"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">accepted</text></g>
+      <g class="review-record" data-review="declined" id="rs-declined"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="421" y="36">declined</text></g>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Criterion Assessment</h2>
+    <div class="fx-row">
+      <div class="fx-node surface-fill" data-assessment="favorable" id="a-favorable">favorable</div>
+      <div class="fx-node surface-fill" data-assessment="caution" id="a-caution">caution</div>
+      <div class="fx-node surface-fill" data-assessment="adverse" id="a-adverse">adverse</div>
+    </div>
+    <svg class="fx-svg" viewBox="0 0 552 62" role="img" aria-label="The three assessment fills in SVG">
+      <g data-assessment="favorable" id="as-favorable"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">favorable</text></g>
+      <g data-assessment="caution" id="as-caution"><rect class="surface-fill" x="123" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="177" y="36">caution</text></g>
+      <g data-assessment="adverse" id="as-adverse"><rect class="surface-fill" x="245" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="299" y="36">adverse</text></g>
+    </svg>
+  </section>
+
+  <section>
+    <h2>The shipped surfaces</h2>
+    <p>Every filled shape these pages draw, .surface-fill on an HTML box or an SVG shape, is read for its fill.</p>
+    <iframe class="fx-frame" src="../evidence-state.html" title="Evidence State key" data-surface="evidence-state.html"></iframe>
+    <iframe class="fx-frame" src="../review-semantics.html" title="Review Semantics key" data-surface="review-semantics.html"></iframe>
+    <iframe class="fx-frame" src="../criterion-assessment.html" title="Criterion Assessment key" data-surface="criterion-assessment.html"></iframe>
+    <iframe class="fx-frame" src="../spectral-state.html" title="Spectral State key" data-surface="spectral-state.html"></iframe>
+    <iframe class="fx-frame" src="../three-functions.html" title="Three Functions key" data-surface="three-functions.html"></iframe>
+    <iframe class="fx-frame" src="../preview/styleguide.html" title="Style guide" data-surface="preview/styleguide.html"></iframe>
+  </section>
+
+  <section>
+    <h2>Verdict</h2>
+    <div class="verdict-box"><table class="verdict"><tbody id="verdict"></tbody></table></div>
+  </section>
+
+</main>
+<script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var tick = function (ms) { return new Promise(function (r) { setTimeout(r, ms || 60); }); };
+    var rows = [];
+    var expect = function (name, actual, expected) { rows.push([actual === expected, name, String(actual), String(expected)]); };
+    var control = (new URLSearchParams(location.search)).get('control');
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    var frames = [].slice.call(document.querySelectorAll('iframe[data-surface]'));
+    await Promise.all(frames.map(function (f) {
+      return new Promise(function (r) {
+        var done = function () { r(); };
+        if (f.contentDocument && f.contentDocument.readyState === 'complete' && f.contentDocument.URL !== 'about:blank') done();
+        else { f.addEventListener('load', done, { once: true }); setTimeout(done, 12000); }
+      });
+    }));
+    await tick();
+
+    /* A token's resolved color, read through a probe on this page. */
+    var resolve = function (name) {
+      var p = document.createElement('span');
+      p.style.color = 'var(' + name + ', transparent)';
+      document.body.appendChild(p);
+      var v = getComputedStyle(p).color;
+      p.remove();
+      return v;
+    };
+    var LIGHT_INK = 'rgb(106, 99, 127)', LAVENDER = 'rgb(212, 198, 225)', HIGH_CONTRAST = 'rgb(32, 29, 38)';
+    /* The root theme, as the foundation reads it: magenta's ink is FILL PAINT's one theme exception among the inks. */
+    var held = document.documentElement.getAttribute('data-theme');
+    var dark = held ? held === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var root = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+
+    /* Brown's ink is the lavender in both themes. */
+    expect('ink / brown is #D4C6E1', resolve('--surface-fill-ink-on-brown'), LAVENDER);
+
+    /* Each role's ink is its fill color's ink: the value at rest, and the binding when that ink changes. */
+    var inks = [
+      ['--evidence-supported-ink', 'green', LIGHT_INK], ['--evidence-partially-supported-ink', 'orange', LIGHT_INK],
+      ['--evidence-unresolved-ink', 'cyan', LIGHT_INK], ['--evidence-weakened-ink', 'brown', LAVENDER],
+      ['--review-proposed-ink', 'magenta', dark ? HIGH_CONTRAST : LAVENDER], ['--review-open-ink', 'cyan', LIGHT_INK],
+      ['--review-accepted-ink', 'green', LIGHT_INK], ['--review-declined-ink', 'red', LAVENDER],
+      ['--assessment-favorable-ink', 'green', LIGHT_INK], ['--assessment-caution-ink', 'yellow', LIGHT_INK],
+      ['--assessment-adverse-ink', 'red', LAVENDER]
+    ];
+    inks.forEach(function (k) { expect('value / ' + k[0] + ' on ' + k[1], resolve(k[0]), k[2]); });
+
+    /* The specimens: each shape takes its role's value, and its text the role's ink. */
+    var shapes = [
+      ['supported', '--evidence-supported'], ['partially-supported', '--evidence-partially-supported'],
+      ['unresolved', '--evidence-unresolved'], ['weakened', '--evidence-weakened']
+    ].map(function (r) { return ['e', r[0], r[1]]; }).concat([
+      ['proposed', '--review-proposed'], ['open', '--review-open'], ['accepted', '--review-accepted'], ['declined', '--review-declined']
+    ].map(function (r) { return ['r', r[0], r[1]]; })).concat([
+      ['favorable', '--assessment-favorable'], ['caution', '--assessment-caution'], ['adverse', '--assessment-adverse']
+    ].map(function (r) { return ['a', r[0], r[1]]; }));
+    shapes.forEach(function (s) {
+      var box = $(s[0] + '-' + s[1]), g = $(s[0] + 's-' + s[1]);
+      var rect = g.querySelector('rect'), text = g.querySelector('text');
+      var bc = getComputedStyle(box), rc = getComputedStyle(rect), tc = getComputedStyle(text);
+      expect('box / ' + s[1] + ' fill', bc.backgroundColor, resolve(s[2]));
+      expect('box / ' + s[1] + ' edge', bc.borderTopColor, resolve(s[2]));
+      expect('box / ' + s[1] + ' ink', bc.color, resolve(s[2] + '-ink'));
+      expect('svg / ' + s[1] + ' fill', rc.fill, resolve(s[2]));
+      expect('svg / ' + s[1] + ' ink', tc.fill, resolve(s[2] + '-ink'));
+    });
+
+    /* No ink for the two roles that are never filled. */
+    expect('no ink / not yet testable', root('--evidence-not-yet-testable-ink'), '');
+    expect('no ink / no decision recorded', root('--review-none-ink'), '');
+    expect('no fill / a record for no decision recorded', getComputedStyle($('r-none')).backgroundColor, 'rgba(0, 0, 0, 0)');
+    expect('no ink / unassessed', root('--assessment-unassessed-ink'), '');
+    expect('no ink / lavender-gray', root('--surface-fill-ink-on-lavender-gray'), '');
+
+    /* Change each fill color's ink: every binding follows its own color's. */
+    var sentinel = { green: 'rgb(1, 2, 3)', yellow: 'rgb(4, 5, 6)', orange: 'rgb(7, 8, 9)', cyan: 'rgb(10, 11, 12)', red: 'rgb(13, 14, 15)', brown: 'rgb(16, 17, 18)', magenta: 'rgb(19, 20, 21)' };
+    var perturb = document.createElement('style');
+    perturb.textContent = ':root { ' + Object.keys(sentinel).map(function (c) { return '--surface-fill-ink-on-' + c + ': ' + sentinel[c] + ' !important;'; }).join(' ') + ' }';
+    document.head.appendChild(perturb);
+    await tick();
+    inks.forEach(function (k) { expect('follows / ' + k[0] + ' reads ' + k[1] + '’s ink', resolve(k[0]), sentinel[k[1]]); });
+    perturb.remove();
+    await tick();
+
+    /* Lavender-gray is never filled: no .surface-fill shape on this page or a shipped surface paints it. */
+    var gray = resolve('--evidence-not-yet-testable');
+    var scan = function (doc, label) {
+      if (!doc || !doc.body) { expect('never filled / ' + label, 'not loaded', 'loaded'); return; }
+      if (control === 'nyt-fill' && label === 'evidence-state.html') {
+        var bad = doc.createElement('div');
+        bad.className = 'surface-fill';
+        bad.setAttribute('style', 'width: 20px; height: 20px; border: 1px solid; --surface-fill-color: var(--evidence-not-yet-testable);');
+        doc.body.appendChild(bad);
+      }
+      var win = doc.defaultView, found = [].slice.call(doc.querySelectorAll('.surface-fill')), hits = [];
+      found.forEach(function (el) {
+        var c = win.getComputedStyle(el);
+        var paint = el instanceof win.SVGElement ? c.fill : c.backgroundColor;
+        if (paint === gray) hits.push((el.id || el.tagName.toLowerCase()) + ' ' + paint);
+      });
+      expect('never filled / ' + label, found.length ? (hits.length ? hits.join(', ') : 'none of ' + found.length) : 'no filled shape found', 'none of ' + found.length);
+    };
+    scan(document, 'this page');
+    frames.forEach(function (f) {
+      var doc = null;
+      try { doc = f.contentDocument; } catch (e) { doc = null; }
+      scan(doc, f.getAttribute('data-surface'));
+    });
+
+    var failed = 0, tbody = $('verdict');
+    rows.forEach(function (r) {
+      if (!r[0]) failed++;
+      var tr = document.createElement('tr');
+      [r[0] ? 'PASS' : 'FAIL', r[1], r[2], 'expected ' + r[3]].forEach(function (text) {
+        var td = document.createElement('td'); td.textContent = text; tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    $('overall').textContent = failed ? 'FAIL: ' + failed + ' case(s)' : 'PASS';
+    window.__fillPaintFixture = rows.map(function (r) { return { pass: r[0], name: r[1], actual: r[2], expected: r[3] }; });
+    document.body.dataset.result = failed ? 'FAIL' : 'PASS';
+  })();
+</script>
+</body>
+</html>

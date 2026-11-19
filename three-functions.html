@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="surface-panel.css">
 <link rel="stylesheet" href="surface-treatments.css">
 <link rel="stylesheet" href="three-functions.css">
+<link rel="stylesheet" href="spectral-state.css">
+<link rel="stylesheet" href="evidence-state.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="patterns/surface-shell/surface-shell.css">
 <style>
@@ -33,7 +35,6 @@
   .arc-label { font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase;
                color: var(--fg-2); grid-column: 1 / -1; margin: 4px 0 0; }
   .swatch { display: flex; align-items: center; gap: 12px; }
-  .dot { width: 30px; height: 30px; border-radius: 999px; flex: 0 0 auto; }
   .meta { display: flex; flex-direction: column; }
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .map  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
@@ -48,7 +49,8 @@
           display: flex; align-items: center; justify-content: center;
           font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
   /* A role-bearing part carries .surface-fill (surface-treatments.css, FILL PAINT): its role's value fills it and
-     edges it, and its role's ink sets its text. This page binds each role and nothing else. */
+     edges it, and its role's ink sets its text. This page binds each role, and the channel cell's state edge
+     below, and nothing else. */
   .leg { --surface-fill-color: var(--function-legislative); --surface-fill-ink: var(--function-legislative-ink); }
   .jud { --surface-fill-color: var(--function-judicial);    --surface-fill-ink: var(--function-judicial-ink); }
   .exe { --surface-fill-color: var(--function-executive);   --surface-fill-ink: var(--function-executive-ink); }
@@ -61,9 +63,19 @@
   .gov { display: flex; align-items: center; gap: 12px; }
   .gpill { height: 46px; border-radius: 8px; border: 1.5px solid var(--fg-3); background: transparent;
            display: flex; align-items: center; padding: 0 14px; font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
+  /* The channel cell: one legislative part on three channels (three-functions.md, Coexistence). The function
+     takes the fill. The state claims the outline through FILL PAINT's --surface-fill-edge, in a Spectral State
+     value other than the function's own, and its keyed label beside the part names it; the border is set by
+     width and style, so FILL PAINT's border color applies. The evidence is the shared marker beside the part,
+     in one Evidence State value, with its label. */
   .chan { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-  .chan .cell { width: 108px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  .chan-element { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .chan .cell { width: 108px; height: 46px; border-radius: 8px; border-width: 2px; border-style: solid;
+                display: flex; align-items: center; justify-content: center;
                 font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
+  .chan .cell.edge-structural { --surface-fill-edge: var(--state-structural); }
+  .chan-keys { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+  .chan-evidence { display: flex; align-items: center; gap: var(--space-2); }
   .chan .legend { font-family: var(--font-mono); font-size: var(--fs-caption); line-height: 1.7; color: var(--fg-2); }
   /* The representations list: framing only; its items take the register's metadata role. */
   .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
@@ -107,9 +119,9 @@
 
   <div class="grid">
     <div class="arc-label">Three functions · one spine</div>
-    <div class="swatch"><div class="dot" style="background:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta // makes the governing standard operative</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--function-executive);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">function-executive</span><span class="map">neutral // realizes under it</span></div></div>
-    <div class="swatch"><div class="dot" style="background:var(--function-judicial)"></div><div class="meta"><span class="role">function-judicial</span><span class="map">cyan // judges against it</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-legislative)"></div><div class="meta"><span class="role">function-legislative</span><span class="map">magenta // makes the governing standard operative</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-executive);border:1px solid var(--fg-3)"></div><div class="meta"><span class="role">function-executive</span><span class="map">neutral // realizes under it</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--function-judicial)"></div><div class="meta"><span class="role">function-judicial</span><span class="map">cyan // judges against it</span></div></div>
   </div>
 
   <div class="demo">
@@ -143,9 +155,9 @@
     <ul class="avail-list" aria-label="Three Functions representations and their status">
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> role-filled part or field, in its role's ink · an apparatus figure · <code class="doc-code">three-functions.css</code> binds the role and FILL PAINT paints it · Three Functions key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> executive field with negative cutouts · an apparatus figure · <code class="doc-code">three-functions.md</code>: a composition the consumer draws with FILL PAINT · Three Functions key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as an outline on a function fill · an apparatus figure whose state color differs from its fill · shared: FILL PAINT's <code class="doc-code">--surface-fill-edge</code>, under <code class="doc-code">three-functions.md</code>, Coexistence · no key specimen; the key's cell is schematic</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as a badge or a separate state marker on a function fill · an apparatus figure; required where the state color matches the fill, such as a proposed legislative or a held judicial part, where an outline cannot be seen · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits, and requires in the same-color case: the consumer draws it with its state label visible, and no shared badge or marker ships · no key specimen</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence as a marker, rail, dash or labeled annotation beside a function fill · an apparatus figure · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits: the consumer draws it in the evidence role's value with its label visible, not yet testable only with its whole contract, and no shared figure rail ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as an outline on a function fill · an apparatus figure whose state color differs from its fill · shared: FILL PAINT's <code class="doc-code">--surface-fill-edge</code>, under <code class="doc-code">three-functions.md</code>, Coexistence, with its state label visible · Three Functions key</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> state as a badge or a separate state marker on a function fill · an apparatus figure; required where the state color matches the fill, such as a proposed legislative or a held judicial part, where an outline cannot be seen · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits, and requires in the same-color case: the consumer draws it with its state label visible, a separate marker through the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) or a badge of its own, since no shared badge ships · no key specimen</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence as a marker, rail, dash or labeled annotation beside a function fill · an apparatus figure · a composition <code class="doc-code">three-functions.md</code>, Coexistence, admits: the consumer draws it in the evidence role's value with its label visible, a marker through the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER), not yet testable only with its whole contract, and no shared figure rail ships · Three Functions key</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> peer functional-role example · the peer pattern · adopted; the peer pattern draws no function</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a fourth role or a governance color · any · three fixed roles</li>
     </ul>
@@ -168,10 +180,16 @@
       <p>function ≠ state ≠ evidence · reused hue is not identity · labels stay mandatory</p>
     </div>
     <div class="chan">
-      <div class="cell leg surface-fill" style="border: 2px solid var(--ask-ui-accent-1); border-left: 3px dashed var(--ask-ui-accent-2);">legislative</div>
+      <div class="chan-element">
+        <div class="cell leg surface-fill edge-structural">legislative</div>
+        <div class="chan-keys">
+          <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
+          <span class="chan-evidence"><span class="surface-marker surface-marker--dot surface-marker--md" style="--surface-marker-color:var(--evidence-supported)"></span><span class="doc-label">Evidence // Supported</span></span>
+        </div>
+      </div>
       <div class="legend">one element · three channels //
-        <b>fill</b> = function · <b>outline</b> = element state, or a badge or separate marker, which a state in its function's own color requires · <b>rail</b> = evidence state, or a marker, dash or labeled annotation<br>
-        state + evidence shown schematic — they would carry Spectral State / Evidence State values</div>
+        <b>fill</b> = function · <b>outline</b> = element state, or a badge or separate marker, which a state in its function's own color requires · <b>marker</b> = evidence state, or a rail, dash or labeled annotation<br>
+        a legislative part · state structural · evidence supported // Spectral State and Evidence State values, each named by its label</div>
     </div>
   </div>
 
@@ -188,6 +206,7 @@
     <div class="doc-section">
       <h2 class="doc-section-title" id="usage">Usage and owners // load order and who decides what</h2>
       <p>load colors_and_type.css first, then surface-panel.css and surface-treatments.css, then three-functions.css, all from one design-system commit // the fill paint supplies each role's ink</p>
+      <p>a figure that shows state or evidence too, as the channel cell does, also loads spectral-state.css and evidence-state.css from the same commit // each binds its own roles, and the channels stay apart</p>
       <p>three-functions.css owns the roles, their values and their inks' bindings // surface-treatments.css owns the fill paint and every ink // the consumer owns which apparatus performs which function</p>
       <p><a href="three-functions.md">the contract</a> · <a href="README.md#application-coverage">application coverage</a> · <a href="preview/styleguide.html#treatment-fill">the filled shapes by color</a></p>
     </div>

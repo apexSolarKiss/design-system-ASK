@@ -37,6 +37,19 @@
      scroll restoration on a reload is left alone. */
   :root[data-surface-nav-mode="desktop"] [id] { scroll-margin-top: calc(var(--surface-nav-top-depth) + var(--space-5)); }
   .key-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+  /* The filled decision records: the record is the shape, and review-semantics.css binds its color and ink.
+     This sets only its geometry and type, which the contract leaves to the composing surface, and lays the
+     records out; its border is set by width and style, never by a shorthand that would reset its color. */
+  .key-records { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); align-items: start; }
+  .key-record { box-sizing: border-box; min-width: 0; margin: 0; padding: var(--space-3) var(--space-4); border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm);
+                display: flex; flex-direction: column; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); line-height: 1.4; }
+  .key-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); line-height: var(--lh-tight); }
+  .key-record-fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); margin: 0; }
+  .key-record-fields > * { margin: 0; min-width: 0; }
+  .key-record-node { display: block; width: 100%; max-width: 340px; height: auto; }
+  .key-record-node rect { stroke-width: 1.5; }
+  .key-record-node text { font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); }
+  .key-record-node .key-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); }
   /* The representations list: framing only; its items take the register's metadata role. */
   .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 </style>
@@ -62,7 +75,7 @@
 <div class="key-measure doc-flow">
 
   <header class="doc-titled">
-    <p class="doc-label">v0.1 // profile under the Spectral State family · opt-in document composition</p>
+    <p class="doc-label">v0.2 // profile under the Spectral State family · opt-in document composition</p>
     <h2 class="doc-title">Review Semantics</h2>
     <p class="doc-lede">One review vocabulary, composed with the document register, Evidence State and Spectral State. Each of five questions keeps its own answer: what a passage is doing, where it came from, what the evidence supports, what judgment is asked or made, and what condition an architectural element is in.</p>
   </header>
@@ -133,13 +146,43 @@
 
   <section class="doc-section" aria-labelledby="representations-title">
     <h2 class="doc-section-title" id="representations-title">Representations // where the roles are drawn, and their status</h2>
-    <p class="doc-body">In a reviewed document a judgment takes the review mark, the scope rail of its range and the scope underline of its passage mark, and each shown decision names what it concerns, who decided and its scope. A filled decision record for a standalone summary is a candidate, not a shipped form. The rows are the README's application coverage.</p>
+    <p class="doc-body">In a reviewed document a judgment takes the review mark, the scope rail of its range and the scope underline of its passage mark, and each shown decision names what it concerns, who decided and its scope. Outside the annotation, a standalone review summary, a status board or a decision node shows one decision on its own as a filled decision record: the role's value as its fill and that color's ink on its words, its outcome stated and its object, actor and scope in fields of its own. It replaces none of the annotation's channels, and no decision recorded draws no record.</p>
+    <div class="key-records">
+      <div class="key-record review-record surface-fill" data-review="proposed">
+        <div class="key-record-outcome">Proposed</div>
+        <dl class="key-record-fields"><dt>object</dt><dd data-record-field="object">a separate search service, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">platform lead</dd><dt>scope</dt><dd data-record-field="scope">the read path</dd></dl>
+      </div>
+      <div class="key-record review-record surface-fill" data-review="open">
+        <div class="key-record-outcome">Open question</div>
+        <dl class="key-record-fields"><dt>object</dt><dd data-record-field="object">search index placement, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">owner decides</dd><dt>scope</dt><dd data-record-field="scope">the whole note</dd><dt>condition</dt><dd data-record-field="condition">until read latency is measured in the third region</dd></dl>
+      </div>
+      <div class="key-record review-record surface-fill" data-review="accepted">
+        <div class="key-record-outcome">Accepted</div>
+        <dl class="key-record-fields"><dt>object</dt><dd data-record-field="object">storage plan, v3</dd><dt>actor</dt><dd data-record-field="actor">owner</dd><dt>scope</dt><dd data-record-field="scope">the write path</dd></dl>
+      </div>
+      <div class="key-record review-record surface-fill" data-review="declined">
+        <div class="key-record-outcome">Declined</div>
+        <dl class="key-record-fields"><dt>object</dt><dd data-record-field="object">search index in the primary store, architecture note v2</dd><dt>actor</dt><dd data-record-field="actor">architecture review</dd><dt>scope</dt><dd data-record-field="scope">this release</dd></dl>
+      </div>
+    </div>
+    <svg class="key-record-node" viewBox="0 0 340 104" role="img" aria-label="A decision node in a figure: an accepted storage plan, version 3, decided by the owner, for the write path">
+      <g class="review-record" data-review="accepted">
+        <rect class="surface-fill" x="0.75" y="0.75" width="338.5" height="102.5" rx="8"/>
+        <text class="surface-fill-ink key-record-outcome" x="16" y="30">Accepted</text>
+        <text class="surface-fill-ink" x="16" y="56">object</text><text class="surface-fill-ink" x="96" y="56" data-record-field="object">storage plan, v3</text>
+        <text class="surface-fill-ink" x="16" y="74">actor</text><text class="surface-fill-ink" x="96" y="74" data-record-field="actor">owner</text>
+        <text class="surface-fill-ink" x="16" y="92">scope</text><text class="surface-fill-ink" x="96" y="92" data-record-field="scope">the write path</text>
+      </g>
+    </svg>
+    <p class="doc-body">The rows are the README's application coverage.</p>
     <ul class="avail-list" aria-label="Review Semantics representations and their status">
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> review mark: the bordered label in its role's value · a document annotation · <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> the scope rail of an annotation range · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> passage mark: the scope underline · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> decision record: what, who and scope beside the mark · a document annotation · <code class="doc-code">review-semantics.md</code>, The decision record: a composition beside the shared mark · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not implemented</span> filled decision record · a standalone review summary, status board or decision node · adopted; no review role binds a fill · candidate C, described in the <a class="surface-text-link" href="preview/styleguide.html#candidate-decision-record">style guide</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled decision record, its words in its role's ink: proposed, open, accepted, declined · a standalone review summary, status board or decision node · <code class="doc-code">review-semantics.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it; the record names its object or version, actor, scope and any material condition · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> filled decision record: no decision recorded · any · a missing record is no decision: none takes no fill</li>
+      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a filled record in place of the mark, range or passage mark · inside a Review Semantics annotation · the composition gives review the outline, the scope rail and the scope underline</li>
       <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> color behind reviewed words · any · a judgment is recorded, never painted onto the content</li>
     </ul>
   </section>
@@ -464,7 +507,7 @@
   <section class="doc-section" aria-labelledby="usage-title">
     <h2 class="doc-section-title" id="usage-title">Usage and owners // load order and who decides what</h2>
     <p class="doc-body">After the foundation, load the four register modules, then <code class="doc-code">spectral-state.css</code>, <code class="doc-code">evidence-state.css</code> and <code class="doc-code">review-semantics.css</code>, all from one design-system commit, in the order the contract gives. The module owns the review vocabulary, its value bindings, the marks that present it and their checking. The adopting project owns which passages and items carry which review state, the decisions and open questions themselves, and their attribution, evidence, actors and scopes. No mark creates authority: the display reports a decision and never makes one.</p>
-    <p class="doc-meta"><a class="surface-text-link" href="review-semantics.md">the contract</a> · <a class="surface-text-link" href="README.md#application-coverage">application coverage</a> · <a class="surface-text-link" href="preview/styleguide.html#candidate-decision-record">candidate C, in the style guide</a></p>
+    <p class="doc-meta"><a class="surface-text-link" href="review-semantics.md">the contract</a> · <a class="surface-text-link" href="README.md#application-coverage">application coverage</a> · <a class="surface-text-link" href="preview/styleguide.html#candidate-decision-record">filled decision records, in the style guide</a></p>
   </section>
 
   <footer class="doc-titled">

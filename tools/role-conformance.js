@@ -23,7 +23,7 @@
                   assignment fails C0 when this is omitted.
 
    It returns { status, pass, governed, counts, tokens, findings, profiles,
-   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C16) and a reason
+   assignment, unmapped, collapsed }. Each finding carries a rule (C0–C18) and a reason
    code, such as C1.size or C4.underline, so a fixture can require the exact
    reason.
 
@@ -32,7 +32,7 @@
    runner drives them through ASKRoleConformance.interaction and adds its C9
    findings to the same report. The runner also opens every disclosure in
    scope and, after its link-state pass, judges there what each collapsed C12,
-   C13, C14, C15 or C16 element presents (see C12 to C16).
+   C13, C14, C15, C16 or C17 element presents (see C12 to C17).
 
    WHY IT EXISTS. check-type-roles.mjs reads stylesheets and proves that each
    role rule declares its matrix values. It cannot see what a consuming page
@@ -194,11 +194,15 @@
                         composition's rows, items, lists, ranges or other
                         notes; no
                         composition class combines with a content role, a rail,
-                        a panel, a compact action or an emphasis chip; and only
+                        a panel, a compact action or an emphasis chip; only
                         a review mark is a bordered label, so an evidence or
                         state mark, a passage mark, a note, a row, an item, a
-                        list or a range never carries .surface-bordered-label
-                        (C12.attach).
+                        list or a range never carries .surface-bordered-label;
+                        and a keyed state or evidence label (Spectral State's
+                        .state-label, Evidence State's .evidence-label) is
+                        never an element of the composition and never sits in
+                        its rows, items, lists or notes, where state keeps its
+                        square and evidence its dot (C12.attach).
                         Computed: a mark is a rendered box, and an evidence or
                         state mark an inline-flex one; a review mark's outline,
                         where it is drawn, is its role token on all four sides
@@ -264,11 +268,26 @@
                         judges)
      C13 bordered label (surface-treatments) applies to every
                         .surface-bordered-label and .surface-emphasis-chip in
-                        scope: a neutral label, the emphasis chip and a review
-                        mark share one box. An evidence or state mark carrying
-                        the class is C12.attach's, not judged here. On each
-                        rendered label: one inline-block box on the text
-                        baseline, or a block where a flex or grid parent
+                        scope: a neutral label, the emphasis chip, a review
+                        mark and a keyed state or evidence label share one
+                        box. An evidence or state mark carrying the class is
+                        C12.attach's, not judged here. Syntax: a keyed label,
+                        Spectral State's .state-label or Evidence State's
+                        .evidence-label, names exactly one axis by its class;
+                        it is a .surface-bordered-label and never an emphasis
+                        chip or an annotation mark; it carries its own axis's
+                        attribute and no other facet, naming a role in that
+                        axis's keyed vocabulary (state: earned, structural,
+                        partial, deflated, held, external or proposed, never
+                        neutral; evidence: supported, partially-supported,
+                        unresolved or weakened, never not-yet-testable); and
+                        its words, whitespace collapsed and case aside, are
+                        exactly its axis and its role's word, "State // Held"
+                        or "Evidence // Partially supported" (C13.key). A label
+                        whose key fails is not judged for its color: the key
+                        is the defect. On each rendered label: one
+                        inline-block box on the text baseline, or a block
+                        where a flex or grid parent
                         blockifies it, border-box sized, as wide as its words
                         on one line (width max-content) and never wider than
                         its container less its margins (max-width
@@ -286,8 +305,9 @@
                         (C13.edge); 1px of inline margin, so a clipping box
                         never cuts the edge's inline sides (C13.clearance);
                         and the color its meaning allows: a neutral label
-                        --fg-3, a chip an emphasis accent or --fg-3, never
-                        transparent (C13.color). A review mark's color,
+                        --fg-3, a chip an emphasis accent or --fg-3, a keyed
+                        label its role's value, never transparent
+                        (C13.color). A review mark's color,
                         transparency included, is C12's. A label a closed
                         disclosure keeps from being seen is judged by the
                         runner once it is open, as C12's elements are, and one
@@ -297,10 +317,11 @@
                         judged. A rendered or held label counts as a governed
                         element
      C14 labeled range (surface-treatments) applies to every
-                        .surface-labeled-range in scope: a neutral range and
-                        Review Semantics' annotation range share one scope
-                        rail. Syntax: it opens with its label — a neutral
-                        range's first child is a neutral bordered label with
+                        .surface-labeled-range in scope: a neutral range,
+                        Review Semantics' annotation range and a keyed state
+                        or evidence range share one scope rail. Syntax: it
+                        opens with its label — a neutral or keyed range's
+                        first child is a neutral or keyed bordered label with
                         words, never a chip or a mark, and an annotation
                         range's first child is the row that holds its label
                         (C14.label); it sits inside no other range (C14.nest),
@@ -345,16 +366,20 @@
                         spacing, and a range beside this one rather than above
                         it, in a neighboring cell or column, is not counted
                         (C14.buffer); for a
-                        neutral range, the tertiary foreground, never
-                        transparent (C14.color); and, where the page shows a
-                        neutral range, its label shown too: some of its words
-                        in an element that renders a box, is seen (not hidden,
+                        neutral range, the tertiary foreground, and for a
+                        keyed range, the value of the role its label names,
+                        never transparent (C14.color); and, where the page
+                        shows a neutral or keyed range, its label shown too:
+                        some of its words in an element that renders a box,
+                        is seen (not hidden,
                         not at zero opacity, not skipped, its ancestors'
                         included) and whose text color is not transparent
                         (C14.label; see LIMITS). An annotation range's color
-                        and its label's words are C12's. A range a closed
-                        disclosure keeps from being seen is judged, its scope
-                        rail and a neutral range's label, by the runner once it
+                        and its label's words are C12's; a keyed range whose
+                        label fails C13.key is not judged for its color. A
+                        range a closed disclosure keeps from being seen is
+                        judged, its scope rail and a neutral or keyed range's
+                        label, by the runner once it
                         is open; one still collapsed then fails C14.rail (an
                         annotation range C12 holds too fails C12.range); one
                         that renders no box draws nothing and is not judged. A
@@ -420,13 +445,96 @@
                         disclosure holds is judged open by the runner, as
                         C12's elements are; one still collapsed then fails
                         C16.rail
+     C17 marker         (surface-treatments) applies to every .surface-marker
+                        in scope: one anatomy for every dot, square and hollow
+                        dot a surface draws beside a label. Review Semantics'
+                        evidence and state marks draw it on their own ::before,
+                        which C12 judges. Syntax: a marker takes at most one
+                        shape (--dot, --square or --hollow) and one size (--sm,
+                        --md or --lg), and no other modifier, so a hollow
+                        marker is never square (C17.shape); it is inert and one
+                        treatment: never a link, a control or a focusable or
+                        editable element, and never also an element of the
+                        annotation composition (a .doc-mark among them), a
+                        bordered label or emphasis chip, a filled shape or its
+                        ink, a labeled range, a scope underline, a sequence or
+                        its step, a rail, a panel, a compact action or a text
+                        role (C17.attach). A marker that fails either is not
+                        judged further: conflicting modifiers name no one
+                        anatomy, and a marker composed onto another element
+                        is that element. Computed, on each rendered marker: one
+                        empty box, holding no element and no visible text, an
+                        inline-block or a block where a flex or grid parent
+                        blockifies it, border-box sized, neither grown nor
+                        shrunk by a flex row and moved by no transform, and
+                        square at the registered size its modifier names:
+                        10px with --sm or none, 12px with --md, 30px with --lg
+                        (C17.box); a dot's and a hollow dot's every corner at
+                        least half the side, and a square's at most the
+                        registered 2px, a percentage resolved against the box
+                        (C17.corner); a filled marker its color at 100% —
+                        --surface-marker-color as it resolves at the marker, or
+                        the tertiary foreground — never transparent, with no
+                        background image, shadow, outline or filter, at full
+                        opacity, and no border but one 1px solid edge alike
+                        on all four sides, which a composing surface may draw
+                        where the marker's color is its field's (C17.fill); a
+                        hollow marker unfilled, inside a 2px dashed border on
+                        all four sides in that color, never transparent, with
+                        no background image, shadow, outline or filter, at
+                        full opacity (C17.hollow). A marker
+                        a closed disclosure keeps from being seen is judged by
+                        the runner once it is open, as C12's elements are; one
+                        still collapsed then fails C17.box. A rendered or held
+                        marker counts as a governed element
+     C18 record         (Review Semantics) applies to every .review-record in
+                        scope: one decision shown on its own, outside a
+                        reviewed document's annotation, on a shape the
+                        consumer fills with FILL PAINT. Syntax: its
+                        data-review is proposed, open, accepted or declined,
+                        never none, which draws no record (C18.vocab); in
+                        fields of its own (data-record-field) it names exactly
+                        one object, one actor and one scope, and any
+                        conditions, each in words that no style inside the
+                        record hides, with no other field and no field inside
+                        another (C18.fields); it is inert: never a link, a
+                        control, a focusable or editable element, a compact
+                        action, a call to action or an attention edge, and
+                        holding none, nor set inside a link, a control, an
+                        editable element, a compact action, a call to action
+                        or an attention edge, where a tabindex alone, such as
+                        a scrolling box's, makes no host (C18.inert); and it
+                        stands on its own: never an element of the annotation
+                        composition or inside one, never inside another
+                        record, never also a bordered label, a chip, a keyed
+                        label, a marker, a range, an underline, a sequence, a
+                        rail, a panel, the neutral shape or a text role, and
+                        carrying no evidence, state or assessment attribute
+                        (C18.attach). A record whose role is outside that
+                        vocabulary is judged no further. Its words outside its
+                        fields that no style hides name its outcome, Proposed
+                        or Correction requested, Open question, Accepted or
+                        Declined, and no other review outcome (C18.words).
+                        Computed: it is one filled shape, the record itself
+                        carrying .surface-fill or its single .surface-fill
+                        descendant, whose fill and every drawn edge take the
+                        role's value, --review-<role>, never transparent, with
+                        no image or filter, at full opacity, the record's
+                        included (C18.fill); a record without one shape is
+                        judged for that alone. Every element holding its words
+                        takes the role's ink, --review-<role>-ink, never
+                        transparent or unresolved, as its text color, or as
+                        its fill in SVG (C18.ink). A record is
+                        judged at rest wherever it sits, a closed disclosure
+                        included, is never held, and counts as a governed
+                        element
 
    STATUS
      pass       no finding, and at least one governed element was checked
      fail       one or more findings
      vacuous    no governed element in scope: nothing was proven. A page that
                 has not adopted the register is not a passing page.
-     incomplete no finding, but C12 to C16 elements collapsed in closed
+     incomplete no finding, but C12 to C17 elements collapsed in closed
                 disclosures (listed under collapsed) await the runner's
                 open-state judgment, so nothing yet proves what they present.
    Neither vacuous nor incomplete is a pass.
@@ -453,7 +561,7 @@
      child of the step, is outside it.
    - C3 compares each rail to its role's color token as the page resolves it;
      C0 is what holds those tokens to the owner's values.
-   - check() alone does not judge what a collapsed C12, C13, C14, C15 or C16 element
+   - check() alone does not judge what a collapsed C12, C13, C14, C15, C16 or C17 element
      presents: it lists the element under collapsed and never reports pass. The runner
      judges every element held this way, once it has opened every disclosure
      in scope and judged the link states; each ends in a judgment or a
@@ -462,9 +570,9 @@
      state "collapsed": C12.label for a mark, C12.passage for a passage mark,
      C12.note for a note, C12.rail for a row, an item, a list or a list's
      key or value, C12.range for an annotation range, C13.box for a
-     bordered label or an emphasis chip, C14.rail for a neutral
-     labeled range, C15.line for a neutral scope underline, and C16.rail for an
-     ordered sequence. One
+     bordered label or an emphasis chip, C14.rail for a neutral or keyed
+     labeled range, C15.line for a neutral scope underline, C16.rail for an
+     ordered sequence and C17.box for a marker. One
      that left the page as its disclosure opened fails it
      marked "removed", since what it presents cannot be proven. A page that
      changes a disclosure's content after that judgment is outside this
@@ -480,7 +588,7 @@
      rest.
    - The open-state judgment covers what the C12 composition presents, the
      hierarchy rail of its elements included, and the C13 labels, C14
-     ranges and C15 underlines a closed disclosure holds. Every other rule judges content
+     ranges, C15 underlines and C17 markers a closed disclosure holds. Every other rule judges content
      in a closed disclosure at rest, the role metrics of a mark's or a list
      key's words (C1, C8) among them: a page that restyles such content only
      once a disclosure opens is not exercised there, one that restyles it
@@ -502,9 +610,15 @@
      judged, so a page whose only governed element is such a label or range
      is not reported vacuous.
    - C13 judges a label's color against the meanings this file knows: a
-     neutral label and the emphasis chip. A review mark's color is C12's. A
-     label another owner composes with a color of its own fails C13.color
-     until that owner is added here.
+     neutral label, the emphasis chip, and Spectral State's and Evidence
+     State's keyed labels. A review mark's color is C12's. A label another
+     owner composes with a color of its own fails C13.color until that owner
+     is added here.
+   - C13.key compares a keyed label's role with the keyed vocabulary written
+     here and its words, whitespace collapsed and case aside, with its axis
+     and role. It reads the words as text, so it does not show that they are
+     seen (C14.label does, for a range's label), and it does not judge whether
+     the role is the right one for the element the label names.
    - C14 proves the computed scope rail and its lane. It reads the rail from
      the range's ::before and the range's own box, so it does not see paint a
      consumer adds elsewhere (an ::after, an outline or a border-image on the
@@ -527,14 +641,14 @@
      narrow side padding, and a scrolling box's extent, not what is scrolled
      into view. It reads the rail on the left: a right-to-left page is not
      judged, and CSS zoom mixes the coordinates it compares.
-   - C14.label proves that some words of a shown neutral range's label sit
-     in an element that renders a box, that checkVisibility() shows (display,
-     visibility, opacity and content-visibility, its ancestors' included)
-     and whose text color is not transparent. It does not judge clipping or
-     a clip path on the label, its position, or its words' size or contrast:
-     where the label carries a text role, such as .doc-label, C1 judges that
-     role's metrics and color, and a label without one is judged by none of
-     these.
+   - C14.label proves that some words of a shown neutral or keyed range's
+     label sit in an element that renders a box, that checkVisibility() shows
+     (display, visibility, opacity and content-visibility, its ancestors'
+     included) and whose text color is not transparent. It does not judge
+     clipping or a clip path on the label, its position, or its words' size
+     or contrast: where the label carries a text role, such as .doc-label, C1
+     judges that role's metrics and color, and a label without one is judged
+     by none of these.
    - C12.label judges a review mark's rendered words, not its opacity, so an
      annotation range opened by a mark at zero opacity passes.
    - C14 and C12 prove that a range is drawn and opened as the contract
@@ -583,6 +697,45 @@
    - A valid profile exempts its members' own text from C8: check()
      reports each member with its computed metrics under `profiles` but
      compares it against no role, so a profile narrows what a pass proves.
+   - C17 compares a marker's size, its square corner and its edges with the
+     owner's literal values (10px, 12px, 30px, 2px and 1px), not with the
+     page's --surface-marker-* properties, so a page that redefines one
+     cannot move the expectation with the defect. It reads the marker's own
+     box and computed paint, its own opacity included: a pseudo-element on
+     the marker, another element laid over it, or an ancestor's opacity, is
+     outside it, and it does not measure pixels.
+     It compares the paint with --surface-marker-color as it resolves at the
+     marker, so it proves that a marker is drawn in its own color, not that
+     the color is the one its meaning assigns, and it does not judge whether
+     a visible label stands beside the marker: both stay with the author. So
+     a filled marker in lavender-gray, which the owner draws only hollow,
+     passes here. It admits the one 1px solid edge on any filled marker, not
+     only on one whose color is its field's, which it cannot tell.
+   - C18 judges a record at rest, from its markup and its computed styles,
+     wherever it sits: one a closed disclosure holds, or one that renders no
+     box, is judged as it rests, so it does not show that a record or its
+     words are seen. It reads the outcome and the fields as text. Words are
+     hidden to it only through display or zero opacity on the element holding
+     them or on one between that element and the record in the document
+     tree, or through the visibility that element computes, which a style on
+     the record or around it can also set. A field names something only
+     through a letter or number it shows, so a field whose words a child
+     hides that way names nothing, punctuation left around them included. It
+     proves that a record names an object, an actor and a scope, not that
+     they are the right ones or that its letters form a name, that a
+     condition it omits is immaterial, or that the decision was made. It
+     compares the fill with --review-<role> and the words with
+     --review-<role>-ink as each resolves
+     at the record, an unresolved one read as transparent, which fails, so
+     it proves that a record is drawn in its role's
+     binding, not that the binding is FILL PAINT's ink for that color
+     (tests/fill-paint-fixture.html holds that). It reads an HTML shape's
+     background and border and an SVG shape's fill and stroke, not paint a
+     pseudo-element or another element lays over the record. It knows a
+     control by element, role, tabindex, contenteditable and class, and a
+     host a record is set inside by element, role, contenteditable and class:
+     a tabindex alone, such as a scrolling box's, makes no host. It does not
+     judge a cursor or a hover, press or focus rule.
 */
 (function (global) {
   'use strict';
@@ -664,10 +817,10 @@
     'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell', 'doc-entry-title',
     'doc-compare-head', 'doc-compare-cell', 'doc-compare-summary'];
   /* Classes whose owners are not this register: their text is governed elsewhere. */
-  const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-panel-title',
+  const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-cta', 'surface-panel-title',
     'surface-panel-support', 'surface-emphasis-chip', 'surface-disclosure-label', 'surface-disclosure-indicator', 'caption'];
   /* Anchors that are shaped objects owning their own interaction (C7). */
-  const SHAPED = ['surface-action', 'surface-panel', 'surface-nav-row'];
+  const SHAPED = ['surface-action', 'surface-cta', 'surface-panel', 'surface-nav-row'];
   const INLINE_EMPHASIS = ['STRONG', 'B', 'EM', 'I', 'SUB', 'SUP', 'MARK'];
   const PASSAGE = '.doc-quote, .doc-pre';
   const RAILED = '.doc-quote, .doc-pre, .surface-emphasis-rail';
@@ -900,6 +1053,40 @@
   const UNDERLINED = '.surface-scope-underline';
   const SCOPE_LINE = { thickness: 2, offset: 0.36 };
   const NOTE_ATTACH = 12;
+  /* C17: the marker (surface-treatments.css). The owner's values, as literals: its three sizes, the
+     square's corner, the hollow marker's dashed edge, and the one solid edge a composing surface may
+     draw around a filled marker whose color is its own field's. */
+  const MARKED = '.surface-marker';
+  const MARKER = { sizes: { sm: 10, md: 12, lg: 30 }, square: 2, hollow: 2, edge: 1 };
+  const MARKER_SHAPES = ['dot', 'square', 'hollow'];
+  const MARKER_SIZES = ['sm', 'md', 'lg'];
+  /* C13: a keyed label, Spectral State's or Evidence State's state or evidence in words on the shared
+     bordered label (spectral-state.css, evidence-state.css). Per axis: its class, the word that names
+     it and its keyed roles; neutral and not yet testable take no keyed label. */
+  const KEYED = '.state-label, .evidence-label';
+  const KEYED_AXES = {
+    state: { cls: 'state-label', word: 'State', roles: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed'] },
+    evidence: { cls: 'evidence-label', word: 'Evidence', roles: ['supported', 'partially-supported', 'unresolved', 'weakened'] } };
+  /* A keyed label's key: its axis and role where its class, attributes and words agree, or the
+     defect that keeps it from being one. */
+  function keyOf(el) {
+    const axes = Object.keys(KEYED_AXES).filter((a) => el.classList.contains(KEYED_AXES[a].cls));
+    if (axes.length !== 1) return { defect: 'a keyed label names exactly one axis: .state-label or .evidence-label, never both' };
+    const axis = axes[0], k = KEYED_AXES[axis];
+    if (!el.classList.contains('surface-bordered-label')) return { defect: 'a keyed label is the shared bordered label: it carries .surface-bordered-label' };
+    if (el.matches('.surface-emphasis-chip, .doc-mark')) return { defect: 'a keyed label is neither an emphasis chip nor an annotation mark: inside the composition state keeps its square and evidence its dot' };
+    const others = ['review', 'evidence', 'state'].filter((f) => f !== axis && el.hasAttribute('data-' + f));
+    if (others.length) return { defect: 'a keyed label carries its own axis\'s attribute and no other facet', facets: others };
+    const v = el.getAttribute('data-' + axis);
+    if (axis === 'state' && v === 'neutral') return { defect: 'neutral asserts no state: it takes no keyed label', value: v };
+    if (axis === 'evidence' && v === 'not-yet-testable') return { defect: 'not yet testable takes no keyed label: it keeps its whole contract, lavender-gray, a dashed rail, a hollow marker and its visible label', value: v };
+    if (!k.roles.includes(v || '')) return { defect: 'a keyed ' + axis + ' label names a role in its keyed vocabulary', value: v };
+    const role = v.replace(/-/g, ' ');
+    const want = k.word + ' // ' + role.charAt(0).toUpperCase() + role.slice(1);
+    const words = el.textContent.replace(/\s+/g, ' ').trim();
+    if (words.toLowerCase() !== want.toLowerCase()) return { defect: 'a keyed label\'s words are its axis and its role, "' + want + '": color never names the axis alone', words };
+    return { axis, v };
+  }
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
     'doc-annotation-note': ['a note', 'note', 'computed'], 'doc-annotations': ['an annotation row', 'rail', 'computed'],
@@ -908,6 +1095,7 @@
     'surface-emphasis-chip': ['an emphasis chip', 'box', 'computed', 'C13'], 'surface-bordered-label': ['a bordered label', 'box', 'computed', 'C13'],
     'surface-scope-underline': ['a scope underline', 'line', 'computed', 'C15'],
     'doc-sequence': ['an ordered sequence', 'rail', 'computed', 'C16'],
+    'surface-marker': ['a marker', 'box', 'computed', 'C17'],
     'doc-annotation-list dt': ['a list key', 'rail', 'computed'], 'doc-annotation-list dd': ['a list value', 'rail', 'computed'] };
   const kindOf = (el) => Object.keys(HELD_KIND).find((k) => !k.includes(' ') && el.classList.contains(k)) || 'doc-annotation-list ' + el.localName;
 
@@ -1359,6 +1547,15 @@
       if (el.matches(RAILED + ', ' + PANEL + ', .surface-separate, .surface-action, .surface-emphasis-chip, ' + CONTENT_ROLES)) syn('C12', 'attach', el, { message: 'an annotation class never combines with a content role, a rail, a panel, a compact action or an emphasis chip' });
       else if (el.matches('.surface-bordered-label') && !el.matches('.doc-mark[data-review]')) syn('C12', 'attach', el, { message: 'only a review mark is a bordered label: an evidence or state mark draws its marker, and no other element of the composition takes the box' });
     }
+    /* A keyed state or evidence label is its owner's presentation outside the composition: no element
+       of the composition is one, and none sits in a row, an item, a list or a note, where state keeps its
+       square and evidence its dot. A keyed label in a range's content is that content's. */
+    const IN_ANNOTATION = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-note';
+    for (const el of all(KEYED)) {
+      if (el.matches(COMPOSITION) || (el.parentElement && el.parentElement.closest(IN_ANNOTATION))) {
+        syn('C12', 'attach', el, { message: 'a keyed state or evidence label stays outside the annotation composition: inside a row, item, list or note state keeps its square and evidence its dot, and no element of the composition is a keyed label' });
+      }
+    }
     for (const pm of all('mark.doc-passage-mark')) {
       counts['doc-passage-mark'] = (counts['doc-passage-mark'] || 0) + 1;
       const v = pm.getAttribute('data-review');
@@ -1510,11 +1707,24 @@
       if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin to reserve its reinforcement at the inline sides; block-axis clearance belongs to its host', got: c.marginLeft + ' ' + c.marginRight });
       if (!el.matches('.doc-mark[data-review]')) {
         const chip = el.matches('.surface-emphasis-chip');
-        const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
-        if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
-          cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip or a review mark', got: color });
+        /* A keyed label takes its role's value; one whose key fails is C13.key's alone. */
+        const key = el.matches(KEYED) ? keyOf(el) : null;
+        if (key && !key.defect) {
+          const want = probe(el, `border-left:1px solid var(--${key.axis}-${key.v}, transparent)`).border;
+          if (clear(color) || color !== want) cmp('color', { message: 'a keyed label\'s border is the value of the role its words name, and not transparent', expected: want, got: color });
+        } else if (!key) {
+          const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
+          if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
+            cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip, a review mark or a keyed state or evidence label', got: color });
+          }
         }
       }
+    }
+    /* C13.key: a keyed label's class, axis, role and words, judged as syntax at rest. */
+    for (const el of all(KEYED)) {
+      counts['keyed-label'] = (counts['keyed-label'] || 0) + 1;
+      const { defect, axis, v, ...detail } = keyOf(el);
+      if (defect) add('C13', 'key', el, { basis: 'syntax', message: defect, ...detail });
     }
     for (const el of all(BORDERED)) {
       if (el.matches('.doc-mark[data-evidence], .doc-mark[data-state]')) continue;   /* C12.attach reports it */
@@ -1548,14 +1758,14 @@
       if (s.clipPath && s.clipPath !== 'none') return { x0: q.left, y0: q.top, w: q.width, h: q.height, x: true, y: true, scrollLeft: 0 };
       return null;
     }
-    /* A shown neutral range shows its label: some of the words that name it sit in an element that
-       renders, is seen and is not transparent. The words are judged where they render, so words a child
-       of the label hides count as hidden. A range the page does not show presents no label to judge. An
-       annotation range's label is its review mark, whose words C12.label judges. */
-    const NEUTRAL_LABEL = '.surface-bordered-label:not(.doc-mark):not(.surface-emphasis-chip)';
+    /* A shown neutral or keyed range shows its label: some of the words that name it sit in an element
+       that renders, is seen and is not transparent. The words are judged where they render, so words a
+       child of the label hides count as hidden. A range the page does not show presents no label to judge.
+       An annotation range's label is its review mark, whose words C12.label judges. */
+    const RANGE_LABEL = '.surface-bordered-label:not(.doc-mark):not(.surface-emphasis-chip)';
     function opener(el, add) {
       const head = el.firstElementChild;
-      if (el.matches('.doc-annotation-range') || !head || !head.matches(NEUTRAL_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label at rest reports it */
+      if (el.matches('.doc-annotation-range') || !head || !head.matches(RANGE_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label at rest reports it */
       if (!seen(el)) return;
       let shows = false;
       const walk = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
@@ -1665,8 +1875,15 @@
           ? 'a list that opens or closes on an item host keeps the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) from a range or another such list beside it, so their rails never read as one'
           : 'two labeled ranges in a row keep the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) between them, so their rails never read as one', gap: +(r.top - before.getBoundingClientRect().bottom).toFixed(2) });
       }
-      if (!el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
-        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range', got: color });
+      /* A keyed range's rail takes the role its label names; a range whose keyed label fails its key is
+         C13.key's alone. Any other range outside the composition is neutral. */
+      const head = el.firstElementChild;
+      const key = !el.matches('.doc-annotation-range') && head && head.matches(KEYED) ? keyOf(head) : null;
+      if (key && !key.defect) {
+        const want = probe(el, `border-left:1px solid var(--${key.axis}-${key.v}, transparent)`).border;
+        if (clear(want) || color !== want) cmp('color', { message: 'a keyed range\'s scope rail takes the value of the role its label names, and is not transparent', expected: want, got: color });
+      } else if (!key && !el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
+        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range or a keyed state or evidence range', got: color });
       }
     }
     for (const el of all(LABELED)) {
@@ -1675,8 +1892,8 @@
       const head = el.firstElementChild;
       const review = el.matches('.doc-annotation-range');
       const labeled = review ? head && head.matches('.doc-annotations') && head.querySelector(BORDERED)
-        : head && head.matches(NEUTRAL_LABEL);
-      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral bordered label');
+        : head && head.matches(RANGE_LABEL);
+      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral or keyed bordered label');
       else if (!review && !VISIBLE.test(head.textContent)) s14('label', 'a labeled range\'s label names it in words: a label with none opens nothing');
       const parent = el.parentElement;
       if (parent && parent.closest(LABELED)) s14('nest', 'a labeled range never sits inside another');
@@ -1847,6 +2064,158 @@
       sequenced(el, add);
     }
 
+    /* C17 the marker (surface-treatments.css): one anatomy for every dot, square and hollow dot a
+       surface draws beside a label, at three sizes, its color the composing meaning's. Review
+       Semantics' evidence and state marks draw it on their own ::before, which C12 judges. */
+    const MARKER_ATTACH = COMPOSITION + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', ' + SEQUENCE + ', ' + SEQUENCE_STEP + ', ' +
+      RAILED + ', ' + PANEL + ', .surface-separate, .surface-fill, .surface-fill-ink, .surface-action, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+    function marked(el, add) {
+      const cmp = (reason, detail) => add('C17', reason, el, { basis: 'computed', ...detail });
+      const c = getComputedStyle(el);
+      const shape = MARKER_SHAPES.find((k) => el.classList.contains('surface-marker--' + k)) || 'dot';
+      const sizeKey = MARKER_SIZES.find((k) => el.classList.contains('surface-marker--' + k)) || 'sm';
+      const size = MARKER.sizes[sizeKey];
+      const parent = el.parentElement ? getComputedStyle(el.parentElement).display : '';
+      const item = /(flex|grid)$/.test(parent);
+      const r = el.getBoundingClientRect();
+      const moved = [c.transform, c.translate, c.rotate, c.scale].some((v) => !none(v));
+      const empty = !el.firstElementChild && !VISIBLE.test(el.textContent || '');
+      if (!empty || !(c.display === 'inline-block' || (item && c.display === 'block')) || c.boxSizing !== 'border-box' || c.flexGrow !== '0' || c.flexShrink !== '0' || moved ||
+          Math.abs(r.width - size) > TOL || Math.abs(r.height - size) > TOL) {
+        cmp('box', { message: 'a marker is one empty border-box square at the registered size its modifier names (' + MARKER.sizes.sm + 'px with --sm or none, ' + MARKER.sizes.md + 'px with --md, ' + MARKER.sizes.lg + 'px with --lg): an inline-block, or a block where a flex or grid parent blockifies it, that no flex row grows or shrinks and no transform moves',
+          size: sizeKey, expected: size, width: +r.width.toFixed(2), height: +r.height.toFixed(2), display: c.display, boxSizing: c.boxSizing, flex: c.flexGrow + ' ' + c.flexShrink, transform: [c.transform, c.translate, c.rotate, c.scale].join(' / '), empty });
+      }
+      const rad = corners(c).map((x) => radius(x, r.width, r.height));
+      const side = Math.min(r.width, r.height);
+      if (shape === 'square' ? !rad.every((x) => x <= MARKER.square + TOL) : !rad.every((x) => x >= side / 2 - TOL)) {
+        cmp('corner', { message: shape === 'square' ? 'a square marker keeps the registered ' + MARKER.square + 'px corner or less on every corner' : 'a dot and a hollow dot are round: every corner at least half the side', shape, got: corners(c) });
+      }
+      /* Its color: --surface-marker-color as it resolves at the marker, or the tertiary foreground. */
+      const raw = tokenAt(el, '--surface-marker-color');
+      const want = probe(el, 'border-left:1px solid ' + (raw || 'var(--fg-3)')).border;
+      const paint = { image: c.backgroundImage, shadow: c.boxShadow, filter: c.filter, outline: c.outlineWidth + ' ' + c.outlineStyle, opacity: c.opacity };
+      const painted = !none(c.backgroundImage) || !none(c.boxShadow) || !none(c.filter) || (c.outlineStyle !== 'none' && px(c.outlineWidth) > TOL) || parseFloat(c.opacity) < 1;
+      const sides = ['Top', 'Right', 'Bottom', 'Left'];
+      const border = sides.map((s) => c['border' + s + 'Width'] + ' ' + c['border' + s + 'Style'] + ' ' + c['border' + s + 'Color']).join(' / ');
+      if (shape === 'hollow') {
+        const ring = !clear(want) && sides.every((s) => c['border' + s + 'Style'] === 'dashed' && Math.abs(px(c['border' + s + 'Width']) - MARKER.hollow) <= TOL && c['border' + s + 'Color'] === want);
+        if (!ring || !clear(c.backgroundColor) || painted) {
+          cmp('hollow', { message: 'a hollow marker is unfilled, inside a ' + MARKER.hollow + 'px dashed edge on all four sides in its color, never transparent, with no shadow, outline or filter, at full opacity', expected: want, background: c.backgroundColor, border, ...paint });
+        }
+      } else {
+        const edge = sides.every((s) => !drawn(c, s)) ||
+          sides.every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - MARKER.edge) <= TOL && c['border' + s + 'Color'] === c.borderTopColor);
+        if (clear(c.backgroundColor) || c.backgroundColor !== want || !edge || painted) {
+          cmp('fill', { message: 'a filled marker is its color at 100%, never transparent, with no image, shadow, outline or filter, at full opacity, and no edge but one ' + MARKER.edge + 'px solid line alike on all four sides', expected: want, background: c.backgroundColor, border, ...paint });
+        }
+      }
+    }
+    for (const el of all(MARKED)) {
+      counts['marker'] = (counts['marker'] || 0) + 1;
+      const mods = [...el.classList].filter((k) => k.startsWith('surface-marker--')).map((k) => k.slice('surface-marker--'.length));
+      const shapes = mods.filter((k) => MARKER_SHAPES.includes(k)), sizes = mods.filter((k) => MARKER_SIZES.includes(k));
+      const unknown = mods.filter((k) => !MARKER_SHAPES.includes(k) && !MARKER_SIZES.includes(k));
+      /* A marker whose modifiers conflict has no one anatomy to judge; one that is also another
+         treatment's or the composition's element, or a control, is that element. Either is reported
+         here, and its anatomy is not judged. */
+      let judgeable = true;
+      if (shapes.length > 1 || sizes.length > 1 || unknown.length) {
+        add('C17', 'shape', el, { basis: 'syntax', message: 'a marker takes at most one shape (--dot, --square or --hollow) and one size (--sm, --md or --lg), and no other modifier: a hollow marker is never square', shapes, sizes, unknown });
+        judgeable = false;
+      }
+      if (el.matches(MARKER_ATTACH) || el.matches(CONTROLS)) {
+        add('C17', 'attach', el, { basis: 'syntax', message: 'a marker is inert and stands alone beside its label: never a control or a focusable element, and never also an element of the annotation composition, a bordered label, a chip, a filled shape or its ink, a range, an underline, a sequence, a rail, a panel, a compact action or a text role' });
+        judgeable = false;
+      }
+      if (!judgeable) continue;
+      if (collapsed(el)) { hold(el, (sink) => { if (renders(el)) marked(el, sink); }, heldHere.has(el) ? undefined : 'surface-marker'); governed++; continue; }
+      if (!renders(el)) continue;   /* it renders no box: nothing is drawn to judge */
+      governed++;
+      marked(el, add);
+    }
+
+    /* C18 the filled decision record (Review Semantics): one decision shown on its own, outside a
+       reviewed document's annotation, on one shape the consumer fills with FILL PAINT. It is judged
+       at rest wherever it sits, from its markup and computed paint, and never held. */
+    const RECORD_ROLES = ['proposed', 'open', 'accepted', 'declined'];
+    const RECORD_ATTACH = COMPOSITION + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', ' + SEQUENCE + ', ' + SEQUENCE_STEP + ', ' +
+      RAILED + ', ' + PANEL + ', ' + KEYED + ', ' + MARKED + ', .surface-separate, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+    const RECORD_CONTROLS = CONTROLS + ', .surface-cta, .surface-attention-edge';
+    /* Hosts that make whatever they hold part of a control. A scrolling box's tabindex is not one. */
+    const RECORD_HOSTS = 'a, button, summary, label, select, option, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta, .surface-attention-edge';
+    const OUTCOME = { proposed: ['proposed', 'correction requested'], open: ['open question'], accepted: ['accepted'], declined: ['declined'], none: ['no decision recorded'] };
+    const phrase = (words, p) => new RegExp('(^|[^\\p{L}\\p{N}])' + p.replace(/ /g, '\\s+') + '(?=$|[^\\p{L}\\p{N}])', 'iu').test(words);
+    const own = (rec, node) => (node.nodeType === 1 ? node : node.parentElement).closest('.review-record') === rec;
+    const isSvg = (el) => typeof SVGElement !== 'undefined' && el instanceof SVGElement;
+    for (const rec of all('.review-record')) {
+      counts['review-record'] = (counts['review-record'] || 0) + 1;
+      governed++;
+      const v = rec.getAttribute('data-review');
+      const known = RECORD_ROLES.includes(v || '');
+      if (!known) {
+        add('C18', 'vocab', rec, { basis: 'syntax', value: v, message: v === 'none' ? 'no decision recorded draws no record: none binds no fill and has no ink, and a missing record is no decision' : 'a record carries data-review proposed, open, accepted or declined: the pending or decided role it reports' });
+      }
+      /* Its fields, its own: a nested record's are that record's. */
+      const fields = [...rec.querySelectorAll('[data-record-field]')].filter((f) => own(rec, f));
+      const names = fields.map((f) => f.getAttribute('data-record-field'));
+      const tally = (n) => names.filter((k) => k === n).length;
+      const hidden = (f) => { for (let e = f; e && e !== rec; e = e.parentElement) { const c = getComputedStyle(e); if (c.display === 'none' || parseFloat(c.opacity) === 0) return true; } return getComputedStyle(f).visibility !== 'visible'; };
+      /* A field is present only through a letter or number it shows: text inside it whose own element is not
+         display: none, computes visibility visible and, with every element from there up to the record, the
+         field's included, is not at zero opacity. Words a child hides that way do not count, and nor does
+         punctuation left around them. */
+      const shown = (f) => { const w = document.createTreeWalker(f, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) { if (/[\p{L}\p{N}]/u.test(n.textContent) && n.parentElement && !hidden(n.parentElement)) return true; } return false; };
+      const blank = fields.filter((f) => !shown(f));
+      const unknown = names.filter((n) => !['object', 'actor', 'scope', 'condition'].includes(n));
+      const nested = fields.filter((f) => f.parentElement && f.parentElement.closest('[data-record-field]') && rec.contains(f.parentElement.closest('[data-record-field]')));
+      if (tally('object') !== 1 || tally('actor') !== 1 || tally('scope') !== 1 || unknown.length || nested.length || blank.length) {
+        add('C18', 'fields', rec, { basis: 'syntax', message: 'a record names, each once in a field of its own (data-record-field), what it concerns (object), who decided or decides (actor) and its scope (scope), and any material condition (condition), each in words no style inside the record hides, and no field holds another', fields: names, unknown, blank: blank.map(path), nested: nested.map(path) });
+      }
+      if (rec.matches(RECORD_CONTROLS) || rec.querySelector(RECORD_CONTROLS) || (rec.parentElement && rec.parentElement.closest(RECORD_HOSTS))) {
+        add('C18', 'inert', rec, { basis: 'syntax', message: 'a record is inert: never a link, a control, a focusable or editable element, an action or an attention edge, holding none, and set inside no link, control, editable element, action or attention edge; a link to the reviewed object sits beside it' });
+      }
+      const facets = ['evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
+      if (rec.matches(RECORD_ATTACH) || (rec.parentElement && rec.parentElement.closest(COMPOSITION + ', .review-record')) || facets.length) {
+        add('C18', 'attach', rec, { basis: 'syntax', message: 'a record stands on its own: never an element of the annotation composition or inside one, where the mark, the range and the passage mark stay the channels; never inside another record; never a bordered label, a chip, a marker, a range, an underline, a sequence, a rail, a panel, the neutral shape or a text role; and it carries no evidence, state or assessment attribute', facets });
+      }
+      if (!known) continue;   /* with no role there is no outcome, value or ink to judge */
+      /* Its outcome, in the words outside its fields: its own role's, and no other. */
+      const loose = [];
+      const walker = document.createTreeWalker(rec, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const host = n.parentElement;
+        if (host && own(rec, n) && !hidden(host) && !(host.closest('[data-record-field]') && rec.contains(host.closest('[data-record-field]')))) loose.push(n.textContent);
+      }
+      const words = loose.join(' ').replace(/\s+/g, ' ').trim();
+      const others = Object.keys(OUTCOME).filter((k) => k !== v && OUTCOME[k].some((p) => phrase(words, p)));
+      if (!OUTCOME[v].some((p) => phrase(words, p)) || others.length) {
+        add('C18', 'words', rec, { basis: 'syntax', message: 'a record states its one outcome in words outside its fields: Proposed or Correction requested, Open question, Accepted or Declined, and no other', role: v, words: words.slice(0, 80), others });
+      }
+      /* Its one filled shape: the record itself, or its single .surface-fill descendant. */
+      const shapes = [...(rec.matches('.surface-fill') ? [rec] : []), ...[...rec.querySelectorAll('.surface-fill')].filter((s) => own(rec, s))];
+      const at = rec.closest('svg') || rec;
+      const want = probe(at, 'color:var(--review-' + v + ', transparent)').color;
+      if (shapes.length !== 1) {
+        add('C18', 'fill', rec, { basis: 'computed', message: 'a record is one filled shape: the record itself carries .surface-fill, or an SVG record holds exactly one .surface-fill shape', shapes: shapes.length });
+        continue;   /* with no one shape, its paint is not judged, nor the words a missing fill leaves */
+      }
+      const s = shapes[0], c = getComputedStyle(s), rc = getComputedStyle(rec);
+      const sides = ['Top', 'Right', 'Bottom', 'Left'];
+      const fill = isSvg(s) ? c.fill : c.backgroundColor;
+      const edge = isSvg(s) ? (none(c.stroke) || (c.stroke === want && parseFloat(c.strokeOpacity) >= 1)) : sides.every((d) => !drawn(c, d) || c['border' + d + 'Color'] === want);
+      const plain = none(c.backgroundImage) && none(c.filter) && parseFloat(c.opacity) >= 1 && parseFloat(rc.opacity) >= 1 && (!isSvg(s) || parseFloat(c.fillOpacity) >= 1);
+      if (clear(want) || fill !== want || !edge || !plain) {
+        add('C18', 'fill', s, { basis: 'computed', message: 'a record\'s shape takes its role\'s value at 100% as its fill and its drawn edge, never transparent, with no image or filter and at full opacity, the record\'s included', expected: want, fill, edge: isSvg(s) ? c.stroke : sides.map((d) => c['border' + d + 'Color']).join(' / '), image: c.backgroundImage, filter: c.filter, opacity: c.opacity + ' / ' + rc.opacity });
+      }
+      /* Its words: every element holding them takes the role's ink, as text color or an SVG text's fill. */
+      const ink = probe(at, 'color:var(--review-' + v + '-ink, transparent)').color;
+      const bearers = [rec, ...rec.querySelectorAll('*')].filter((e) => own(rec, e) && ownText(e) && [...e.childNodes].some((n) => n.nodeType === 3 && VISIBLE.test(n.textContent)));
+      const off = bearers.filter((e) => clear(ink) || (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color) !== ink);
+      if (off.length) {
+        add('C18', 'ink', rec, { basis: 'computed', message: 'a record\'s words take its role\'s ink, --review-' + v + '-ink, FILL PAINT\'s for its color: never the role\'s value, a text role\'s color or the theme foreground', expected: ink, examples: off.slice(0, 3).map((e) => path(e) + ' ' + (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color)) });
+      }
+    }
+
     for (const [el, h] of heldHere) held.set(el, h);
     const status = findings.length ? 'fail' : governed === 0 ? 'vacuous' : collapsedHere.length ? 'incomplete' : 'pass';
     return { status, pass: status === 'pass', governed, counts, tokens, findings, profiles: profileReport, assignment: assignmentReport, unmapped, collapsed: collapsedHere };
@@ -1858,8 +2227,8 @@
      neutral() to place a real pointer, read() at rest, under the pointer and
      after it leaves; then walks the page with real Tab presses, calling
      read() on each governed link that takes focus; then judge(records).
-     Last, it calls collapsed(), which judges the C12, C13, C14, C15 and C16
-     elements a resting check held. */
+     Last, it calls collapsed(), which judges the C12, C13, C14, C15, C16 and
+     C17 elements a resting check held. */
   const ATTR = 'data-ask-rc';
   const byId = (id) => document.querySelector(`[${ATTR}="${id}"]`);
   const rendered = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -1875,7 +2244,7 @@
       for (const d of ds) if (!d.open) { d.open = true; opened++; }
       return opened;
     },
-    /* With every disclosure in scope open, judge what each C12 to C16 element a resting check held
+    /* With every disclosure in scope open, judge what each C12 to C17 element a resting check held
        presents, wherever it now sits, once the animations on it, inside it and on its ancestors
        have finished: its findings carry state "open". An element still collapsed fails its held
        reason marked "collapsed"; one no longer on the page fails it marked "removed". */

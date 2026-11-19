@@ -4,7 +4,9 @@ An opt-in composition for documents that are reviewed. It keeps five questions a
 
 Review State is **a sanctioned profile, not a separate palette and not a change to Spectral State or Evidence State.** It reuses existing values by reference, keeps its own labels and meanings, and mints no value. Spectral State's eight roles and Evidence State's five are unchanged.
 
-> **Status: v0.1 // first version.** Opt-in. A consumer takes it through its own gates; no existing document is recolored by its arrival.
+> **Status: v0.2 // the filled decision record.** Outside a reviewed document's own annotation, one decision may be shown on its own as a filled record, `.review-record` with `data-review` proposed, open, accepted or declined, on a shape the consumer fills with [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT; each of those roles names its ink, `--review-<role>-ink`, and `none` draws no record. The record states its outcome in words, names its object or version, its actor, its scope and any material condition in fields of its own, and is inert; its fill confers no authority (The filled decision record, below). The evidence and state marks now read the surface treatments' shared marker anatomy, and the accepted and declined ranges bind green's and red's rail paint by color, with no change to what either draws; a keyed state or evidence label is never an element of the composition. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
+>
+> **v0.1 // first version.** Opt-in. A consumer takes it through its own gates; no existing document is recolored by its arrival.
 
 ## Five questions, five owners
 
@@ -40,7 +42,7 @@ The channels follow [`three-functions.md`](three-functions.md) §Coexistence: st
 
 ## Annotation // the composition
 
-- **Mark** // an inert annotation word: one review, evidence or state role, stated literally. `span.doc-mark.doc-label` with exactly one of `data-review`, `data-evidence` or `data-state`. Its words are the register's label role, which this module never restyles; its color sits only on its geometry. A review mark also carries `.surface-bordered-label`: its box and edge are the shared bordered label's, from `surface-treatments.css` — the same box as the emphasis chip and a neutral label — and this module supplies its color only. Evidence draws a 10px round dot and state a 10px square, with no outline, and neither carries `.surface-bordered-label`. A mark carries one role; a second fact takes a second mark.
+- **Mark** // an inert annotation word: one review, evidence or state role, stated literally. `span.doc-mark.doc-label` with exactly one of `data-review`, `data-evidence` or `data-state`. Its words are the register's label role, which this module never restyles; its color sits only on its geometry. A review mark also carries `.surface-bordered-label`: its box and edge are the shared bordered label's, from `surface-treatments.css` — the same box as the emphasis chip and a neutral label — and this module supplies its color only. Evidence draws a 10px round dot and state a 10px square, the shared marker's anatomy at its small size (`surface-treatments.css`, MARKER), with no outline, and neither carries `.surface-bordered-label`; this module supplies each role's color and which facet takes which shape. A mark carries one role; a second fact takes a second mark.
 - **Item** // one fact and its qualifier, kept together: a mark and the metadata that qualifies it (`.doc-meta`), or a basis key (`.doc-label`) and its value (`.doc-meta`). `.doc-annotation-item`, inside a row or a table cell. It wraps as a unit.
 - **Annotation row** // the items that apply to one scope: the range it opens, a whole list item that is itself the range included, the target its record names as an explicit-target prompt immediately before the range that holds that content, the table cell it sits in, the note it heads, or the whole document, as the review record set under its title that names the document. A row that holds no review item may instead apply to the section after its heading or the block it follows. `.doc-annotations`, its items in one fixed order: state, basis, evidence, review. A row that opens a range or stands as a prompt leads with its review item, and its state, basis and evidence items follow in that order; the row that opens a range sits beside the top of the scope rail. A review item on whole blocks never trails them: it opens a range over them, a whole list item it judges included, or, as a separate question about a range's content, stands as an explicit-target prompt before that range (rule 2). Each item opens on its own mark or key, so items need no separator.
 - **Annotation list** // one item answering several questions at once, one keyed line per question, in the row's order. `dl.doc-annotation-list`, with `dt.doc-label` keys and `dd` values. Its review lines judge the item the list itself names, in a keyed line of its own, at the scope each line states, never the blocks beside the list; a review judgment on blocks in the flow opens a range instead.
@@ -69,25 +71,37 @@ A shown decision is a whole record. It names what it concerns (object or version
 - **A missing record is no decision.** No decision recorded is shown only where the absence matters. It is not a refusal or an acceptance, and not a hold: a hold is an open question.
 - **Scopes stay distinct.** A recorded acceptance for production may report that authorization. It is not permission to show a packet, and it is not adoption for a bounded trial; each is its own record, with its own mark.
 
+### The filled decision record
+
+Outside a reviewed document's own annotation, in a standalone review summary, a decision or status board, or a decision node in a figure, one decision may be shown on its own as a filled record. It is `.review-record` with `data-review` proposed, open, accepted or declined, on a shape the consumer draws with the surface treatments' fill paint (`surface-treatments.css`, FILL PAINT): an HTML record carries `.surface-fill` itself, and words in an element that sets its own color, such as a paragraph, take `.surface-fill-ink`; an SVG `g.review-record` holds one `.surface-fill` shape, its text taking `.surface-fill-ink`. This module binds the role's value as the fill and that color's existing ink, `--review-<role>-ink`, and nothing else: Proposed and Correction requested on the magenta, whose ink follows the theme; Open question on the cyan and Accepted on the green, each in `#6A637F`; Declined on the red, in the lavender. The consumer owns the shape, its geometry, layout and type, and the record's values.
+
+- **It states its outcome in words** // Proposed or Correction requested, Open question, Accepted or Declined, and no other outcome: one record, one decision.
+- **It names the whole record in fields of its own** // each marked with `data-record-field`: what it concerns (`object`, the object or its version), who decided or decides (`actor`, the actor or role), its scope (`scope`), and any condition where it is material (`condition`). The decision record above binds it as it binds every shown decision.
+- **It is inert** // never a link or a control, holding none and set inside none, with no hover, press, focus or selection. A link to the reviewed object sits beside the record.
+- **It is not part of the annotation composition** // never inside a row, item, list, note or range. In a reviewed document the mark, the range and the passage mark stay the channels, and the record replaces none of them.
+- **No decision recorded draws no record** // `none` has no ink and binds no fill.
+
+Its words take the fill's ink, never the role's value or a text role's color. The fill confers no authority and no evidence: it reports the decision the record names.
+
 ## Applicability
 
-Every rule here applies to elements carrying this module's classes: `.doc-mark`, `mark.doc-passage-mark`, `.doc-annotation-note`, `.doc-annotation-item`, `.doc-annotations`, `.doc-annotation-list` and `.doc-annotation-range`. A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in and paints nothing. Those attribute names already exist outside this composition: [Evidence State](evidence-state.md)'s own consumer example paints `.node[data-evidence]`, and the [`message-archive`](patterns/message-archive/README.md) pattern uses `data-state` with a vocabulary of its own.
+Every rule here applies to elements carrying this module's classes: the annotation composition's `.doc-mark`, `mark.doc-passage-mark`, `.doc-annotation-note`, `.doc-annotation-item`, `.doc-annotations`, `.doc-annotation-list` and `.doc-annotation-range`, and the filled decision record's `.review-record`, which is never an element of that composition. A `data-review`, `data-evidence` or `data-state` attribute alone opts nothing in and paints nothing. Those attribute names already exist outside this composition: [Evidence State](evidence-state.md)'s own consumer example paints `.node[data-evidence]`, and the [`message-archive`](patterns/message-archive/README.md) pattern uses `data-state` with a vocabulary of its own. A keyed state or evidence label, `.state-label` or `.evidence-label` with the range it opens, is [Spectral State](spectral-state.md)'s or Evidence State's own presentation outside this composition. It is never an element of the composition and never sits in its rows, items, lists or notes: there state keeps its square and evidence its dot.
 
 ## Checking
 
-`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary, a review mark's bordered label, a range's opening row, the one judgment that leads it and its shared class, a whole list item a review row leads being its range, and a passage mark's shared underline) and computed presentation (the outline's, the scope rail's and the passage line's color, the marker, the rail and a note's attachment in a list item). Rule **C13** checks a review mark's box and edge as it checks every bordered label, rule **C14** a range's scope rail, lane, host, clearance and buffer as it checks every labeled range, an item host's included, and rule **C15** a passage mark's line and unchanged words as it checks every scope underline. None judges semantic assignment, that is, whether an item's role is the right one, nor scope. A pass reports no finding in what the checker reads, within the limits `tools/role-conformance.js` states; it does not show that a range was opened wherever a judgment needed one, that a range holds the right blocks, or that a passage mark underlines the right words. A review row left trailing a block or a list item's text passes, and so do a prompt stranded after its target and a prompt row that does not open on its review item, and a note on a decided judgment whose words no passage mark underlines. Those stay with the author, a consumer's own renderer tests and the reviewer reading the result.
+`tools/role-conformance.js` rule **C12** checks this composition where its classes appear: syntax (classes, attributes, vocabulary, a review mark's bordered label, a range's opening row, the one judgment that leads it and its shared class, a whole list item a review row leads being its range, a passage mark's shared underline, and a keyed label kept outside its rows, items, lists and notes) and computed presentation (the outline's, the scope rail's and the passage line's color, the marker, the rail and a note's attachment in a list item). Rule **C13** checks a review mark's box and edge as it checks every bordered label, rule **C14** a range's scope rail, lane, host, clearance and buffer as it checks every labeled range, an item host's included, and rule **C15** a passage mark's line and unchanged words as it checks every scope underline. Rule **C18** checks a filled decision record: its role, never `none`; its outcome words; its `object`, `actor` and `scope` fields, which no style inside the record hides; that it is inert and outside the annotation composition; its one filled shape in the role's value; and its words in the role's ink. It proves that a record names an object, an actor and a scope, not that they are the right ones or that the decision was made. None judges semantic assignment, that is, whether an item's role is the right one, nor scope. A pass reports no finding in what the checker reads, within the limits `tools/role-conformance.js` states; it does not show that a range was opened wherever a judgment needed one, that a range holds the right blocks, or that a passage mark underlines the right words. A review row left trailing a block or a list item's text passes, and so do a prompt stranded after its target and a prompt row that does not open on its review item, and a note on a decided judgment whose words no passage mark underlines. Those stay with the author, a consumer's own renderer tests and the reviewer reading the result.
 
 C12 compares a mark with its resolved role token. It does not independently establish that a local token rebinding is authorized. Adopted role bindings remain governed by this contract; a local exception requires the applicable explicit authorization.
 
 ## Tiers
 
-- **Tier 1 (identity-free):** the five `--review-*` role names, the review vocabulary and the composition's class names. A stable vocabulary other ASK-family surfaces can reuse.
-- **Tier 2 (ASK design language):** the reuse-by-reference mapping. Every color value is inherited from [Spectral State](spectral-state.md) or the foundation by reference.
+- **Tier 1 (identity-free):** the five `--review-*` role names and the four `--review-*-ink` names, the review vocabulary, the composition's class names, and the filled record's `.review-record` and its `data-record-field` names. A stable vocabulary other ASK-family surfaces can reuse.
+- **Tier 2 (ASK design language):** the reuse-by-reference mapping. Every color value is inherited from [Spectral State](spectral-state.md) or the foundation by reference, and every ink from the surface treatments' fill paint.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it
 
-1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract, and `surface-treatments.css` is required: it draws a review mark's box, a range's scope rail and its paint, and a passage mark's line:
+1. Load the foundation and the four register modules, then the state modules, then this file. The order is part of the contract, and `surface-treatments.css` is required: it draws a review mark's box, a range's scope rail and its paint, and a passage mark's line, gives the evidence and state marks their marker's size, corners and hollow edge, and paints a filled decision record and supplies its inks:
 
    ```text
    colors_and_type.css → surface-panel.css → surface-text-link.css →
@@ -165,9 +179,28 @@ C12 compares a mark with its resolved role token. It does not independently esta
    </div>
    ```
 
-6. Keep the labels visible, keep every shown decision's what, who and scope, and do not relabel a role by another axis's name.
+6. Outside a reviewed document's annotation, in a review summary, a decision or status board or a figure, show one decision on its own as a filled record. In HTML the record is the shape, and a paragraph inside it, which the foundation colors, takes the ink by class; in SVG the group holds one shape and its text takes the ink. The geometry and type are yours:
+
+   ```html
+   <div class="review-record surface-fill" data-review="accepted">
+     <p class="surface-fill-ink">Accepted</p>
+     <p class="surface-fill-ink"><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></p>
+   </div>
+
+   <svg viewBox="0 0 320 76" role="img" aria-label="An open question on the search index placement">
+     <g class="review-record" data-review="open">
+       <rect class="surface-fill" x="1" y="1" width="318" height="74" rx="8"/>
+       <text class="surface-fill-ink" x="16" y="28">Open question</text>
+       <text class="surface-fill-ink" x="16" y="54"><tspan data-record-field="object">search index placement</tspan> · <tspan data-record-field="actor">owner</tspan> · <tspan data-record-field="scope">the whole note</tspan></text>
+     </g>
+   </svg>
+   ```
+
+   A link to the reviewed object sits beside the record, never inside it, and no decision recorded draws no record.
+
+7. Keep the labels visible, keep every shown decision's what, who and scope, and do not relabel a role by another axis's name.
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the review role names, their meanings and values, the composition and its rules, and the decision-record display obligation. Consumers inherit by reference and do not mint a divergent palette.
+- **Upstream (this repo):** the review role names, their meanings and values, each pending or decided role's ink binding, the composition and its rules, the decision-record display obligation, and the filled decision record's binding and rules. Consumers inherit by reference and do not mint a divergent palette.
 - **Consumer-local:** which content carries which mark and why; the record values (what, who, scope); who may decide; the workflows; and any explicitly authorized local exception. This module is no workflow, database, approval interface or event schema, and it confers no authority.

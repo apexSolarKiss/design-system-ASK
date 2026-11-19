@@ -1,0 +1,148 @@
+/* ============================================================
+   surface-cta.css — the shared larger call-to-action contract
+
+   An OPT-IN live-surface visual rule under Foundations, and the second
+   control on the action axis beside surface-action.css. That module owns the
+   compact control a surface offers; this one owns the larger call to action:
+   the page-level step a surface asks its reader to take.
+
+   Presentation and interaction only. It owns no markup, no semantics, no
+   destination and no row layout, and it ships no template, catalog card or
+   generated preview.
+
+   WHAT IT DOES NOT OWN, deliberately:
+
+     element type      <a> or <button> — the consumer decides whether the call
+                       navigates or acts, and the contract styles either
+                       without changing what it is
+     destination/copy  the consumer's
+     row layout        placement, gap and rhythm stay with the consuming
+                       surface; no row class ships here
+     placement         inside a panel, outside one, several, one, or none
+
+   NOT for: compact actions (surface-action.css owns those), full-panel links,
+   textual links, theme or mode selectors, labels, badges or status notes. A
+   bordered label is inert and never becomes a call to action. Never a filled
+   semantic shape (.surface-fill) or a decision record (.review-record), and
+   never set inside one. A CTA takes no Spectral State, Evidence State, Review
+   State or Criterion Assessment value, and carries none of their attributes:
+   an ordinary button is never colored by a meaning. Its primary fill is the
+   UI accent, not the fill paint, and it confers nothing.
+
+   THE ROLE. 18px Inter at 400 (--fs-small, --fw-regular) on zero tracking,
+   sentence-cased, on the pill. It is deliberately larger, sans and heavier
+   than the compact action, which is 14px mono at 300: a page-level call to
+   action rather than a compact navigation control. Neither is conformed to
+   the other.
+
+   ONE GEOMETRY, TWO PAINTS. The base, .surface-cta, is the ghost: no fill, a
+   1px --line-1 border and --fg-1 words. .surface-cta--primary is a PAINT
+   variant, never a second geometry: it fills the pill with the UI accent
+   (--ask-ui-accent-1), sets the words in --ask-white and makes the border
+   transparent. Both paints hold in both themes as the tokens resolve.
+
+   Five properties a consumer could otherwise decide are DECLARED here. Four
+   of them inherit, so a host surface can set them far above the control; the
+   fifth is a box model the two permitted element types do not share:
+
+     text-transform none. A CTA is sentence-cased wherever an ancestor
+                    uppercases a region.
+     text-align     center. A label that wraps keeps one alignment in an
+                    anchor and in a button.
+     line-height    --lh-tight. A call to action's height is not a property of
+                    the page it lands on.
+     white-space    normal. A long label wraps within the pill rather than
+                    pushing past its container.
+     box-sizing     border-box. An anchor and a button resolve one declared
+                    width to one outer width.
+
+   HOVER, PRESS AND FOCUS. A CTA takes the shared attention edge by ADOPTING
+   it: every CTA also carries .surface-attention-edge, so a page that renders
+   one loads surface-action.css, which owns the edge. Hover and
+   keyboard-visible focus turn the 1px border pure magenta, with the 0.5px
+   ring outside it in light; on the primary the edge paints over the
+   transparent border. This module adds what the class leaves to the object:
+   on hover the 0.92 opacity drop, which a keyboard user's focus does not
+   take; on press scale(0.97); and the transitions. A CTA without the class
+   has no hover edge and shows the browser's focus ring, which the README's
+   focus contract does not allow.
+
+   Load order is not load-bearing: no rule here sets a border color or a
+   shadow on hover or focus, and the primary's transparent border is set at
+   a lower specificity than the shared edge. A consumer rule that sets a
+   CTA's border color on hover or focus overrides the edge, as for any
+   adopting object.
+
+   NO DISABLED STATE. This contract defines none: a CTA is always operable,
+   and a disabled appearance is not implied by any rule here.
+
+   WHY THESE VALUES. The contract uses existing role tokens for type, spacing,
+   radius, foreground, border color and motion timing and easing, and it
+   introduces no token and no palette role. The 1px border, the 0.92 hover
+   opacity and the 0.97 press scale are the action family's existing
+   interaction literals, as in surface-action.css.
+
+   The foundation underlines anchors, so text-decoration is held off at rest
+   and on hover.
+
+   Requires colors_and_type.css, and surface-action.css for the edge it
+   adopts. Rebinds no token.
+   ============================================================ */
+
+.surface-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-normal);
+  white-space: normal;
+  text-decoration: none;
+  text-transform: none;
+  text-align: center;
+
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--fg-1);
+
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+/* The <button> form. A button carries user-agent appearance and margin that a
+   class alone does not reach; the declarations above replace its font, paint
+   and border, and these remove what is left. */
+button.surface-cta {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Primary is a PAINT variant, never a second geometry. */
+.surface-cta--primary {
+  background: var(--ask-ui-accent-1);
+  color: var(--ask-white);
+  border-color: transparent;
+}
+
+/* The CTA's own hover and press. The edge is .surface-attention-edge's, in
+   surface-action.css; the opacity drop belongs to hover alone. */
+.surface-cta:hover { opacity: 0.92; text-decoration: none; }
+.surface-cta:active { transform: scale(0.97); }
+
+/* Reduced motion. Transitions and the press scale are removed; the adopted
+   hover and focus edge still applies, without animation. */
+@media (prefers-reduced-motion: reduce) {
+  .surface-cta { transition: none; }
+  .surface-cta:active { transform: none; }
+}

@@ -301,10 +301,14 @@ only the tables that show their words.
 ## rail-paint-fixture.html
 
 Guards **the rail paint** in `surface-treatments.css`: a rail in one governed color takes the
-same paint whichever meaning draws it. The fixture sets five review ranges, one per review
-judgment, and a neutral range; a comparison that shows its words, with a favorable, a caution
-and an adverse summary; a legend-led comparison with the same three as rated figures in value
-fields, and their key; a caution summary inside a `.theme-dark` subtree; and a quotation.
+same paint whichever meaning draws it. Each paint is keyed by its color,
+`--surface-rail-paint-green`, `-yellow` and `-red`, and the meaning-named `-earned`, `-structural`
+and `-deflated` are aliases that read their color's paint. The fixture sets five review ranges,
+one per review judgment, and a neutral range; five keyed ranges, opened by Spectral State's
+earned, structural, deflated and held labels and Evidence State's supported label; a comparison that shows its words, with a
+favorable, a caution and an adverse summary; a legend-led comparison with the same three as rated
+figures in value fields, and their key; a caution summary inside a `.theme-dark` subtree; and a
+quotation.
 
 The page measures each case once the fonts are ready and reports one overall verdict, with a row
 per case:
@@ -313,15 +317,17 @@ per case:
 stroke    every rail is a 2px solid stroke
 paint     each rail's paint is its color's: none for every color, the plain stroke, on both fields,
           in the dark subtree too
-one       the declined range's rail and every adverse rail share one color and one paint; the
-          accepted range's and every favorable rail, another; caution beside a summary, in a
-          field, in the key and in the dark subtree, a third
+one       the declined range's rail, the deflated range's and every adverse rail share one color
+          and one paint; the accepted range's, the earned and supported ranges' and every favorable
+          rail, another; caution beside a summary, in a field, in the key and in the dark subtree,
+          and the structural range's, a third
 label     the declined review mark keeps the bordered label's own edge, a 1px reinforcement in
           light and a 0px one in dark
-follows   with the shared paints changed on the root (green 3px, yellow 2px, red 1.5px), every
-          rail bound to one follows it, and the proposed, open, no-decision and neutral ranges'
-          rails stay bare; the declined mark's edge and the quotation's rail do not move; once the
-          change is removed, every rail paints as before
+alias     on the root, earned reads green's paint, structural yellow's and deflated red's
+follows   with the color-named paints changed on the root (green 3px, yellow 2px, red 1.5px),
+          every rail bound to one follows it, and the proposed, open, no-decision, neutral and held
+          ranges' rails stay bare; each alias follows its color; the declined mark's edge and the
+          quotation's rail do not move; once the change is removed, every rail paints as before
 ```
 
 **Run it** from the repo root:
@@ -344,19 +350,89 @@ rule; it fails only the cases named, in every one of those six settings.
 
 ```text
 ?control=local-dose       caution keeps a dose of its own, as the profile once did: its four rails'
-                          paint and follows cases fail
+                          paint and follows cases fail, and so does the one-yellow case, since the
+                          structural range keeps the shared paint
 ?control=unbound-range    the review ranges lose their binding to the shared paint: the accepted
                           and declined ranges' follows cases fail
-?control=label-reach      the red rail paint is put on the declined review mark: the mark's own-
-                          edge case and its untouched case fail
+?control=unbound-keyed    the keyed ranges lose their binding to the shared paint: the earned,
+                          structural, deflated and supported ranges' follows cases fail
+?control=label-reach      the red rail paint, --surface-rail-paint-red, is put on the declined
+                          review mark: the mark's own-edge case and its untouched case fail
 ?field=ask-lavender&control=field-dose
-                          a declared field gives yellow a dose, as the retired ring did: the four
-                          caution rails' paint cases fail; without ?field= the control is inert
+                          a declared field gives yellow a dose, as the retired ring did, through
+                          --surface-rail-paint-yellow: the four caution rails' and the structural
+                          range's paint cases fail; without ?field= the control is inert
+?control=alias-value      the earned alias carries a value of its own instead of reading green's
+                          paint: its alias follows case fails
 ```
 
 Until the yellow ring was retired (Spectral State v1.2), the fixture carried two controls for the
 ring's field and subtree logic; with every paint none, neither can fail, so both are gone. The
 `?field=` run and its control stand in their place, guarding that no field brings a dose back.
+
+## fill-paint-fixture.html
+
+Guards **the fill paint** in `surface-treatments.css` as Evidence State, Review Semantics and
+Criterion Assessment bind it: each chromatic role names its ink, `--evidence-<role>-ink`,
+`--review-<role>-ink` and `--assessment-<role>-ink`, bound by reference to the ink FILL PAINT keys
+by the fill color, and brown's ink is the lavender in both themes. The fixture sets the four
+chromatic evidence roles and the three assessment roles as filled HTML boxes and SVG shapes, each
+composed by the recipe its contract documents, and the four pending and decided review roles as
+decision records, which `review-semantics.css` binds itself; it loads the Evidence State, Review
+Semantics, Criterion Assessment, Spectral State and Three Functions keys and the style guide in
+frames.
+
+The page measures each case once the fonts and the frames are ready and reports one overall
+verdict, with a row per case:
+
+```text
+ink       brown's ink, --surface-fill-ink-on-brown, is #D4C6E1
+value     each evidence, review and assessment ink is its color's: #6A637F on green, yellow, orange
+          and cyan, the lavender on red and brown, and on magenta the lavender in light and #201D26
+          in dark
+box, svg  each filled box takes its role's value as fill and edge and its ink as text color; each
+          SVG shape its role's value as fill, and its text the ink
+no ink    not yet testable, no decision recorded, unassessed and lavender-gray declare no ink
+no fill   a record for no decision recorded takes no fill
+follows   with each fill color's ink changed on the root, every role's ink reads its own color's
+never     no .surface-fill shape on this page or in a frame is painted lavender-gray, and each page
+filled    draws at least one filled shape, so the case cannot pass on a page that failed to load
+```
+
+**Run it** from the repo root:
+
+```
+python3 -m http.server 8080
+# open http://localhost:8080/tests/fill-paint-fixture.html
+# add ?theme=light or ?theme=dark to hold a mode
+```
+
+The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
+also on `window.__fillPaintFixture` and the verdict on `body[data-result]`. Run it held light,
+held dark and following the browser, each with the browser's preference light and dark: brown's
+ink takes no theme exception, so every case but the magenta ink's expects the same value in all four;
+the magenta ink's follows the root theme, as FILL PAINT's one theme exception among the inks. The frames follow
+the browser's preference; lavender-gray is one value in both themes, so their case is the same in
+each. The never-filled case reads `.surface-fill` shapes only: a lavender-gray swatch in the style
+guide's color tokens is a token's specimen, not a filled shape, and is not read.
+
+**Verifying the fixture still bites.** Each control below loads one regression; it fails only the
+cases named.
+
+```text
+?control=brown-theme      brown's ink takes a dark theme exception, #6A637F: in the held-dark and
+                          follow-dark settings the brown ink case and the weakened value case fail;
+                          in the light settings the control is inert
+?control=restated-ink     the weakened ink restates #D4C6E1 instead of reading brown's: its follows
+                          case fails, in every setting
+?control=restated-review-ink
+                          the open ink restates #6A637F instead of reading cyan's: its follows case
+                          fails, in every setting
+?control=nyt-ink          not yet testable declares an ink: its no-ink case fails, in every setting
+?control=nyt-fill         a filled not-yet-testable shape is added to the Evidence State key's
+                          frame, as a key that broke the contract would draw it: that frame's
+                          never-filled case fails, in every setting
+```
 
 ## doc-actions-end-fixture.html
 
@@ -431,12 +507,14 @@ range lane, one in each of a first, an interior and a last column and one in a t
 only column, and a list that opens on two item hosts after a range, keeping the passage
 buffer from it; and the scope underline without Review Semantics: a neutral underline in
 body text, and one under a phrase holding a link, which keeps its own line and states;
-and an ordered sequence of three steps, each opening on its label — which must return no
-finding at rest or in any link state, on screen or under print media.
-After it come **controls**: 217 negative controls, one per failure branch, and two more
+an ordered sequence of three steps, each opening on its label; and the marker: a neutral
+dot, a square and a hollow dot at the three sizes, a dot in a meaning's color, a dot in
+its field's color inside its 1px edge, and a square inline in body text — which must
+return no finding at rest or in any link state, on screen or under print media.
+After it come **controls**: 240 negative controls, one per failure branch, and two more
 under print media,
 each of which must fail with exactly the reason codes it names, no more and no fewer; and
-17 positive controls (15 under print media) — an unmarked prose table, a complete profile declaration, a
+19 positive controls (17 under print media) — an unmarked prose table, a call to action in a meta line, a shaped object that owns its own interaction and so takes no text-link class, a complete profile declaration, a
 declared presentation assignment's own foreground with a bordered label under it, an
 emphasis rail off document text keeping a sanctioned violet accent, six declared
 peer-group blocks (two, five and ten groups, a question set out as three groups, a single
@@ -448,7 +526,8 @@ wrapper, and item hosts in two neighboring table cells, which owe no buffer acro
 row, and three ordered sequences — one in a closed disclosure, judged once the runner
 opens it, one whose step a local print rule lets break and one whose step it keeps whole
 only in columns (`avoid-column`), which on screen draw as they should and under print
-media are the two more negative controls (`C16.print`) — which must return no finding:
+media are the two more negative controls (`C16.print`), and a marker in a closed
+disclosure, judged once the runner opens it — which must return no finding:
 
 ```text
 C0.token                    a region that redefines --fs-body, alone and around body
@@ -503,6 +582,8 @@ C5.body · C5.body           a dense cell holding body text · a dense header ho
 C6.display                  the retired display quotation
 C7.class                    a bare link in body text · in a subsection heading · in
                             a dense table header
+(none)                      a call to action in a meta line: a shaped object that owns
+                            its interaction, so it takes no text-link class
 C8.size · C8.family         smaller text inside body · undeclared mono inside body
 C9.hover                    a contents link and a body link whose hover loses the
                             full magenta
@@ -651,6 +732,26 @@ C16.ring · C16.ring
 C16.print · C16.print       under print media only (data-expect-print): a step a local
                             print rule lets break · one it keeps whole only in columns
                             (avoid-column), which does not hold on paper
+C17.box · C17.box ·         a large marker drawn at the small size · a hollow marker
+C17.box · C17.box ·         sized by its content box, its dashed edge outside its 30px ·
+C17.box · C17.box           a marker a flex row may shrink · one holding a word · one
+                            moved by a transform · a page that redefines
+                            --surface-marker-size-lg, where the check holds the owner's
+                            30px, not the page's property
+C17.corner · C17.corner     a square marker drawn round · a dot drawn square
+C17.fill · C17.fill ·       a filled marker made transparent · painted by a local rule
+C17.fill · C17.fill ·       in a color that is not its own · given a dashed edge ·
+C17.fill                    given a glow · faded to 30% opacity
+C17.hollow · C17.hollow ·   a hollow marker filled · its edge drawn solid · its edge in
+C17.hollow                  another color
+C17.shape · C17.shape ·     a hollow square · a marker at two sizes · a marker with an
+C17.shape                   unknown modifier; none is judged further
+C12.rail C17.attach ·       a marker composed with an annotation item, which C12 also
+C17.attach · C17.attach     reports for its fill · composed with a fill · made
+                            focusable; none is judged further
+C17.corner                  a marker in a closed disclosure drawn square, which only the
+                            runner returns, once it opens the disclosure
+                            (data-expect-open)
 ```
 
 The page judges each case's **resting** codes itself and writes them to
@@ -745,14 +846,14 @@ printer's own handling, is shown by printing, not checked here.
 
 ## review-semantics-fixture.html
 
-The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, [`review-semantics.md`](../review-semantics.md)), for rule **C13** where a review mark takes the shared bordered label, for rule **C14** where an annotation range takes the shared labeled range, a whole list item included, and for rule **C15** where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, and every passage mark `.surface-scope-underline`, except where a control omits it.
+The regression fixture for rule **C12** of `tools/role-conformance.js`, the Review Semantics annotation composition (`review-semantics.css`, [`review-semantics.md`](../review-semantics.md)), for rule **C13** where a review mark takes the shared bordered label, for rule **C14** where an annotation range takes the shared labeled range, a whole list item included, and for rule **C15** where a passage mark takes the shared scope underline, and for all three where a neutral label, range or underline is held in a closed disclosure. It is also the fixture for Spectral State's and Evidence State's keyed labels and the ranges they open (`C13.key`, `C13.color`, `C14.color`, `C12.attach`), since it loads both modules, and for rule **C18**, the filled decision record, which `review-semantics.css` binds and `surface-treatments.css` paints. It loads the foundation, the four register modules, `spectral-state.css`, `evidence-state.css` and `review-semantics.css` in the contract's order, and `../tools/role-conformance.js`. Every review mark carries `.surface-bordered-label`, and every passage mark `.surface-scope-underline`, except where a control omits it.
 
-A conforming specimen must return no finding; it includes annotation ranges over one paragraph whose passage mark's note follows the range, over two paragraphs and over one beside them, over a quotation alone, over a callout, which keeps its own rail, over a list with the lead-in that introduces it, over a quotation with the sentence that reads it, over a synthesis panel, over a whole table, and over a heading that alone poses a question, two in one table cell of a second column, and two in a table's first column, whose box keeps the range lane; an annotation list naming its item; a decided judgment on exact words, its words under an Accepted passage mark that names the note quoting them; two whole list items in a row, each its own range, beside an item whose pending words keep their passage mark and note after the item's text, and an item whose paragraph ends on declined words, its note keeping its 12px attachment below them; and an explicit-target prompt standing just before a range over a table. Each range's row leads with its judgment, and no review row trails the block it judges. A pass reports no finding in what the checker reads, within the limits `tools/role-conformance.js` states. It does not establish that a range was opened wherever a judgment needed one, that a range holds the right blocks or that a passage mark underlines the right words: a review row left trailing a block or a list item's text passes, and so do a prompt stranded after its target, a prompt row that does not open on its review item, and a decided judgment's note that no passage mark names, so scope and placement stay with the author, a consumer's renderer tests and the reviewer. Two disclosure controls below keep a review row after a paragraph; they test disclosure behavior, not composition. After it come **114 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
+A conforming specimen must return no finding; it includes annotation ranges over one paragraph whose passage mark's note follows the range, over two paragraphs and over one beside them, over a quotation alone, over a callout, which keeps its own rail, over a list with the lead-in that introduces it, over a quotation with the sentence that reads it, over a synthesis panel, over a whole table, and over a heading that alone poses a question, two in one table cell of a second column, and two in a table's first column, whose box keeps the range lane; an annotation list naming its item; a decided judgment on exact words, its words under an Accepted passage mark that names the note quoting them; two whole list items in a row, each its own range, beside an item whose pending words keep their passage mark and note after the item's text, and an item whose paragraph ends on declined words, its note keeping its 12px attachment below them; and an explicit-target prompt standing just before a range over a table. Each range's row leads with its judgment, and no review row trails the block it judges. A pass reports no finding in what the checker reads, within the limits `tools/role-conformance.js` states. It does not establish that a range was opened wherever a judgment needed one, that a range holds the right blocks or that a passage mark underlines the right words: a review row left trailing a block or a list item's text passes, and so do a prompt stranded after its target, a prompt row that does not open on its review item, and a decided judgment's note that no passage mark names, so scope and placement stay with the author, a consumer's renderer tests and the reviewer. Two disclosure controls below keep a review row after a paragraph; they test disclosure behavior, not composition. After it come **196 controls**, each judged like the role-conformance fixture's: it must return exactly the reason codes it names, no more and no fewer.
 
-- **91 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.base`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`, `.range`, `.mixed`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, role tokens made transparent, and a not-yet-testable note drawn in its text color while its value is undefined. A passage mark fails with its own reasons and the shared line's: one naming No decision recorded (`C12.vocab`), one without `.surface-scope-underline` (`C12.base`), one whose line takes another role's value (`C12.color`), one drawn as a dotted line (`C15.line`), one that recolors its words and one given a tint (`C15.words`), and, in a closed disclosure, a neutral underline drawn dotted once open (`C15.line`, open only). A note in a list item at the old 4px attachment fails `C12.note`, after a paragraph and after the item's own text alike. A whole list item a review row leads without the range classes fails `C12.base`; an item host whose words come before its row fails `C12.range`; an item host in a list indented 40px that does not name its indentation fails `C14.rail`; and an item host holding a note of its own fails `C12.mixed`. The shared box fails with the bordered label's own reasons: a review mark without `.surface-bordered-label` (`C12.base`), an evidence and a state mark carrying it (`C12.attach`), a review mark on pill corners and one with three pill corners (`C13.corner`), one with a padding of its own (`C13.padding`), and a repainted outline, whose reinforcement keeps the role's color (`C12.color` and `C13.edge`). An annotation range fails with its own reasons: one without `.surface-labeled-range`, and a labeled range a review judgment opens without `.doc-annotation-range` (`C12.base`, the latter with `C14.label`); one opened by a paragraph and one whose row names no judgment (`C12.range`, each with `C14.label`); one whose row names two judgments, and one whose row opens on its basis rather than its judgment (`C12.range`); one holding a second judgment, or a nested range (`C12.mixed`, the latter with `C14.nest`); a scope rail in another role's color (`C12.color`); a range carrying `data-review`, and one that is itself a quotation (`C12.attach`, the latter with `C14.box`); a quotation inside a range repainted in the range's color (`C3.color`); a range inside a panel (`C14.host`); one in a table's first column without the range lane (`C14.clearance`); and a range in a closed disclosure drawn at the content edge once open (`C14.rail`, open only). A neutral labeled range in a closed disclosure fails `C14.label` when its label has no words, at rest, and when its label is hidden, once open.
-- **23 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, a passage mark naming a decided outcome, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose line is suppressed only while its disclosure is closed and the same passage open from the start, a neutral scope underline in a closed disclosure, which C15 judges once open, an item host in a list indented 40px that names its indentation, an item host holding a passage mark whose note follows the list, a note after a paragraph whose larger margin the attachment collapses into, a note in a list item that is itself a group and keeps the group's gap, a review row trailing a list item's text, which the checker does not judge, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, rows without a mark in a closed disclosure, an emphasis chip and a neutral bordered label in a closed disclosure, which C13 judges once open, an annotation range in a closed disclosure, which C12 and C14 judge once open, a neutral labeled range in a closed disclosure, which C14 judges once open, and an annotation range holding a passage mark whose note follows the range: words judged otherwise keep their own, narrower record.
+- **153 negative controls**, one or more per C12 reason (`C12.role`, `.facet`, `.vocab`, `.label`, `.base`, `.attach`, `.geometry`, `.color`, `.nyt`, `.passage`, `.note`, `.rail`, `.range`, `.mixed`) and three for an element's hierarchy rail (`C3.hierarchy`), among them a not-yet-testable rail at width 0, an evidence marker not displayed, role tokens made transparent, and a not-yet-testable note drawn in its text color while its value is undefined. A passage mark fails with its own reasons and the shared line's: one naming No decision recorded (`C12.vocab`), one without `.surface-scope-underline` (`C12.base`), one whose line takes another role's value (`C12.color`), one drawn as a dotted line (`C15.line`), one that recolors its words and one given a tint (`C15.words`), and, in a closed disclosure, a neutral underline drawn dotted once open (`C15.line`, open only). A note in a list item at the old 4px attachment fails `C12.note`, after a paragraph and after the item's own text alike. A whole list item a review row leads without the range classes fails `C12.base`; an item host whose words come before its row fails `C12.range`; an item host in a list indented 40px that does not name its indentation fails `C14.rail`; and an item host holding a note of its own fails `C12.mixed`. The shared box fails with the bordered label's own reasons: a review mark without `.surface-bordered-label` (`C12.base`), an evidence and a state mark carrying it (`C12.attach`), a review mark on pill corners and one with three pill corners (`C13.corner`), one with a padding of its own (`C13.padding`), and a repainted outline, whose reinforcement keeps the role's color (`C12.color` and `C13.edge`). An annotation range fails with its own reasons: one without `.surface-labeled-range`, and a labeled range a review judgment opens without `.doc-annotation-range` (`C12.base`, the latter with `C14.label`); one opened by a paragraph and one whose row names no judgment (`C12.range`, each with `C14.label`); one whose row names two judgments, and one whose row opens on its basis rather than its judgment (`C12.range`); one holding a second judgment, or a nested range (`C12.mixed`, the latter with `C14.nest`); a scope rail in another role's color (`C12.color`); a range carrying `data-review`, and one that is itself a quotation (`C12.attach`, the latter with `C14.box`); a quotation inside a range repainted in the range's color (`C3.color`); a range inside a panel (`C14.host`); one in a table's first column without the range lane (`C14.clearance`); and a range in a closed disclosure drawn at the content edge once open (`C14.rail`, open only). A neutral labeled range in a closed disclosure fails `C14.label` when its label has no words, at rest, and when its label is hidden, once open. A keyed label fails `C13.key` when its words lack the axis (`Held`) or name another role (`State // Earned` on a held label), when it keys neutral, not yet testable or a role outside its axis's vocabulary, when it is not a bordered label or is an emphasis chip, when it names both axes, and when a state label also carries an evidence attribute; a range that such a label opens fails `C13.key` alone, unjudged for its color. A plain bordered label set to a state value, and one set to not yet testable's lavender-gray, fail `C13.color`, as does a keyed label repainted in another role; a keyed range repainted in another role, and a neutral range in lavender-gray, fail `C14.color`; a keyed role token made transparent fails both; and a keyed range in a closed disclosure repainted once open fails `C14.color`, open only. A keyed label in an annotation row, an annotation list's value or an annotation note fails `C12.attach`, and one that carries an annotation class fails it with `C12.rail` and `C13.box`. A filled decision record fails `C18.vocab` when it names no decision recorded or no role, and is judged no further; `C18.words` when its words outside its fields state no outcome, name another, state it only inside a field, or hide it; `C18.fields` when it lacks its actor, names two objects, uses a field outside the vocabulary, or hides or empties a field, including a field whose only words sit in a child hidden by `display`, `visibility` or zero opacity, a field at zero opacity around its child's words, and a field that shows only punctuation around hidden words; `C18.inert` when it is a link, holds a button, takes focus, or sits inside a link, an attention-edge object, a checkbox or a select's option; and `C18.attach` when it sits inside an annotation range, an annotation note or another record, or carries a state attribute. A record on the neutral shape fails `C18.attach` and, since the neutral shape claims its edge, `C18.fill`. It fails `C18.fill` alone when its fill or its edge takes another value, when it draws no filled shape, which leaves its words unjudged, when an SVG record holds two shapes or strokes its shape in another value, when it is at half opacity, and when its role token is made transparent; and `C18.ink` when its words take the theme foreground, a paragraph's foundation color or a text role's, when an SVG record's text lacks the ink, and when its ink token is made transparent or left undefined.
+- **43 positive controls**, which must return no finding: harmless evidence metadata on document text, an Evidence State not-yet-testable presentation outside the composition, a state marker with 10% corners, a passage mark described by two ids, a passage mark naming a decided outcome, labeled marks in a closed disclosure, the same marks with their disclosure open, a mark in a closed disclosure's summary, a passage whose line is suppressed only while its disclosure is closed and the same passage open from the start, a neutral scope underline in a closed disclosure, which C15 judges once open, an item host in a list indented 40px that names its indentation, an item host holding a passage mark whose note follows the list, a note after a paragraph whose larger margin the attachment collapses into, a note in a list item that is itself a group and keeps the group's gap, a review row trailing a list item's text, which the checker does not judge, a composition restyled only while its disclosure is closed, a not-yet-testable note in a closed disclosure, rows without a mark in a closed disclosure, an emphasis chip and a neutral bordered label in a closed disclosure, which C13 judges once open, an annotation range in a closed disclosure, which C12 and C14 judge once open, a neutral labeled range in a closed disclosure, which C14 judges once open, an annotation range holding a passage mark whose note follows the range, since words judged otherwise keep their own, narrower record, every keyed state label and every keyed evidence label, keyed state ranges and keyed evidence ranges in the flow, a keyed item host, a keyed range in a table's first column with the range lane, a keyed label in a table cell and one in an annotation range's content, plain bordered labels and a neutral range whose labels carry a `data-state` or `data-evidence` attribute and no key, and a keyed range in a closed disclosure, which C13 and C14 judge once open. For the filled decision record: one record per pending or decided role, a Correction requested record, a decision node in SVG, a record beside the link to its object, a record in a closed disclosure, which C18 judges at rest and never holds, a decision board of records, a record whose paragraph takes the ink, a record whose fields hold their words in shown children, a record whose actor shows its words beside hidden ones, and a `data-review` attribute on a filled shape that is no record, which binds no fill.
 
-**Disclosures.** Forty-three controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them; so is a bordered label, a labeled range or a scope underline held there. The resting check judges its syntax, vocabulary and relationships, requires that a mark and a neutral range's label have words (`C12.label`, `C14.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
+**Disclosures.** Forty-six controls sit in a disclosure. An element of the composition that a closed disclosure keeps from being seen is collapsed: a mark, a passage mark, a note, a row, an item, a list, or a list's key or value, with or without a mark among them; so is a bordered label, a labeled range or a scope underline held there. The resting check judges its syntax, vocabulary and relationships, requires that a mark and a neutral range's label have words (`C12.label`, `C14.label`), and reports the element collapsed. The runner judges what it presents once it has opened every disclosure in scope and judged the link states, and once the animations on the element, inside it and on its ancestors have finished; an element's hierarchy rail (`C3.hierarchy`) is judged there too. Such a control names the codes expected at rest in `data-expect`, those the runner returns in `data-expect-open` (absent means none), and how many elements the resting check must report collapsed in `data-collapsed`. The runner passes a case only when the page's resting verdict passes and its own codes for the case equal `data-expect-open` exactly. It compares reason codes, not the state a finding carries (`open`, `collapsed` or `removed`).
 
 - Labeled marks in a closed disclosure pass, nested and in a table cell included, and so do rows without a mark and a not-yet-testable note on its rail.
 - At rest, a collapsed mark with no words, one without the label role, one wearing the emphasis chip class, one carrying two facets, a review role outside the vocabulary and a passage mark with no note fail as they would outside a disclosure.
@@ -788,7 +889,10 @@ reference   a compact action and a full-panel link: the edge they already take
 bordered    an image card that lifts and raises its own shadow on hover, a launch
             card, and a media facade: the object's own border turns magenta, with
             the 0.5px ring outside it in light; the image card restates its hover
-            shadow with the ring, as an adopting object with a shadow must
+            shadow with the ring, as an adopting object with a shadow must. Two
+            calls to action from surface-cta.css, a primary button and a ghost
+            anchor, take the same edge: the primary's transparent rest border
+            turns magenta, as the ghost's hairline does
 borderless  three overlay controls with no border of their own
             (.surface-attention-edge--borderless): an inset 1px ring where a border
             would sit, with the 0.5px ring outside it in light
@@ -838,6 +942,10 @@ python3 -m http.server 8080
 remove the .surface-attention-edge selectors from the  every bordered, borderless and SVG
 shared hover and focus rule and its outline rule       case, on focus, with the browser's
                                                        own ring; the reference cases pass
+remove .surface-attention-edge from a CTA's markup     that CTA, on focus, with the
+                                                       browser's own ring
+set the primary CTA's transparent border at a          the primary CTA, on focus: its
+specificity above the shared edge rule                 border stays transparent
 remove the borderless rules                            the three overlay controls
 remove the SVG rules                                   the four linked SVG cards
 replace the scale-compensated SVG widths with plain    the half- and quarter-scale

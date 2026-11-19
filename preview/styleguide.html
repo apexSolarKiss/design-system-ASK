@@ -30,12 +30,15 @@
      values resolve live from colors_and_type.css; the styleguide remains a maintained
      reference surface (specimen copy / coverage can still need maintenance). -->
 <link rel="stylesheet" href="../colors_and_type.css">
-<!-- The canonical compact-action contract, loaded so the specimen below RENDERS
-     from the real module rather than a local re-derivation. The specimen loads
-     the real module, so the module-owned control styling resolves from the
-     canonical contract. Consumer-owned specimen framing and descriptive copy
-     remain maintained and may require conformance when the contract changes. -->
+<!-- The canonical compact-action and call-to-action contracts, loaded so the
+     specimens below RENDER from the real modules rather than a local
+     re-derivation, and the module-owned control styling resolves from the
+     canonical contracts. A CTA takes its hover and focus edge from
+     surface-action.css, by class. Consumer-owned specimen framing and
+     descriptive copy remain maintained and may require conformance when a
+     contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
+<link rel="stylesheet" href="../surface-cta.css">
 
 <!-- The panel, textual-link, document-register and treatment rules, then the
      semantic modules, in the load order the Review Semantics and Criterion
@@ -88,14 +91,21 @@
   .role .lbl { font-family: var(--font-mono); font-size: var(--fs-caption); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--fg-3); display: block; margin-top: var(--space-2); }
   .note { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.6; color: var(--fg-3); }
   /* Specimen framing for the two interactive roles. Layout only — no control
-     value is restated in CSS, so the rendered compact-action specimen resolves
-     from surface-action.css. The prose beside it does restate values and is
-     maintained copy. `spec-actions-narrow` constrains the row, and
-     `spec-actions-fixed` gives both forms one explicit width, so the wrapping
-     and box-model cases the contract permits are actually exercised. */
+     value is restated in CSS, so the rendered compact-action and CTA specimens
+     resolve from surface-action.css and surface-cta.css. The prose beside them
+     does restate values and is maintained copy. `spec-actions-narrow`
+     constrains the row, and `spec-actions-fixed` gives both forms one explicit
+     width, so the wrapping and box-model cases the contract permits are
+     actually exercised. `spec-actions-cta` spaces the larger pills, and
+     `spec-roles` sets the named small roles side by side: the two labels
+     share a start-aligned group, since the chip keeps its own place at the
+     start of a flex row, and the group centers against the compact action. */
   .spec-role { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-small); font-weight: var(--fw-light); }
   .spec-role-meta { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-3); font-weight: var(--fw-light); }
   .spec-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-start; }
+  .spec-actions-cta { gap: var(--space-3); }
+  .spec-roles { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .spec-roles-labels { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3); }
   .spec-actions-narrow { max-width: 210px; }
   /* One EXPLICIT width on both semantic forms. A parent max-width only
      constrains the row; giving each control the same declared width is what
@@ -113,10 +123,6 @@
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
-  .badge { display: inline-block; font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--line-1); border-radius: var(--radius-pill); padding: var(--space-1) var(--space-3); margin: 0 var(--space-2) var(--space-2) 0; }
-  .btn { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--fs-small); border-radius: var(--radius-pill); padding: var(--space-2) var(--space-5); border: 1px solid var(--line-1); cursor: pointer; margin: 0 var(--space-3) var(--space-3) 0; }
-  .btn-primary { background: var(--ask-ui-accent-1); color: var(--ask-white); border-color: transparent; }
-  .btn-ghost { background: transparent; color: var(--fg-1); }
   .specimen { line-height: var(--lh-tight); }
   .row { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
   /* Wordmark specimen. Sizing only — visibility is the shell's own
@@ -147,7 +153,7 @@
   .cat-cell { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line-2); min-width: 0; }
   .cat-spec { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-2); min-height: 46px; }
   .cat-cell .note { margin: 0; }
-  .cat-family > .cat-grid + .note, .cat-family > .note + .note { margin-top: var(--space-4); }
+  .cat-family > .cat-grid + .note, .cat-family > .cat-cell + .note, .cat-family > .note + .note { margin-top: var(--space-4); }
   .cat-box { box-sizing: border-box; width: 108px; height: 46px; border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--fs-caption); }
   .cat-svg { display: block; width: 108px; height: 46px; }
   .cat-svg rect { stroke-width: 1.5; }
@@ -156,7 +162,33 @@
      inside the cell, as the labeled range's contract asks of its host. */
   .cat-lane { padding-left: var(--space-5); }
   .cat-stack { display: flex; flex-direction: column; gap: var(--space-4); }
+  /* The marker anatomy's specimen: each size's three shapes on one center line. */
+  .cat-spec--markers { align-items: center; gap: var(--space-5); }
+  .cat-marker-set { display: inline-flex; align-items: center; gap: var(--space-3); }
   .cat-candidate { margin: var(--space-6) 0 0; }
+  /* The bordered labels' cells are wide enough for a keyed label's words on one line. */
+  .cat-grid--labels { grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
+  /* A full-width cell after a family's grid, and a set of ranges laid side by side in it. Side by side,
+     the ranges keep no stacked buffer; a row of them keeps the passage buffer from the next. */
+  .cat-cell--wide { margin-top: var(--space-4); }
+  .cat-range-set { display: grid; gap: var(--space-5) var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+  .cat-range-set > .surface-labeled-range { margin-top: 0; }
+  /* The filled decision records: the record is the shape, and review-semantics.css binds its color and ink.
+     This sets its geometry and type, which the contract leaves to the composing surface, and lays the records
+     out; no rule here sets a paint, an edge or an ink. Its border is set by width and style, never by a
+     shorthand that would reset the color FILL PAINT gives it. */
+  .cat-records { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); align-items: start; }
+  .cat-record { box-sizing: border-box; min-width: 0; margin: 0; padding: var(--space-3) var(--space-4); border-width: 1.5px; border-style: solid; border-radius: var(--radius-sm);
+                display: flex; flex-direction: column; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); line-height: 1.4; }
+  .cat-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); line-height: var(--lh-tight); }
+  .cat-record-fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); margin: 0; }
+  .cat-record-fields > * { margin: 0; min-width: 0; }
+  .cat-record-node { display: block; width: 100%; max-width: 340px; height: auto; }
+  .cat-record-node rect { stroke-width: 1.5; }
+  .cat-record-node text { font-family: var(--font-mono); font-size: var(--fs-caption); font-weight: var(--fw-light); }
+  .cat-record-node .cat-record-outcome { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-regular); }
+  .cat-candidate > :is(.cat-spec, .cat-lane, .doc-table-scroll, .cat-records, .cat-record-node), .cat-candidate > :not(h4) + .note { margin-top: var(--space-4); }
+  .cat-candidate > .cat-spec { min-height: 0; }
   .cat-links { margin: var(--space-3) 0 0; padding-left: var(--space-5); }
   .cat-links li { margin: 0 0 var(--space-2); }
 
@@ -376,17 +408,21 @@
         <p style="font-size: var(--fs-small); color: var(--fg-2); margin:0;">Frosted glass surface over the gradient // the canonical container.</p>
       </div>
       <div class="card">
-        <div style="margin-bottom: var(--space-3);"><button class="btn btn-primary">Primary</button><button class="btn btn-ghost">Ghost</button></div>
-        <div><span class="badge">badge</span><span class="badge">chip</span><span class="badge">tag</span></div>
+        <div class="spec-roles">
+          <span class="spec-roles-labels"><span class="surface-bordered-label doc-label">draft</span><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span></span>
+          <a class="surface-action" href="#compact-action">compact action</a>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">A short word or a small control is a named role, never a generic badge. Left: a neutral <a class="surface-text-link" href="#treatment-label">bordered label</a> and an emphasis chip, both inert: read, never operated. Right: the compact action, the operable small control, shown below. The shell's status badge is an unbordered note in a surface header and is not drawn here.</p>
       </div>
     </div>
 
     <!-- Two interactive roles, shown together so the boundary between them is
          visible on the surface designers are told to read before designing.
-         They are NOT variants of one another: the CTA is 18px Inter and is
-         styled locally here; the compact action is 14px mono and resolves from
-         the canonical surface-action.css. Conforming either to the other is the
-         mismatch this section exists to prevent. -->
+         They are NOT variants of one another: the CTA is 18px Inter and
+         resolves from the canonical surface-cta.css; the compact action is
+         14px mono and resolves from the canonical surface-action.css.
+         Conforming either to the other is the mismatch this section exists to
+         prevent. -->
     <h3 class="spec-role" id="compact-action">Compact action <span class="spec-role-meta">14px JetBrains Mono 300 · tracking 0 · canonical <code>.surface-action</code></span></h3>
     <p class="note" style="margin: 0 0 var(--space-3);">The label on a small control — a chip, a route action, a repo link. Caption-<em>sized</em>, not the Caption role: sentence-cased, zero tracking, weight 300. The contract styles a native anchor and a native button identically, so the consumer keeps whichever element the job actually calls for.</p>
     <div class="grid cols-2">
@@ -406,8 +442,24 @@
       </div>
     </div>
 
-    <h3 class="spec-role">CTA <span class="spec-role-meta">18px Inter 400 · a SEPARATE role — not a compact action</span></h3>
-    <p class="note" style="margin: 0 0 var(--space-3);">The Primary / Ghost pair above. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. It is not governed by <code>surface-action.css</code> and must not be conformed to it.</p>
+    <h3 class="spec-role" id="cta">CTA <span class="spec-role-meta">18px Inter 400 · tracking 0 · canonical <code>.surface-cta</code> · a SEPARATE role — not a compact action</span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">The larger call to action. It is deliberately larger, sans, and heavier: a page-level call to action rather than a compact navigation control. Its type, geometry and paint are <code>surface-cta.css</code>'s; it adopts the attention edge by class, as any shaped interactive object may, and is never conformed to the compact action. The primary fills the pill with the UI accent and confers nothing: a CTA takes no state, evidence, review or assessment color. No disabled state is defined.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="spec-actions spec-actions-cta">
+          <button type="button" class="surface-cta surface-cta--primary surface-attention-edge">Primary</button>
+          <button type="button" class="surface-cta surface-attention-edge">Ghost</button>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">Native <code>&lt;button&gt;</code>: the primary on the UI accent, and the ghost on its <code>--line-1</code> border. Same geometry, same type — primary changes paint only.</p>
+      </div>
+      <div class="card">
+        <div class="spec-actions spec-actions-cta">
+          <a class="surface-cta surface-cta--primary surface-attention-edge" href="#cta">Primary</a>
+          <a class="surface-cta surface-attention-edge" href="#cta">Ghost</a>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">The same pair as native <code>&lt;a&gt;</code>. Each also carries <code>.surface-attention-edge</code>, so hover and keyboard focus turn the border magenta; hover adds the 0.92 opacity drop, and press the 0.97 scale.</p>
+      </div>
+    </div>
 
     <!-- The third interactive role, and the one with no geometry of its own.
          It sits directly after the two boxed roles because the boundary IS the
@@ -441,7 +493,7 @@
 
     <div class="cat-family" id="treatment-fill">
       <h3 class="spec-role">Filled shape <span class="spec-role-meta">FILL PAINT · <code>surface-treatments.css</code></span></h3>
-      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. The Criterion Assessment and Evidence State fills are adopted and not implemented; their colors' inks are the ones below, brown's excepted.</p>
+      <p class="note">The shape at 100% of its color, its boundary in the same color, and any text on it in that color's ink. Each color is drawn twice, an HTML box and an SVG shape, from one recipe. Inks follow the root theme: magenta's ink and the neutral shape change with it, and no other does. Spectral State, Evidence State, Review Semantics, Criterion Assessment and Three Functions bind each role to its color's ink; lavender-gray has none.</p>
       <div class="cat-grid">
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-green); --surface-fill-ink: var(--surface-fill-ink-on-green);">
@@ -449,7 +501,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">green</text></svg>
           </div>
           <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span> · ink <span data-fg="--surface-fill-ink-on-green"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Review Semantics decision record · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-yellow); --surface-fill-ink: var(--surface-fill-ink-on-yellow);">
@@ -457,7 +509,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">yellow</text></svg>
           </div>
           <p class="doc-meta">yellow <span data-fg="--ask-state-value-yellow"></span> · ink <span data-fg="--surface-fill-ink-on-yellow"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-orange); --surface-fill-ink: var(--surface-fill-ink-on-orange);">
@@ -465,7 +517,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">orange</text></svg>
           </div>
           <p class="doc-meta">orange <span data-fg="--ask-state-value-orange"></span> · ink <span data-fg="--surface-fill-ink-on-orange"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-red); --surface-fill-ink: var(--surface-fill-ink-on-red);">
@@ -473,12 +525,15 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">red</text></svg>
           </div>
           <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span> · ink <span data-fg="--surface-fill-ink-on-red"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Review Semantics decision record · Criterion Assessment</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><p class="note">No shape is drawn: brown has no ink.</p></div>
-          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span> · no ink</p>
-          <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> Evidence State weakened: adopted, and brown has no ink</p>
+          <div class="cat-spec" style="--surface-fill-color: var(--ask-state-value-brown); --surface-fill-ink: var(--surface-fill-ink-on-brown);">
+            <span class="cat-box surface-fill">brown</span>
+            <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">brown</text></svg>
+          </div>
+          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span> · ink <span data-fg="--surface-fill-ink-on-brown"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Evidence State</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec"><p class="note">No shape is drawn.</p></div>
@@ -491,7 +546,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">magenta</text></svg>
           </div>
           <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span> · ink <span data-fg="--surface-fill-ink-on-magenta"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Review Semantics decision record · Three Functions</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-violet); --surface-fill-ink: var(--surface-fill-ink-on-violet);">
@@ -507,7 +562,7 @@
             <svg class="cat-svg" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="0.75" y="0.75" width="106.5" height="44.5" rx="8"/><text class="surface-fill-ink" x="54" y="23">cyan</text></svg>
           </div>
           <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span> · ink <span data-fg="--surface-fill-ink-on-cyan"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Three Functions</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State · Evidence State · Review Semantics decision record · Three Functions</p>
         </div>
         <div class="cat-cell">
           <div class="cat-spec" style="--surface-fill-color: var(--ask-white); --surface-fill-ink: var(--surface-fill-ink-on-white);">
@@ -538,47 +593,70 @@
 
     <div class="cat-family" id="treatment-label">
       <h3 class="spec-role">Bordered label <span class="spec-role-meta">BORDERED LABEL · <code>surface-treatments.css</code></span></h3>
-      <p class="note">One inert box for every short label: a word that is read, never operated. Its edge takes a color only from a governed meaning, the emphasis chip or a review mark; a neutral label keeps the tertiary foreground. The edge is an apparent 2px in light and 1px in dark.</p>
-      <div class="cat-grid">
+      <p class="note">One inert box for every short label: a word that is read, never operated. Its edge takes a color only from a governed meaning: the emphasis chip, a review mark, or a Spectral State or Evidence State label whose words name its axis and role; a neutral label keeps the tertiary foreground. The edge is an apparent 2px in light and 1px in dark.</p>
+      <div class="cat-grid cat-grid--labels">
         <div class="cat-cell">
           <div class="cat-spec"><span class="surface-bordered-label doc-label">draft</span></div>
           <p class="doc-meta">neutral <span data-fg="--fg-3"></span></p>
           <p class="note"><span class="surface-bordered-label doc-label">supported</span> a neutral status word; Review State's no decision recorded</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--magenta">thesis</span><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span><span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span></div>
           <p class="doc-meta">magenta <span data-fg="--ask-emphasis-magenta"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark · a Spectral State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--violet">finding</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--violet">finding</span><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span></div>
           <p class="doc-meta">violet <span data-fg="--ask-emphasis-violet"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Spectral State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--cyan">aside</span><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></div>
+          <div class="cat-spec"><span class="surface-emphasis-chip surface-emphasis--cyan">aside</span><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span><span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span></div>
           <p class="doc-meta">cyan <span data-fg="--ask-emphasis-cyan"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the emphasis chip · a Review State mark · a Spectral State label · an Evidence State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></div>
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="supported">Evidence // Supported</span></div>
           <p class="doc-meta">green <span data-fg="--ask-state-value-green"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark · a Spectral State label · an Evidence State label</p>
         </div>
         <div class="cat-cell">
-          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></div>
+          <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span></div>
+          <p class="doc-meta">yellow <span data-fg="--ask-state-value-yellow"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Spectral State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span></div>
+          <p class="doc-meta">orange <span data-fg="--ask-state-value-orange"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Spectral State label · an Evidence State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span></div>
           <p class="doc-meta">red <span data-fg="--ask-state-value-red"></span></p>
-          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> a Review State mark · a Spectral State label</p>
+        </div>
+        <div class="cat-cell">
+          <div class="cat-spec"><span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+          <p class="doc-meta">brown <span data-fg="--ask-state-value-brown"></span></p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> an Evidence State label</p>
         </div>
       </div>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> green, yellow, orange, red, cyan, violet and magenta as Spectral State labels; green, orange, cyan and brown as Evidence State labels. Both are adopted, and described below as candidates A and B.</p>
-      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> lavender-gray alone: Evidence State's not yet testable keeps its hollow marker and dashed rail with its label. No application: white, lavender.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> lavender-gray: Evidence State's not yet testable is never a keyed label and keeps its hollow marker and dashed rail with its label. Spectral State's neutral takes no keyed label. No application: white, lavender.</p>
     </div>
 
     <div class="cat-family" id="treatment-marker">
-      <h3 class="spec-role">Marker <span class="spec-role-meta">dot · square · hollow dashed dot · <code>review-semantics.css</code></span></h3>
-      <p class="note">A 10px dot carries evidence and a 10px square carries state, each beside its visible label; not yet testable takes a hollow dashed dot. The anatomy is <code>review-semantics.css</code>'s today, used in the document annotation composition. A shared marker anatomy in <code>surface-treatments.css</code> is adopted and <span class="surface-bordered-label doc-label">not implemented</span>; the Evidence and Spectral keys draw their own swatches.</p>
+      <h3 class="spec-role">Marker <span class="spec-role-meta">dot · square · hollow dashed dot · <code>surface-treatments.css</code> · <code>review-semantics.css</code></span></h3>
+      <p class="note">One anatomy at three sizes, <code>surface-treatments.css</code>'s marker: a dot, a square and a hollow dashed dot, each an empty border-box square, so a hollow marker measures what a filled one of its size does. A governed meaning sets its color and which shape its axis takes. In a document annotation a 10px dot carries evidence and a 10px square carries state, each beside its visible label, and not yet testable takes the hollow dashed dot: Review Semantics draws those marks on the shared anatomy. The Evidence, Spectral and Three Functions keys draw their swatches with it.</p>
       <div class="cat-stack">
+        <div class="cat-cell">
+          <div class="cat-spec cat-spec--markers">
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--sm"></span><span class="surface-marker surface-marker--square surface-marker--sm"></span><span class="surface-marker surface-marker--hollow surface-marker--sm"></span></span>
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--md"></span><span class="surface-marker surface-marker--square surface-marker--md"></span><span class="surface-marker surface-marker--hollow surface-marker--md"></span></span>
+            <span class="cat-marker-set"><span class="surface-marker surface-marker--dot surface-marker--lg"></span><span class="surface-marker surface-marker--square surface-marker--lg"></span><span class="surface-marker surface-marker--hollow surface-marker--lg"></span></span>
+          </div>
+          <p class="doc-meta">the anatomy // dot · square · hollow dashed dot, at 10px, 12px and 30px · neutral; a meaning sets the color</p>
+          <p class="note"><span class="surface-bordered-label doc-label">supported</span> the shared marker: the Evidence, Spectral and Three Functions keys' swatches, and the anatomy Review Semantics' marks read</p>
+        </div>
         <div class="cat-cell">
           <div class="cat-spec">
             <span class="doc-mark doc-label" data-evidence="supported">Supported</span>
@@ -609,7 +687,7 @@
 
     <div class="cat-family" id="treatment-rail">
       <h3 class="spec-role">Rails <span class="spec-role-meta">five families · <code>surface-treatments.css</code> · <code>surface-document.css</code></span></h3>
-      <p class="note">Rails share paint, not place or meaning. A passage rail sits at the content edge and insets its text; a scope rail sits in the outer lane beside the range its label governs; an assessment rail marks one summary in a comparison table; the hierarchy rail is a quiet 1px rule; not yet testable takes a 2px dashed rail. Rail paint keyed by physical color, with the earned, structural and deflated names kept as aliases, is adopted and <span class="surface-bordered-label doc-label">not implemented</span>.</p>
+      <p class="note">Rails share paint, not place or meaning. A passage rail sits at the content edge and insets its text; a scope rail sits in the outer lane beside the range its label governs, in the label's color: neutral, a review judgment's, or a keyed state or evidence role's; an assessment rail marks one summary in a comparison table; the hierarchy rail is a quiet 1px rule; not yet testable takes a 2px dashed rail. Rail paint is keyed by physical color: <code>--surface-rail-paint-green</code>, <code>-yellow</code> and <code>-red</code>, one paint per color whichever meaning draws it, each none today, the plain 2px stroke. The earned, structural and deflated names are aliases that read their color's paint.</p>
       <div class="cat-grid">
         <div class="cat-cell">
           <div class="cat-stack">
@@ -667,8 +745,45 @@
           <p class="note"><span class="surface-bordered-label doc-label">supported</span> the document register · Evidence State, in a document annotation</p>
         </div>
       </div>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> a scope rail in a Spectral State or an Evidence State value, beside a label naming its axis: the labeled range admits neutral and the review values only today. Both are adopted, and described below as candidates A and B.</p>
-      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> a solid lavender-gray scope rail: Evidence State's not yet testable keeps its dashed rail.</p>
+      <div class="cat-cell cat-cell--wide">
+        <div class="cat-lane cat-range-set">
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span>
+            <p class="doc-meta">green</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span>
+            <p class="doc-meta">yellow</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span>
+            <p class="doc-meta">orange</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span>
+            <p class="doc-meta">red</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span>
+            <p class="doc-meta">cyan</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span>
+            <p class="doc-meta">violet</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span>
+            <p class="doc-meta">magenta</p>
+          </div>
+          <div class="doc-group surface-labeled-range">
+            <span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span>
+            <p class="doc-meta">brown</p>
+          </div>
+        </div>
+        <p class="doc-meta">scope rail // keyed ranges · outer lane · 2px</p>
+        <p class="note"><span class="surface-bordered-label doc-label">supported</span> Spectral State ranges · Evidence State ranges, each in its role's value; green, yellow and red take their color's rail paint</p>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> a solid lavender-gray scope rail: Evidence State's not yet testable keeps its dashed rail. A scope rail for an assessment: Criterion Assessment keeps its own rail.</p>
     </div>
 
     <div class="cat-family" id="treatment-underline">
@@ -749,7 +864,7 @@
 
   <!-- ============ SEMANTIC APPLICATIONS ============ -->
   <section id="semantic-applications">
-    <p class="sg-h">Semantic applications // coverage and candidates</p>
+    <p class="sg-h">Semantic applications // coverage and admitted applications</p>
     <p class="note" style="margin: 0;">A shared treatment is reusable; a semantic system uses it only where its contract binds it. The README's <a class="surface-text-link" href="../README.md#application-coverage">application coverage</a> is the one map of which representations each system has, in which context, and in which status. Each key presents its system in one order: scope, roles and colors, representations, rules, worked applications, usage and owners.</p>
     <ul class="cat-links note">
       <li><a class="surface-text-link" href="../spectral-state.html">Spectral State</a> // the state of an architectural element</li>
@@ -759,22 +874,81 @@
       <li><a class="surface-text-link" href="../three-functions.html">Three Functions</a> // the legislative, executive and judicial roles of an apparatus</li>
     </ul>
 
-    <h3 class="spec-role" id="candidates">Adopted candidates <span class="spec-role-meta">three applications · not implemented</span></h3>
-    <p class="note" style="margin: 0;">Three applications of existing treatments, adopted and not implemented. None is part of any module, and none is drawn here: the bordered label, the labeled range and the fill paint do not admit these bindings until the change that implements each one updates the named contracts and their checks, and this page draws only what its modules admit.</p>
+    <h3 class="spec-role" id="candidates">Admitted applications <span class="spec-role-meta">three applications · supported</span></h3>
+    <p class="note" style="margin: 0;">Three applications of existing treatments, each bound by its own system and drawn here by the modules that bind them. Each keeps its system's words beside its color. None applies inside a multi-axis review annotation, where the square, the dot, the outline, the range and the passage mark stay the channels.</p>
 
     <div class="cat-candidate" id="candidate-state-labels">
       <h4 class="spec-role">A // Spectral State labels and rails</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> an architecture document, a figure caption or a table that names an element's state in words, outside a review annotation. <b>Binding:</b> the role's Spectral State value on the label's edge and on the range's rail; the words stay in the label role, and nothing fills, so no ink is needed. The label names its axis, so a green edge never reads as an accepted review. <b>Implementing it changes:</b> BORDERED LABEL in <code>surface-treatments.css</code>, which admits a color today only from the emphasis chip and a review mark, LABELED RANGE, which admits only neutral and a review range's value, and the representations in <code>spectral-state.md</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> an architecture description, a figure caption or a table that names an element's state in words, outside a multi-axis review annotation; inside one, the square keeps the state channel. <b>Binding:</b> <code>spectral-state.css</code> binds each chromatic role's value to the label's edge and, through the label at a range's head, to the range's scope rail, with green's, yellow's and red's rail paint. The words stay in the label role and nothing fills, so no ink is needed. The label names its axis, so a green edge never reads as an accepted review. Neutral takes no keyed label.</p>
+      <div class="cat-spec"><span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span><span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span><span class="surface-bordered-label doc-label state-label" data-state="partial">State // Partial</span><span class="surface-bordered-label doc-label state-label" data-state="deflated">State // Deflated</span><span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span><span class="surface-bordered-label doc-label state-label" data-state="proposed">State // Proposed</span></div>
+      <div class="cat-lane">
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label state-label" data-state="held">State // Held</span>
+          <p class="doc-body">Whether the search index belongs in the primary store or in a separate service is not yet settled.</p>
+        </div>
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label state-label" data-state="earned">State // Earned</span>
+          <p class="doc-body">Every write reaches the primary store through one queue, exercised at full load.</p>
+        </div>
+      </div>
+      <div class="doc-table-scroll" role="region" aria-label="Components and their states" tabindex="0">
+        <table class="doc-table doc-compact-table">
+          <thead><tr><th class="doc-label">component</th><th class="doc-label">state</th></tr></thead>
+          <tbody><tr><td class="doc-body">identity provider</td><td class="doc-body"><span class="surface-bordered-label doc-label state-label" data-state="external">State // External</span></td></tr></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="cat-candidate" id="candidate-evidence-labels">
       <h4 class="spec-role">B // Evidence State labels and rails</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a statement in a report or a figure that records what the evidence supports, outside a multi-axis review annotation; inside one, the dot keeps the evidence channel. <b>Binding:</b> the role's Evidence State value on the label's edge and the range's rail, the label naming its axis. Not yet testable keeps its whole contract, so its standalone form is the existing note: lavender-gray, a dashed rail, a hollow marker and the visible label. <b>Implementing it changes:</b> BORDERED LABEL and LABELED RANGE in <code>surface-treatments.css</code>, and the representations in <code>evidence-state.md</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> a statement in a report, a figure or a table that records what the evidence supports, outside a multi-axis review annotation; inside one, the dot keeps the evidence channel. <b>Binding:</b> <code>evidence-state.css</code> binds each chromatic role's value to the label's edge and the range's scope rail, supported with green's rail paint, the label naming its axis. Not yet testable keeps its whole contract, so its standalone form is the existing note: lavender-gray, a dashed rail, a hollow marker and the visible label.</p>
+      <div class="cat-spec"><span class="surface-bordered-label doc-label evidence-label" data-evidence="supported">Evidence // Supported</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span><span class="surface-bordered-label doc-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+      <div class="cat-lane">
+        <div class="doc-group surface-labeled-range">
+          <span class="surface-bordered-label doc-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span>
+          <p class="doc-body">Read latency stays under 40 ms at the expected load: measured in two of three regions.</p>
+        </div>
+      </div>
+      <div class="cat-lane">
+        <div class="doc-group doc-annotation-note" data-evidence="not-yet-testable">
+          <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span></span></div>
+          <p class="doc-body">Whether a separate search service keeps that latency: no such service runs yet.</p>
+        </div>
+      </div>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> not yet testable as a keyed label, a solid edge or a scope rail: it keeps its hollow marker, its dashed rail and its label.</p>
     </div>
 
     <div class="cat-candidate" id="candidate-decision-record">
       <h4 class="spec-role">C // A filled decision record</h4>
-      <p class="note"><span class="surface-bordered-label doc-label">not implemented</span> <b>Context:</b> a standalone decision record, such as a review summary, a status board or a decision node in a figure. Inside a reviewed document the review mark, the range and the passage mark stay the channels; this replaces none of them. <b>Binding:</b> the role's Review State value as FILL PAINT's color, and that color's existing ink. Each record still names what it concerns, who decided and the scope; no decision recorded draws no record. <b>Implementing it changes:</b> <code>review-semantics.md</code> and <code>.css</code>, which bind a review role to a fill, and FILL PAINT's population in <code>surface-treatments.css</code>.</p>
+      <p class="note"><span class="surface-bordered-label doc-label">supported</span> <b>Context:</b> a standalone decision record, such as a review summary, a status board or a decision node in a figure. Inside a reviewed document the review mark, the range and the passage mark stay the channels; this replaces none of them. <b>Binding:</b> <code>review-semantics.css</code> binds each pending or decided role's Review State value as FILL PAINT's color on <code>.review-record</code>, and that color's existing ink as <code>--review-*-ink</code>. Each record states its outcome in words and names, in fields of its own, what it concerns, who decided or decides and the scope, and any material condition. It is inert, and its color confers no authority.</p>
+      <div class="cat-records">
+        <div class="cat-record review-record surface-fill" data-review="accepted">
+          <div class="cat-record-outcome">Accepted</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">storage plan, v3</dd><dt>actor</dt><dd data-record-field="actor">owner</dd><dt>scope</dt><dd data-record-field="scope">the write path</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="declined">
+          <div class="cat-record-outcome">Declined</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">search index in the primary store, architecture note v2</dd><dt>actor</dt><dd data-record-field="actor">architecture review</dd><dt>scope</dt><dd data-record-field="scope">this release</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="proposed">
+          <div class="cat-record-outcome">Proposed</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">a separate search service, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">platform lead</dd><dt>scope</dt><dd data-record-field="scope">the read path</dd></dl>
+        </div>
+        <div class="cat-record review-record surface-fill" data-review="open">
+          <div class="cat-record-outcome">Open question</div>
+          <dl class="cat-record-fields"><dt>object</dt><dd data-record-field="object">search index placement, architecture note v3</dd><dt>actor</dt><dd data-record-field="actor">owner decides</dd><dt>scope</dt><dd data-record-field="scope">the whole note</dd><dt>condition</dt><dd data-record-field="condition">until read latency is measured in the third region</dd></dl>
+        </div>
+      </div>
+      <svg class="cat-record-node" viewBox="0 0 340 104" role="img" aria-label="A decision node in a figure: an open question on the search index placement, which the owner decides, over the whole note">
+        <g class="review-record" data-review="open">
+          <rect class="surface-fill" x="0.75" y="0.75" width="338.5" height="102.5" rx="8"/>
+          <text class="surface-fill-ink cat-record-outcome" x="16" y="30">Open question</text>
+          <text class="surface-fill-ink" x="16" y="56">object</text><text class="surface-fill-ink" x="96" y="56" data-record-field="object">search index placement, v3</text>
+          <text class="surface-fill-ink" x="16" y="74">actor</text><text class="surface-fill-ink" x="96" y="74" data-record-field="actor">owner decides</text>
+          <text class="surface-fill-ink" x="16" y="92">scope</text><text class="surface-fill-ink" x="96" y="92" data-record-field="scope">the whole note</text>
+        </g>
+      </svg>
+      <p class="note"><span class="surface-bordered-label doc-label">not applicable</span> no decision recorded, which draws no record; a record as a link or a control, or inside a review annotation, where the mark, the range and the passage mark stay the channels.</p>
     </div>
   </section>
 
@@ -874,5 +1048,6 @@
 </script>
 <script src="../styleguide-theme-control.js"></script>
 <script src="../patterns/surface-shell/surface-shell.js"></script>
+<script src="../surface-document-overflow.js"></script>
 </body>
 </html>

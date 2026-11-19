@@ -113,6 +113,7 @@ const GOVERNED = [
   FOUNDATION,
   'surface-panel.css',
   'surface-action.css',
+  'surface-cta.css',
   'surface-text-link.css',
   'surface-document.css',
   'surface-treatments.css',
@@ -139,7 +140,7 @@ const REGISTERED_SIZE = [
 const REGISTERED_TRACKING = [];
 
 /* R4 */
-const LABEL_CLASSES = ['caption', 'doc-label', 'doc-meta', 'surface-badge', 'surface-action', 'surface-emphasis-chip', 'surface-bordered-label'];
+const LABEL_CLASSES = ['caption', 'doc-label', 'doc-meta', 'surface-badge', 'surface-action', 'surface-cta', 'surface-emphasis-chip', 'surface-bordered-label'];
 
 /* R5: every selector allowed to set mono in uppercase, with its role. The key
    pages' .sub and .arc-label are page-local names. */
@@ -158,13 +159,10 @@ const MONO_UPPERCASE = [
   ]),
 ];
 
-/* R6: departures from a register's tracking token, each with its reason. */
-const TRACKING_EXCEPTIONS = [
-  {
-    file: 'preview/styleguide.html', selector: '.badge', value: 'var(--tracking-wide)',
-    reason: 'The style guide\'s .badge component specimen is Inter, uppercase, at --tracking-wide. It is neither the Caption role nor a mono operative label, and it is not a precedent for either register.',
-  },
-];
+/* R6: departures from a register's tracking token, each with its reason. None
+   is registered; the self-test proves the mechanism with a fixture
+   registration of its own. */
+const TRACKING_EXCEPTIONS = [];
 
 /* R7: the document-register lock. One row per role; values are the exact
    declarations surface-document.css must carry. tools/role-conformance.js holds
@@ -983,8 +981,9 @@ function selfTest(root) {
     const label = added({ 'index.html': read('index.html').replace('</body>', '<h2 class="doc-label">x</h2>\n</body>') });
     const control = added({ 'index.html': read('index.html').replace('</body>', '<h2 class="doc-section-title">x</h2>\n</body>') });
     const role = added({ 'index.html': read('index.html').replace('</body>', '<p role="heading" aria-level="7" class="caption">x</p>\n</body>') });
-    record('a heading carrying a label class fails R4', one(label, 'R4') && control.length === 0 && one(role, 'R4'),
-      'h2.doc-label: one R4; h2.doc-section-title: none; p[role=heading].caption: one R4', { label, control, role });
+    const cta = added({ 'index.html': read('index.html').replace('</body>', '<h2 class="surface-cta">x</h2>\n</body>') });
+    record('a heading carrying a label or control class fails R4', one(label, 'R4') && control.length === 0 && one(role, 'R4') && one(cta, 'R4'),
+      'h2.doc-label: one R4; h2.doc-section-title: none; p[role=heading].caption: one R4; h2.surface-cta: one R4', { label, control, role, cta });
   }
   {
     const unregistered = added(append('surface-panel.css', '.x { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: var(--tracking-wide); }'));
@@ -1001,20 +1000,35 @@ function selfTest(root) {
       one(inter, 'R6') && one(noFamily, 'R6') && caption.length === 0 && mono.length === 1 && mono[0].startsWith('R6 '),
       'one R6; one R6; none at --tracking-caption; one R6 on a registered mono selector', { inter, noFamily, caption, mono });
   }
+  /* No tracking exception is registered, so these cases push a fixture
+     registration for their own run and remove it after, whatever happens. */
+  const withException = (selector, body) => {
+    const fixture = { file: 'preview/styleguide.html', selector, value: 'var(--tracking-wide)', reason: 'self-test fixture registration' };
+    TRACKING_EXCEPTIONS.push(fixture);
+    try { return body(); } finally { TRACKING_EXCEPTIONS.splice(TRACKING_EXCEPTIONS.indexOf(fixture), 1); }
+  };
   {
     const page = 'preview/styleguide.html';
-    const exception = added(inPage(page, '  .badge { text-transform: uppercase; letter-spacing: var(--tracking-wide); }'));
-    const other = added(inPage(page, '  .badge-like { text-transform: uppercase; letter-spacing: var(--tracking-wide); }'));
-    record('the registered .badge exception holds only for its own selector', exception.length === 0 && one(other, 'R6'),
-      '.badge: none; .badge-like: one R6', { exception, other });
+    const { exception, other } = withException('.x-fixture', () => ({
+      exception: added(inPage(page, '  .x-fixture { text-transform: uppercase; letter-spacing: var(--tracking-wide); }')),
+      other: added(inPage(page, '  .x-fixture-like { text-transform: uppercase; letter-spacing: var(--tracking-wide); }')),
+    }));
+    record('a registered tracking exception holds only for its own selector',
+      exception.length === 0 && other.length === 2 && other.some((k) => k.startsWith('R6 ')) && other.some((k) => k.startsWith('stale ')),
+      '.x-fixture: none; .x-fixture-like: one R6, and one stale for the registration it leaves unmatched', { exception, other });
   }
   {
     const page = 'preview/styleguide.html';
-    const removed = added({ [page]: read(page).replace(/\n\s*\.badge \{[^}]*\}/, '\n') });
+    const lbl = /\n\s*\.role \.lbl \{[^}]*\}/;
+    if (!lbl.test(read(page))) throw new Error('self-test anchor missing: .role .lbl');
+    const removed = added({ [page]: read(page).replace(lbl, '\n') });
+    const unmatched = withException('.x-fixture', () => added({}));
     const missing = added({ 'surface-treatments.css': null });
     record('a registration that matches no rule is stale; a missing governed file fails',
-      removed.length === 1 && removed[0].startsWith('stale ') && missing.some((k) => k.startsWith('missing ')),
-      'one stale for .badge; a missing finding for surface-treatments.css', { removed, missing });
+      removed.length === 1 && removed[0].startsWith('stale ') && unmatched.length === 1 && unmatched[0].startsWith('stale ') &&
+      missing.some((k) => k.startsWith('missing ')),
+      'one stale for the .role .lbl registration once its rule is gone; one stale for a tracking exception with no rule; a missing finding for surface-treatments.css',
+      { removed, unmatched, missing });
   }
   {
     const media = added(append('surface-panel.css', '@media (max-width: 500px) { .x { font-size: 13px; } }'));

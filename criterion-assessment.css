@@ -14,15 +14,28 @@
    Load order (each layers on the previous):
      colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
      spectral-state.css  →  criterion-assessment.css
-   surface-treatments.css supplies the inks Spectral State binds and, as RAIL
-   PAINT, each color's paint as a rail. Its table application also needs
-   surface-document.css, which draws the rail's geometry, after
-   surface-panel.css and before surface-treatments.css.
+   surface-treatments.css supplies, as FILL PAINT, the inks Spectral State and
+   this profile bind and, as RAIL PAINT, each color's paint as a rail. Its
+   table application also needs surface-document.css, which draws the rail's
+   geometry, after surface-panel.css and before surface-treatments.css.
 
    Offline; no CDN. Its colors are Spectral State's, one value per role in both
-   themes, and its rails take surface-treatments.css's rail paint (below).
+   themes; its rails take surface-treatments.css's rail paint, and its filled
+   nodes its fill paint, each described below.
 
-   STATUS: v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
+   STATUS: v0.2 — the filled-node application. A node in an
+   assessment-bearing figure the consumer composes may be filled in its role
+   through FILL PAINT, in surface-treatments.css: each role names its ink,
+   --assessment-<role>-ink, favorable on green, caution on yellow and adverse
+   on red. Each filled node shows its word, or the figure has a key, and an
+   unassessed node takes no assessment fill (FILLED NODE APPLICATION, below).
+   The table application stays rail-only, and its rails bind the rail paint by
+   color, green, yellow and red, with no change to what they draw. A labeled
+   range takes neutral, a review value or a keyed state or evidence value,
+   never an assessment. The role values are unchanged. Re-sync this file with
+   surface-treatments.css from the same owner commit.
+
+   v0.1. Authorized by ASK source-of-intent (2026-11-05) as a shared
    capability, with colored rails selected for its table application.
 
    ---------------------------------------------------------------------------
@@ -42,9 +55,10 @@
    disadvantage is still adverse.
 
    THE CRITERION IS THE AUTHOR'S. This profile owns the meaning of each role
-   and its presentation, binding each role to a color and to that color's
-   shared rail paint. The consuming author owns the criterion each row is
-   judged against and every assignment. A color token supplies no judgment.
+   and its presentation, binding each role to a color, to that color's shared
+   rail paint and to its fill ink. The consuming author owns the criterion
+   each row or node is judged against and every assignment. A color token
+   supplies no judgment.
 
    ---------------------------------------------------------------------------
    TABLE APPLICATION
@@ -71,9 +85,35 @@
    since v1.2, and the light field's ring is retired. This file binds each role
    to its color's paint and sets no dose of its own.
 
-   Never a fill, tint, backplate, glow or colored cell border; never the
-   labeled range, whose rail admits only neutral and review colors; never a
-   review, evidence or state attribute standing in for an assessment.
+   In the table application, never a fill, tint, backplate, glow or colored
+   cell border: a cell's assessment is its rail and its word.
+
+   ---------------------------------------------------------------------------
+   FILLED NODE APPLICATION
+   ---------------------------------------------------------------------------
+   In an assessment-bearing figure the consuming surface composes, a node
+   judged against the figure's criterion is filled in its role. The node
+   carries the surface treatments' .surface-fill (FILL PAINT), with
+   --surface-fill-color: var(--assessment-<role>) and --surface-fill-ink:
+   var(--assessment-<role>-ink), and any text on it takes .surface-fill-ink.
+   Each ink is FILL PAINT's for the role's color, keyed by that color:
+   favorable on green, caution on yellow, adverse on red. This file binds each
+   role to its color's ink, defines no ink value and ships no node selector:
+   the figure, its geometry and its layout are the consumer's.
+
+   The assessment never depends on color: each filled node shows its word, on
+   the node or beside it, or the figure carries a key that names each fill.
+   An unassessed node takes no assessment fill and shows no word; it keeps
+   the figure's own node for one that asserts nothing, FILL PAINT's neutral
+   shape where the figure fills its nodes, and never a gray or a fourth color
+   standing for a rating. One node takes one assessment. A filled node is
+   never a table cell. The structural diagram scaffolds (diagram-static-H,
+   -V, -SEQ, -FLOW) take no assessment fill, as FILL PAINT excludes them.
+
+   In any application, never the labeled range, whose rail takes neutral, a
+   review value or a keyed state or evidence value, never an assessment;
+   never a review, evidence or state attribute standing in for an
+   assessment.
    ========================================================================= */
 
 /* ---------- The three roles — both themes ----------
@@ -83,6 +123,13 @@
   --assessment-favorable: var(--state-earned);     /* visual-role mapping */
   --assessment-caution:   var(--state-structural); /* visual-role mapping */
   --assessment-adverse:   var(--state-deflated);   /* visual-role mapping */
+
+  /* Each role's ink: the color of text set on a node filled in that role's
+     color, bound to the surface treatments' FILL PAINT, which keys each ink by
+     the fill color. Unassessed takes no assessment fill and binds no ink. */
+  --assessment-favorable-ink: var(--surface-fill-ink-on-green);
+  --assessment-caution-ink:   var(--surface-fill-ink-on-yellow);
+  --assessment-adverse-ink:   var(--surface-fill-ink-on-red);
 }
 
 /* ---------- Table application ----------
@@ -91,13 +138,13 @@
 .doc-compare-assessed:is([data-assessment="favorable"], [data-assessment="caution"], [data-assessment="adverse"])::before { content: ""; }
 .doc-compare-assessed[data-assessment="favorable"] {
   --doc-compare-rail-color: var(--assessment-favorable);
-  --doc-compare-rail-paint: var(--surface-rail-paint-earned);
+  --doc-compare-rail-paint: var(--surface-rail-paint-green);
 }
 .doc-compare-assessed[data-assessment="caution"] {
   --doc-compare-rail-color: var(--assessment-caution);
-  --doc-compare-rail-paint: var(--surface-rail-paint-structural);
+  --doc-compare-rail-paint: var(--surface-rail-paint-yellow);
 }
 .doc-compare-assessed[data-assessment="adverse"] {
   --doc-compare-rail-color: var(--assessment-adverse);
-  --doc-compare-rail-paint: var(--surface-rail-paint-deflated);
+  --doc-compare-rail-paint: var(--surface-rail-paint-red);
 }
