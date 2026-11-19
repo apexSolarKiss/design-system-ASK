@@ -2136,7 +2136,7 @@
       RAILED + ', ' + PANEL + ', ' + KEYED + ', ' + MARKED + ', .surface-separate, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
     const RECORD_CONTROLS = CONTROLS + ', .surface-cta, .surface-attention-edge';
     /* Hosts that make whatever they hold part of a control. A scrolling box's tabindex is not one. */
-    const RECORD_HOSTS = 'a, button, summary, label, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta, .surface-attention-edge';
+    const RECORD_HOSTS = 'a, button, summary, label, select, option, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta, .surface-attention-edge';
     const OUTCOME = { proposed: ['proposed', 'correction requested'], open: ['open question'], accepted: ['accepted'], declined: ['declined'], none: ['no decision recorded'] };
     const phrase = (words, p) => new RegExp('(^|[^\\p{L}\\p{N}])' + p.replace(/ /g, '\\s+') + '(?=$|[^\\p{L}\\p{N}])', 'iu').test(words);
     const own = (rec, node) => (node.nodeType === 1 ? node : node.parentElement).closest('.review-record') === rec;
