@@ -1,7 +1,7 @@
 /* =========================================================================
    surface-treatments — separate surfaces composed from three axes; the
-   disclosure; content emphasis; the bordered label; the labeled range; rail
-   paint; fill paint; the scope underline; the marker.
+   disclosure; content emphasis; perimeter paint; the bordered label; the
+   labeled range; rail paint; fill paint; the scope underline; the marker.
 
    An OPT-IN VISUAL RULE under Foundations. It owns PRESENTATION ONLY: no
    markup, no semantics, no template, and no generated preview. A consuming
@@ -134,7 +134,8 @@
                      not containment and not interaction — hover and focus are
                      transient and border-only; emphasis stays at rest
      population      .surface-emphasis for a whole unit (a perimeter and a
-                     soft bloom, present at rest); .surface-emphasis-rail for a
+                     soft bloom, present at rest, drawn with PERIMETER PAINT
+                     in its accent); .surface-emphasis-rail for a
                      bounded passage in the reading flow (a vertical accent
                      rule and an inset), which in a document is the authorial
                      callout; .surface-emphasis-chip for the marker that names
@@ -158,18 +159,60 @@
      counterexample  a hard directional drop shadow with no visible border,
                      or chip words set in the accent
 
+   PERIMETER PAINT
+     meaning         how a governed color is drawn on a separate surface's
+                     perimeter, present at rest: a 1px edge in the color, a
+                     thin ring in light, and a soft bloom outside the edge. It
+                     draws a meaning another owner assigns and asserts none of
+                     its own: no emphasis, interaction, urgency or authority
+     population      .surface-perimeter on a separate surface, its color in
+                     --surface-perimeter-color, and the content-emphasis
+                     panel, .surface-emphasis, by selector grouping, in its
+                     accent. Two governed meanings draw it: content emphasis,
+                     in magenta, violet or cyan, and Review Semantics'
+                     decision record shown as a panel, in its role's value
+     owner           this module: the edge, the ring, the bloom's blur and
+                     spread, and the dose per theme, which is the emphasis
+                     dose (--surface-emphasis-ring, --surface-emphasis-bloom).
+                     The governing meaning owns the color and binds it, as
+                     content emphasis binds its accent and Review Semantics
+                     its role values
+     reuses          the emphasis dose; --fg-3 for the edge of a perimeter no
+                     meaning colors, which draws no ring or bloom
+     variation       the color, set only by a governed meaning; the dose per
+                     theme
+     exclusions      no hover, press, focus or animation, and no fill or
+                     wash: the surface keeps its material. Never a color
+                     chosen for decoration and never a general accent: a green
+                     or red perimeter arrives only with a review record, and
+                     content emphasis keeps its three accents. A bloom arrives
+                     only with a governed color: with none bound, the edge is
+                     the neutral --fg-3 and nothing blooms. The color does not
+                     inherit, so a surface inside an emphasis panel or a
+                     record takes none of theirs. It is not the attention edge
+                     (README, Hover, press, focus), which is transient and
+                     draws no bloom
+     example         a THESIS panel in the emphasis magenta and an Accepted
+                     record in the earned green: one perimeter, two meanings
+     counterexample  a red perimeter chosen for a warning's look; a record's
+                     perimeter repainted on hover
+
    BORDERED LABEL
      meaning         a short inert label inside a thin border: a word that is
                      read, never operated. One box for every such label, so a
                      label measures the same wherever it appears and only its
                      meaning changes its color
      population      .surface-bordered-label, neutral by default: a status
-                     word such as DRAFT. Four governed meanings take the same
+                     word such as DRAFT. Five governed meanings take the same
                      box: the emphasis chip, by selector grouping in this file,
                      its border the emphasis accent; Review Semantics' review
                      mark, which carries the class, its border the review
-                     role's value; and, outside a multi-axis review
-                     annotation, Spectral State's .state-label and Evidence
+                     role's value; the outcome label that heads Review
+                     Semantics' decision record shown as a panel,
+                     .review-record-outcome, which carries the class, its
+                     border the record's role value; and, outside a
+                     multi-axis review annotation, Spectral State's
+                     .state-label and Evidence
                      State's .evidence-label, which carry the class and name
                      their axis and role in their words (State // Held,
                      Evidence // Supported), each border the role's value
@@ -188,10 +231,11 @@
                      not --radius-pill; corner shape alone assigns no
                      interaction. Never a color chosen for contrast or
                      decoration: a neutral label stays --fg-3, and a color
-                     arrives only with the emphasis chip, a review mark or a
-                     keyed state or evidence label whose words name its axis
-                     and role. Spectral State's neutral and Evidence State's
-                     not yet testable take no keyed label. Evidence dots,
+                     arrives only with the emphasis chip, a review mark, a
+                     decision record's outcome label or a keyed state or
+                     evidence label whose words name its axis and role.
+                     Spectral State's neutral and Evidence State's not yet
+                     testable take no keyed label. Evidence dots,
                      state squares and the not-yet-testable rail are not
                      bordered labels, and the status badge (surface-shell) is
                      an unbordered note
@@ -326,9 +370,9 @@
                      draws it
      population      role- and state-bearing filled shapes and fields: a
                      state node, an evidence-bearing shape, an assessment
-                     node, a decision record, a function's part or field, a
-                     key's filled specimen. One ink per fill color, keyed by
-                     the color:
+                     node, a decision node in a diagram, a function's part
+                     or field, a key's filled specimen. One ink per fill
+                     color, keyed by the color:
                      --surface-fill-ink-on-yellow, -on-green, -on-orange,
                      -on-cyan, -on-red, -on-brown, -on-violet, -on-magenta,
                      -on-white and -on-lavender; and the neutral filled
@@ -359,7 +403,9 @@
                      square, a key's swatch), chip, rail, bordered label,
                      range, underline or sequence node is not a filled shape:
                      it takes no fill paint or ink and keeps its own paint,
-                     solid or not. The interactive
+                     solid or not. A decision record shown on its own as a
+                     panel is not a filled shape: it takes PERIMETER PAINT
+                     and keeps its material. The interactive
                      spine's and radial's state marks take this paint; a
                      radial mark that asserts no state is structure, not a
                      filled shape, and keeps its engine's own neutral wash,
@@ -371,7 +417,7 @@
                      step in its fill. Lavender-gray has no ink and takes no
                      fill paint: its one role, Evidence State's not yet
                      testable, is drawn hollow, dashed and labeled
-     example         a held node, an open decision record and a judicial
+     example         a held node, an open decision node and a judicial
                      part: one cyan, one ink, three meanings
      counterexample  a meaning restating an ink for its own role; a semantic
                      fill at 30% beside one at 100%; text on a fill in the
@@ -666,6 +712,15 @@
        text link, draws it beside the scope line. The 0.36em offset follows
        the font's metrics, so the line sits a little differently in another
        family.
+     - Perimeter paint's bloom is a box-shadow: a clipping box around the
+       surface, or a neighbor painted over it, cuts the bloom. Under forced
+       colors the browser drops the bloom and gives the edge, and a decision
+       record's outcome label's border, a system color, so the record's
+       outcome is carried by its label's words. The perimeter takes the
+       emphasis dose; a theme the foundation does not declare keeps the light
+       dose. The color's non-inheritance is an @property registration: a
+       browser without @property lets it inherit, so an unbound perimeter
+       inside a colored one takes that color.
      - A filled marker is a background. Where a browser suppresses
        backgrounds (forced colors, a print without backgrounds) it may not
        paint, and the label beside it still names the role; a hollow marker's
@@ -810,14 +865,28 @@
   :root:not([data-theme="light"]) { --surface-emphasis-ring: 0;     --surface-emphasis-bloom: 50%; }
 }
 
-/* The panel: a perimeter plus a soft bloom, present at rest. Flush by default:
-   an emphasized unit must be easier to notice, not necessarily higher. */
+/* The panel: a perimeter plus a soft bloom, present at rest, drawn with
+   PERIMETER PAINT in its accent. Flush by default: an emphasized unit must be
+   easier to notice, not necessarily higher. */
 .surface-emphasis {
   --surface-emphasis-accent: var(--ask-emphasis-magenta);
-  border: 1px solid var(--surface-emphasis-accent);
+  --surface-perimeter-color: var(--surface-emphasis-accent);
+}
+/* PERIMETER PAINT: a governed color on a separate surface's perimeter, at
+   rest. One recipe, shared by selector grouping: the emphasis panel draws it
+   in its accent, and .surface-perimeter in the color a governed meaning binds
+   to --surface-perimeter-color (Review Semantics' decision record, in its
+   role's value). The edge, the ring and the bloom take the emphasis dose.
+   The color does not inherit: each surface binds its own. With none bound
+   the edge is the neutral --fg-3, and the ring and the bloom are transparent:
+   a bloom arrives only with a governed color. */
+@property --surface-perimeter-color { syntax: '*'; inherits: false; }
+.surface-emphasis,
+.surface-perimeter {
+  border: 1px solid var(--surface-perimeter-color, var(--fg-3));
   box-shadow:
-    0 0 0 var(--surface-emphasis-ring) color-mix(in srgb, var(--surface-emphasis-accent) 70%, transparent),
-    0 0 22px 1px color-mix(in srgb, var(--surface-emphasis-accent) var(--surface-emphasis-bloom), transparent);
+    0 0 0 var(--surface-emphasis-ring) color-mix(in srgb, var(--surface-perimeter-color, transparent) 70%, transparent),
+    0 0 22px 1px color-mix(in srgb, var(--surface-perimeter-color, transparent) var(--surface-emphasis-bloom), transparent);
 }
 /* Emphasis and elevation are separate axes: a raised emphasized surface keeps
    both rather than one replacing the other. */

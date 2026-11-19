@@ -269,9 +269,10 @@
      C13 bordered label (surface-treatments) applies to every
                         .surface-bordered-label and .surface-emphasis-chip in
                         scope: a neutral label, the emphasis chip, a review
-                        mark and a keyed state or evidence label share one
-                        box. An evidence or state mark carrying the class is
-                        C12.attach's, not judged here. Syntax: a keyed label,
+                        mark, a decision record's outcome label and a keyed
+                        state or evidence label share one box. An evidence or
+                        state mark carrying the class is C12.attach's, not
+                        judged here. Syntax: a keyed label,
                         Spectral State's .state-label or Evidence State's
                         .evidence-label, names exactly one axis by its class;
                         it is a .surface-bordered-label and never an emphasis
@@ -308,7 +309,8 @@
                         --fg-3, a chip an emphasis accent or --fg-3, a keyed
                         label its role's value, never transparent
                         (C13.color). A review mark's color,
-                        transparency included, is C12's. A label a closed
+                        transparency included, is C12's, and the color of an
+                        outcome label heading a decision panel is C18's. A label a closed
                         disclosure keeps from being seen is judged by the
                         runner once it is open, as C12's elements are, and one
                         still collapsed then fails C13.box (a review mark that
@@ -489,10 +491,14 @@
                         marker counts as a governed element
      C18 record         (Review Semantics) applies to every .review-record in
                         scope: one decision shown on its own, outside a
-                        reviewed document's annotation, on a shape the
-                        consumer fills with FILL PAINT. Syntax: its
+                        reviewed document's annotation, as a panel or,
+                        declared with data-record-presentation="node", as a
+                        decision node in a diagram. Syntax: its
                         data-review is proposed, open, accepted or declined,
-                        never none, which draws no record (C18.vocab); in
+                        never none, which draws no record (C18.vocab); its
+                        presentation is the panel, with no attribute, or
+                        "node", and a node sits in a diagram, inside an svg
+                        or an element whose role is img (C18.presentation); in
                         fields of its own (data-record-field) it names exactly
                         one object, one actor and one scope, and any
                         conditions, each in words that no style inside the
@@ -508,26 +514,47 @@
                         composition or inside one, never inside another
                         record, never also a bordered label, a chip, a keyed
                         label, a marker, a range, an underline, a sequence, a
-                        rail, a panel, the neutral shape or a text role, and
-                        carrying no evidence, state or assessment attribute
-                        (C18.attach). A record whose role is outside that
-                        vocabulary is judged no further. Its words outside its
-                        fields that no style hides name its outcome, Proposed
-                        or Correction requested, Open question, Accepted or
-                        Declined, and no other review outcome (C18.words).
-                        Computed: it is one filled shape, the record itself
-                        carrying .surface-fill or its single .surface-fill
-                        descendant, whose fill and every drawn edge take the
-                        role's value, --review-<role>, never transparent, with
-                        no image or filter, at full opacity, the record's
-                        included (C18.fill); a record without one shape is
-                        judged for that alone. Every element holding its words
-                        takes the role's ink, --review-<role>-ink, never
-                        transparent or unresolved, as its text color, or as
-                        its fill in SVG (C18.ink). A record is
-                        judged at rest wherever it sits, a closed disclosure
-                        included, is never held, and counts as a governed
-                        element
+                        rail, a content-emphasis panel, the neutral shape or a
+                        text role, a node never a separate surface or a
+                        perimeter and holding no outcome label, and carrying
+                        no evidence, state or assessment attribute
+                        (C18.attach). A record whose
+                        role is outside that vocabulary is judged no further.
+                        Its words outside its fields that no style hides name
+                        its outcome, Proposed or Correction requested, Open
+                        question, Accepted or Declined, and no other review
+                        outcome (C18.words). A panel, computed: it is the
+                        separate surface .surface-separate
+                        .surface-material-page .surface-attach-free
+                        .surface-elevation-flush .surface-perimeter, with no
+                        .surface-fill, other material, attachment or
+                        elevation; every side a 1px solid edge in the role's
+                        value, --review-<role>; an outset blurred shadow in
+                        that value, its bloom; its background, background
+                        image, backdrop filter, corners and whole shadow the
+                        owner's panel's in that role, probed beside it; and
+                        nothing on it or above it at less than full opacity,
+                        blended or filtered (C18.panel). Its first element child is its
+                        one outcome label, .review-record-outcome, a
+                        .surface-bordered-label and never a review mark, an
+                        emphasis chip or a facet-bearing element, whose border
+                        is the role's value and whose words name the record's
+                        outcome (C18.label). Every element holding its words
+                        takes a theme text role, --fg-1, --fg-2 or --fg-3, as
+                        its text color, never the role's value or a fill's ink
+                        (C18.text). A node, computed: it is one filled shape,
+                        the record itself carrying .surface-fill or its single
+                        .surface-fill descendant, whose fill and every drawn
+                        edge take the role's value, --review-<role>, never
+                        transparent, with no image or filter, at full
+                        opacity, the record's included (C18.fill); a record
+                        without one shape is judged for that alone. Every
+                        element holding its words takes the role's ink,
+                        --review-<role>-ink, never transparent or unresolved,
+                        as its text color, or as its fill in SVG (C18.ink). A
+                        record is judged at rest wherever it sits, a closed
+                        disclosure included, is never held, and counts as a
+                        governed element
 
    STATUS
      pass       no finding, and at least one governed element was checked
@@ -611,7 +638,8 @@
      is not reported vacuous.
    - C13 judges a label's color against the meanings this file knows: a
      neutral label, the emphasis chip, and Spectral State's and Evidence
-     State's keyed labels. A review mark's color is C12's. A label another
+     State's keyed labels. A review mark's color is C12's, and the color of
+     an outcome label heading a decision panel is C18's. A label another
      owner composes with a color of its own fails C13.color until that owner
      is added here.
    - C13.key compares a keyed label's role with the keyed vocabulary written
@@ -724,14 +752,26 @@
      proves that a record names an object, an actor and a scope, not that
      they are the right ones or that its letters form a name, that a
      condition it omits is immaterial, or that the decision was made. It
-     compares the fill with --review-<role> and the words with
-     --review-<role>-ink as each resolves
-     at the record, an unresolved one read as transparent, which fails, so
-     it proves that a record is drawn in its role's
-     binding, not that the binding is FILL PAINT's ink for that color
-     (tests/fill-paint-fixture.html holds that). It reads an HTML shape's
-     background and border and an SVG shape's fill and stroke, not paint a
-     pseudo-element or another element lays over the record. It knows a
+     compares a node's fill with --review-<role> and its words with
+     --review-<role>-ink, and a panel's edge, its bloom's color and its
+     outcome label's border with --review-<role>, as each resolves at the
+     record, an unresolved one read as transparent, which fails, so it proves
+     that a record is drawn in its role's binding, not that the binding is
+     FILL PAINT's ink for that color (tests/fill-paint-fixture.html holds
+     that) or that the bloom takes PERIMETER PAINT's dose. A panel's bloom is
+     any outset blurred shadow in the role's value, at any opacity above
+     zero; its blur, spread and dose are surface-treatments.css's. It reads
+     an HTML shape's background and border and an SVG shape's fill and
+     stroke, not paint a pseudo-element or another element lays over the
+     record. It knows a node by its declaration and its place inside an svg
+     or an element whose role is img; it cannot tell a diagram from a status
+     board drawn as one. It compares a panel's words with the values the
+     theme's text roles resolve to, so a word in another color of equal value
+     passes: in light the open and accepted inks, #6A637F, are --fg-1's value,
+     and in dark the declined ink, #D4C6E1, is. It compares a panel's
+     material, corners and shadow with the owner's panel probed beside it, so
+     it proves the record is drawn as the owner draws a panel there, not that
+     the owner's values are right. It knows a
      control by element, role, tabindex, contenteditable and class, and a
      host a record is set inside by element, role, contenteditable and class:
      a tabindex alone, such as a scrolling box's, makes no host. It does not
@@ -1670,8 +1710,9 @@
     }
 
     /* C13 the bordered label (surface-treatments.css): one box for every inert bordered label —
-       neutral, the emphasis chip and a review mark. Its color is the composing meaning's: C12 judges
-       a review mark's, and this rule a neutral label's and a chip's. */
+       neutral, the emphasis chip, a review mark and a decision record's outcome label. Its color is
+       the composing meaning's: C12 judges a review mark's, C18 the outcome label heading a panel, and
+       this rule a neutral label's, a chip's, a keyed label's and any other outcome label's. */
     const fg1Light = probe(tokenHost, 'color:' + THEME_TOKENS['--fg-1'][0]).color;
     const fg1Dark = probe(tokenHost, 'color:' + THEME_TOKENS['--fg-1'][1]).color;
     function bordered(el, add) {
@@ -1705,7 +1746,7 @@
         cmp('edge', { message: 'a bordered label\'s edge is its border plus one zero-blur reinforcement in the border\'s color: ' + LABEL_BOX.dose.light + 'px in light, ' + LABEL_BOX.dose.dark + 'px in dark', theme, got: c.boxShadow, border: color });
       }
       if ([c.marginLeft, c.marginRight].some((v) => Math.abs(px(v) - LABEL_BOX.margin) > TOL)) cmp('clearance', { message: 'a bordered label keeps 1px of inline margin to reserve its reinforcement at the inline sides; block-axis clearance belongs to its host', got: c.marginLeft + ' ' + c.marginRight });
-      if (!el.matches('.doc-mark[data-review]')) {
+      if (!el.matches('.doc-mark[data-review]') && !(el.matches('.review-record-outcome') && el.closest('.review-record') && !el.closest('.review-record').matches('[data-record-presentation="node"]'))) {
         const chip = el.matches('.surface-emphasis-chip');
         /* A keyed label takes its role's value; one whose key fails is C13.key's alone. */
         const key = el.matches(KEYED) ? keyOf(el) : null;
@@ -2134,12 +2175,18 @@
       marked(el, add);
     }
 
-    /* C18 the filled decision record (Review Semantics): one decision shown on its own, outside a
-       reviewed document's annotation, on one shape the consumer fills with FILL PAINT. It is judged
-       at rest wherever it sits, from its markup and computed paint, and never held. */
+    /* C18 the decision record (Review Semantics): one decision shown on its own, outside a reviewed
+       document's annotation, as a panel (PERIMETER PAINT, the bordered label) or, declared with
+       data-record-presentation="node", as a decision node in a diagram (FILL PAINT). It is judged at
+       rest wherever it sits, from its markup and computed paint, and never held. */
     const RECORD_ROLES = ['proposed', 'open', 'accepted', 'declined'];
     const RECORD_ATTACH = COMPOSITION + ', ' + BORDERED + ', ' + LABELED + ', ' + UNDERLINED + ', ' + SEQUENCE + ', ' + SEQUENCE_STEP + ', ' +
-      RAILED + ', ' + PANEL + ', ' + KEYED + ', ' + MARKED + ', .surface-separate, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+      RAILED + ', ' + KEYED + ', ' + MARKED + ', .surface-emphasis, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
+    /* A node is a shape in a figure: never a separate surface, a panel or a perimeter. */
+    const NODE_ATTACH = RECORD_ATTACH + ', ' + PANEL + ', .surface-separate, .surface-perimeter';
+    /* A panel's own composition, and the axis classes that would contradict it. */
+    const PANEL_CLASSES = ['surface-separate', 'surface-material-page', 'surface-attach-free', 'surface-elevation-flush', 'surface-perimeter'];
+    const PANEL_OTHERS = ['surface-fill', 'surface-panel', 'surface-material-panel', 'surface-attach-top', 'surface-attach-bottom', 'surface-attach-full-width', 'surface-attach-chip', 'surface-elevation-raised'];
     const RECORD_CONTROLS = CONTROLS + ', .surface-cta, .surface-attention-edge';
     /* Hosts that make whatever they hold part of a control. A scrolling box's tabindex is not one. */
     const RECORD_HOSTS = 'a, button, summary, label, select, option, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta, .surface-attention-edge';
@@ -2147,13 +2194,29 @@
     const phrase = (words, p) => new RegExp('(^|[^\\p{L}\\p{N}])' + p.replace(/ /g, '\\s+') + '(?=$|[^\\p{L}\\p{N}])', 'iu').test(words);
     const own = (rec, node) => (node.nodeType === 1 ? node : node.parentElement).closest('.review-record') === rec;
     const isSvg = (el) => typeof SVGElement !== 'undefined' && el instanceof SVGElement;
+    /* A computed color as [r, g, b, a] on 0–255: rgb(), rgba() and the color(srgb …) a color-mix() computes to. */
+    const rgbaOf = (s) => {
+      let m = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/.exec(s || '');
+      if (m) return [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]];
+      m = /^color\(srgb\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)(?:\s*\/\s*([\d.]+))?\s*\)$/.exec(s || '');
+      if (m) return [m[1] * 255, m[2] * 255, m[3] * 255, m[4] === undefined ? 1 : +m[4]];
+      return null;
+    };
+    const sameHue = (a, b) => { const x = rgbaOf(a), y = rgbaOf(b); return !!x && !!y && [0, 1, 2].every((i) => Math.abs(x[i] - y[i]) <= 1); };
     for (const rec of all('.review-record')) {
       counts['review-record'] = (counts['review-record'] || 0) + 1;
       governed++;
       const v = rec.getAttribute('data-review');
       const known = RECORD_ROLES.includes(v || '');
       if (!known) {
-        add('C18', 'vocab', rec, { basis: 'syntax', value: v, message: v === 'none' ? 'no decision recorded draws no record: none binds no fill and has no ink, and a missing record is no decision' : 'a record carries data-review proposed, open, accepted or declined: the pending or decided role it reports' });
+        add('C18', 'vocab', rec, { basis: 'syntax', value: v, message: v === 'none' ? 'no decision recorded draws no record: none binds no color and has no ink, and a missing record is no decision' : 'a record carries data-review proposed, open, accepted or declined: the pending or decided role it reports' });
+      }
+      /* Its presentation: a panel unless it declares itself a node, which sits in a diagram. */
+      const pres = rec.getAttribute('data-record-presentation');
+      const node = pres === 'node';
+      const figure = isSvg(rec) || (rec.parentElement && rec.parentElement.closest('svg, [role="img"]'));
+      if ((pres !== null && !node) || (node && !figure)) {
+        add('C18', 'presentation', rec, { basis: 'syntax', value: pres, message: 'a record is a panel unless it declares data-record-presentation="node", and no other value; a node is a decision node in a diagram, inside an svg or an element whose role is img' });
       }
       /* Its fields, its own: a nested record's are that record's. */
       const fields = [...rec.querySelectorAll('[data-record-field]')].filter((f) => own(rec, f));
@@ -2175,8 +2238,9 @@
         add('C18', 'inert', rec, { basis: 'syntax', message: 'a record is inert: never a link, a control, a focusable or editable element, an action or an attention edge, holding none, and set inside no link, control, editable element, action or attention edge; a link to the reviewed object sits beside it' });
       }
       const facets = ['evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
-      if (rec.matches(RECORD_ATTACH) || (rec.parentElement && rec.parentElement.closest(COMPOSITION + ', .review-record')) || facets.length) {
-        add('C18', 'attach', rec, { basis: 'syntax', message: 'a record stands on its own: never an element of the annotation composition or inside one, where the mark, the range and the passage mark stay the channels; never inside another record; never a bordered label, a chip, a marker, a range, an underline, a sequence, a rail, a panel, the neutral shape or a text role; and it carries no evidence, state or assessment attribute', facets });
+      const nodeLabel = node && [...rec.querySelectorAll('.review-record-outcome')].some((l) => own(rec, l));
+      if (rec.matches(node ? NODE_ATTACH : RECORD_ATTACH) || (rec.parentElement && rec.parentElement.closest(COMPOSITION + ', .review-record')) || facets.length || nodeLabel) {
+        add('C18', 'attach', rec, { basis: 'syntax', message: 'a record stands on its own: never an element of the annotation composition or inside one, where the mark, the range and the passage mark stay the channels; never inside another record; never a bordered label, a chip, a marker, a range, an underline, a sequence, a rail, a content-emphasis panel, the neutral shape or a text role, and a node never a separate surface or a perimeter and holding no outcome label, a panel\'s; and it carries no evidence, state or assessment attribute', facets, nodeLabel });
       }
       if (!known) continue;   /* with no role there is no outcome, value or ink to judge */
       /* Its outcome, in the words outside its fields: its own role's, and no other. */
@@ -2191,12 +2255,53 @@
       if (!OUTCOME[v].some((p) => phrase(words, p)) || others.length) {
         add('C18', 'words', rec, { basis: 'syntax', message: 'a record states its one outcome in words outside its fields: Proposed or Correction requested, Open question, Accepted or Declined, and no other', role: v, words: words.slice(0, 80), others });
       }
-      /* Its one filled shape: the record itself, or its single .surface-fill descendant. */
-      const shapes = [...(rec.matches('.surface-fill') ? [rec] : []), ...[...rec.querySelectorAll('.surface-fill')].filter((s) => own(rec, s))];
       const at = rec.closest('svg') || rec;
       const want = probe(at, 'color:var(--review-' + v + ', transparent)').color;
+      const bearers = [rec, ...rec.querySelectorAll('*')].filter((e) => own(rec, e) && ownText(e) && [...e.childNodes].some((n) => n.nodeType === 3 && VISIBLE.test(n.textContent)));
+      if (!node) {
+        /* A panel: the separate surface, its perimeter and bloom in the role's value, no wash. */
+        const c = getComputedStyle(rec);
+        const sides = ['Top', 'Right', 'Bottom', 'Left'];
+        const missing = PANEL_CLASSES.filter((k) => !rec.classList.contains(k));
+        const contrary = PANEL_OTHERS.filter((k) => rec.classList.contains(k));
+        const edge = sides.every((d) => c['border' + d + 'Style'] === 'solid' && Math.abs(px(c['border' + d + 'Width']) - 1) <= TOL && c['border' + d + 'Color'] === want);
+        const bloom = shadows(c.boxShadow).some((l) => !l.inset && l.lens.length >= 3 && l.lens[2] > TOL && sameHue(l.color, want) && rgbaOf(l.color)[3] > 0);
+        /* The owner's own panel in this role, beside the record: its material, corners and full shadow. */
+        const ref = document.createElement('div');
+        ref.className = PANEL_CLASSES.join(' ');
+        ref.style.setProperty('--surface-perimeter-color', 'var(--review-' + v + ')');
+        (rec.parentElement || document.body).insertBefore(ref, rec.nextSibling);
+        const rf = getComputedStyle(ref);
+        const PAINT = ['backgroundColor', 'backgroundImage', 'backdropFilter', 'boxShadow', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius'];
+        const unlike = PAINT.filter((k) => c[k] !== rf[k]);
+        ref.remove();
+        /* Nothing above or on the record fades, blends or filters it. */
+        const veiled = [];
+        for (let e = rec; e && e.nodeType === 1; e = e.parentElement) { const s = getComputedStyle(e); if (parseFloat(s.opacity) < 1 || s.mixBlendMode !== 'normal' || !none(s.filter)) veiled.push(path(e)); }
+        if (missing.length || contrary.length || clear(want) || !edge || !bloom || unlike.length || veiled.length) {
+          add('C18', 'panel', rec, { basis: 'computed', message: 'a record shown as a panel is the separate surface .surface-separate .surface-material-page .surface-attach-free .surface-elevation-flush .surface-perimeter, and no other material, attachment, elevation or fill; its edge is 1px solid in its role\'s value on every side and it blooms in that value; its background, corners and shadow are the owner\'s panel in that role, with no wash, image or added shadow; and nothing on it or above it lowers its opacity, blends or filters it', expected: want, missing, contrary, edge: sides.map((d) => c['border' + d + 'Width'] + ' ' + c['border' + d + 'Style'] + ' ' + c['border' + d + 'Color']).join(' / '), differs: Object.fromEntries(unlike.map((k) => [k, c[k] + ' (owner: ' + rf[k] + ')'])), veiled });
+        }
+        /* Its outcome label: the first element child, one bordered label in the role's value, naming the outcome. */
+        const labels = [...rec.querySelectorAll('.review-record-outcome')].filter((l) => own(rec, l));
+        const lab = labels[0];
+        const lc = lab ? getComputedStyle(lab) : null;
+        const said = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+        if (labels.length !== 1 || rec.firstElementChild !== lab || !lab.matches('.surface-bordered-label') || lab.matches('.doc-mark, .surface-emphasis-chip, [data-review], [data-evidence], [data-state], [data-assessment]') ||
+            hidden(lab) || !sides.every((d) => lc['border' + d + 'Color'] === want) || !OUTCOME[v].some((p) => phrase(said, p))) {
+          add('C18', 'label', rec, { basis: 'computed', message: 'a panel opens with its one outcome label: its first element child, .review-record-outcome, a bordered label and never a review mark, an emphasis chip or a facet-bearing element, its border in the role\'s value and its words naming the record\'s outcome', expected: want, labels: labels.length, first: rec.firstElementChild ? path(rec.firstElementChild) : null, border: lc ? lc.borderTopColor : null, words: said.slice(0, 40) });
+        }
+        /* Its words: the theme's text roles, never the role's value or a fill's ink. */
+        const roles = ['--fg-1', '--fg-2', '--fg-3'].map((k) => probe(rec, 'color:var(' + k + ', transparent)').color);
+        const off = bearers.filter((e) => !roles.includes(getComputedStyle(e).color));
+        if (off.length) {
+          add('C18', 'text', rec, { basis: 'computed', message: 'a panel\'s words keep the theme\'s text roles, --fg-1, --fg-2 or --fg-3: never its role\'s value, a fill\'s ink or another color', examples: off.slice(0, 3).map((e) => path(e) + ' ' + getComputedStyle(e).color) });
+        }
+        continue;
+      }
+      /* A node: its one filled shape, the record itself or its single .surface-fill descendant. */
+      const shapes = [...(rec.matches('.surface-fill') ? [rec] : []), ...[...rec.querySelectorAll('.surface-fill')].filter((s) => own(rec, s))];
       if (shapes.length !== 1) {
-        add('C18', 'fill', rec, { basis: 'computed', message: 'a record is one filled shape: the record itself carries .surface-fill, or an SVG record holds exactly one .surface-fill shape', shapes: shapes.length });
+        add('C18', 'fill', rec, { basis: 'computed', message: 'a node is one filled shape: the record itself carries .surface-fill, or an SVG record holds exactly one .surface-fill shape', shapes: shapes.length });
         continue;   /* with no one shape, its paint is not judged, nor the words a missing fill leaves */
       }
       const s = shapes[0], c = getComputedStyle(s), rc = getComputedStyle(rec);
@@ -2205,14 +2310,13 @@
       const edge = isSvg(s) ? (none(c.stroke) || (c.stroke === want && parseFloat(c.strokeOpacity) >= 1)) : sides.every((d) => !drawn(c, d) || c['border' + d + 'Color'] === want);
       const plain = none(c.backgroundImage) && none(c.filter) && parseFloat(c.opacity) >= 1 && parseFloat(rc.opacity) >= 1 && (!isSvg(s) || parseFloat(c.fillOpacity) >= 1);
       if (clear(want) || fill !== want || !edge || !plain) {
-        add('C18', 'fill', s, { basis: 'computed', message: 'a record\'s shape takes its role\'s value at 100% as its fill and its drawn edge, never transparent, with no image or filter and at full opacity, the record\'s included', expected: want, fill, edge: isSvg(s) ? c.stroke : sides.map((d) => c['border' + d + 'Color']).join(' / '), image: c.backgroundImage, filter: c.filter, opacity: c.opacity + ' / ' + rc.opacity });
+        add('C18', 'fill', s, { basis: 'computed', message: 'a node\'s shape takes its role\'s value at 100% as its fill and its drawn edge, never transparent, with no image or filter and at full opacity, the record\'s included', expected: want, fill, edge: isSvg(s) ? c.stroke : sides.map((d) => c['border' + d + 'Color']).join(' / '), image: c.backgroundImage, filter: c.filter, opacity: c.opacity + ' / ' + rc.opacity });
       }
       /* Its words: every element holding them takes the role's ink, as text color or an SVG text's fill. */
       const ink = probe(at, 'color:var(--review-' + v + '-ink, transparent)').color;
-      const bearers = [rec, ...rec.querySelectorAll('*')].filter((e) => own(rec, e) && ownText(e) && [...e.childNodes].some((n) => n.nodeType === 3 && VISIBLE.test(n.textContent)));
       const off = bearers.filter((e) => clear(ink) || (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color) !== ink);
       if (off.length) {
-        add('C18', 'ink', rec, { basis: 'computed', message: 'a record\'s words take its role\'s ink, --review-' + v + '-ink, FILL PAINT\'s for its color: never the role\'s value, a text role\'s color or the theme foreground', expected: ink, examples: off.slice(0, 3).map((e) => path(e) + ' ' + (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color)) });
+        add('C18', 'ink', rec, { basis: 'computed', message: 'a node\'s words take its role\'s ink, --review-' + v + '-ink, FILL PAINT\'s for its color: never the role\'s value, a text role\'s color or the theme foreground', expected: ink, examples: off.slice(0, 3).map((e) => path(e) + ' ' + (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color)) });
       }
     }
 
