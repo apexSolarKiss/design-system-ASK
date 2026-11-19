@@ -175,10 +175,10 @@
                      FILL PAINT's for the role's color, keyed by that color:
                      proposed on magenta, open on cyan, accepted on green,
                      declined on red; this module defines no ink value.
-                     surface-treatments.css for the paint: PERIMETER PAINT
-                     (the edge, ring and bloom), the bordered label's box, the
-                     separate surface's material and corners, and FILL PAINT
-                     (the fill, its boundary and the ink). The consumer for
+                     surface-treatments.css for the paint: PERIMETER PAINT for
+                     the edge, ring and bloom; the bordered label's box; the
+                     separate surface's material and corners; and FILL PAINT for
+                     the fill, its boundary and the ink. The consumer for
                      the layout, the fields' type and the record's values
      exclusions      no decision recorded draws no record: none binds no
                      color and has no ink, and a missing record is no
