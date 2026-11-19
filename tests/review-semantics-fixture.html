@@ -825,6 +825,12 @@
     <div data-control="record set inside a link" data-expect="C18.inert">
       <a href="#controls"><div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div></a>
     </div>
+    <div data-control="record set inside an attention-edge object" data-expect="C18.inert">
+      <div class="surface-attention-edge"><div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div></div>
+    </div>
+    <div data-control="record set inside a checkbox" data-expect="C18.inert">
+      <div role="checkbox" aria-checked="false"><div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div></div>
+    </div>
     <div data-control="record inside an annotation range" data-expect="C18.attach">
       <div class="doc-group doc-annotation-range surface-labeled-range"><div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">v3 · owner · this record</span></span></div><div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div></div>
     </div>
@@ -877,6 +883,9 @@
       <svg class="fx-svg-record" viewBox="0 0 320 76" aria-hidden="true"><g class="review-record" data-review="accepted"><rect class="surface-fill" x="1" y="1" width="318" height="74" rx="8"/><text x="16" y="28">Accepted</text><text class="surface-fill-ink" x="16" y="54"><tspan data-record-field="object">storage plan, v3</tspan> · <tspan data-record-field="actor">owner</tspan> · <tspan data-record-field="scope">the write path</tspan></text></g></svg>
     </div>
     <div data-control="record ink token made transparent" data-expect="C18.ink" style="--review-accepted-ink: transparent">
+      <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div>
+    </div>
+    <div data-control="record ink token undefined" data-expect="C18.ink" style="--review-accepted-ink: initial">
       <div class="fx-record review-record surface-fill" data-review="accepted"><div>Accepted</div><div><span data-record-field="object">storage plan, v3</span> · <span data-record-field="actor">owner</span> · <span data-record-field="scope">the write path</span></div></div>
     </div>
   </section>

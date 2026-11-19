@@ -30,7 +30,7 @@
 
    STATUS: v0.4 — each role's ink, and an evidence role in words. Each
    chromatic role names its ink on a fill, --evidence-<role>-ink, bound by
-   reference to the ink FILL PAINT (surface-treatments.css) keys by the fill
+   reference to the ink FILL PAINT, in surface-treatments.css, keys by the fill
    color: supported on green, partially-supported on orange, unresolved on
    cyan and weakened on brown, whose ink is the lavender in both themes.
    Not-yet-testable has no ink and is never filled (EACH ROLE'S INK, below).

@@ -21,11 +21,11 @@
 
    Offline; no CDN. Its colors are Spectral State's, one value per role in both
    themes; its rails take surface-treatments.css's rail paint, and its filled
-   nodes its fill paint (below).
+   nodes its fill paint, each described below.
 
    STATUS: v0.2 — the filled-node application. A node in an
    assessment-bearing figure the consumer composes may be filled in its role
-   through FILL PAINT (surface-treatments.css): each role names its ink,
+   through FILL PAINT, in surface-treatments.css: each role names its ink,
    --assessment-<role>-ink, favorable on green, caution on yellow and adverse
    on red. Each filled node shows its word, or the figure has a key, and an
    unassessed node takes no assessment fill (FILLED NODE APPLICATION, below).
@@ -126,7 +126,7 @@
 
   /* Each role's ink: the color of text set on a node filled in that role's
      color, bound to the surface treatments' FILL PAINT, which keys each ink by
-     the fill color. Unassessed takes no fill and has no ink. */
+     the fill color. Unassessed takes no assessment fill and binds no ink. */
   --assessment-favorable-ink: var(--surface-fill-ink-on-green);
   --assessment-caution-ink:   var(--surface-fill-ink-on-yellow);
   --assessment-adverse-ink:   var(--surface-fill-ink-on-red);

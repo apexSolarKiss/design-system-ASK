@@ -62,7 +62,7 @@
    marker; a passage mark's line color; a note's rail and attachment; a row,
    item or list drawing no rail, border or wash; its hierarchy rail, if it
    has one; a bordered label's or an emphasis chip's box and edge; a labeled
-   range's scope rail and, for a neutral range, its label; a scope
+   range's scope rail and, for a neutral or keyed range, its label; a scope
    underline's line and words; an ordered sequence's rail and nodes; and a
    marker's box, corners and paint. These findings
    are C12's, C13's, C14's, C15's, C16's, C17's and C3.hierarchy's, with the resting

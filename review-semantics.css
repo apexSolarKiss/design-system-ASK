@@ -58,7 +58,7 @@
    STATUS: v0.2 // the filled decision record. Outside a reviewed document's
    own annotation, one decision may be shown on its own as a filled record,
    .review-record with data-review proposed, open, accepted or declined, on a
-   shape the consumer fills with FILL PAINT (surface-treatments.css); each of
+   shape the consumer fills with FILL PAINT, in surface-treatments.css; each of
    those roles names its ink, --review-<role>-ink, and none draws no record.
    The record states its outcome in words, names its object or version, its
    actor, its scope and any material condition in fields of its own, and is

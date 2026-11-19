@@ -475,13 +475,14 @@
                         (C17.corner); a filled marker its color at 100% —
                         --surface-marker-color as it resolves at the marker, or
                         the tertiary foreground — never transparent, with no
-                        background image, shadow, outline or filter, and no
-                        border but one 1px solid edge alike on all four sides,
-                        which a composing surface may draw where the marker's
-                        color is its field's (C17.fill); a hollow marker
-                        unfilled, inside a 2px dashed border on all four sides
-                        in that color, never transparent, with no background
-                        image, shadow, outline or filter (C17.hollow). A marker
+                        background image, shadow, outline or filter, at full
+                        opacity, and no border but one 1px solid edge alike
+                        on all four sides, which a composing surface may draw
+                        where the marker's color is its field's (C17.fill); a
+                        hollow marker unfilled, inside a 2px dashed border on
+                        all four sides in that color, never transparent, with
+                        no background image, shadow, outline or filter, at
+                        full opacity (C17.hollow). A marker
                         a closed disclosure keeps from being seen is judged by
                         the runner once it is open, as C12's elements are; one
                         still collapsed then fails C17.box. A rendered or held
@@ -498,9 +499,12 @@
                         record hides, with no other field and no field inside
                         another (C18.fields); it is inert: never a link, a
                         control, a focusable or editable element, a compact
-                        action, a call to action or an attention edge, holding
-                        none and set inside none (C18.inert); and it stands on
-                        its own: never an element of the annotation
+                        action, a call to action or an attention edge, and
+                        holding none, nor set inside a link, a control, an
+                        editable element, a compact action, a call to action
+                        or an attention edge, where a tabindex alone, such as
+                        a scrolling box's, makes no host (C18.inert); and it
+                        stands on its own: never an element of the annotation
                         composition or inside one, never inside another
                         record, never also a bordered label, a chip, a keyed
                         label, a marker, a range, an underline, a sequence, a
@@ -518,8 +522,9 @@
                         no image or filter, at full opacity, the record's
                         included (C18.fill); a record without one shape is
                         judged for that alone. Every element holding its words
-                        takes the role's ink, --review-<role>-ink, as its text
-                        color, or as its fill in SVG (C18.ink). A record is
+                        takes the role's ink, --review-<role>-ink, never
+                        transparent or unresolved, as its text color, or as
+                        its fill in SVG (C18.ink). A record is
                         judged at rest wherever it sits, a closed disclosure
                         included, is never held, and counts as a governed
                         element
@@ -565,7 +570,7 @@
      state "collapsed": C12.label for a mark, C12.passage for a passage mark,
      C12.note for a note, C12.rail for a row, an item, a list or a list's
      key or value, C12.range for an annotation range, C13.box for a
-     bordered label or an emphasis chip, C14.rail for a neutral
+     bordered label or an emphasis chip, C14.rail for a neutral or keyed
      labeled range, C15.line for a neutral scope underline, C16.rail for an
      ordered sequence and C17.box for a marker. One
      that left the page as its disclosure opened fails it
@@ -636,14 +641,14 @@
      narrow side padding, and a scrolling box's extent, not what is scrolled
      into view. It reads the rail on the left: a right-to-left page is not
      judged, and CSS zoom mixes the coordinates it compares.
-   - C14.label proves that some words of a shown neutral range's label sit
-     in an element that renders a box, that checkVisibility() shows (display,
-     visibility, opacity and content-visibility, its ancestors' included)
-     and whose text color is not transparent. It does not judge clipping or
-     a clip path on the label, its position, or its words' size or contrast:
-     where the label carries a text role, such as .doc-label, C1 judges that
-     role's metrics and color, and a label without one is judged by none of
-     these.
+   - C14.label proves that some words of a shown neutral or keyed range's
+     label sit in an element that renders a box, that checkVisibility() shows
+     (display, visibility, opacity and content-visibility, its ancestors'
+     included) and whose text color is not transparent. It does not judge
+     clipping or a clip path on the label, its position, or its words' size
+     or contrast: where the label carries a text role, such as .doc-label, C1
+     judges that role's metrics and color, and a label without one is judged
+     by none of these.
    - C12.label judges a review mark's rendered words, not its opacity, so an
      annotation range opened by a mark at zero opacity passes.
    - C14 and C12 prove that a range is drawn and opened as the contract
@@ -696,8 +701,9 @@
      owner's literal values (10px, 12px, 30px, 2px and 1px), not with the
      page's --surface-marker-* properties, so a page that redefines one
      cannot move the expectation with the defect. It reads the marker's own
-     box and computed paint: a pseudo-element on the marker, or another
-     element laid over it, is outside it, and it does not measure pixels.
+     box and computed paint, its own opacity included: a pseudo-element on
+     the marker, another element laid over it, or an ancestor's opacity, is
+     outside it, and it does not measure pixels.
      It compares the paint with --surface-marker-color as it resolves at the
      marker, so it proves that a marker is drawn in its own color, not that
      the color is the one its meaning assigns, and it does not judge whether
@@ -714,13 +720,16 @@
      scope, not that they are the right ones, that a condition it omits is
      immaterial, or that the decision was made. It compares the fill with
      --review-<role> and the words with --review-<role>-ink as each resolves
-     at the record, so it proves that a record is drawn in its role's
+     at the record, an unresolved one read as transparent, which fails, so
+     it proves that a record is drawn in its role's
      binding, not that the binding is FILL PAINT's ink for that color
      (tests/fill-paint-fixture.html holds that). It reads an HTML shape's
      background and border and an SVG shape's fill and stroke, not paint a
-     pseudo-element or another element lays over the record. It knows
-     controls by element, role, tabindex, contenteditable and class, and does
-     not judge a cursor or a hover, press or focus rule.
+     pseudo-element or another element lays over the record. It knows a
+     control by element, role, tabindex, contenteditable and class, and a
+     host a record is set inside by element, role, contenteditable and class:
+     a tabindex alone, such as a scrolling box's, makes no host. It does not
+     judge a cursor or a hover, press or focus rule.
 */
 (function (global) {
   'use strict';
@@ -802,10 +811,10 @@
     'doc-label', 'doc-meta', 'doc-code', 'doc-quote', 'doc-pre', 'doc-pre-part', 'doc-toc-link', 'doc-table-cell', 'doc-entry-title',
     'doc-compare-head', 'doc-compare-cell', 'doc-compare-summary'];
   /* Classes whose owners are not this register: their text is governed elsewhere. */
-  const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-panel-title',
+  const OTHER_OWNERS = ['surface-title', 'surface-lede', 'surface-nav-row', 'surface-badge', 'surface-action', 'surface-cta', 'surface-panel-title',
     'surface-panel-support', 'surface-emphasis-chip', 'surface-disclosure-label', 'surface-disclosure-indicator', 'caption'];
   /* Anchors that are shaped objects owning their own interaction (C7). */
-  const SHAPED = ['surface-action', 'surface-panel', 'surface-nav-row'];
+  const SHAPED = ['surface-action', 'surface-cta', 'surface-panel', 'surface-nav-row'];
   const INLINE_EMPHASIS = ['STRONG', 'B', 'EM', 'I', 'SUB', 'SUP', 'MARK'];
   const PASSAGE = '.doc-quote, .doc-pre';
   const RAILED = '.doc-quote, .doc-pre, .surface-emphasis-rail';
@@ -2078,20 +2087,20 @@
       /* Its color: --surface-marker-color as it resolves at the marker, or the tertiary foreground. */
       const raw = tokenAt(el, '--surface-marker-color');
       const want = probe(el, 'border-left:1px solid ' + (raw || 'var(--fg-3)')).border;
-      const paint = { image: c.backgroundImage, shadow: c.boxShadow, filter: c.filter, outline: c.outlineWidth + ' ' + c.outlineStyle };
-      const painted = !none(c.backgroundImage) || !none(c.boxShadow) || !none(c.filter) || (c.outlineStyle !== 'none' && px(c.outlineWidth) > TOL);
+      const paint = { image: c.backgroundImage, shadow: c.boxShadow, filter: c.filter, outline: c.outlineWidth + ' ' + c.outlineStyle, opacity: c.opacity };
+      const painted = !none(c.backgroundImage) || !none(c.boxShadow) || !none(c.filter) || (c.outlineStyle !== 'none' && px(c.outlineWidth) > TOL) || parseFloat(c.opacity) < 1;
       const sides = ['Top', 'Right', 'Bottom', 'Left'];
       const border = sides.map((s) => c['border' + s + 'Width'] + ' ' + c['border' + s + 'Style'] + ' ' + c['border' + s + 'Color']).join(' / ');
       if (shape === 'hollow') {
         const ring = !clear(want) && sides.every((s) => c['border' + s + 'Style'] === 'dashed' && Math.abs(px(c['border' + s + 'Width']) - MARKER.hollow) <= TOL && c['border' + s + 'Color'] === want);
         if (!ring || !clear(c.backgroundColor) || painted) {
-          cmp('hollow', { message: 'a hollow marker is unfilled, inside a ' + MARKER.hollow + 'px dashed edge on all four sides in its color, never transparent, with no shadow, outline or filter', expected: want, background: c.backgroundColor, border, ...paint });
+          cmp('hollow', { message: 'a hollow marker is unfilled, inside a ' + MARKER.hollow + 'px dashed edge on all four sides in its color, never transparent, with no shadow, outline or filter, at full opacity', expected: want, background: c.backgroundColor, border, ...paint });
         }
       } else {
         const edge = sides.every((s) => !drawn(c, s)) ||
           sides.every((s) => c['border' + s + 'Style'] === 'solid' && Math.abs(px(c['border' + s + 'Width']) - MARKER.edge) <= TOL && c['border' + s + 'Color'] === c.borderTopColor);
         if (clear(c.backgroundColor) || c.backgroundColor !== want || !edge || painted) {
-          cmp('fill', { message: 'a filled marker is its color at 100%, never transparent, with no image, shadow, outline or filter, and no edge but one ' + MARKER.edge + 'px solid line alike on all four sides', expected: want, background: c.backgroundColor, border, ...paint });
+          cmp('fill', { message: 'a filled marker is its color at 100%, never transparent, with no image, shadow, outline or filter, at full opacity, and no edge but one ' + MARKER.edge + 'px solid line alike on all four sides', expected: want, background: c.backgroundColor, border, ...paint });
         }
       }
     }
@@ -2127,7 +2136,7 @@
       RAILED + ', ' + PANEL + ', ' + KEYED + ', ' + MARKED + ', .surface-separate, .surface-fill--neutral, ' + ROLE_CLASSES.map((r) => '.' + r).join(', ');
     const RECORD_CONTROLS = CONTROLS + ', .surface-cta, .surface-attention-edge';
     /* Hosts that make whatever they hold part of a control. A scrolling box's tabindex is not one. */
-    const RECORD_HOSTS = 'a, button, summary, label, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta';
+    const RECORD_HOSTS = 'a, button, summary, label, [contenteditable]:not([contenteditable="false"]), [role="link"], [role="button"], [role="tab"], [role="menuitem"], [role="checkbox"], [role="radio"], [role="switch"], [role="option"], [role="treeitem"], .surface-text-link, .surface-action, .surface-cta, .surface-attention-edge';
     const OUTCOME = { proposed: ['proposed', 'correction requested'], open: ['open question'], accepted: ['accepted'], declined: ['declined'], none: ['no decision recorded'] };
     const phrase = (words, p) => new RegExp('(^|[^\\p{L}\\p{N}])' + p.replace(/ /g, '\\s+') + '(?=$|[^\\p{L}\\p{N}])', 'iu').test(words);
     const own = (rec, node) => (node.nodeType === 1 ? node : node.parentElement).closest('.review-record') === rec;
@@ -2152,7 +2161,7 @@
         add('C18', 'fields', rec, { basis: 'syntax', message: 'a record names, each once in a field of its own (data-record-field), what it concerns (object), who decided or decides (actor) and its scope (scope), and any material condition (condition), each in words no style inside the record hides, and no field holds another', fields: names, unknown, blank: blank.map(path), nested: nested.map(path) });
       }
       if (rec.matches(RECORD_CONTROLS) || rec.querySelector(RECORD_CONTROLS) || (rec.parentElement && rec.parentElement.closest(RECORD_HOSTS))) {
-        add('C18', 'inert', rec, { basis: 'syntax', message: 'a record is inert: never a link, a control, a focusable or editable element, an action or an attention edge, holding none and set inside none; a link to the reviewed object sits beside it' });
+        add('C18', 'inert', rec, { basis: 'syntax', message: 'a record is inert: never a link, a control, a focusable or editable element, an action or an attention edge, holding none, and set inside no link, control, editable element, action or attention edge; a link to the reviewed object sits beside it' });
       }
       const facets = ['evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
       if (rec.matches(RECORD_ATTACH) || (rec.parentElement && rec.parentElement.closest(COMPOSITION + ', .review-record')) || facets.length) {
@@ -2174,7 +2183,7 @@
       /* Its one filled shape: the record itself, or its single .surface-fill descendant. */
       const shapes = [...(rec.matches('.surface-fill') ? [rec] : []), ...[...rec.querySelectorAll('.surface-fill')].filter((s) => own(rec, s))];
       const at = rec.closest('svg') || rec;
-      const want = probe(at, 'color:var(--review-' + v + ')').color;
+      const want = probe(at, 'color:var(--review-' + v + ', transparent)').color;
       if (shapes.length !== 1) {
         add('C18', 'fill', rec, { basis: 'computed', message: 'a record is one filled shape: the record itself carries .surface-fill, or an SVG record holds exactly one .surface-fill shape', shapes: shapes.length });
         continue;   /* with no one shape, its paint is not judged, nor the words a missing fill leaves */
@@ -2188,7 +2197,7 @@
         add('C18', 'fill', s, { basis: 'computed', message: 'a record\'s shape takes its role\'s value at 100% as its fill and its drawn edge, never transparent, with no image or filter and at full opacity, the record\'s included', expected: want, fill, edge: isSvg(s) ? c.stroke : sides.map((d) => c['border' + d + 'Color']).join(' / '), image: c.backgroundImage, filter: c.filter, opacity: c.opacity + ' / ' + rc.opacity });
       }
       /* Its words: every element holding them takes the role's ink, as text color or an SVG text's fill. */
-      const ink = probe(at, 'color:var(--review-' + v + '-ink)').color;
+      const ink = probe(at, 'color:var(--review-' + v + '-ink, transparent)').color;
       const bearers = [rec, ...rec.querySelectorAll('*')].filter((e) => own(rec, e) && ownText(e) && [...e.childNodes].some((n) => n.nodeType === 3 && VISIBLE.test(n.textContent)));
       const off = bearers.filter((e) => clear(ink) || (isSvg(e) ? getComputedStyle(e).fill : getComputedStyle(e).color) !== ink);
       if (off.length) {

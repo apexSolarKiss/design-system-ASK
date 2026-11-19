@@ -130,6 +130,7 @@
   [data-control="filled marker painted by a local rule"] .surface-marker { background-color: var(--ask-emphasis-cyan); }
   [data-control="filled marker given a dashed edge"] .surface-marker { border: 1px dashed var(--fg-3); }
   [data-control="filled marker given a glow"] .surface-marker { box-shadow: 0 0 6px var(--ask-emphasis-magenta); }
+  [data-control="filled marker faded"] .surface-marker { opacity: 0.3; }
   [data-control="hollow marker filled"] .surface-marker { background-color: var(--fg-3); }
   [data-control="hollow marker drawn solid"] .surface-marker { border-style: solid; }
   [data-control="hollow marker edged in another color"] .surface-marker { border-color: var(--ask-emphasis-cyan); }
@@ -496,6 +497,9 @@ keeps the one violet rail</pre>
     </div>
     <div data-control="link in a dense table header without the class" data-expect="C7.class">
       <table class="doc-dense-table"><thead><tr><th class="doc-label"><a href="#controls">field</a></th></tr></thead></table>
+    </div>
+    <div data-control="call to action in a meta line, a shaped object" data-expect="">
+      <p class="doc-meta">Next <a class="surface-cta surface-attention-edge" href="#controls">start the review</a></p>
     </div>
     <div data-control="small text inside body" data-expect="C8.size">
       <p class="doc-body">Body copy with <span style="font-size: var(--fs-small)">a smaller run</span> inside it.</p>
@@ -1094,6 +1098,9 @@ another</pre></div></div>
       <div class="fx-row"><span class="surface-marker surface-marker--lg"></span><span class="doc-label">a role</span></div>
     </div>
     <div data-control="filled marker given a glow" data-expect="C17.fill">
+      <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
+    </div>
+    <div data-control="filled marker faded" data-expect="C17.fill">
       <div class="fx-row"><span class="surface-marker surface-marker--md"></span><span class="doc-label">a role</span></div>
     </div>
     <div data-control="hollow marker filled" data-expect="C17.hollow">
