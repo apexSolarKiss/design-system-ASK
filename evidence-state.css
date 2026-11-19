@@ -40,8 +40,10 @@
    role's value on its scope rail, with green's rail paint for supported (AN
    EVIDENCE ROLE IN WORDS, below). Not-yet-testable takes no keyed label and
    keeps its note, and inside a Review Semantics annotation evidence keeps its
-   dot. The role values are unchanged. Re-sync this file with
-   surface-treatments.css from the same owner commit.
+   dot. Weakened's value, the foundation's brown, moves to a darker, redder
+   chocolate, hsl(21, 41.8%, 38%), #895538 (ASK, 2026-11-18); the other role
+   values are unchanged. Re-sync this file with surface-treatments.css and
+   colors_and_type.css from the same owner commit.
 
    v0.3 — the two new values are defined once, in the foundation's reserved
    state values (colors_and_type.css: --ask-state-value-brown and
@@ -68,7 +70,7 @@
      supported             value of --state-earned            visual-role mapping
      partially-supported   value of --state-partial           visual-role mapping
      unresolved            value of --state-held              exact mapping
-     weakened              new — muted/darkened 30° brown     new Evidence role
+     weakened              new — muted/darkened 21° brown     new Evidence role
      not-yet-testable      new — neutral lavender-gray        new Evidence role
 
    The three reused values are VISUAL-ROLE mappings (and one exact mapping,
@@ -77,8 +79,9 @@
    and must never relabel them earned / partial / held just because the color
    value is shared.
 
-   `weakened` is a tonal derivative of `partial`: the same 30° hue family, lower
-   saturation and lightness — a muted, darkened orange ("brown"). It reads as a
+   `weakened` is a tonal derivative of `partial`: a muted, darkened brown on the
+   orange side of the wheel, at about 21° where `partial` is 30°, with lower
+   saturation and lightness. It reads as a
    degraded `partial` (viable but credibility lost), distinct from neon
    `partial` and from red `deflated`. It is NOT a new wheel position and is NOT
    added to the Spectral State health ramp.
@@ -134,7 +137,7 @@
   --evidence-unresolved:          var(--state-held);     /* exact mapping */
 
   /* new Evidence State roles — one value each, in both themes */
-  --evidence-weakened:            var(--ask-state-value-brown);          /* muted 30° — brown */
+  --evidence-weakened:            var(--ask-state-value-brown);          /* muted 21° — brown */
   --evidence-not-yet-testable:    var(--ask-state-value-lavender-gray);  /* neutral lavender-gray (see contract above) */
 
   /* Each chromatic role's ink: the color of text set on a shape filled in that

@@ -4,7 +4,7 @@ A semantic state-color **profile** under the Spectral State family. Where [`spec
 
 It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** Spectral State's eight-role architectural-element vocabulary is unchanged. This profile **reuses three Spectral State values by reference** and **adds two evidence-specific roles**.
 
-> **Status: v0.4 // each role's ink, and an evidence role in words.** Each chromatic role names its ink on a fill, `--evidence-<role>-ink`, bound by reference to the ink [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT keys by the fill color: `supported` on green, `partially-supported` on orange, `unresolved` on cyan and `weakened` on brown, whose ink is the lavender in both themes. `not-yet-testable` has no ink and is never filled. Outside a multi-axis review annotation, a chromatic role may be named on a keyed bordered label, `.evidence-label` with `data-evidence`, whose words are exactly `Evidence // <Role>`, and a labeled range that label opens takes the role's value on its scope rail, with green's rail paint for `supported` (An evidence role in words, below). `not-yet-testable` takes no keyed label and keeps its note, and inside a Review Semantics annotation evidence keeps its dot. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
+> **Status: v0.4 // each role's ink, and an evidence role in words.** Each chromatic role names its ink on a fill, `--evidence-<role>-ink`, bound by reference to the ink [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT keys by the fill color: `supported` on green, `partially-supported` on orange, `unresolved` on cyan and `weakened` on brown, whose ink is the lavender in both themes. `not-yet-testable` has no ink and is never filled. Outside a multi-axis review annotation, a chromatic role may be named on a keyed bordered label, `.evidence-label` with `data-evidence`, whose words are exactly `Evidence // <Role>`, and a labeled range that label opens takes the role's value on its scope rail, with green's rail paint for `supported` (An evidence role in words, below). `not-yet-testable` takes no keyed label and keeps its note, and inside a Review Semantics annotation evidence keeps its dot. `weakened`'s value, the foundation's brown, moves to a darker, redder chocolate, `hsl(21, 41.8%, 38%)`, `#895538` (ASK, 2026-11-18); the other role values are unchanged. Re-sync this file with `surface-treatments.css` and `colors_and_type.css` from the same owner commit.
 >
 > **v0.3 // its two values defined in the foundation.** `weakened` and `not-yet-testable` take `var(--ask-state-value-brown)` and `var(--ask-state-value-lavender-gray)`, the foundation's reserved state values in [`colors_and_type.css`](colors_and_type.css), as [Spectral State](spectral-state.md) v1.3's own values do; the values are unchanged. Re-sync this file with `colors_and_type.css` from the same owner commit.
 >
@@ -19,14 +19,14 @@ It is a **sanctioned profile, not a separate palette and not a change to Spectra
 | `supported` | value of `--state-earned` | visual-role mapping |
 | `partially-supported` | value of `--state-partial` | visual-role mapping |
 | `unresolved` | value of `--state-held` | exact mapping |
-| `weakened` | new — muted/darkened 30° brown | new Evidence State role |
+| `weakened` | new — muted/darkened 21° brown | new Evidence State role |
 | `not-yet-testable` | new — neutral lavender-gray + dashed/hollow treatment | new Evidence State role |
 
 **Labels stay evidence labels.** A consuming surface keeps **Supported**, **Partially supported**, and **Unresolved** — it must never relabel them `earned` / `partial` / `held` merely because the color value is shared. The three reused values are *visual-role* mappings (one exact: `unresolved → held`), not semantic aliases.
 
 ## The two new roles
 
-- **`weakened`** // a *tonal derivative* of `partial`: the same 30° hue family, lower saturation and lightness — a muted, darkened orange ("brown"). It reads as a degraded `partial` (the pathway remains viable but has lost credibility), clearly separated from neon `partial` and from red `deflated`. It is **not** a new wheel position and is **not** added to the Spectral State health ramp.
+- **`weakened`** // a *tonal derivative* of `partial`: a muted, darkened brown on the orange side of the wheel, at about 21° where `partial` is 30°, with lower saturation and lightness. It reads as a degraded `partial` (the pathway remains viable but has lost credibility), clearly separated from neon `partial` and from red `deflated`. It is **not** a new wheel position and is **not** added to the Spectral State health ramp.
 - **`not-yet-testable`** // **off** the chromatic arc entirely: a neutral lavender-gray for "evidence cannot exist yet at this stage" (distinct from `unresolved`, an open question being worked, and from a neutral field with no asserted state). Color alone is **not** sufficient. Its presentation contract is mandatory:
 
   ```text
@@ -48,7 +48,7 @@ Outside a multi-axis review annotation, for a statement in a report, a figure or
 
 ## Wheel logic (inherited)
 
-Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values come from it (`earned` 120°, `partial` 30°, and `held`, now the foundation's emphasis cyan at about 195°); `weakened` is a tonal branch of the 30° orange; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
+Evidence State draws on the same neon wheel as [Spectral State](spectral-state.md). The three reused values come from it (`earned` 120°, `partial` 30°, and `held`, now the foundation's emphasis cyan at about 195°); `weakened` is a tonal branch of the orange, at about 21°; `not-yet-testable` is achromatic (off the wheel), like the neutral field. The sparse-signal discipline carries over: a node takes color only to say something.
 
 The Spectral State health ramp is **unchanged**:
 
@@ -58,13 +58,13 @@ Spectral State ramp (unchanged)
 
 Evidence State derivation
   partially-supported  → value of partial
-  weakened             → muted 30° brown (tonal branch of partial, off the ramp)
+  weakened             → muted 21° brown (tonal branch of partial, off the ramp)
 ```
 
 ## Tiers
 
 - **Tier 1 (identity-free):** the `--evidence-*` role names and the `.evidence-label` class — a stable vocabulary other ASK-family surfaces can reuse.
-- **Tier 2 (ASK design language):** the two new values, one each in both themes (`weakened` brown `hsl(30, 45%, 48%)`, `not-yet-testable` lavender-gray `hsl(264, 8%, 53%)`), defined in the foundation's reserved state values ([`colors_and_type.css`](colors_and_type.css)); the three reused values inherit [Spectral State](spectral-state.md)'s Tier 2 by reference.
+- **Tier 2 (ASK design language):** the two new values, one each in both themes (`weakened` brown `hsl(21, 41.8%, 38%)`, `not-yet-testable` lavender-gray `hsl(264, 8%, 53%)`), defined in the foundation's reserved state values ([`colors_and_type.css`](colors_and_type.css)); the three reused values inherit [Spectral State](spectral-state.md)'s Tier 2 by reference.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it
