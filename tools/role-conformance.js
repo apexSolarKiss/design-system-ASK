@@ -536,10 +536,11 @@
                         nothing on it or above it at less than full opacity,
                         blended or filtered (C18.panel). Its first element child is its
                         one outcome label, .review-record-outcome, a
-                        .surface-bordered-label and never a review mark, an
-                        emphasis chip or a facet-bearing element, whose border
-                        is the role's value and whose words name the record's
-                        outcome (C18.label). Every element holding its words
+                        .surface-bordered-label carrying the label role,
+                        .doc-label, and never a review mark, an emphasis chip
+                        or a facet-bearing element, whose border is the role's
+                        value and whose words name the record's outcome
+                        (C18.label). Every element holding its words
                         takes a theme text role, --fg-1, --fg-2 or --fg-3, as
                         its text color, never the role's value or a fill's ink
                         (C18.text). A node, computed: it is one filled shape,
@@ -2281,14 +2282,14 @@
         if (missing.length || contrary.length || clear(want) || !edge || !bloom || unlike.length || veiled.length) {
           add('C18', 'panel', rec, { basis: 'computed', message: 'a record shown as a panel is the separate surface .surface-separate .surface-material-page .surface-attach-free .surface-elevation-flush .surface-perimeter, and no other material, attachment, elevation or fill; its edge is 1px solid in its role\'s value on every side and it blooms in that value; its background, corners and shadow are the owner\'s panel in that role, with no wash, image or added shadow; and nothing on it or above it lowers its opacity, blends or filters it', expected: want, missing, contrary, edge: sides.map((d) => c['border' + d + 'Width'] + ' ' + c['border' + d + 'Style'] + ' ' + c['border' + d + 'Color']).join(' / '), differs: Object.fromEntries(unlike.map((k) => [k, c[k] + ' (owner: ' + rf[k] + ')'])), veiled });
         }
-        /* Its outcome label: the first element child, one bordered label in the role's value, naming the outcome. */
+        /* Its outcome label: the first element child, one bordered label in the label role, its border in the role's value, naming the outcome. */
         const labels = [...rec.querySelectorAll('.review-record-outcome')].filter((l) => own(rec, l));
         const lab = labels[0];
         const lc = lab ? getComputedStyle(lab) : null;
         const said = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
-        if (labels.length !== 1 || rec.firstElementChild !== lab || !lab.matches('.surface-bordered-label') || lab.matches('.doc-mark, .surface-emphasis-chip, [data-review], [data-evidence], [data-state], [data-assessment]') ||
+        if (labels.length !== 1 || rec.firstElementChild !== lab || !lab.matches('.doc-label.surface-bordered-label') || lab.matches('.doc-mark, .surface-emphasis-chip, [data-review], [data-evidence], [data-state], [data-assessment]') ||
             hidden(lab) || !sides.every((d) => lc['border' + d + 'Color'] === want) || !OUTCOME[v].some((p) => phrase(said, p))) {
-          add('C18', 'label', rec, { basis: 'computed', message: 'a panel opens with its one outcome label: its first element child, .review-record-outcome, a bordered label and never a review mark, an emphasis chip or a facet-bearing element, its border in the role\'s value and its words naming the record\'s outcome', expected: want, labels: labels.length, first: rec.firstElementChild ? path(rec.firstElementChild) : null, border: lc ? lc.borderTopColor : null, words: said.slice(0, 40) });
+          add('C18', 'label', rec, { basis: 'computed', message: 'a panel opens with its one outcome label: its first element child, .review-record-outcome, a bordered label in the label role (.doc-label) and never a review mark, an emphasis chip or a facet-bearing element, its border in the role\'s value and its words naming the record\'s outcome', expected: want, labels: labels.length, first: rec.firstElementChild ? path(rec.firstElementChild) : null, border: lc ? lc.borderTopColor : null, words: said.slice(0, 40) });
         }
         /* Its words: the theme's text roles, never the role's value or a fill's ink. */
         const roles = ['--fg-1', '--fg-2', '--fg-3'].map((k) => probe(rec, 'color:var(' + k + ', transparent)').color);
