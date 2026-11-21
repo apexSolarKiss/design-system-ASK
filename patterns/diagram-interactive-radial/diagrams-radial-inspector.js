@@ -17,9 +17,14 @@
      idle       nothing selected or previewed: the adapter's idle text
      root · container · item
                 the selected node, or the previewed one while nothing is selected
-     record     an undrawn record, opened from a reference, a search or an arrival. It keeps
-                the node it was opened from, offers a way back to it, and is closed by Escape
-                before the selection is.
+     record     an undrawn record, opened from a reference, a search or an arrival. One followed
+                from a node's reference keeps that node as its origin (from another record's view,
+                that record's origin) and offers a way back to it; one opened by a search, an
+                arrival or the page without an origin has none. Escape closes it before the
+                selection. A locked node other than the record's origin is cleared as the record
+                opens, before the record's view is drawn or the panel opens: it is no longer drawn
+                as selected, and opening the record never moves the camera toward it. The
+                clearing is the module's, so the record stays.
    A reference to a placed node selects and centers it. A node a membership hides is revealed
    first by clearing the membership, through the facets module when it is listed and through the
    engine when it is not, so a reference never lands on a hidden node; the camera moves only once
@@ -427,6 +432,13 @@
       if (id !== target) showAll = false;
       origin = from !== undefined ? from : (origin || api.selection().locked || null);
       view = 'record'; target = id;
+      /* a lock other than the origin is obsolete: cleared first, as the module's clearing (the record
+         view is already set, so the select handler below leaves it open), so neither the view, the
+         panel's opening nor the camera acts on it. The origin decides, never a link to the record.
+         A select listener that destroyed the map, or moved the view on, in the meantime has the last word */
+      var held = api.selection().locked;
+      if (held && held !== origin) api.select(null, 'inspector', 'module');
+      if (destroyed || view !== 'record' || target !== id) return false;
       render();
       expand(true, cause || 'reader', false);
       say(targetFor(id));
@@ -619,9 +631,10 @@
     api.on('select', function (ev) {
       if (destroyed) return;
       if (ev.id === null) {
-        /* the reader's own clearing (a tap on empty canvas, Escape) closes a record view too and,
-           on a compact canvas, collapses the sheet; a clearing a module makes (a filter that hides
-           the selection) leaves an open record and the sheet as they are */
+        /* the reader's own clearing (a tap on empty canvas, or Escape once no record is open) idles
+           the panel, closing an open record view, and on a compact canvas collapses the sheet; a
+           clearing the page or a module makes (select(null), a filter that hides the selection, a
+           record opened with no origin or another one) leaves an open record and the sheet as they are */
         var own = ev.via === 'pointer' || ev.via === 'keyboard';
         if (view === 'record' && !own) return;
         showNode(null, false);
