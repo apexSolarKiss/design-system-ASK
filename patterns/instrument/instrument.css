@@ -1,0 +1,385 @@
+/* =========================================================================
+   instrument.css // layout and control vocabulary for a canvas instrument
+
+   design-system-ASK surface pattern `instrument`; the contract is
+   patterns/instrument/README.md. Everything here is something the root
+   modules do not provide: the instrument layout, a one-of-n selector, a
+   slider row, a status line.
+
+   Rules it keeps:
+     - DS tokens only (colors_and_type.css). No new color value, no redefined
+       role, no root module edited.
+     - Three objects, three jobs. An ACTION is a DS compact action
+       (.surface-action), unchanged in geometry. A SELECTOR is a native radio
+       group drawn as segments. A SLIDER is a native range input.
+     - Selected is a neutral step among existing roles: foreground, border,
+       fill and weight. Never magenta, which the DS reserves for hover and
+       focus attention on actions.
+     - Chrome never sits on top of the artwork. In full window and fullscreen
+       the controls sit under or beside the canvas, on the page field, so
+       theme-colored chrome is never drawn over the artwork, whose colors
+       are the product's in every theme.
+     - The page follows the operating system's light or dark setting through
+       the DS foundation. Nothing here sets or switches a theme.
+
+   Instrument-local departures from the root modules, kept by the owner and
+   listed in the README: the stage drops its frame material and the panel its
+   shadow in full window; selector segments and slider rows are local control
+   roles; touch hit areas grow inside .inst only; [hidden] is forced; the save
+   action has a local busy style; and the canvas focus ring is two-tone in
+   fixed values, because the artwork beneath it may be light or dark.
+
+   Prefix: inst-. Load after the DS files.
+   ========================================================================= */
+
+/* A DS class that sets `display` beats the UA's [hidden] rule; this restores it. */
+.inst [hidden] { display: none !important; }
+/* Shown only in full window and fullscreen. */
+.inst[data-expanded="false"] .inst-when-expanded { display: none !important; }
+
+html.inst-lock, html.inst-lock body { overflow: hidden; }
+
+/* Announcements for assistive technology; nothing to see. */
+.inst-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Regions ----------------------------------------------------------- */
+
+.inst {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 30vw, 420px);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "head  head"
+    "stage bar"
+    "stage panel";
+  gap: var(--space-4);
+  height: 100dvh;
+  padding: var(--space-4);
+}
+.inst *, .inst *::before, .inst *::after { box-sizing: border-box; }
+
+.inst-head {
+  grid-area: head;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.inst-head .caption { margin: 0; }
+
+/* Stage and bar travel together when the layout stacks; side by side they are
+   two separate grid items. */
+.inst-pin { display: contents; }
+
+/* The stage is a separate surface (DS axis classes on the element); only its
+   placement and the canvas fit are local. */
+.inst-stage {
+  grid-area: stage;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3);
+  display: flex;
+}
+/* The box the canvas is fitted into. The shared script measures this one. */
+.inst-fit {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+/* The artwork keeps its own colors in every theme. */
+.inst-fit > canvas {
+  display: block;
+  flex: none;
+  color-scheme: only light;
+  border-radius: var(--radius-xs);
+}
+/* Keyboard focus on the canvas. The ring is drawn inside the canvas, so
+   nothing clips it, in fixed values, because the artwork's colors are the
+   product's whatever the theme. It is two-tone so it shows on light and dark
+   artwork alike: the outline gives the outer 2px in --ask-fg-light, and an
+   overlay matched to the canvas box (the script sets its size) adds an inner
+   2px in --ask-white. Where :has() is unsupported the outline alone shows. */
+.inst-fit > canvas:focus-visible { outline: 2px solid var(--ask-fg-light); outline-offset: -2px; }
+.inst-fit:has(> canvas:focus-visible)::after {
+  content: "";
+  position: absolute;
+  width: var(--inst-canvas-width, 100%);
+  height: var(--inst-canvas-height, 100%);
+  box-shadow: inset 0 0 0 2px var(--ask-fg-light), inset 0 0 0 4px var(--ask-white);
+  border-radius: var(--radius-xs);
+  pointer-events: none;
+}
+/* A canvas the person draws on by touch: the product sets data-draw, and only
+   then does the canvas (never the page) stop answering to scroll and zoom. */
+.inst-fit > canvas[data-draw="true"] { touch-action: none; cursor: crosshair; }
+
+.inst-bar {
+  grid-area: bar;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.inst-bar-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+.inst-bar-spacer { flex: 1 1 auto; }
+
+.inst-panel {
+  grid-area: panel;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+/* The panel's own inset and column stay the DS's; this body lays out the controls. */
+.inst-panel-body {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.inst-col { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+/* One column: a rule between the two groups. Two columns: the gap does that. */
+.inst-col--second { border-top: 1px solid var(--line-2); padding-top: var(--space-4); }
+
+/* ---- Short landscape screens: keep two columns, narrower --------------- */
+@media (max-width: 999px) and (orientation: landscape) and (max-height: 520px) {
+  .inst { grid-template-columns: minmax(0, 1fr) 300px; padding: var(--space-2); gap: var(--space-2); }
+}
+
+/* ---- Stacked: stage and actions pinned above, controls scroll below ---- */
+@media (max-width: 999px) and (min-height: 521px), (max-width: 999px) and (orientation: portrait) {
+  .inst {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "head" "pin" "panel";
+    height: auto;
+    min-height: 100dvh;
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+  /* The picture and its actions stay in view while the controls under them are
+     used. The block is edge to edge and carries the page field, so nothing
+     shows through or around it. */
+  .inst-pin {
+    grid-area: pin;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 0 calc(-1 * var(--space-3));
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    background-color: var(--bg-edge);
+  }
+  .inst-stage { height: 52vh; height: 52svh; }
+  .inst-panel { overflow: visible; }
+  /* A control reached by keyboard scrolls clear of the pinned block. */
+  .inst-panel :is(input, button, summary) { scroll-margin-top: calc(var(--inst-pin-height, 62vh) + var(--space-3)); }
+}
+@media (min-width: 600px) and (max-width: 999px) and (min-height: 521px) {
+  .inst-panel-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--space-6); align-items: start; }
+  .inst-panel-body > .surface-panel-title, .inst-panel-body > .inst-span { grid-column: 1 / -1; }
+  .inst-col--second { border-top: 0; padding-top: 0; }
+}
+
+/* ---- Full window and fullscreen ----------------------------------------
+   The canvas takes everything; one row of actions sits under it and never
+   changes height, so nothing a control says or shows can resize the picture.
+   `controls` brings the panel back beside (wide) or under (narrow) the canvas. */
+.inst[data-expanded="true"] {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  height: 100dvh;
+  min-height: 0;
+  padding: 0;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "stage" "bar";
+}
+/* A fullscreen element sits on the browser's black backdrop; give it the page field. */
+.inst:fullscreen { background-image: var(--bg-gradient); background-color: var(--bg-edge); }
+.inst:-webkit-full-screen { background-image: var(--bg-gradient); background-color: var(--bg-edge); }
+
+.inst[data-expanded="true"] .inst-head { display: none; }
+.inst[data-expanded="true"] .inst-panel { display: none; }
+.inst[data-expanded="true"] .inst-pin { display: contents; }
+.inst[data-expanded="true"] .inst-stage {
+  position: static;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.inst[data-expanded="true"] .inst-fit > canvas,
+.inst[data-expanded="true"] .inst-fit::after { border-radius: 0; }
+.inst[data-expanded="true"] .inst-bar {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  padding-left: max(var(--space-3), env(safe-area-inset-left));
+  padding-right: max(var(--space-3), env(safe-area-inset-right));
+}
+.inst[data-expanded="true"] .inst-status { flex: 0 1 auto; }
+.inst[data-expanded="true"] .inst-bar-actions { flex: 1 0 auto; flex-wrap: nowrap; }
+
+.inst[data-expanded="true"][data-panel="open"] {
+  grid-template-columns: minmax(0, 1fr) clamp(360px, 30vw, 420px);
+  grid-template-areas: "stage panel" "bar bar";
+}
+.inst[data-expanded="true"][data-panel="open"] .inst-panel {
+  display: flex;
+  overflow: auto;
+  margin: var(--space-3);
+  box-shadow: none;                  /* nothing is painted over the artwork's edge */
+}
+@media (max-width: 999px) {
+  .inst[data-expanded="true"][data-panel="open"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, 46dvh);
+    grid-template-areas: "stage" "bar" "panel";
+  }
+  .inst[data-expanded="true"][data-panel="open"] .inst-panel { margin: 0 var(--space-3) var(--space-3); }
+}
+/* A phone has room for one short row: pause, save, controls, exit. */
+@media (max-width: 699px) {
+  .inst[data-expanded="true"] .inst-status,
+  .inst[data-expanded="true"] .inst-wide-only { display: none !important; }
+}
+
+/* ---- Field: a caption over one control row ----------------------------- */
+.inst-field { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; border: 0; margin: 0; padding: 0; }
+.inst-field > .caption, .inst-field > legend.caption { margin: 0; padding: 0; }
+/* A control that is off is dimmed; the note that says why is not. */
+.inst-field[data-off="true"] > .inst-row { opacity: 0.5; }
+.inst-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+.inst-value {
+  flex: none;
+  min-width: 7ch;
+  text-align: end;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-1);
+}
+.inst-note {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+.inst-note--mono { font-family: var(--font-mono); overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+.inst-rule { border: 0; border-top: 1px solid var(--line-2); margin: 0; width: 100%; }
+.inst-group { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+
+/* ---- Status line: one line, always ------------------------------------- */
+.inst-status {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Selector: a native radio group drawn as segments ------------------ */
+.inst-seg { display: flex; flex-wrap: wrap; gap: var(--space-1); min-width: 0; }
+.inst-seg > label { position: relative; display: inline-flex; flex: 0 1 auto; min-width: 0; }
+/* Two equal columns: a pair in one row, four as two by two. */
+.inst-seg.inst-seg--two > label { flex: 1 1 calc(50% - var(--space-1)); }
+.inst-seg input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: pointer; }
+.inst-seg span {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  padding: var(--space-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out);
+}
+.inst-seg input:hover + span { color: var(--fg-1); border-color: var(--line-1); }
+.inst-seg input:checked + span {
+  color: var(--fg-1);
+  border-color: var(--fg-1);
+  background: var(--surface-glass-2);
+  font-weight: var(--fw-regular);
+}
+.inst-seg input:focus-visible + span { outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
+.inst-seg input:disabled { cursor: default; }
+.inst-seg input:disabled + span { opacity: 0.5; }
+@media (forced-colors: active) {
+  .inst-seg input:checked + span { background: Highlight; color: HighlightText; border-color: Highlight; forced-color-adjust: none; }
+}
+
+/* ---- Slider: a native range ------------------------------------------- */
+.inst-range { flex: 1 1 auto; min-width: 0; margin: 0; accent-color: var(--fg-1); }
+.inst-range:focus-visible { outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
+.inst-range:disabled { cursor: default; }
+
+/* ---- Actions: DS compact actions; only the busy state is local --------- */
+.inst .surface-action[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+/* The DS disclosure trigger, where it sits in a row of actions. */
+.inst-bar .surface-disclosure-trigger { flex: none; padding: var(--space-2) var(--space-1); }
+.inst .surface-disclosure-trigger:focus-visible { outline: 2px solid var(--fg-1); outline-offset: var(--space-1); }
+
+/* Touch: targets grow. The compact action keeps the DS geometry and gains an
+   invisible margin to press; selector segments, which are local, grow
+   outright. A comfort choice of this layer, not a conformance claim and not a
+   DS rule. */
+@media (pointer: coarse) {
+  .inst .surface-action { position: relative; }
+  .inst .surface-action::after { content: ""; position: absolute; inset: -5px 0; }
+  /* The DS disclosure trigger is 18 px tall; it gains the same kind of margin. */
+  .inst .surface-disclosure-trigger { position: relative; }
+  .inst .surface-disclosure-trigger::after { content: ""; position: absolute; inset: -13px 0; }
+  .inst-seg span { min-height: 44px; }
+  .inst-range { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inst-seg span { transition: none; }
+}

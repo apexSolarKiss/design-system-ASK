@@ -1,0 +1,32 @@
+{
+  "name": "ASK artwork palettes",
+  "version": 1,
+  "about": "Opt-in artwork color data: four shared named palettes ASK artwork may paint; an artwork may use its own ASK-approved palette instead. Spec owner: visual-identity-system.md, Artwork palettes; it wins where the two differ. An artwork resource only: it creates no interface color role, and a value here asserts no semantic state. The interface tokens are colors_and_type.css. How often each color is drawn, transparency, ground and rendering belong to each artwork. Order is part of the data: an artwork that picks colors by index from a seeded sequence depends on it. `version` rises when a palette is added or removed, or a color or its position changes. Python reads the file directly; a served page reads it with fetch, which a page opened from disk cannot do.",
+  "base": {
+    "about": "The muted-purple base all four palettes share. `rare` members are meant to appear more rarely than `common` ones.",
+    "common": ["#FFFFFF", "#E2D3F0", "#D4C6E1", "#BFB3D4", "#C9BCDE"],
+    "rare": ["#8B79A2", "#AE87C2"]
+  },
+  "palettes": [
+    {
+      "id": "muted-purple",
+      "label": "muted purple",
+      "featured": []
+    },
+    {
+      "id": "ask-emphasis",
+      "label": "ASK emphasis",
+      "featured": ["#FF00FF", "#AA40FF", "#00BEFF"]
+    },
+    {
+      "id": "rainbow",
+      "label": "rainbow",
+      "featured": ["#FF00FF", "#AA40FF", "#00BEFF", "#38FA38", "#FAFA38", "#FF8000", "#FA3838"]
+    },
+    {
+      "id": "red-pink-cyan",
+      "label": "red/pink/cyan",
+      "featured": ["#FA3838", "#00BEFF", "#FF00FF", "#FFFFFF", "#FFCEC2"]
+    }
+  ]
+}

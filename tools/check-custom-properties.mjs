@@ -72,6 +72,7 @@ const DEPENDENCIES = {
                                                                         'evidence-state.css', SELF],
   'criterion-assessment.css':                                          [FOUNDATION, 'surface-treatments.css', 'spectral-state.css', SELF],
   'patterns/surface-shell/surface-shell.css':                          [FOUNDATION, SELF],
+  'patterns/instrument/instrument.css':                                [FOUNDATION],
   'patterns/diagram-interactive-spine/diagrams-interactive-spine.css': [FOUNDATION, 'spectral-state.css', 'surface-panel.css', 'surface-treatments.css',
                                                                         'patterns/diagram-interactive-spine/diagrams-interactive-spine-engine.js'],
   'patterns/diagram-interactive-radial/diagrams-radial.css':           [FOUNDATION, 'spectral-state.css', 'surface-panel.css', 'surface-treatments.css',
