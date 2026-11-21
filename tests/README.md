@@ -1463,11 +1463,21 @@ node tests/radial-stack.mjs              # add --json for the measurements
 U  the inspector: views, the default kind line and an adapter's own kept as given (its
    punctuation, and an empty one drawing none), preview, references and the way back, Escape,
    show-all, relation direction and flags, locators, text never markup, malformed sections,
-   a record arrival,
+   a record arrival, a record's origin (one opened with none, by the page, a search result or a
+   link that is no origin, or with another origin than the locked node clears that lock as the
+   module's clearing before its view is drawn, the record open, nothing drawn as selected and the
+   camera still, and by the page with the focus kept and the live region written once; one
+   followed from the selected node, opened by the page from it or followed on from that record's
+   view keeps it and the way back; the page's own clearing leaves the record open; a select
+   listener that opens another view at the clearing ends the opening, the record neither drawn
+   nor announced), a later arrival naming a record over a lock,
    refits at the Fit only, the compact sheet and its exclusivity, the Fit edges it declares by
    state (the collapsed pill top with the right as its option, the open sheet an overlay that
    reserves nothing, the wide panel right), a selection opening the sheet with no refit (also
-   over an open chrome panel), focus kept in the panel with trusted keys, the live legend's notes
+   over an open chrome panel), a record opened with no origin over a lock and a folded sheet
+   clearing the lock before the sheet opens, with the camera where it was, and stopping, with
+   the restored host left as it was, when a select listener destroys the map at that clearing,
+   focus kept in the panel with trusted keys, the live legend's notes
    and its shapes line; a resize into compact keeping a reader's open record as the sheet, with
    focus in it (a narrow window; a short one under a coarse pointer), and folding a panel open
    only by default, with unrelated focus left alone; a record kept open on the resize with
@@ -1559,8 +1569,13 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    the map mounts with every view treated as the reader's (the bar filling in moves an arrived
    node under the sheet); on the fixture, the camera kept for the wide panel too (its toggle then
    refits away from the Fit); the default kind line planted with the dash it replaced, and an
-   adapter's kind line planted to be replaced by the default; a control that names its reason
-   fails for it
+   adapter's kind line planted to be replaced by the default; a record keeping a lock other than
+   its origin (the lock stays drawn as selected beside it), one clearing the lock only once its
+   panel has opened (the camera brings the cleared node beside the sheet), one clearing it only
+   once its view is drawn, one going on opening after a select listener destroyed the map (it
+   writes onto the restored host), one announcing at the clearing (two live-region writes where
+   one is due), and one going on opening after a select listener opened another view (the record
+   is announced over it); a control that names its reason fails for it
 ```
 
 ## radial-export-fixture.html + radial-export.mjs

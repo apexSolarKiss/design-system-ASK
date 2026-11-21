@@ -18,6 +18,8 @@
         locators; compact sheet and exclusivity; the Fit edges by state (the collapsed pill top
         with the right as its option, the open sheet an overlay reserving nothing, the wide panel
         right); refits only at the Fit; text, never markup; malformed sections; a record arrival;
+        a record's origin and the lock it clears, before its view is drawn and its sheet opens, and
+        an opening that stops when a select listener destroys the map or opens another view;
         a resize into compact keeping a reader's record open and folding an idle panel; the sheet
         opened and closed with a record and a filter through a portrait / landscape turn, at the
         Fit and away from it; the two public expressions framed at the Fit (clear, as large as the
@@ -230,6 +232,118 @@ window.C = (function () {
     const a = st(); esc(); await frames(); const b = st(); esc(); await frames(); const c = st();
     return { ok: a.inspector.view === 'record' && b.inspector.view === 'item' && b.selection.locked === leaf && c.selection.locked === null && c.inspector.view === 'idle',
              d: { a: a.inspector.view, b: [b.inspector.view, b.selection.locked], c: [c.inspector.view, c.selection.locked] } }; };
+  /* a record's origin and the lock it clears. A record opened with no origin (the page's openRecord(id)
+     or openRecord(id, null), a search result) or with another origin than the locked node clears that
+     lock as the module's clearing, before the record's view is drawn: the record stays open, nothing is
+     drawn as selected, and the camera stays. A record that only happens to link to the locked node is
+     opened the same way. A record followed from the selected node keeps it and the way back, and so do
+     one the page opens from it and one followed on from that record's view. A clearing the page makes
+     leaves an open record */
+  C.recordOrigin = async () => { const m = fresh(); const M = m.model, insp = m.service('inspector'), sel = [], out = {};
+    m.on('select', (e) => sel.push([e.id, e.via, e.cause]));
+    const leaf = 'VM-HG-243'; m.select(leaf); await frames();
+    const ref = qa('#D .radial-insp-refrow .radial-insp-ref').find((b) => M.kindOf(b.getAttribute('data-radial-ref')) === 'record');
+    if (!ref) return { ok: false, d: 'no record reference' };
+    const rec = ref.getAttribute('data-radial-ref');
+    const links = (M.recordLinks.get(rec) || []).map((l) => l.other && l.other.id);
+    const onward = links.find((id) => id && M.kindOf(id) === 'record');
+    const free = m.layout.nodes.find((n) => n.kind === 'leaf' && n.id !== leaf && links.indexOf(n.id) < 0);
+    if (!free || !onward) return { ok: false, d: { free: !!free, onward: onward || null } };
+    const other = free.id, title = () => (q('#D .radial-insp-title') || {}).textContent || null;
+    const snap = () => { const s = st(), v = m.view(); return { view: s.inspector.view, target: s.inspector.target, origin: s.inspector.origin, locked: s.selection.locked,
+      back: !!q('#D .radial-insp-back'), framed: qa('#D .radial-node.is-selected').length, cam: [v.k, v.x, v.y] }; };
+    const still = (a, b) => a.cam.every((x, i) => Math.abs(x - b.cam[i]) < 1e-6);
+    const cleared = (a, b) => b.view === 'record' && b.target === rec && b.origin === null && b.locked === null && !b.back && b.framed === 0 && still(a, b);
+    const ONE = J([[null, 'inspector', 'module']]);
+    /* the page's openRecord(id), another leaf locked: one clearing, the module's, made while the previous
+       view still stands; the focus and the camera stay; each write to the live region is recorded, and the
+       only one is the record's */
+    m.select(other); await frames(); let a = snap(); sel.length = 0;
+    let atClear = null; const off = m.on('select', (e) => { if (e.id === null && !atClear) atClear = { title: title(), view: st().inspector.view }; });
+    const live = q('#D [data-radial-slot="live"]'), said = [], mo = new MutationObserver((rs) => rs.forEach((r) =>
+      said.push(r.type === 'characterData' ? r.target.data : Array.prototype.map.call(r.addedNodes, (n) => n.textContent).join(''))));
+    mo.observe(live, { childList: true, characterData: true, subtree: true });
+    const ctl = q('#D .radial-theme-control'); if (ctl) ctl.focus(); const focus0 = document.activeElement;
+    insp.openRecord(rec); await frames(); mo.disconnect(); off();
+    let b = snap(); const recTitle = title();
+    const drawnFirst = !!atClear && atClear.title === recTitle;
+    out.page = { ok: cleared(a, b) && J(sel) === ONE && !!atClear && !drawnFirst && !!ctl && focus0 === ctl && document.activeElement === focus0 && J(said) === J([recTitle]),
+                 b, sel: sel.slice(), atClear, drawnFirst, said, focus: document.activeElement === focus0 };
+    /* openRecord(id, null), the leaf it links to locked: a link is not an origin */
+    m.select(leaf); await frames(); a = snap(); sel.length = 0; insp.openRecord(rec, null); await frames(); b = snap();
+    out.linked = { ok: links.indexOf(leaf) >= 0 && cleared(a, b) && J(sel) === ONE, b, sel: sel.slice() };
+    /* a search result, another leaf locked */
+    m.select(other); await frames(); const f = m.service('facets'); f.open(true); f.query(rec); await frames(); a = snap(); sel.length = 0;
+    f.activate(0); await frames(); b = snap();
+    out.search = { ok: cleared(a, b) && J(sel) === ONE, b, sel: sel.slice() };
+    /* followed on from a record opened with no origin: still none, and nothing to clear */
+    sel.length = 0; const on0 = q('#D .radial-insp-body [data-radial-ref="' + CSS.escape(onward) + '"]'); if (on0) on0.click(); await frames(); b = snap();
+    out.onwardFree = { ok: !!on0 && b.view === 'record' && b.target === onward && b.origin === null && b.locked === null && !b.back && sel.length === 0, b };
+    /* followed from the selected leaf: the leaf stays, with the way back */
+    m.select(leaf); await frames();
+    const r2 = qa('#D .radial-insp-refrow .radial-insp-ref').find((x) => x.getAttribute('data-radial-ref') === rec); if (r2) r2.click(); await frames(); b = snap();
+    out.follow = { ok: !!r2 && b.view === 'record' && b.origin === leaf && b.locked === leaf && b.back && b.framed === 1, b };
+    /* followed on from that record's view: the origin carries on, and the leaf stays */
+    const on1 = q('#D .radial-insp-body [data-radial-ref="' + CSS.escape(onward) + '"]'); if (on1) on1.click(); await frames(); b = snap();
+    out.onward = { ok: !!on1 && b.view === 'record' && b.target === onward && b.origin === leaf && b.locked === leaf && b.back && b.framed === 1, b };
+    /* the page names the locked leaf as the origin: it stays */
+    m.select(leaf); await frames(); insp.openRecord(rec, leaf); await frames(); b = snap();
+    out.named = { ok: b.origin === leaf && b.locked === leaf && b.back && b.framed === 1, b };
+    /* the page names another origin than the locked leaf: that lock is cleared, the named origin kept */
+    m.select(other); await frames(); a = snap(); sel.length = 0; insp.openRecord(rec, leaf); await frames(); b = snap();
+    out.other = { ok: b.view === 'record' && b.origin === leaf && b.locked === null && b.back && b.framed === 0 && still(a, b) && J(sel) === ONE, b, sel: sel.slice() };
+    /* the page's own clearing leaves the record open */
+    m.select(leaf); await frames(); insp.openRecord(rec, leaf); await frames(); m.select(null); await frames(); b = snap();
+    out.pageClear = { ok: b.view === 'record' && b.target === rec && b.locked === null, b };
+    /* a select listener that opens another view at the clearing (the page selects a third leaf): the opening
+       stops (openRecord returns false), the third leaf's view stands, and the record is neither drawn nor announced */
+    const third = m.layout.nodes.find((n) => n.kind === 'leaf' && n.id !== leaf && n.id !== other).id;
+    m.select(other); await frames(); let moved = false; const drawn = [], said2 = [];
+    const off2 = m.on('select', (e) => { if (e.id === null && !moved) { moved = true; m.select(third); } });
+    const mo2 = new MutationObserver((rs) => rs.forEach((r) =>
+      said2.push(r.type === 'characterData' ? r.target.data : Array.prototype.map.call(r.addedNodes, (n) => n.textContent).join(''))));
+    mo2.observe(live, { childList: true, characterData: true, subtree: true });
+    const mo3 = new MutationObserver(() => { const t = title(); if (t) drawn.push(t); });
+    mo3.observe(q('#D .radial-insp-body'), { childList: true, characterData: true, subtree: true });
+    const r3 = insp.openRecord(rec); await frames(); mo2.disconnect(); mo3.disconnect(); off2(); b = snap();
+    out.moved = { ok: moved && r3 === false && b.view === 'item' && b.target === third && b.locked === third && drawn.indexOf(recTitle) < 0 && said2.indexOf(recTitle) < 0,
+                  r: r3, b, drawn, said: said2, rec: recTitle };
+    const bad = Object.keys(out).filter((k) => !out[k].ok);
+    return { ok: bad.length === 0, d: bad.length ? Object.fromEntries(bad.map((k) => [k, out[k]])) : { rec, leaf, otherLeaf: other, onward, cases: Object.keys(out) } }; };
+  /* a later arrival naming a record, with a node locked: the record opens with no origin and the lock is cleared */
+  C.recordOriginArrival = async () => { history.replaceState(null, '', location.pathname); const m = fresh('specimen', { arrival: true }); await frames();
+    m.select('VM-HG-243'); await frames(); const a = st().selection.locked;
+    location.hash = '#node=' + encodeURIComponent('OFFICE-N'); await new Promise((r) => setTimeout(r, 60)); await frames();
+    const s = st(); history.replaceState(null, '', location.pathname); m.destroy(); FX.inst.D = null;
+    return { ok: a === 'VM-HG-243' && s.inspector.view === 'record' && s.inspector.target === 'OFFICE-N' && s.inspector.origin === null && s.selection.locked === null,
+             d: { a, insp: s.inspector, locked: s.selection.locked } }; };
+  /* compact: a node locked under where the sheet opens, the sheet folded by its toggle (the lock stays), then a
+     record opened with no origin: the lock is cleared while the sheet is still folded, the sheet opens with the
+     record, and the camera stays where it was rather than bringing the cleared node beside the sheet */
+  C.recordCamera = async () => { const m = fresh(); await frames();
+    const leaf = m.layout.nodes.filter((n) => n.kind === 'leaf').sort((a, b) => m.project(a.id).y - m.project(b.id).y)[0];
+    m.select(leaf.id); await frames(); q('#D .radial-insp-toggle').click(); await frames();
+    const v0 = m.view(), a = st();
+    let atClear = null; const off = m.on('select', (e) => { if (e.id === null && !atClear) atClear = { expanded: st().inspector.expanded }; });
+    m.service('inspector').openRecord('OFFICE-N'); await frames(); off();
+    const v1 = m.view(), s = st();
+    const still = Math.abs(v1.k - v0.k) < 1e-9 && Math.abs(v1.x - v0.x) < 1e-6 && Math.abs(v1.y - v0.y) < 1e-6;
+    return { ok: a.selection.locked === leaf.id && !a.inspector.expanded && !!atClear && atClear.expanded === false &&
+                 s.inspector.view === 'record' && s.inspector.expanded && s.selection.locked === null && still,
+             d: { a: [a.selection.locked, a.inspector.expanded], atClear, s: [s.inspector.view, s.inspector.expanded, s.selection.locked], still, v0: [v0.k, v0.x, v0.y], v1: [v1.k, v1.x, v1.y] } }; };
+  /* compact: a node locked and the sheet folded, then a record opened with no origin, and a select listener
+     that destroys the map when the lock is cleared: the opening stops there (openRecord returns false), and
+     nothing is written back onto the restored host, which is as it was before the mount */
+  C.recordTeardown = async () => { if (FX.inst.D) { FX.inst.D.destroy(); FX.inst.D = null; } const host = FX.host('D'), before = host.outerHTML;
+    const m = FX.mount('D', 'specimen'); await frames();
+    const leaf = m.layout.nodes.find((n) => n.kind === 'leaf'); m.select(leaf.id); await frames(); q('#D .radial-insp-toggle').click(); await frames();
+    const a = st(); let gone = false;
+    m.on('select', (e) => { if (e.id === null && !gone) { gone = true; m.destroy(); FX.inst.D = null; } });
+    const r = m.service('inspector').openRecord('OFFICE-N'); await frames();
+    const after = host.outerHTML, same = before === after;
+    const left = same ? [] : Array.from(host.attributes).map((x) => x.name).filter((n) => !new RegExp('\\s' + n + '=').test(before.slice(0, before.indexOf('>'))));
+    return { ok: a.selection.locked === leaf.id && !a.inspector.expanded && gone && r === false && same,
+             d: { a: [a.selection.locked, a.inspector.expanded], gone, r, same, left, len: [before.length, after.length] } }; };
   C.showAll = async () => { const d = FX.DATA.specimen(); const leaf = d.nodes.find((n) => n.id === 'VM-KQ-002');
     for (let i = 1; i <= 5; i++) { d.records.push({ id: 'REC-' + i, label: 'record ' + i }); d.edges.push({ from: 'REC-' + i, to: leaf.id, plane: 'crew', type: 'files' }); }
     const m = fresh(d); m.select(leaf.id); await frames();
@@ -1326,6 +1440,8 @@ async function run() {
     await W('U4 a container and the root: their views and member counts', 'container');
     await W('U5 a reference opens a record, which names the way back; back returns to the item and its selection', 'record');
     await W('U6 Escape closes the record first, keeping the selection, then clears the selection', 'escapeOrder');
+    await W('U41 a record\'s origin: opened with none (the page, a search result, a link that is no origin) or with another origin than the locked node, it clears that lock as the module\'s clearing, before its view is drawn, with the record open, nothing drawn as selected and the camera still (and, by the page, the focus kept and the live region written once, with the record); followed from the selected node, opened by the page from it, or followed on from that record\'s view, the node stays with the way back; the page\'s own clearing leaves the record open; a select listener that opens another view at the clearing ends the opening, with the record neither drawn nor announced', 'recordOrigin');
+    await W('U42 a later arrival naming a record, with a node locked, opens the record with no origin and clears the lock', 'recordOriginArrival');
     await W('U7 show-all: the head, then all, and the head again for another target', 'showAll');
     await W('U8 relation rows show direction (out, in, undirected) and flag a never-drawn plane', 'relations');
     await W('U9 under a filter, a row to a filtered-out node is flagged; following it resets the filter (the facets controls too) and selects it', 'outside');
@@ -1351,7 +1467,7 @@ async function run() {
     {
       await P.ev(`(async () => { const m = (FX.inst.D && FX.inst.D.destroy(), FX.mount('D', 'specimen')); m.select('VM-HG-243');
         m.service('facets').open(true); const cb = document.querySelector('#D input[data-radial-facet="surface"][value="lawn"]'); cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true }));
-        m.select('VM-HG-243'); m.service('inspector').openRecord('OFFICE-N'); document.querySelector('#D .radial-drawer-q').focus(); })()`);
+        m.select('VM-HG-243'); m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243'); document.querySelector('#D .radial-drawer-q').focus(); })()`);
       await P.type('kestrel');
       const s = () => P.ev(`(() => { const s = FX.inst.D.state(); return { q: s.facets.query, insp: s.inspector.view, sel: s.selection.locked, active: s.facets.active.length, open: s.facets.open,
         focus: document.activeElement && document.activeElement.className }; })()`);
@@ -1420,6 +1536,8 @@ async function run() {
         a.ok && w.ok, J({ wide: w.d, compact: [a.d.a.edge, a.d.b, a.d.c.edge, a.d.d.edge, a.d.e.edge] })); }
     await W('Q13 compact: the drawer, the chrome panels and the inspector sheet are exclusive', 'exclusive');
     await W('U16 compact: a selection opens the sheet with no refit, and the selected node lands beside the sheet, not under it', 'compactReveal');
+    await W('U43 compact: with a node locked and the sheet folded, a record opened with no origin clears the lock while the sheet is still folded, then opens the sheet, and the camera stays rather than bringing the cleared node beside the sheet', 'recordCamera');
+    await W('U44 compact: with a node locked and the sheet folded, a select listener that destroys the map while a record opened with no origin clears the lock stops the opening: openRecord returns false and the restored host is left as it was before the mount', 'recordTeardown');
     await W('U18 compact: a selection opening the sheet over an open chrome panel at the Fit closes the panel and refits nothing', 'compactClaimNoFit');
     { const r = await KEYED.u27(P); measures.u27 = r.d; check('U27 compact, with a record and a filter: collapsing, expanding and a portrait / landscape turn and back keep the record, selection and filter, with the Fit edges following the state; at the Fit, opening never refits or shrinks the drawing and keeps the leaf beside the sheet, closing returns to the same Fit, a turn refits and the turn back restores the same Fit; away from it the camera stays', r.ok, J(r.d).slice(0, 400)); }
     { const r = await KEYED.q15(P); check('Q15 compact, with the keyboard: choosing a result closes the drawer with focus on its trigger, and Escape then clears the selection', r.ok, J(r.d)); }
@@ -1630,7 +1748,27 @@ async function run() {
       ['X35 the default kind line planted with the dash it replaced fails U2', 'diagrams-radial-inspector.js',
        "t.kind.id + ' // ' + t.kind.label", "t.kind.id + ' \\u2014 ' + t.kind.label", 'item', {}, (r) => / \u2014 /.test(r.d.kind)],
       ['X36 an adapter\'s kind line planted to be replaced by the default fails U2b', 'diagrams-radial-inspector.js',
-       'var kindLine = h.kind !== undefined ? h.kind : (', 'var kindLine = (', 'kindOverride', {}, (r) => r.d.one[0] !== 'own kind \u2014 as given']);
+       'var kindLine = h.kind !== undefined ? h.kind : (', 'var kindLine = (', 'kindOverride', {}, (r) => r.d.one[0] !== 'own kind \u2014 as given'],
+      ['X37 a record planted to keep a lock other than its origin fails U41: the lock stays drawn as selected beside it', 'diagrams-radial-inspector.js',
+       "      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", '', 'recordOrigin', {},
+       (r) => !!r.d.page && r.d.page.b.locked !== null && r.d.page.b.framed === 1 && !r.d.follow && !r.d.named],
+      ['X38 a record planted to clear the lock only once its panel has opened fails U43: the camera brings the cleared node beside the sheet', 'diagrams-radial-inspector.js',
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      expand(true, cause || 'reader', false);\n      say(targetFor(id));\n"],
+       ['', "      expand(true, cause || 'reader', false);\n      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      say(targetFor(id));\n"],
+       'recordCamera', { width: 390, height: 844, touch: true }, (r) => r.d.still === false && r.d.s[2] === null && !!r.d.atClear && r.d.atClear.expanded === true],
+      ['X39 a record planted to clear the lock only once its view is drawn fails U41: the clearing comes after the record is drawn', 'diagrams-radial-inspector.js',
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      render();\n      expand(true, cause || 'reader', false);\n"],
+       ['', "      render();\n      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      expand(true, cause || 'reader', false);\n"],
+       'recordOrigin', {}, (r) => !!r.d.page && r.d.page.drawnFirst === true && r.d.page.b.locked === null],
+      ['X40 a record planted to go on opening after a select listener destroyed the map fails U44: openRecord returns true and the opening writes onto the restored host', 'diagrams-radial-inspector.js',
+       "      if (destroyed || view !== 'record' || target !== id) return false;\n", "      if (view !== 'record' || target !== id) return false;\n",
+       'recordTeardown', { width: 390, height: 844, touch: true }, (r) => r.d.gone === true && r.d.r === true && r.d.same === false],
+      ['X41 a record planted to announce at the clearing, before the record in the same task, fails U41: each live-region write is recorded, two where one is due', 'diagrams-radial-inspector.js',
+       "      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      api.announce('cleared');\n",
+       'recordOrigin', {}, (r) => !!r.d.page && r.d.page.said.length === 2 && r.d.page.said[0] === 'cleared'],
+      ['X42 a record planted to go on opening after a select listener opened another view fails U41: openRecord returns true and the record is announced over the other view', 'diagrams-radial-inspector.js',
+       "      if (destroyed || view !== 'record' || target !== id) return false;\n", "      if (destroyed) return false;\n",
+       'recordOrigin', {}, (r) => !!r.d.moved && r.d.moved.r === true && r.d.moved.said.indexOf(r.d.moved.rec) >= 0]);
     for (const [name, file, from, to, fn, opts, why] of plants) {
       const Q = await open(b, url, opts);
       const pl = await Q.ev(`C.plant(${J(file)}, ${J(from)}, ${J(to)})`);
@@ -1688,7 +1826,7 @@ async function groupW(b, url) {
   await P.ev(`(() => { if (FX.inst.D) FX.inst.D.destroy(); const m = FX.mount('D', 'specimen'); window.__fresh = m; return true; })()`);
   const plain = await png(`FX.inst.D.service('export').run('page')`);
   await P.ev(`(() => { const m = FX.inst.D; m.select('VM-HG-243'); const f = m.service('facets'); f.open(true); f.set('status', ['earned']);
-    m.service('inspector').openRecord('OFFICE-N'); return true; })()`);
+    m.service('inspector').openRecord('OFFICE-N', 'VM-HG-243'); return true; })()`);
   await P.ev('new Promise((r) => setTimeout(r, 400))'); await P.frames();          /* the chrome settles after the filter */
   const before = await P.ev(`(() => { const s = FX.inst.D.state(); return JSON.stringify([s.selection, s.membership, s.inspector, s.facets.open, s.view]); })()`);
   const busy = await png(`FX.inst.D.service('export').run('page')`);
