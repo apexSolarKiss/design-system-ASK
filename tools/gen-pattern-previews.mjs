@@ -89,6 +89,11 @@ const SHELLS = [
   // above is still generated from the template as it stands.
   { src: 'surface-shell/surface-shell.template.html',              dir: 'surface-shell',              out: 'surface-shell-expanded.html',
     rootRefs: ['surface-action.css'], identity: 'expanded' },
+  // The instrument specimen: the canonical markup with the example product (instrument.example.js) in
+  // place of a consumer's script. Its root modules resolve through `_dsa-surface/` like the shells'.
+  // This preview is also the standalone page for device checks: the gallery host frames it, and a
+  // frame without a fullscreen permission falls back to full window.
+  { src: 'instrument/instrument.template.html',                    dir: 'instrument',                 out: 'instrument.html' },
 ];
 
 // Rewrite a src/href value from the canonical shell's perspective (patterns/<dir>/)
@@ -326,6 +331,7 @@ const HOST_SPECS = {
   'message-archive-default-ASK.html':        { stage: 'viewport', why: 'a document whose sticky search bar and day headings scroll inside its own window' },
   'surface-shell.html':                      { stage: 'viewport', why: SHELL_SPECIMEN },
   'surface-shell-expanded.html':             { stage: 'viewport', why: SHELL_SPECIMEN, note: 'expanded identity' },
+  'instrument.html':                         { stage: 'viewport', why: 'a full-viewport instrument: its layout fills the window, and its full-window view is position: fixed over the page' },
 };
 
 const HOST_MARKER = (out, why) => `<!-- ============================================================

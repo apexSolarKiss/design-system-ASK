@@ -16,7 +16,7 @@
    file that is missing fails. Outside the set by declared disposition,
    because they own pattern-local metrics or are fixtures: the diagram
    scaffolds, the interactive spine, the interactive radial pattern, the
-   message archive, and tests/. Any
+   message archive, the instrument pattern, and tests/. Any
    other file is not read, so a pass says nothing about it.
 
    WHAT IS READ

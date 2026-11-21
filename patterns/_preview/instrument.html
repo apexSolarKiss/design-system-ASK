@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- ============================================================
+     OWNER PREVIEW — design-system-ASK/patterns/_preview/instrument.html
+     GENERATED from patterns/instrument/ by tools/gen-pattern-previews.mjs.
+     Consumes the CANONICAL pattern files by reference (../instrument/) + DS-root
+     tokens/fonts (../../). Opens directly via file:// — no server, no mirror.
+     OWNER PREVIEW ONLY — DO NOT VENDOR DOWNSTREAM. Do not hand-edit; regenerate
+     and parity-check (git diff --exit-code patterns/_preview/).
+     ============================================================ -->
+<meta name="dsa-owner-preview" content="do-not-vendor; generated from patterns/instrument/">
+<script>(function(){try{var t=(location.hash||'').replace('#','')||new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>instrument // specimen</title>
+<!-- design-system-ASK surface pattern `instrument`: the canonical markup, written from a consumer's
+     layout. The foundation and the root modules are vendored beside it (_dsa-tokens/, _dsa-surface/);
+     instrument.css and instrument.js sit beside the page. The page carries no theme attribute: the
+     chrome follows the operating system through the foundation. Load order is the DS's own. -->
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="../../surface-action.css">
+<link rel="stylesheet" href="../../surface-panel.css">
+<link rel="stylesheet" href="../../surface-treatments.css">
+<link rel="stylesheet" href="../instrument/instrument.css">
+</head>
+<body>
+<div class="inst" id="inst">
+
+  <header class="inst-head">
+    <p class="caption">instrument // specimen</p>
+    <div class="inst-row">
+      <button type="button" class="surface-action surface-action--secondary" id="view-window">full window</button>
+      <button type="button" class="surface-action surface-action--secondary" id="view-fullscreen">fullscreen</button>
+    </div>
+  </header>
+
+  <!-- Stage and actions: two grid items side by side, one pinned block when the layout stacks. -->
+  <div class="inst-pin" id="pin">
+    <main class="inst-stage surface-material-panel surface-attach-free surface-elevation-flush" aria-label="artwork">
+      <div class="inst-fit" id="fit">
+        <canvas id="canvas" tabindex="0" role="img" aria-label="calibration chart, example artwork"></canvas>
+      </div>
+    </main>
+
+    <div class="inst-bar">
+      <p class="inst-status" id="status"></p>
+      <p class="inst-sr" id="announce" role="status" aria-live="polite"></p>
+      <div class="inst-bar-actions">
+        <button type="button" class="surface-action" id="save" aria-describedby="save-size">save PNG</button>
+        <span class="inst-bar-spacer" aria-hidden="true"></span>
+        <button type="button" class="surface-action surface-action--secondary inst-when-expanded inst-wide-only" id="view-fullscreen-bar">fullscreen</button>
+        <button type="button" class="surface-disclosure-trigger" id="panel-toggle" aria-controls="panel" aria-expanded="false" hidden>
+          <span class="surface-disclosure-label">controls</span>
+          <span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span>
+        </button>
+        <button type="button" class="surface-action surface-action--secondary" id="view-exit" hidden>exit</button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="inst-panel surface-panel" id="panel" aria-label="controls">
+    <div class="inst-panel-body">
+      <h1 class="surface-panel-title">instrument</h1>
+      <div class="inst-col">
+        <fieldset class="inst-field" id="ground">
+          <legend class="caption">ground</legend>
+          <div class="inst-seg inst-seg--two">
+            <label><input type="radio" name="ground" value="light" checked><span>light</span></label>
+            <label><input type="radio" name="ground" value="dark"><span>dark</span></label>
+          </div>
+          <p class="inst-note">The example artwork's own colors. The chrome around it follows the system theme.</p>
+        </fieldset>
+        <div class="inst-field">
+          <label class="caption" for="grid">grid</label>
+          <div class="inst-row">
+            <input class="inst-range" id="grid" type="range" min="2" max="24" step="1" value="8" aria-describedby="grid-note">
+            <span class="inst-value" id="grid-value" aria-hidden="true">8</span>
+          </div>
+          <p class="inst-note" id="grid-note">Cells across the short side.</p>
+        </div>
+      </div>
+      <div class="inst-col inst-col--second">
+        <fieldset class="inst-field" id="frame">
+          <legend class="caption">frame</legend>
+          <div class="inst-seg">
+            <label><input type="radio" name="frame" value="free" checked><span>free</span></label>
+            <label><input type="radio" name="frame" value="square"><span>square</span></label>
+            <label><input type="radio" name="frame" value="four-three"><span>4:3</span></label>
+            <label><input type="radio" name="frame" value="wide"><span>widescreen</span></label>
+          </div>
+          <p class="inst-note" id="save-size"></p>
+        </fieldset>
+      </div>
+      <p class="inst-note inst-span">Esc leaves full window.</p>
+    </div>
+  </aside>
+</div>
+<!-- Classic scripts, no modules, no fetch: the page runs from disk as well as from a server. -->
+<script src="../instrument/instrument.js"></script>
+<!-- The example product. A consumer replaces it with its own script. -->
+<script src="../instrument/instrument.example.js"></script>
+</body>
+</html>

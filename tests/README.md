@@ -1651,3 +1651,37 @@ The arrow fixture's controls, each in its own copy:
 ```
 node tests/fill-paint-engines.mjs        # --out DIR keeps the results
 ```
+
+## instrument.mjs
+
+The **rendered check** of [`instrument`](../patterns/instrument/README.md), on its specimen
+(`patterns/_preview/instrument.html`: the canonical template, the pattern's stylesheet and script, and
+the example product). It serves the repository read-only and opens the specimen in headless Chrome; clicks
+and keys arrive as trusted DevTools input.
+
+```text
+F  frames: each frame's canvas keeps its shape inside the stage and meets it on one side; free takes the stage
+V  views: full window and back by Escape; the fullscreen control, reported as what the browser did
+   (native fullscreen or the full-window fallback) and never more; exit
+E  saved sizes: 2160 × 2160, 2880 × 2160, 3840 × 2160, free at 2160 on its short side, and free on a
+   very wide stage at 3840 on its long side; an export draws for the frame it saves, not the one on screen; the live canvas untouched; the
+   filename's name, date stamp, product suffix and size
+T  touch: on a coarse pointer an action and the disclosure trigger reach 44 px of hit height, from
+   their boxes and margins, and selector segments are at least 44 px tall
+R  the canvas focus ring by keyboard, on light, dark and plum artwork (plum close to the outer band's
+   color), docked in light and dark chrome (plum in light chrome only) and in full window in light
+   chrome: an outer 2 px band of #6A637F and an inner 2 px band of #FFFFFF on every edge, one of them
+   well apart from the artwork,
+   and no ring without focus
+X  planted faults: the specimen without the ring's overlay keeps the outline and loses the inner
+   band, failing R; without the touch margin, T
+```
+
+Headless Chrome only. Safari, Firefox, a physical device, a device's save or share flow, native
+fullscreen where this browser declines it, and a page opened from disk are not exercised; the standalone specimen is the page for
+those checks, not the gallery's framed host, whose frame does not allow fullscreen.
+
+```
+node tests/instrument.mjs                # --shots DIR keeps the focus-ring screenshots
+node tools/check-instrument-neutrality.mjs   # --deny FILE adds a consumer's own tokens; --self-test
+```

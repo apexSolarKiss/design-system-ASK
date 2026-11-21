@@ -43,6 +43,7 @@
      "intro": "Each pattern's contract. The pattern previews show them rendered.",
      "entries": [
        {"path": "patterns/surface-shell/README.md", "label": "surface-shell", "output": "surface-shell.html"},
+       {"path": "patterns/instrument/README.md", "label": "instrument", "output": "instrument.html"},
        {"path": "patterns/diagram-static-H/README.md", "label": "diagram-static-H", "output": "diagram-static-H.html"},
        {"path": "patterns/diagram-static-V/README.md", "label": "diagram-static-V", "output": "diagram-static-V.html"},
        {"path": "patterns/diagram-static-SEQ/README.md", "label": "diagram-static-SEQ", "output": "diagram-static-SEQ.html"},
