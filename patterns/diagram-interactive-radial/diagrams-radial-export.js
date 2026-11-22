@@ -60,7 +60,7 @@
               busy: 'export busy', stopped: 'export stopped', profile: 'no such profile',
               capture: 'plate style not captured at the click' };
   /* the state the screen paints and a plate never shows */
-  var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on'];
+  var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on', 'is-linked'];
   /* the computed properties a probe reports, by kind of element */
   var GROUP = ['opacity'];
   var SHAPE = ('fill fill-opacity fill-rule stroke stroke-width stroke-opacity stroke-dasharray stroke-dashoffset ' +

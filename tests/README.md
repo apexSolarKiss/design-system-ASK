@@ -1470,14 +1470,39 @@ U  the inspector: views, the default kind line and an adapter's own kept as give
    followed from the selected node, opened by the page from it or followed on from that record's
    view keeps it and the way back; the page's own clearing leaves the record open; a select
    listener that opens another view at the clearing ends the opening, the record neither drawn
-   nor announced), a later arrival naming a record over a lock,
+   nor announced), a later arrival naming a record over a lock, the record context (a record
+   opened with no origin frames each shown place it links to through the adapter's linkPlanes,
+   1px at full strength with nothing dimmed, and no link on another plane; one of two linked
+   places framed under a filter that hides the other, and the context held with every linked place
+   filtered out, with no link and with no plane named; the context moving to another record's set
+   when that record's reference is followed; none from a record opened from a node; a selection
+   ending it; teardown), hover in it by a real mouse (nothing previewed, dimmed or framed and the
+   pixels unchanged, against the control with nothing open; the pointer cursor kept; a linked leaf
+   keeping its frame; the same with every linked place filtered out and beside a record with no
+   link; a click selecting, and a click on the framed leaf offering no way back), the keyboard
+   focus in it by real keys (its ring drawn with the linked frame kept, on the linked place too), the chooser's
+   preview overriding it until Escape restores the frames or a choice ends it, and a click on empty
+   canvas closing the chooser and the record together, the way back to a record from a place
+   reached by one of its references and from nowhere else (none left behind by a followed
+   reference whose selection throws, by the adapter's error or a malformed section, the error
+   reaching the page, against the control with nothing thrown), and closing a record by a click on
+   empty canvas with the camera still (a record whose origin a filter cleared included), not by a
+   drag, by Escape, and with a node selected together with the selection, each written once to the
+   live region in the default or the adapter's words, an empty one writing nothing, Escape back to
+   a selected origin announcing it, and a click with nothing open writing nothing, an opening or a
+   close a listener interrupts ending there (a preview listener that selects another leaf, or
+   destroys the map, as the record context ends a hover preview, against the control with no
+   listener; an inspector listener that opens another record as Escape, a click or a tap closes
+   one, and an obstacle listener that does so as the sheet folds, that record kept open and
+   announced, the camera left where its opening put it, and nothing announced closed),
    refits at the Fit only, the compact sheet and its exclusivity, the Fit edges it declares by
    state (the collapsed pill top with the right as its option, the open sheet an overlay that
    reserves nothing, the wide panel right), a selection opening the sheet with no refit (also
    over an open chrome panel), a record opened with no origin over a lock and a folded sheet
    clearing the lock before the sheet opens, with the camera where it was, and stopping, with
    the restored host left as it was, when a select listener destroys the map at that clearing,
-   focus kept in the panel with trusted keys, the live legend's notes
+   a touch drag leaving a record and its sheet open and a tap on empty canvas closing the record
+   and folding the sheet, focus kept in the panel with trusted keys, the live legend's notes
    and its shapes line; a resize into compact keeping a reader's open record as the sheet, with
    focus in it (a narrow window; a short one under a coarse pointer), and folding a panel open
    only by default, with unrelated focus left alone; a record kept open on the resize with
@@ -1537,7 +1562,8 @@ Q  facets and search: the index, ranking and ties, what a result opens, OR withi
    clearing a hidden selection, the drawer's bound, edge and focus, exclusivity on a compact canvas,
    the Escape order and the result keyboard with trusted keys, focus after a result closes the
    drawer, no match, is-out; and, on the reference shell, an open drawer meeting a corner panel
-W  export with the whole stack in use, and the reference plates
+W  export with the whole stack in use, a plate with a record context held equal to the neutral
+   one, and the reference plates
 H  theme: the cycle, one owner per document, teardown
 N  the synthetic composition in every hierarchy shape, two instances, destroy and remount,
    missing modules and slots, the minimum composition's membership, no reference content loaded
@@ -1575,7 +1601,19 @@ X  planted faults: OR as AND, the record layer below the selection, rows without
    once its view is drawn, one going on opening after a select listener destroyed the map (it
    writes onto the restored host), one announcing at the clearing (two live-region writes where
    one is due), and one going on opening after a select listener opened another view (the record
-   is announced over it); a control that names its reason fails for it
+   is announced over it); hover suppressed only while a linked place is shown, a linked set
+   taking every plane, a context held only with a qualifying link, hover previewing in the
+   context, the context's hover rule dropped from the stylesheet, the exporter keeping the linked
+   class, the way back following any record, empty canvas closing only a record with no origin,
+   Escape closing a record unannounced, the chooser not repainting as it closes, teardown leaving
+   the context's class, the empty-canvas close not folding the sheet, the linked frame on a
+   filtered-out place, the context keeping its first record's set when another record opens, an
+   empty closed announced as an empty write, an opening going on after drawing its view (the
+   record announced over a leaf a preview listener selected, or written onto the restored host),
+   a close folding the sheet, or announcing itself, whatever a listener opened, the fold
+   returning to the Fit under a record an obstacle listener opened, and a follow keeping its way
+   back when the selection throws, or swallowing the error; a control that names its reason fails
+   for it
 ```
 
 ## radial-export-fixture.html + radial-export.mjs
