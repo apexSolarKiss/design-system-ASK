@@ -271,6 +271,8 @@ export function specimen(D = parks()) {
   c.edges.push({ id: 'ADM-2', from: 'OFFICE-S', to: 'VM-KQ-001', plane: 'crew', type: 'administers', note: 'office of record' });
   c.edges.push({ id: 'ADM-3', from: 'OFFICE-N', to: 'OFFICE-S', plane: 'crew', type: 'reports to', note: 'office hierarchy' });
   c.edges.push({ id: 'GW-HG', from: 'VM-HG-244', to: 'VM-LM-164', plane: 'greenway', type: 'greenway connects to', note: 'signed cycle + foot route' });
+  /* a link on a plane the composition's adapter does not name in linkPlanes: it must frame nothing */
+  c.edges.push({ id: 'GW-OF', from: 'OFFICE-N', to: 'VM-HG-245', plane: 'greenway', type: 'signposts', note: 'greenway signage' });
   return c;
 }
 
@@ -281,7 +283,7 @@ export const ADAPTER = {
   text: { idle: '' },
   legend: {
     headings: { state: 'color = status', line: 'line = link kind', shape: 'shape = surface' },
-    bound: 'Distance from the center is depth and wedge width is size; position and adjacency encode nothing. Links are drawn only by their kind.'
+    bound: 'Distance from the center is depth and wedge width is size; position and adjacency encode nothing. Links are drawn only by their kind; a record opened on its own frames its crew-linked places.'
   },
   chrome: { panels: [{ slot: 'caption', trigger: 'about' }, { slot: 'legend', trigger: 'legend' }] },
   arrival: { hash: true }

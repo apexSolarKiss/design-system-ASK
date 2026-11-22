@@ -30,6 +30,8 @@
     var inspector = {
       name: 'details',
       idle: 'Select a place or a group to see it here. Search and filters are under find.',
+      /* a record opened on its own frames its crew-linked places, and no other link */
+      linkPlanes: planes.has('crew') ? ['crew'] : [],
       header: function (t) {
         if (t.type === 'record') return { title: t.node.label, kind: 'record' };
         if (t.type === 'root') return { title: t.node.label, kind: 'the whole system' };

@@ -25,6 +25,12 @@
                 opens, before the record's view is drawn or the panel opens: it is no longer drawn
                 as selected, and opening the record never moves the camera toward it. The
                 clearing is the module's, so the record stays.
+                A record opened with no origin holds the engine's record context while it is open,
+                with or without links shown: each shown placed node it links to through a plane the
+                adapter names in linkPlanes takes the linked frame, and hover previews nothing. A
+                placed node reached by one of its references offers the one way back to it.
+                A tap or click on empty canvas with nothing selected closes a record view, whatever
+                its origin, and so does Escape; with nothing selected either announces closed.
    A reference to a placed node selects and centers it. A node a membership hides is revealed
    first by clearing the membership, through the facets module when it is listed and through the
    engine when it is not, so a reference never lands on a hidden node; the camera moves only once
@@ -57,13 +63,13 @@
 
   var R = root.DIAGRAM_RADIAL = root.DIAGRAM_RADIAL || {};
   R.modules = R.modules || {};
-  var KEYS = ['header', 'sections', 'name', 'idle', 'back', 'backMax', 'more', 'controls', 'announce'];
+  var KEYS = ['header', 'sections', 'name', 'idle', 'back', 'backMax', 'more', 'closed', 'linkPlanes', 'controls', 'announce'];
   var CONTROL_KEYS = ['collapse', 'expand'];
   var SECTION_TYPES = ['state', 'fields', 'relations', 'references', 'note'];
   var FORMATS = ['text', 'list', 'structured', 'locator'];
   var COMPACT_Q = '(max-width: 767px), (max-height: 520px) and (pointer: coarse)';
   var DEFAULTS = { name: 'details', idle: '', back: '\u2190 back to {label}', backMax: 52, more: 'show all {count}',
-                   collapse: 'collapse {name}', expand: 'expand {name}' };
+                   closed: '{name} closed', collapse: 'collapse {name}', expand: 'expand {name}' };
 
   function InspectorError(detail) {
     var e = new Error('radial mount HOOK_MISSING: ' + detail);
@@ -77,11 +83,13 @@
     Object.keys(cfg).forEach(function (k) { if (KEYS.indexOf(k) < 0) throw InspectorError('inspector: unknown key ' + k); });
     if (typeof cfg.header !== 'function') throw InspectorError('inspector.header must be a function');
     if (typeof cfg.sections !== 'function') throw InspectorError('inspector.sections must be a function');
-    ['name', 'idle', 'back', 'more'].forEach(function (k) {
+    ['name', 'idle', 'back', 'more', 'closed'].forEach(function (k) {
       if (cfg[k] !== undefined && typeof cfg[k] !== 'string') throw InspectorError('inspector.' + k + ' must be a string');
     });
     if (cfg.name !== undefined && !cfg.name.trim()) throw InspectorError('inspector.name must not be empty');
     if (cfg.backMax !== undefined && !(Number.isInteger(cfg.backMax) && cfg.backMax > 0)) throw InspectorError('inspector.backMax must be a positive integer');
+    if (cfg.linkPlanes !== undefined && !(Array.isArray(cfg.linkPlanes) && cfg.linkPlanes.every(function (p) { return typeof p === 'string'; })))
+      throw InspectorError('inspector.linkPlanes must be an array of plane identifiers');
     if (cfg.announce !== undefined && typeof cfg.announce !== 'function') throw InspectorError('inspector.announce must be a function');
     if (cfg.controls !== undefined) {
       if (!plain(cfg.controls)) throw InspectorError('inspector.controls must be a plain object');
@@ -160,10 +168,17 @@
       idle: cfg.idle !== undefined ? cfg.idle : DEFAULTS.idle,
       back: cfg.back !== undefined ? cfg.back : DEFAULTS.back,
       more: cfg.more !== undefined ? cfg.more : DEFAULTS.more,
+      closed: cfg.closed !== undefined ? cfg.closed : DEFAULTS.closed,
       collapse: cfg.controls && cfg.controls.collapse !== undefined ? cfg.controls.collapse : DEFAULTS.collapse,
       expand: cfg.controls && cfg.controls.expand !== undefined ? cfg.controls.expand : DEFAULTS.expand
     };
     var backMax = cfg.backMax || DEFAULTS.backMax;
+    /* the planes whose links between a record and a placed node frame that node in the record
+       context; none is named by default, so a frame never claims a link the adapter has not */
+    (cfg.linkPlanes || []).forEach(function (p) {
+      if (!M.planes.has(p)) throw InspectorError('inspector.linkPlanes names an undeclared plane ' + JSON.stringify(p));
+    });
+    var linkPlanes = new Set(cfg.linkPlanes || []);
     var COMPACT = root.matchMedia ? root.matchMedia(COMPACT_Q) : { matches: false };
 
     /* restore-on-destroy: every attribute this module changes on the slot */
@@ -202,6 +217,10 @@
     set(slot, 'tabindex', '-1');                          /* where focus goes when the view under it is replaced */
 
     var view = 'idle', target = null, origin = null, showAll = false, destroyed = false;
+    /* the record a placed node's view leads back to: set only when the node was reached by a
+       reference in the view of a record opened with no origin, and kept until the next selection */
+    var returnTo = null, pending = null;
+    var contextFor = null;           /* the record that holds the engine's record context, or null */
     /* compact: a narrow or short window, or the chrome module's measured compact arrangement */
     var folded = api.canvas.getAttribute('data-radial-chrome') === 'compact';
     var compact = COMPACT.matches || folded, expanded = !compact;
@@ -393,6 +412,11 @@
           back.type = 'button'; back.setAttribute('data-radial-back', origin);
           out.appendChild(back);
         }
+        if (t.type !== 'record' && returnTo && M.byId.get(returnTo)) {
+          var ret = el('button', 'radial-insp-back', fill(words.back, { label: cap(M.byId.get(returnTo).label, backMax) }));
+          ret.type = 'button'; ret.setAttribute('data-radial-return', returnTo);
+          out.appendChild(ret);
+        }
         var kindLine = h.kind !== undefined ? h.kind : (t.kind ? t.kind.id + ' // ' + t.kind.label : '');
         if (!empty(kindLine)) out.appendChild(el('div', 'radial-insp-h radial-insp-kind', kindLine));
         out.appendChild(el('div', 'radial-insp-title', h.title));
@@ -411,7 +435,28 @@
         var to = body.querySelector('.radial-insp-back') || slot;
         try { to.focus({ preventScroll: true }); } catch (e) { to.focus(); }
       }
+      syncContext();
     }
+    /* the record context follows the view drawn: a record opened with no origin holds it, with the
+       placed nodes it links to through linkPlanes, shown or not; any other view leaves it */
+    function linkedTo(id) {
+      var s = new Set();
+      (M.recordLinks.get(id) || []).forEach(function (l) {
+        if (linkPlanes.has(l.edge.plane) && l.other && api.node(l.other.id)) s.add(l.other.id);
+      });
+      return s;
+    }
+    function syncContext() {
+      var want = view === 'record' && !origin ? target : null;
+      if (want === contextFor) return;
+      contextFor = want;
+      api.recordContext(want ? linkedTo(want) : null);
+    }
+    function sayClosed() { var msg = fill(words.closed, { name: words.name }); if (msg) api.announce(msg); }
+    /* a close with nothing selected leaves the idle view; a listener that destroyed the map or drew
+       another view meanwhile (as the record closed, or as the sheet folded) has the last word, so the
+       close neither folds that view's sheet nor announces it closed */
+    function stillClosed() { return !destroyed && view === 'idle'; }
     function say(t) {
       if (!t) return;
       var msg = cfg.announce ? cfg.announce(t, ctx) : cfg.header(t).title;
@@ -421,6 +466,7 @@
     /* ----------------------------------------------------------- views -- */
     function showNode(id, announce) {
       if (id !== target) showAll = false;
+      returnTo = pending && id !== null && pending.node === id ? pending.record : null;
       if (id === null) { view = 'idle'; target = null; origin = null; render(); emitState(); return; }
       view = 'node'; target = id; origin = null;
       render();
@@ -431,7 +477,7 @@
       if (M.kindOf(id) !== 'record') return false;
       if (id !== target) showAll = false;
       origin = from !== undefined ? from : (origin || api.selection().locked || null);
-      view = 'record'; target = id;
+      view = 'record'; target = id; returnTo = null;
       /* a lock other than the origin is obsolete: cleared first, as the module's clearing (the record
          view is already set, so the select handler below leaves it open), so neither the view, the
          panel's opening nor the camera acts on it. The origin decides, never a link to the record.
@@ -440,6 +486,9 @@
       if (held && held !== origin) api.select(null, 'inspector', 'module');
       if (destroyed || view !== 'record' || target !== id) return false;
       render();
+      /* drawing the view can enter the record context, which ends a hover preview: a preview listener
+         that destroyed the map or moved the view on then has the last word in the same way */
+      if (destroyed || view !== 'record' || target !== id) return false;
       expand(true, cause || 'reader', false);
       say(targetFor(id));
       emitState();
@@ -470,7 +519,19 @@
     /* the camera moves only once the node is shown and selected */
     function follow(id) {
       if (M.kindOf(id) === 'record') { openRecord(id, view === 'record' ? origin : (target || null), 'reader'); return; }
-      if (!reach(id) || !api.select(id, 'inspector', 'reader')) return;
+      /* a record opened with no origin, left by one of its references, is the node's way back */
+      var from = view === 'record' && !origin ? target : null;
+      if (!reach(id)) return;
+      pending = from ? { node: id, record: from } : null;
+      /* cleared however the selection ends: a rendering that throws (the adapter's own error, or a
+         malformed section the owner reports) leaves no way back for a later selection, and its error stands */
+      var ok;
+      try {
+        ok = api.select(id, 'inspector', 'reader');
+      } finally {
+        pending = null;
+      }
+      if (!ok) return;
       api.centerOn(id, Math.max(api.view().k, 1.35));
       keepTarget();
     }
@@ -539,6 +600,10 @@
       if (refit === false && on) beside(reveal === undefined ? api.selection().locked : reveal, atFit);
       if (on && compact) api.claim('inspector');            /* one exclusive panel at a time */
       api.emit('obstacle', { cause: cause });
+      /* an obstacle listener that destroyed the map, or turned the compact sheet back (a record it opened
+         as the sheet folded), has the last word: the camera stays where that left it. The arrangement
+         turning wide meanwhile is not such a turn: the wide panel returns to the Fit as ever */
+      if (destroyed || compact && expanded !== on) return;
       if (refit !== false && cause !== 'fit' && (atFit || back)) api.fit(cause === 'compact' ? 'resize' : cause === 'claim' ? 'reader' : cause);
     }
     on(toggle, 'click', function (ev) {
@@ -622,7 +687,8 @@
         origin = null;
         if (api.visible(o)) { api.select(o, 'inspector', 'reader'); }
         else closeRecord('reader');
-      } else if (b.hasAttribute('data-radial-more')) { showAll = true; render(); }
+      } else if (b.hasAttribute('data-radial-return')) openRecord(b.getAttribute('data-radial-return'), null, 'reader');
+      else if (b.hasAttribute('data-radial-more')) { showAll = true; render(); }
     });
     /* a click inside the panel is the panel's, never the map's */
     on(slot, 'pointerdown', function (ev) { ev.stopPropagation(); });
@@ -658,6 +724,16 @@
       if (view === 'node' && target && !api.visible(target)) { showNode(null, false); return; }
       if (view !== 'idle') render();
     });
+    /* a tap or click on empty canvas with nothing selected closes an open record view, whatever its
+       origin, folds the sheet on a compact canvas and says so; with a node selected, the engine clears
+       the selection instead, and the reader's clearing closes the record with it (above) */
+    api.on('empty', function () {
+      if (destroyed || view !== 'record' || api.selection().locked) return;
+      closeRecord('reader');
+      if (!stillClosed()) return;
+      if (compact && expanded) expand(false, 'reader');
+      if (stillClosed()) sayClosed();
+    });
     /* an arrival naming an undrawn record opens its view */
     api.on('arrival', function (ev) {
       if (!destroyed && !ev.resolved && typeof ev.id === 'string' && M.kindOf(ev.id) === 'record') openRecord(ev.id, null, 'load');
@@ -668,7 +744,7 @@
       dismiss: function (cause) { expand(false, cause === 'claim' ? 'reader' : cause || 'module'); } });
     var unescape = api.escape({ name: 'record', priority: 11,
       isActive: function () { return view === 'record'; },
-      dismiss: function () { closeRecord('reader'); } });
+      dismiss: function () { var idle = !api.selection().locked; closeRecord('reader'); if (idle && stillClosed()) sayClosed(); } });
 
     place();
     render();
@@ -682,7 +758,7 @@
       state: state,
       openRecord: service.openRecord,
       destroy: function () {
-        destroyed = true;
+        destroyed = true; contextFor = null; returnTo = null;   /* the engine clears the record context itself */
         unregister(); unescape();
         Array.prototype.slice.call(slot.childNodes).forEach(function (c) { if (before.indexOf(c) < 0) slot.removeChild(c); });
         restore.slice().reverse().forEach(function (f) { f(); });

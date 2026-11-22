@@ -87,7 +87,9 @@ body.radial-page {
    relation and selection. Emphasis never steps a fill: one neutral frame outside the mark, which
    follows its shape, shows it — 1px on hover (a preview included), 1px at half strength on a
    related node (full when hovered), 2px on the locked selection, which keeps it when hovered. A
-   dimmed mark under the pointer shows in full. */
+   dimmed mark under the pointer shows in full. In the record context (a record opened with no
+   origin is open) each shown node it links to through a plane the adapter names takes 1px at full
+   strength, nothing dims, and hover adds no frame: a hovered mark keeps only a frame it already has. */
 .radial-node { transition: opacity var(--dur-2) var(--ease-out); }
 .radial-node .radial-mark { stroke-width: 1.5; }
 .radial-node .radial-mark:not(.surface-fill) { fill: var(--st); fill-opacity: 0.15; stroke: var(--st); }
@@ -100,6 +102,8 @@ body.radial-page {
 .radial-node.is-near:hover .radial-frame { stroke-opacity: 1; }
 .radial-node.is-selected .radial-frame { display: inline; stroke-width: 2px; stroke-opacity: 1; }
 .radial-node.is-selected.is-preview .radial-frame { stroke-width: 1px; }   /* a preview, not yet locked */
+.radial-node.is-linked .radial-frame { display: inline; stroke-width: 1px; stroke-opacity: 1; }
+.radial-stage.is-record-context .radial-node:hover:not(.is-linked):not(.is-near):not(.is-selected) .radial-frame { display: none; }
 .radial-node.is-dim:hover { opacity: 1; }                 /* a dimmed mark under the pointer shows in full */
 .radial-raise { pointer-events: none; }
 

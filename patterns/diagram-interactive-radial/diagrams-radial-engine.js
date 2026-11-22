@@ -23,7 +23,12 @@
    true shape, that finds every mark under or near the point and, where more than one is there,
    offers them in a chooser that always lists every mark under it; a keyboard path over the
    hierarchy itself, which does not depend on geometry at all; and a focused or selected mark
-   raised above its neighbors with a ring drawn at screen size. */
+   raised above its neighbors with a ring drawn at screen size.
+
+   THE RECORD CONTEXT. A module (the inspector) holds it while a record opened with no origin is
+   open, whether or not any node it links to is shown. While it holds, hover previews nothing and
+   adds no frame, and each shown node of the module's linked set takes the linked frame, at full
+   strength, with nothing dimmed. A chooser's preview overrides it while the chooser is open. */
 (function (root) {
   'use strict';
 
@@ -733,6 +738,7 @@
 
     /* ---------------------------------------------------------- selection -- */
     var locked = null, previewId = null, focusId = null;
+    var context = null;                     /* the record context: null, or the Set of placed nodes it links */
     var neighbors = new Map();
     edgeEls.forEach(function (x) {
       [[x.e.from, x.e.to], [x.e.to, x.e.from]].forEach(function (p) {
@@ -742,12 +748,15 @@
     });
     function paint(nid) {
       var near = nid ? (neighbors.get(nid) || new Set()) : null;
+      /* the record context's linked frame, only while no node is shown */
+      var linked = !nid && context ? context : null;
       nodeEls.forEach(function (x, k) {
         x.g.classList.toggle('is-selected', !!nid && k === nid);
         /* a previewed mark (hovered, or chosen in the chooser, and not locked) keeps a hover's 1px frame */
         x.g.classList.toggle('is-preview', !!nid && k === nid && nid !== locked);
         x.g.classList.toggle('is-near', !!nid && k !== nid && near.has(k));
         x.g.classList.toggle('is-dim', !!nid && k !== nid && !near.has(k) && x.n.kind === 'leaf');
+        x.g.classList.toggle('is-linked', !!linked && linked.has(k) && visible(k));
       });
       edgeEls.forEach(function (x) {
         var hot = !!nid && (x.e.from === nid || x.e.to === nid);
@@ -780,11 +789,22 @@
       return true;
     }
     function preview(nid) {
-      if (locked) return;
+      if (locked || context) return;
       if (nid === previewId) return;
       previewId = nid;
       paint(nid);
       emit('preview', { id: nid, cause: 'reader' });
+    }
+    /* A module sets the record context with the placed nodes it links (a Set, which may be empty),
+       and leaves it with null. Entering it ends a hover's preview; a chooser's stays until it closes. */
+    function setContext(ids) {
+      if (ids !== null && !(ids instanceof Set)) throw MountError('MOUNT', 'a record context must be a Set or null');
+      context = ids === null ? null : new Set(Array.from(ids).filter(function (k) { return nodeEls.has(k); }));
+      stage.classList.toggle('is-record-context', !!context);
+      var ended = !!context && !chooser && !!previewId;
+      if (ended) previewId = null;
+      paint(locked || previewId);
+      if (ended) emit('preview', { id: null, cause: 'module' });
     }
 
     /* ---------------------------------------------------------- membership -- */
@@ -889,7 +909,8 @@
     on(stage, 'pointerdown', function (e) { lastPointerType = e.pointerType || 'mouse'; }, { capture: true });
     function tolerance() { return lastPointerType === 'mouse' ? 4 : 10; }
     /* a tap: one mark under the point selects it; several marks under it, or none under it and several
-       near it, open the chooser; one near it selects it; nothing there clears the selection */
+       near it, open the chooser; one near it selects it; nothing there clears the selection, or,
+       with nothing selected, emits empty */
     /* the chooser lists every mark under the point, since zoom cannot separate overlapping marks,
        then marks near it up to CHOOSER_MAX in all; the rest of the near ones separate with zoom */
     function chooseFrom(inside, near) {
@@ -909,9 +930,9 @@
       var t = tapAt(sx, sy);
       if (t.action === 'select') { closeChooser(); select(t.id, 'pointer'); focusId = t.id; drawFocus(); }
       else if (t.action === 'choose') openChooser(t, sx, sy);
-      else { closeChooser(); if (locked) { select(null, 'pointer'); announce(announceT.clear); } }
+      else { closeChooser(); if (locked) { select(null, 'pointer'); announce(announceT.clear); } else emit('empty', { cause: 'reader', via: 'pointer' }); }
     });
-    /* hover: the mark under a mouse previews while nothing is selected */
+    /* hover: the mark under a mouse previews while nothing is selected and no record context holds */
     var hoverFrame = 0, hoverAt = null;
     on(stage, 'pointermove', function (e) {
       if (e.pointerType !== 'mouse' || pointer.panning()) return;
@@ -992,6 +1013,8 @@
       announce(fill(announceT.choose, { count: ids.length }));
       items[0].focus({ preventScroll: true });
     }
+    /* the chooser's preview shows its mark in place of any selection, and in place of the record
+       context's linked frames, until the chooser closes */
     function previewInChooser(k) {
       if (locked) { paint(k); return; }
       previewId = k; paint(k);
@@ -1199,6 +1222,9 @@
                 select: function (nid, via, cause) { if (destroyed) return false; closeChooser(); return select(nid, via || 'api', cause); },
                 centerOn: function (nid, k) { return !destroyed && centerOn(nid, k); },
                 reveal: function (nid, cover) { return !destroyed && revealBeside(nid, cover || null); },
+                /* the record context, for the inspector: a Set of the placed nodes it links (possibly
+                   empty) while a record opened with no origin is open, and null once none is */
+                recordContext: function (ids) { if (!destroyed) setContext(ids === undefined ? null : ids); },
                 frame: function (nid, cause) { return !destroyed && frameNode(nid, cause || 'module'); },
                 membership: { set: function (leaves, relations, cause) { return setMembership(leaves, relations, cause); },
                               reset: function (cause) { return setMembership(null, null, cause); },
@@ -1254,7 +1280,8 @@
       if (frame && root.cancelAnimationFrame) root.cancelAnimationFrame(frame);
       if (hoverFrame && root.cancelAnimationFrame) root.cancelAnimationFrame(hoverFrame);
       created.slice().reverse().forEach(function (e) { if (e.parentNode) e.parentNode.removeChild(e); });
-      stage.classList.remove('panning', 'is-over-mark');
+      context = null;
+      stage.classList.remove('panning', 'is-over-mark', 'is-record-context');
       restore.slice().reverse().forEach(function (f) { f(); });
       if (arrivalOwner === id) arrivalOwner = null;
       if (themeOwner === id) themeOwner = null;
@@ -1277,6 +1304,7 @@
       state: function () {
         var s = { view: { k: view.k, x: view.x, y: view.y, atFit: atFit, fitCause: fitCause, manual: manual },
                   selection: { locked: locked, preview: previewId, focus: focusId },
+                  recordContext: context ? { linked: Array.from(context).filter(visible) } : null,
                   lod: { tier: tier().name, deferred: R.labels.deferred(solution) },
                   overlays: overlays.filter(function (o) { return o.isOpen(); }).map(function (o) { return o.name; }),
                   membership: membershipState() };

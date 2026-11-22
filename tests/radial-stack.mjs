@@ -20,6 +20,13 @@
         right); refits only at the Fit; text, never markup; malformed sections; a record arrival;
         a record's origin and the lock it clears, before its view is drawn and its sheet opens, and
         an opening that stops when a select listener destroys the map or opens another view;
+        the record context (the linked frame by the adapter's planes, the context held with no
+        link shown, moving from record to record, hover and the keyboard focus in it, the chooser's
+        override and its closing with the record on empty canvas, the way back to a record (none
+        left behind by a followed reference whose selection throws), and
+        closing a record on empty canvas, by Escape and by a touch tap, an opening that stops where
+        a listener destroys the map or opens another view, and a close that stops where one opens
+        another record);
         a resize into compact keeping a reader's record open and folding an idle panel; the sheet
         opened and closed with a record and a filter through a portrait / landscape turn, at the
         Fit and away from it; the two public expressions framed at the Fit (clear, as large as the
@@ -40,7 +47,8 @@
         a filter clearing a hidden selection but not a record; the Escape order; the drawer's
         bound, edge and refit; exclusivity on a compact canvas; the result keyboard; no match; is-out
      W  export: page and diagram plates in both themes, sizes, determinism, the reader's state
-        untouched, both font routes, failure surfaced on the control, teardown
+        untouched, a record context left out of the plate, both font routes, failure surfaced on
+        the control, teardown
      H  theme: the cycle, one owner per document, an inert non-owner, teardown
      N  the synthetic composition, complete: every hierarchy shape, two instances, destroy and
         remount, missing modules and slots, the minimum composition's membership, and no
@@ -786,6 +794,212 @@ window.C = (function () {
       if (m.state().inspector.expanded) q('.radial-insp-toggle').click(); m.select(null); m.fit('explicit'); await frames();
     }
     return null; };
+  /* ---- U45 to U51, U55, W6: the record context ---- */
+  /* a record opened with no origin: what the map draws, from the engine's state and the drawn frames */
+  const ctxSnap = (h) => { const s = st(h), host = '#' + (h || 'D');
+    const drawn = qa(host + ' .radial-node').filter((g) => { const f = g.querySelector('.radial-frame'); return f && getComputedStyle(f).display !== 'none'; });
+    return { ctx: s.recordContext ? s.recordContext.linked.slice().sort() : null, view: s.inspector.view, target: s.inspector.target, origin: s.inspector.origin,
+      locked: s.selection.locked, preview: s.selection.preview, expanded: s.inspector.expanded,
+      linked: qa(host + ' .radial-node.is-linked').map((g) => g.getAttribute('data-radial-id')).sort(),
+      framed: drawn.map((g) => g.getAttribute('data-radial-id')).sort(),
+      widths: drawn.map((g) => { const cs = getComputedStyle(g.querySelector('.radial-frame')); return cs.strokeWidth + '/' + cs.strokeOpacity; }),
+      dim: qa(host + ' .radial-node.is-dim').length, selected: qa(host + ' .radial-node.is-selected').length,
+      stage: q(host + ' [data-radial-slot="stage"]').classList.contains('is-record-context'),
+      over: q(host + ' [data-radial-slot="stage"]').classList.contains('is-over-mark') }; };
+  const LINKED = 'VM-HG-243';
+  /* every write to the live region from now on, one per mutation */
+  const listen = (h) => { const live = q('#' + (h || 'D') + ' [data-radial-slot="live"]') || q('#' + (h || 'D') + ' .radial-sr-only[aria-live]');
+    if (window.__mo) window.__mo.disconnect(); window.__said = [];
+    window.__mo = new MutationObserver((rs) => rs.forEach((r) => window.__said.push(r.type === 'characterData' ? r.target.data : Array.prototype.map.call(r.addedNodes, (n) => n.textContent).join(''))));
+    window.__mo.observe(live, { childList: true, characterData: true, subtree: true }); return true; };
+  C.said = () => (window.__said || []).slice();
+  C.listen = (h) => listen(h);
+  /* a point on empty canvas: no mark under or near it, clear of every panel, inside the stage */
+  C.blank = (h) => { const m = FX.inst[h || 'D'], stage = q('#' + (h || 'D') + ' [data-radial-slot="stage"]'), sr = stage.getBoundingClientRect();
+    for (let y = sr.top + 30; y < sr.bottom - 30; y += 17) for (let x = sr.left + 30; x < sr.right - 30; x += 17) {
+      const e = document.elementFromPoint(x, y);
+      if (!e || !stage.contains(e)) continue;
+      if (m.tap(x - sr.left, y - sr.top, 14).action === 'clear') return { x: Math.round(x), y: Math.round(y) };
+    }
+    return null; };
+  C.recordContext = async () => { const d = {}, rec = 'OFFICE-N', TWO = J([LINKED, 'VM-HG-246']);
+    /* the specimen with a second crew link from the record, to a held place, so 'each' is not 'one' */
+    const md = FX.DATA.specimen(); md.edges.push({ id: 'ADM-9', from: rec, to: 'VM-HG-246', plane: 'crew', type: 'administers' });
+    let m = fresh(md, { adapter: FX.adapterFor(md) }); await frames();
+    /* each crew link frames its place; the greenway link (a plane not named) frames nothing */
+    m.service('inspector').openRecord(rec); await frames(); d.open = ctxSnap();
+    const okOpen = J(d.open.ctx) === TWO && J(d.open.linked) === TWO && J(d.open.framed) === TWO && J(d.open.widths) === J(['1px/1', '1px/1']) &&
+      d.open.dim === 0 && d.open.selected === 0 && d.open.stage && d.open.view === 'record' && d.open.origin === null && d.open.locked === null;
+    /* a filter that hides one linked place: the shown one framed */
+    const f = m.service('facets'); f.set('status', ['earned']); await frames(); d.partial = ctxSnap();
+    const okPartial = J(d.partial.ctx) === J([LINKED]) && J(d.partial.framed) === J([LINKED]) && d.partial.dim === 0 && d.partial.stage;
+    /* a filter that hides every linked place: the map neutral, the context kept */
+    f.set('status', ['partial']); await frames(); d.filtered = ctxSnap();
+    const okFiltered = J(d.filtered.ctx) === J([]) && d.filtered.linked.length === 0 && d.filtered.framed.length === 0 && d.filtered.dim === 0 && d.filtered.stage && d.filtered.view === 'record';
+    f.reset('module'); await frames(); d.reset = ctxSnap();
+    const okReset = J(d.reset.ctx) === TWO && J(d.reset.framed) === TWO;
+    /* from this record's view to the other record's, by its reference: the context follows, with that record's set */
+    const toS = qa('#D .radial-insp-ref').find((b) => b.getAttribute('data-radial-ref') === 'OFFICE-S');
+    if (toS) { toS.click(); await frames(); } d.switch = ctxSnap();
+    m.service('inspector').openRecord(rec); await frames(); d.again = ctxSnap();
+    const okSwitch = !!toS && d.switch.target === 'OFFICE-S' && d.switch.origin === null && J(d.switch.ctx) === J(['VM-KQ-001']) && J(d.switch.framed) === J(['VM-KQ-001']) &&
+      d.again.target === rec && J(d.again.ctx) === TWO && J(d.again.framed) === TWO;
+    /* a record opened from a node holds no context and frames none of its links: the other crew-linked place stays unframed */
+    m.select(LINKED); await frames(); m.service('inspector').openRecord(rec, LINKED); await frames(); d.fromNode = ctxSnap();
+    /* (a resting pointer may add an ordinary hover frame outside the context, so only the linked places are read) */
+    const okFromNode = d.fromNode.ctx === null && d.fromNode.linked.length === 0 && d.fromNode.framed.indexOf(LINKED) >= 0 && d.fromNode.framed.indexOf('VM-HG-246') < 0 && !d.fromNode.stage &&
+      d.fromNode.locked === LINKED && d.fromNode.origin === LINKED && d.fromNode.selected === 1;
+    /* a record with no recorded link at all keeps the context, with nothing framed */
+    const zd = FX.DATA.specimen(); zd.records.push({ id: 'OFFICE-X', label: 'Depot office' });
+    m = fresh(zd, { adapter: FX.adapterFor(zd) }); await frames(); m.service('inspector').openRecord('OFFICE-X'); await frames(); d.zero = ctxSnap();
+    const okZero = J(d.zero.ctx) === J([]) && d.zero.framed.length === 0 && d.zero.dim === 0 && d.zero.stage && d.zero.view === 'record';
+    /* no linkPlanes: no link frames anything, and the context still holds */
+    const na = FX.adapterFor('specimen'); delete na.inspector.linkPlanes;
+    m = fresh('specimen', { adapter: na }); await frames(); m.service('inspector').openRecord(rec); await frames(); d.unnamed = ctxSnap();
+    const okUnnamed = J(d.unnamed.ctx) === J([]) && d.unnamed.framed.length === 0 && d.unnamed.stage;
+    /* a selection ends it */
+    m = fresh(); await frames(); m.service('inspector').openRecord(rec); await frames(); m.select('VM-HG-246'); await frames(); d.selected = ctxSnap();
+    const okSelected = d.selected.ctx === null && d.selected.linked.length === 0 && !d.selected.stage && d.selected.view === 'item';
+    /* teardown with the context held leaves the host as it was */
+    if (FX.inst.D) { FX.inst.D.destroy(); FX.inst.D = null; } const host = FX.host('D'), before = host.outerHTML;
+    m = FX.mount('D', 'specimen'); await frames(); m.service('inspector').openRecord(rec); await frames();
+    const heldBefore = !!m.state().recordContext; m.destroy(); FX.inst.D = null; d.teardown = { held: heldBefore, same: host.outerHTML === before };
+    /* linkPlanes and closed are checked when the instance mounts */
+    const err = (patch) => { try { const a = FX.adapterFor('specimen'); Object.assign(a.inspector, patch); const x = FX.mount('D', 'specimen', { adapter: a }); x.destroy(); FX.inst.D = null; return null; }
+      catch (e) { FX.inst.D = null; return e.code + ': ' + e.message; } };
+    d.errors = [err({ linkPlanes: ['nope'] }), err({ linkPlanes: 'crew' }), err({ closed: 5 })];
+    const okErrors = /HOOK_MISSING.*undeclared plane "nope"/.test(d.errors[0] || '') && /HOOK_MISSING.*array of plane identifiers/.test(d.errors[1] || '') && /HOOK_MISSING.*closed must be a string/.test(d.errors[2] || '');
+    fresh();
+    return { ok: okOpen && okPartial && okFiltered && okReset && okSwitch && okZero && okUnnamed && okFromNode && okSelected && d.teardown.held && d.teardown.same && okErrors,
+             d: Object.assign(d, { pass: { okOpen, okPartial, okFiltered, okReset, okSwitch, okZero, okUnnamed, okFromNode, okSelected, okErrors } }) }; };
+  /* hover: a single unlinked leaf clear of the panel that every variant shows (a partial leaf), the linked leaf, and a blank point */
+  C.hoverSetup = async (variant) => { let m;
+    if (variant === 'zero') { const zd = FX.DATA.specimen(); zd.records.push({ id: 'OFFICE-X', label: 'Depot office' }); m = fresh(zd, { adapter: FX.adapterFor(zd) }); }
+    else m = fresh();
+    await frames();
+    if (variant !== 'none') m.service('inspector').openRecord(variant === 'zero' ? 'OFFICE-X' : 'OFFICE-N');
+    await frames();
+    const sr = q('#D [data-radial-slot="stage"]').getBoundingClientRect(), panel = q('#D [data-radial-slot="inspector"]').getBoundingClientRect();
+    const single = (n) => { const p = m.project(n.id), h = m.hits(p.x, p.y, 0); return p.x > 60 && p.y > 60 && p.x + sr.left < panel.left - 60 && p.y < sr.height - 80 && h.inside.length === 1 && h.inside[0] === n.id; };
+    const leaf = m.layout.nodes.find((n) => n.kind === 'leaf' && n.state === 'partial' && n.id !== LINKED && single(n));
+    const linkedOk = single(m.layout.nodes.find((n) => n.id === LINKED)), linkedAt = FX.at('D', LINKED);
+    if (variant === 'filtered') { m.service('facets').set('status', ['partial']); await frames(); }
+    await frames();
+    return { ok: !!leaf && linkedOk && (variant !== 'filtered' || m.state().membership.active), id: leaf && leaf.id, at: leaf && FX.at('D', leaf.id), linkedAt, blank: C.blank(), d: ctxSnap() }; };
+  C.hoverProbe = (id) => { const g = q('#D .radial-node[data-radial-id="' + CSS.escape(id) + '"]'), f = g.querySelector('.radial-frame'), cs = getComputedStyle(f);
+    return Object.assign(ctxSnap(), { hoverFrame: cs.display, hoverWidth: cs.strokeWidth + '/' + cs.strokeOpacity, hovered: g.matches(':hover'), view0: st().inspector.view,
+      cursor: getComputedStyle(q('#D [data-radial-slot="stage"]')).cursor, ret: !!q('#D [data-radial-return]') }); };
+  /* the chooser: a point where a click offers several marks, clear of the panel */
+  C.chooserSetup = async (open) => { const m = fresh(); await frames();
+    if (open) m.service('inspector').openRecord('OFFICE-N');
+    await frames();
+    const stage = q('#D [data-radial-slot="stage"]'), sr = stage.getBoundingClientRect(), panel = q('#D [data-radial-slot="inspector"]').getBoundingClientRect();
+    let at = null;
+    for (const n of m.layout.nodes) { if (n.kind !== 'leaf') continue; const p = m.project(n.id);
+      for (const [dx, dy] of [[0, 0], [3, 0], [-3, 0], [0, 3], [0, -3]]) {
+        const x = p.x + dx, y = p.y + dy;
+        if (x < 40 || y < 40 || x + sr.left > panel.left - 220 || y > sr.height - 200) continue;
+        const e = document.elementFromPoint(x + sr.left, y + sr.top); if (!e || !stage.contains(e)) continue;
+        const t = m.tap(x, y, 4); if (t.action === 'choose' && t.shown.indexOf(LINKED) < 0) { at = { x: Math.round(x + sr.left), y: Math.round(y + sr.top), ids: t.shown }; break; } }
+      if (at) break; }
+    return { ok: !!at, at, blank: C.blank(), d: ctxSnap() }; };
+  C.chooserProbe = () => Object.assign(ctxSnap(), { chooser: !!q('#D .radial-chooser'), first: (q('#D .radial-chooser-item .radial-chooser-lbl') || {}).textContent || null });
+  /* the way back to a record: offered only to a node reached by a reference of a record opened with no origin */
+  C.recordReturn = async () => { const m = fresh(), insp = m.service('inspector'), d = {}; await frames();
+    insp.openRecord('OFFICE-N'); await frames();
+    const ref = qa('#D .radial-insp-ref').find((b) => b.getAttribute('data-radial-ref') === LINKED);
+    if (!ref) return { ok: false, d: 'no reference to the linked place' };
+    ref.click(); await frames(); const v1 = m.view(), ret = q('#D [data-radial-return]');
+    d.node = Object.assign(ctxSnap(), { ret: ret && ret.getAttribute('data-radial-return'), label: ret && ret.textContent });
+    if (!ret) return { ok: false, d };
+    ret.click(); await frames(); const v2 = m.view();
+    d.back = Object.assign(ctxSnap(), { ret: !!q('#D [data-radial-return]') }); d.still = Math.abs(v1.k - v2.k) < 1e-9 && Math.abs(v1.x - v2.x) < 1e-6 && Math.abs(v1.y - v2.y) < 1e-6;
+    /* the same node reached another way offers none: a selection on the map */
+    m.select(LINKED); await frames(); d.mapSel = !!q('#D [data-radial-return]');
+    /* nor a node reached from a record opened from a node */
+    insp.openRecord('OFFICE-N', LINKED); await frames();
+    const ref2 = qa('#D .radial-insp-ref').find((b) => b.getAttribute('data-radial-ref') === 'VM-HG-245');
+    if (ref2) { ref2.click(); await frames(); } d.fromOrigin = { reached: !!ref2 && st().selection.locked === 'VM-HG-245', ret: !!q('#D [data-radial-return]') };
+    const ok = d.node.view === 'item' && d.node.target === LINKED && d.node.locked === LINKED && d.node.ret === 'OFFICE-N' && d.node.label === '← back to North parks office' && d.node.ctx === null &&
+      d.back.view === 'record' && d.back.target === 'OFFICE-N' && d.back.origin === null && d.back.locked === null && J(d.back.ctx) === J([LINKED]) && J(d.back.framed) === J([LINKED]) && !d.back.ret &&
+      d.still && !d.mapSel && d.fromOrigin.reached && !d.fromOrigin.ret;
+    return { ok, d }; };
+  /* a followed reference whose selection throws: the adapter's rendering of the linked place throws once,
+     by its own error or by a malformed section the owner reports; the errors that reach the page are
+     recorded, then another place and the linked one are selected on the map, then the same reference is
+     followed again with nothing thrown (the control) */
+  C.followThrows = async (how) => { const a = FX.adapterFor('specimen'), sec = a.inspector.sections; let armed = true, thrown = null;
+    a.inspector.sections = (t, c) => { if (armed && t.id === LINKED) { armed = false;
+        if (how === 'adapter') { thrown = new Error('the adapter failed'); throw thrown; } return [{ type: 'bogus' }]; }
+      return sec(t, c); };
+    const m = fresh('specimen', { adapter: a }), insp = m.service('inspector'), d = {}, caught = [];
+    const ref = () => qa('#D .radial-insp-ref').find((b) => b.getAttribute('data-radial-ref') === LINKED);
+    const ret = () => { const r = q('#D [data-radial-return]'); return r ? r.getAttribute('data-radial-return') : null; };
+    const snap = () => ({ view: st().inspector.view, target: st().inspector.target, locked: st().selection.locked, ret: ret() });
+    /* an exception's error event carries the error; a resize observer's loop notice carries none */
+    const onErr = (e) => { if (e.error instanceof Error) caught.push(e.error); }; window.addEventListener('error', onErr);
+    try { await frames();
+      insp.openRecord('OFFICE-N'); await frames(); const r1 = ref(); if (!r1) return { ok: false, d: 'no reference to the linked place' };
+      r1.click(); await frames();
+      d.threw = { armed, caught: caught.length, same: how === 'adapter' ? caught[0] === thrown : !!caught[0] && caught[0].code === 'SECTION', locked: st().selection.locked };
+      m.select('VM-HG-245'); await frames(); d.other = snap();
+      m.select(LINKED); await frames(); d.again = snap();
+      m.select(null); await frames(); insp.openRecord('OFFICE-N'); await frames(); const r2 = ref(); if (r2) { r2.click(); await frames(); }
+      d.control = Object.assign(snap(), { reached: !!r2, caught: caught.length });
+    } finally { window.removeEventListener('error', onErr); }
+    return { ok: true, d }; };
+  /* closing: the record opened as each case needs it, with the live region recorded from then on */
+  C.closeSetup = async (how, closed) => { let o = {}; if (closed !== undefined) { const a = FX.adapterFor('specimen'); a.inspector.closed = closed; o = { adapter: a }; }
+    const m = fresh('specimen', o); await frames(); const insp = m.service('inspector');
+    if (how === 'ctx') insp.openRecord('OFFICE-N');
+    else if (how === 'locked') { m.select(LINKED); await frames(); insp.openRecord('OFFICE-N', LINKED); }
+    else if (how === 'filteredOrigin') { m.select(LINKED); await frames(); insp.openRecord('OFFICE-N', LINKED); await frames(); m.service('facets').set('status', ['partial']); }
+    await frames(); await new Promise((r) => setTimeout(r, 300)); await frames();
+    listen(); return { ok: true, blank: C.blank(), d: ctxSnap() }; };
+  C.closeProbe = () => Object.assign(ctxSnap(), { said: C.said(), cam: (() => { const v = FX.inst.D.view(); return [v.k, v.x, v.y, v.manual]; })() });
+  C.focusPanel = () => { const s = q('#D [data-radial-slot="inspector"]'); s.focus({ preventScroll: true }); return document.activeElement === s; };
+  C.focusStage = () => { const s = q('#D [data-radial-slot="stage"]'); s.focus({ preventScroll: true }); return document.activeElement === s; };
+  C.focusProbe = () => { const r = q('#D .radial-focus-ring'), cs = r && getComputedStyle(r);
+    return Object.assign(ctxSnap(), { rings: qa('#D .radial-focus-ring').length, ring: cs ? cs.display + '/' + cs.strokeWidth : null, focus: st().selection.focus, said: C.said() }); };
+  /* the plate with a record context held is the neutral plate, byte for byte */
+  C.contextPlate = async () => { const m = fresh(); await frames();
+    const run = async () => (await m.service('export').run('page')).svg;
+    const plain = await run(); m.service('inspector').openRecord('OFFICE-N'); await frames();
+    const s = ctxSnap(), held = await run(), after = ctxSnap();
+    return { ok: J(s.ctx) === J([LINKED]) && J(s.linked) === J([LINKED]) && plain === held && held.indexOf('is-linked') < 0 && J(after) === J(s),
+             d: { ctx: s.ctx, same: plain === held, tokens: (held.match(/is-linked/g) || []).length, len: [plain.length, held.length], screen: J(after) === J(s) } }; };
+  /* a planted stylesheet fault: drop every rule whose selector names the text */
+  C.dropRule = (sub) => { let n = 0; Array.from(document.styleSheets).forEach((sh) => { let rs; try { rs = sh.cssRules; } catch (e) { return; }
+    for (let i = rs.length - 1; i >= 0; i--) if (rs[i].selectorText && rs[i].selectorText.indexOf(sub) >= 0) { sh.deleteRule(i); n++; } }); return { dropped: n }; };
+  /* ---- U52 to U54: a listener's newer action ends an opening or a close it interrupts ---- */
+  /* a record opened with no origin over a standing hover preview: entering the record context ends the
+     preview with a preview event, on which a listener does nothing, selects another leaf or destroys the
+     map. The wide panel is collapsed by its own toggle first, so the opening has a panel to open, as after
+     a teardown it would write onto the host. The host is kept as it was before the mount, to compare */
+  C.ctxPreviewSetup = async () => { if (FX.inst.D) { try { FX.inst.D.destroy(); } catch (e) {} FX.inst.D = null; } FX.mode('one');
+    window.__host0 = FX.host('D').outerHTML; const m = FX.mount('D', 'specimen'); await frames();
+    q('#D .radial-insp-toggle').click(); await frames(); await new Promise((r) => setTimeout(r, 120)); await frames();
+    const folded = !m.state().inspector.expanded;
+    const sr = q('#D [data-radial-slot="stage"]').getBoundingClientRect(), panel = q('#D [data-radial-slot="inspector"]').getBoundingClientRect();
+    const single = (n) => { const p = m.project(n.id), h = m.hits(p.x, p.y, 0); return p.x > 60 && p.y > 60 && p.x + sr.left < panel.left - 60 && p.y < sr.height - 80 && h.inside.length === 1 && h.inside[0] === n.id; };
+    const leaf = m.layout.nodes.find((n) => n.kind === 'leaf' && n.id !== LINKED && single(n));
+    const other = leaf && m.layout.nodes.find((n) => n.kind === 'leaf' && n.id !== leaf.id && n.id !== LINKED);
+    return { ok: folded && !!leaf && !!other, folded, id: leaf && leaf.id, other: other && other.id, at: leaf && FX.at('D', leaf.id) }; };
+  C.ctxPreviewRun = async (how, other) => { const m = FX.inst.D, host = FX.host('D'), pre = m.state().selection.preview; let ended = 0;
+    listen();
+    const off = m.on('preview', (e) => { if (e.id !== null || e.cause !== 'module' || ended) return; ended++;
+      if (how === 'destroy') { m.destroy(); FX.inst.D = null; } else if (how === 'select') m.select(other); });
+    const r = m.service('inspector').openRecord('OFFICE-N'); await frames();
+    const out = { pre, ended, r, said: C.said() };
+    if (how === 'destroy') return Object.assign(out, { same: host.outerHTML === window.__host0 });
+    off(); return Object.assign(out, ctxSnap(), { title: (q('#D .radial-insp-title') || {}).textContent || null }); };
+  /* a close with a listener that opens another record, OFFICE-S, on the idle view the close leaves: on the
+     inspector event the close emits, or on the obstacle event of the sheet's folding; the live region is
+     recorded from then on */
+  C.closeListen = (type) => { const m = FX.inst.D, insp = m.service('inspector'); window.__reopened = 0;
+    m.on(type, () => { if (window.__reopened || m.state().inspector.view !== 'idle') return; window.__reopened++; insp.openRecord('OFFICE-S'); });
+    listen(); return true; };
+  C.reopenProbe = () => Object.assign(C.closeProbe(), { reopened: window.__reopened, title: (q('#D .radial-insp-title') || {}).textContent || null, atFit: FX.inst.D.view().atFit });
   /* ---- X: a planted fault in a copy of a module, then the check written for it ---- */
   /* a preview page's map mounted again, after a plant: the CFW reference or the neutral composition */
   C.remount = () => { const host = q('[data-radial]'), R = window.RADIAL_REFERENCE, S = window.RADIAL_SPECIMEN, N = window.RADIAL_NEUTRAL;
@@ -1411,6 +1625,222 @@ const KEYED = {
 };
 
 /* ------------------------------------------------------------- run -- */
+/* B2: the record context driven with trusted input: hover, the keyboard focus, the chooser, empty canvas,
+   a drag and Escape on a wide page, and a tap and a touch drag on a compact one */
+const clickAt = async (P, x, y) => { for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased'])
+  await P.call('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', buttons: type === 'mousePressed' ? 1 : 0, clickCount: 1 });
+  await P.frames(); };
+const dragFrom = async (P, x, y, dx, dy) => {
+  await P.call('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'none' });
+  await P.call('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
+  for (let i = 1; i <= 6; i++) await P.call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x + dx * i / 6, y: y + dy * i / 6, button: 'left', buttons: 1 });
+  await P.call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x + dx, y: y + dy, button: 'left', buttons: 0, clickCount: 1 });
+  await P.frames(); };
+const touchDrag = async (P, x, y, dx, dy) => {
+  await P.call('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+  for (let i = 1; i <= 6; i++) await P.call('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + dx * i / 6, y: y + dy * i / 6, id: 1 }] });
+  await P.call('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await P.frames(); };
+const tapAt = async (P, x, y) => { await P.call('Input.synthesizeTapGesture', { x, y, duration: 40, tapCount: 1, gestureSourceType: 'touch' }); await P.frames(); };
+/* an 80px square of the page around a point, as PNG bytes */
+const shot = async (P, c) => (await P.call('Page.captureScreenshot', { format: 'png', clip: { x: c.x - 40, y: c.y - 40, width: 80, height: 80, scale: 1 } })).data;
+const settleHover = async (P) => { await P.ev('new Promise((r) => setTimeout(r, 80))'); await P.frames(); };
+Object.assign(KEYED, {
+  /* U46: hover with nothing open (the control), in the record context, on a linked leaf, and with every linked leaf filtered out */
+  async u46(P) {
+    const d = {}, fails = [];
+    for (const v of ['none', 'ctx', 'filtered', 'zero']) {
+      const s = await P.ev(`C.hoverSetup(${J(v)})`);
+      if (!s.ok || !s.blank) return { ok: false, d: { fails: [['setup ' + v, s]] } };
+      await P.move(s.blank.x, s.blank.y); await settleHover(P); const still = await shot(P, s.at);
+      await P.move(s.at.x, s.at.y); await settleHover(P); const over = await shot(P, s.at);
+      d[v] = Object.assign(await P.ev(`C.hoverProbe(${J(s.id)})`), { id: s.id, same: still === over });
+      if (v === 'ctx') {
+        await P.move(s.blank.x, s.blank.y); await settleHover(P); const still2 = await shot(P, s.linkedAt);
+        await P.move(s.linkedAt.x, s.linkedAt.y); await settleHover(P); const over2 = await shot(P, s.linkedAt);
+        d.linkedHover = Object.assign(await P.ev(`C.hoverProbe('VM-HG-243')`), { same: still2 === over2 });
+        await P.move(s.at.x, s.at.y); await settleHover(P); await clickAt(P, s.at.x, s.at.y);
+        d.click = Object.assign(await P.ev(`C.hoverProbe(${J(s.id)})`), { id: s.id });
+        const s2 = await P.ev('C.hoverSetup("ctx")'); await P.move(s2.linkedAt.x, s2.linkedAt.y); await settleHover(P); await clickAt(P, s2.linkedAt.x, s2.linkedAt.y);
+        d.linkedClick = await P.ev(`C.hoverProbe('VM-HG-243')`);
+      }
+      await P.move(s.blank.x, s.blank.y); await settleHover(P);
+    }
+    const n = d.none, c = d.ctx, l = d.linkedHover, f = d.filtered, z = d.zero, k = d.click, lc = d.linkedClick, one = J(['VM-HG-243']);
+    if (!(n.hovered && n.preview === n.id && n.dim > 0 && n.hoverFrame === 'inline' && !n.same))
+      fails.push(['the control: with nothing open, hover previews, dims and frames the leaf', n]);
+    if (!(c.hovered && c.preview === null && c.dim === 0 && c.hoverFrame === 'none' && J(c.ctx) === one && J(c.framed) === one && c.over && c.cursor === 'pointer' && c.same && c.view0 === 'record'))
+      fails.push(['in the record context, hover previews nothing, dims nothing and adds no frame, the pixels unchanged, and the pointer cursor stays', c]);
+    if (!(l.hovered && l.preview === null && l.hoverFrame === 'inline' && l.hoverWidth === '1px/1' && J(l.framed) === one && l.dim === 0 && l.same))
+      fails.push(['a hovered linked leaf keeps its linked frame with nothing added', l]);
+    if (!(f.hovered && f.preview === null && f.dim === 0 && f.hoverFrame === 'none' && J(f.ctx) === J([]) && f.framed.length === 0 && f.same))
+      fails.push(['every linked leaf filtered out: hover still previews nothing and adds no frame', f]);
+    if (!(z.hovered && z.preview === null && z.dim === 0 && z.hoverFrame === 'none' && J(z.ctx) === J([]) && z.framed.length === 0 && z.same && z.view0 === 'record'))
+      fails.push(['a record with no recorded link: hover still previews nothing and adds no frame', z]);
+    if (!(k.locked === k.id && k.view0 === 'item' && k.ctx === null && k.linked.length === 0 && !k.stage))
+      fails.push(['a click on the hovered leaf selects it and ends the context', k]);
+    if (!(lc.locked === 'VM-HG-243' && lc.view0 === 'item' && lc.ctx === null && !lc.ret))
+      fails.push(['a click on the framed leaf selects it, ends the context and offers no way back', lc]);
+    return { ok: fails.length === 0, d: { fails, d } };
+  },
+  /* U47: the keyboard focus in the record context */
+  async u47(P) {
+    const s = await P.ev('C.hoverSetup("ctx")'); if (!s.ok) return { ok: false, d: s };
+    const f0 = await P.ev('C.focusStage()'); await P.ev('C.listen()');
+    await P.key('ArrowDown'); const a = await P.ev('C.focusProbe()');
+    await P.key('ArrowRight'); const b2 = await P.ev('C.focusProbe()');
+    await P.ev('FX.inst.D.focus("VM-HG-243")'); await P.frames(); const l = await P.ev('C.focusProbe()');
+    await P.key('Enter'); const c = await P.ev('C.focusProbe()');
+    const one = J(['VM-HG-243']);
+    const ok = f0 && a.rings === 1 && a.ring === 'inline/2px' && !!a.focus && J(a.ctx) === one && J(a.linked) === one && a.dim === 0 && a.preview === null && a.view === 'record' && a.said.length >= 1 &&
+      b2.rings === 1 && b2.focus && b2.focus !== a.focus && J(b2.ctx) === one && J(b2.linked) === one && b2.dim === 0 && b2.said.length > a.said.length &&
+      l.focus === 'VM-HG-243' && l.rings === 1 && l.ring === 'inline/2px' && J(l.framed) === one && J(l.widths) === J(['1px/1']) && l.dim === 0 &&
+      c.locked === 'VM-HG-243' && c.ctx === null && c.linked.length === 0 && c.view === 'item';
+    return { ok, d: { f0, a, b: b2, l, c } };
+  },
+  /* U48: the chooser's preview overrides the context while it is open */
+  async u48(P) {
+    const s = await P.ev('C.chooserSetup(true)'); if (!s.ok || !s.blank) return { ok: false, d: { fails: [['setup', s]] } };
+    const fails = [], one = J(['VM-HG-243']);
+    await clickAt(P, s.at.x, s.at.y); const a = await P.ev('C.chooserProbe()');
+    await P.key('Escape'); const e = await P.ev('C.chooserProbe()');
+    await clickAt(P, s.at.x, s.at.y);
+    const it = await P.ev(`(() => { const b = document.querySelector('#D .radial-chooser-item'); if (!b) return null; const r = b.getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) }; })()`);
+    if (it) await clickAt(P, it.x, it.y);
+    const c = await P.ev('C.chooserProbe()');
+    await P.ev('C.chooserSetup(true)'); await P.ev('C.listen()');
+    await clickAt(P, s.at.x, s.at.y); await clickAt(P, s.blank.x, s.blank.y); const g = await P.ev('C.chooserProbe()'), said = await P.ev('C.said()');
+    if (!(a.chooser && J(a.ctx) === one && a.linked.length === 0 && a.dim > 0 && a.preview !== null && a.view === 'record'))
+      fails.push(['the open chooser previews its first mark in place of the linked frames, the context held', a]);
+    if (!(!e.chooser && J(e.ctx) === one && J(e.linked) === one && J(e.framed) === one && e.dim === 0 && e.preview === null && e.view === 'record'))
+      fails.push(['Escape closes the chooser first and restores the frames, nothing dimmed, the record kept', e]);
+    if (!(it && !c.chooser && c.locked !== null && c.ctx === null && c.linked.length === 0 && c.view !== 'record'))
+      fails.push(['choosing a mark selects it and ends the context', { it, c }]);
+    if (!(!g.chooser && g.view === 'idle' && g.ctx === null && said.filter((x) => x === 'details closed').length === 1 && said[said.length - 1] === 'details closed'))
+      fails.push(['with the chooser open, a click on empty canvas closes the chooser and the record, and says so', { g, said }]);
+    return { ok: fails.length === 0, d: { fails, at: s.at } };
+  },
+  /* U50: closing on a wide canvas: a drag, a click on empty canvas, a filter-cleared origin, a selection, Escape, the adapter's words */
+  async u50(P) {
+    const d = {}, fails = [], one = J(['VM-HG-243']);
+    let s = await P.ev('C.closeSetup("ctx")'); if (!s.blank) return { ok: false, d: { fails: [['setup', s]] } };
+    await dragFrom(P, s.blank.x, s.blank.y, 100, 80); d.pan = await P.ev('C.closeProbe()');
+    const b2 = await P.ev('C.blank()'); d.preClick = await P.ev('C.closeProbe()'); if (b2) await clickAt(P, b2.x, b2.y); d.click = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("filteredOrigin")'); d.fo0 = s.d; if (s.blank) await clickAt(P, s.blank.x, s.blank.y); d.fo = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("locked")'); if (s.blank) await clickAt(P, s.blank.x, s.blank.y); d.locked = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("ctx")'); d.focused = await P.ev('C.focusPanel()'); await P.ev('C.listen()'); d.preEsc = await P.ev('C.closeProbe()'); await P.key('Escape'); d.esc = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("locked")'); await P.ev('C.focusPanel()'); await P.ev('C.listen()'); await P.key('Escape'); d.escBack = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("none")'); if (s.blank) await clickAt(P, s.blank.x, s.blank.y); d.idleClick = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("ctx", "{name} shut")'); await P.ev('C.focusPanel()'); await P.ev('C.listen()'); await P.key('Escape'); d.own = await P.ev('C.closeProbe()');
+    s = await P.ev('C.closeSetup("ctx", "")'); await P.ev('C.focusPanel()'); await P.ev('C.listen()'); await P.key('Escape'); d.silent = await P.ev('C.closeProbe()');
+    await P.move(1, 1);
+    if (!(d.pan.view === 'record' && J(d.pan.ctx) === one && d.pan.cam[3] === true && d.pan.said.length === 0))
+      fails.push(['a drag on empty canvas pans and leaves the record open', d.pan]);
+    if (!(b2 && d.click.view === 'idle' && d.click.ctx === null && d.click.linked.length === 0 && !d.click.stage && J(d.click.said) === J(['details closed']) && J(d.click.cam) === J(d.preClick.cam)))
+      fails.push(['a click on empty canvas closes the record, ends the context and says so once, the camera still', { pre: d.preClick.cam, click: d.click }]);
+    if (!(d.fo0.view === 'record' && d.fo0.origin === 'VM-HG-243' && d.fo0.locked === null && d.fo0.ctx === null && d.fo.view === 'idle' && J(d.fo.said) === J(['details closed'])))
+      fails.push(['a record whose origin a filter has cleared closes on empty canvas too', { fo0: d.fo0, fo: d.fo }]);
+    if (!(d.locked.view === 'idle' && d.locked.locked === null && J(d.locked.said) === J(['selection cleared'])))
+      fails.push(['with a node selected, the click clears the selection and the record together', d.locked]);
+    if (!(d.focused && d.esc.view === 'idle' && d.esc.ctx === null && J(d.esc.said) === J(['details closed']) && J(d.esc.cam) === J(d.preEsc.cam)))
+      fails.push(['Escape closes the record and says so once, the camera still', d.esc]);
+    if (!(d.escBack.view === 'item' && d.escBack.target === 'VM-HG-243' && d.escBack.said.length === 1 && d.escBack.said.indexOf('details closed') < 0))
+      fails.push(['Escape from a record opened from the selected node returns to the node and announces it, not the close', d.escBack]);
+    if (!(d.idleClick.view === 'idle' && d.idleClick.said.length === 0))
+      fails.push(['a click on empty canvas with nothing open writes nothing', d.idleClick]);
+    if (!(d.own.view === 'idle' && J(d.own.said) === J(['details shut'])))
+      fails.push(['the adapter\'s closed words replace the default', d.own]);
+    if (!(d.silent.view === 'idle' && d.silent.said.length === 0))
+      fails.push(['an empty closed announces nothing', d.silent]);
+    return { ok: fails.length === 0, d: { fails, d } };
+  },
+  /* U51: compact: a touch drag pans and leaves the sheet open; a tap on empty canvas closes the record, folds the sheet and says so */
+  async u51(P) {
+    const fails = [];
+    const s = await P.ev('C.closeSetup("ctx")'); if (!s.blank) return { ok: false, d: { fails: [['setup', s]] } };
+    await touchDrag(P, s.blank.x, s.blank.y, 60, 90); await P.ev('new Promise((r) => setTimeout(r, 120))'); const pan = await P.ev('C.closeProbe()');
+    const b2 = await P.ev('C.blank()'); if (b2) await tapAt(P, b2.x, b2.y); await P.ev('new Promise((r) => setTimeout(r, 120))'); const tap = await P.ev('C.closeProbe()');
+    if (!(s.d.expanded && pan.view === 'record' && pan.expanded && pan.cam[3] === true && pan.said.length === 0))
+      fails.push(['a touch drag pans and leaves the record and its sheet open', { open: s.d.expanded, pan }]);
+    if (!(b2 && tap.view === 'idle' && !tap.expanded && tap.ctx === null && J(tap.said) === J(['details closed'])))
+      fails.push(['a tap on empty canvas closes the record, folds the sheet and says so', tap]);
+    return { ok: fails.length === 0, d: { fails, open: s.d, pan, tap } };
+  },
+  /* U52: a record opened with no origin over a hover preview a real mouse holds; a preview listener acts as
+     entering the record context ends that preview */
+  async u52(P) {
+    const d = {}, fails = [];
+    for (const how of ['none', 'select', 'destroy']) {
+      const s = await P.ev('C.ctxPreviewSetup()'); if (!s.ok) return { ok: false, d: { fails: [['setup ' + how, s]] } };
+      await P.move(s.at.x, s.at.y); await settleHover(P);
+      d[how] = Object.assign(await P.ev(`C.ctxPreviewRun(${J(how)}, ${J(s.other)})`), { id: s.id, other: s.other });
+      await P.move(1, 1); await settleHover(P);
+    }
+    const n = d.none, sl = d.select, x = d.destroy, rec = n.said.length === 1 ? n.said[0] : null;
+    if (!(n.pre === n.id && n.ended === 1 && n.r === true && n.view === 'record' && n.target === 'OFFICE-N' && J(n.ctx) === J(['VM-HG-243']) && n.preview === null && n.expanded === true && rec))
+      fails.push(['the control: the opening ends the hover preview with a preview event, and the record opens its collapsed panel, holds the context and is announced once', n]);
+    if (!(sl.pre === sl.id && sl.ended === 1 && sl.r === false && sl.view === 'item' && sl.target === sl.other && sl.locked === sl.other && sl.ctx === null && !sl.stage && !!rec && sl.said.indexOf(rec) < 0))
+      fails.push(['a preview listener that selects another leaf as the preview ends stops the opening: openRecord returns false and the record is not announced over the leaf', sl]);
+    if (!(x.pre === x.id && x.ended === 1 && x.r === false && x.same))
+      fails.push(['a preview listener that destroys the map as the preview ends stops the opening: openRecord returns false and the restored host is left as it was before the mount', x]);
+    return { ok: fails.length === 0, d: { fails, d, rec } };
+  },
+  /* U53: on a wide canvas, a listener that opens another record as Escape, or a click on empty canvas, closes
+     this one */
+  async u53(P) {
+    const d = {}, fails = [];
+    let s = await P.ev('C.closeSetup("ctx")'); await P.ev('C.focusPanel()'); await P.ev('C.closeListen("inspector")'); await P.key('Escape'); d.esc = await P.ev('C.reopenProbe()');
+    s = await P.ev('C.closeSetup("ctx")'); await P.ev('C.closeListen("inspector")'); if (s.blank) await clickAt(P, s.blank.x, s.blank.y); d.click = await P.ev('C.reopenProbe()');
+    await P.move(1, 1);
+    for (const [k, how] of [['esc', 'Escape'], ['click', 'a click on empty canvas']]) {
+      const r = d[k];
+      if (!(r.reopened === 1 && r.view === 'record' && r.target === 'OFFICE-S' && r.origin === null && r.expanded && J(r.said) === J([r.title]) && r.said.indexOf('details closed') < 0))
+        fails.push([how + ' closing the record while an inspector listener opens another one leaves that one open and announced, and nothing is announced closed', r]);
+    }
+    if (!s.blank) fails.push(['a point on empty canvas was found', s]);
+    return { ok: fails.length === 0, d: { fails, d } };
+  },
+  /* U54: compact, by touch: a listener that opens another record as a tap on empty canvas closes this one, on
+     the inspector event of the close or on the obstacle event of the sheet's folding */
+  async u54(P) {
+    const d = {}, fails = [];
+    for (const type of ['inspector', 'obstacle']) {
+      const s = await P.ev('C.closeSetup("ctx")'); await P.ev(`C.closeListen(${J(type)})`);
+      if (s.blank) await tapAt(P, s.blank.x, s.blank.y); await P.ev('new Promise((r) => setTimeout(r, 120))');
+      d[type] = Object.assign(await P.ev('C.reopenProbe()'), { open: s.d.expanded, blank: !!s.blank });
+    }
+    const a = d.inspector, b = d.obstacle;
+    if (!(a.blank && a.open && a.reopened === 1 && a.view === 'record' && a.target === 'OFFICE-S' && a.expanded && J(a.said) === J([a.title]) && a.said.indexOf('details closed') < 0))
+      fails.push(['an inspector listener that opens another record as the tap closes this one keeps that record\'s sheet open and announced, and nothing is announced closed', a]);
+    if (!(b.blank && b.open && b.reopened === 1 && b.view === 'record' && b.target === 'OFFICE-S' && b.expanded && b.atFit === false && J(b.said) === J([b.title]) && b.said.indexOf('details closed') < 0))
+      fails.push(['an obstacle listener that opens another record as the sheet folds leaves that record\'s sheet open and announced, the camera where its opening left it, off the Fit, and nothing is announced closed', b]);
+    return { ok: fails.length === 0, d: { fails, d } };
+  },
+  /* U55: a followed reference whose selection throws, by the adapter's own error and by a malformed section
+     the owner reports, on a page of its own, since those errors are uncaught: the page's error event and the
+     browser's own report of each uncaught error are both checked */
+  async u55(P) {
+    const d = {}, fails = [];
+    for (const how of ['adapter', 'section']) {
+      const e0 = P.errors.length, r = await P.ev(`C.followThrows(${J(how)})`);
+      if (!r.ok) { fails.push(['setup ' + how, r.d]); continue; }
+      d[how] = Object.assign(r.d, { reported: P.errors.length - e0 });
+    }
+    for (const how of ['adapter', 'section']) {
+      const x = d[how]; if (!x) continue;
+      if (!(x.threw.armed === false && x.threw.locked === 'VM-HG-243'))
+        fails.push([how + ': the followed reference selects the linked place and reaches its rendering, set to throw once', x.threw]);
+      if (!(x.threw.caught === 1 && x.threw.same && x.reported === 1))
+        fails.push([how + ': the error reaches the page unchanged, reported once as uncaught', Object.assign({ reported: x.reported }, x.threw)]);
+      if (!(x.other.view === 'item' && x.other.target === 'VM-HG-245' && x.other.locked === 'VM-HG-245' && x.other.ret === null && x.again.view === 'item' && x.again.target === 'VM-HG-243' && x.again.locked === 'VM-HG-243' && x.again.ret === null))
+        fails.push([how + ': after recovery, the linked place selected on the map after another place offers no way back to the record', { other: x.other, again: x.again }]);
+      if (!(x.control.reached && x.control.view === 'item' && x.control.target === 'VM-HG-243' && x.control.ret === 'OFFICE-N' && x.control.caught === x.threw.caught))
+        fails.push([how + ': the control: the same reference followed again with nothing thrown offers back to the record', x.control]);
+    }
+    return { ok: fails.length === 0, d: { fails, d } };
+  }
+});
+
 async function run() {
   const b = await launch();
   const { srv, base } = await serve();
@@ -1442,6 +1872,20 @@ async function run() {
     await W('U6 Escape closes the record first, keeping the selection, then clears the selection', 'escapeOrder');
     await W('U41 a record\'s origin: opened with none (the page, a search result, a link that is no origin) or with another origin than the locked node, it clears that lock as the module\'s clearing, before its view is drawn, with the record open, nothing drawn as selected and the camera still (and, by the page, the focus kept and the live region written once, with the record); followed from the selected node, opened by the page from it, or followed on from that record\'s view, the node stays with the way back; the page\'s own clearing leaves the record open; a select listener that opens another view at the clearing ends the opening, with the record neither drawn nor announced', 'recordOrigin');
     await W('U42 a later arrival naming a record, with a node locked, opens the record with no origin and clears the lock', 'recordOriginArrival');
+    await W('U45 the record context: a record opened with no origin frames each shown place it links to through the adapter\'s linkPlanes, 1px at full strength with nothing dimmed or selected, and frames no link on another plane; a filter that hides one of two linked places frames the other, and one that hides both leaves the map neutral with the context held, as do a record with no link and an adapter that names no plane; following a reference to another record moves the context to that record\'s set; a record opened from a node holds no context and frames none of its links; a selection ends it; teardown leaves the host as it was; linkPlanes and closed are checked at mount', 'recordContext');
+    await W('U49 the way back to a record: a place reached by a reference of a record opened with no origin offers back to that record, which reopens it with its frames and no selection, the camera where the reference put it; the same place selected on the map, or reached from a record opened from a node, offers none', 'recordReturn');
+    { const Pf = await open(b, url); const r = await KEYED.u55(Pf);
+      check('U55 a followed reference whose selection throws, by the adapter\'s own error or a malformed section the owner reports: the error reaches the page unchanged, and after recovery the linked place selected on the map after another place offers no way back to the record; the same reference followed again with nothing thrown offers it (the control)', r.ok, J(r.d.fails || r.d).slice(0, 400));
+      await Pf.close(); }
+    { const Pk = await open(b, url);
+      { const r = await KEYED.u46(Pk); check('U46 hover in the record context, by a real mouse: with nothing open the hovered leaf previews, dims the rest and is framed (the control); in the context it previews nothing, dims nothing and takes no frame, its pixels unchanged and the pointer cursor kept; a hovered linked leaf keeps its frame with nothing added; so too with every linked leaf filtered out and beside a record with no link; a click selects the leaf and ends the context, and a click on the framed leaf offers no way back', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+      { const r = await KEYED.u47(Pk); check('U47 the keyboard focus in the record context, by real keys: arrows move the focus, announce each move and draw the ring with the linked frame kept and nothing dimmed, and on the linked place the ring is drawn with that place\'s linked frame kept; Enter selects the focused node and ends the context', r.ok, J(r.d).slice(0, 400)); }
+      { const r = await KEYED.u48(Pk); check('U48 the chooser in the record context, by real clicks and keys: its preview replaces the linked frames while it is open; Escape closes it first and restores the frames with the record kept; choosing a mark selects it and ends the context; a click on empty canvas with the chooser open closes both and says so', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+      { const r = await KEYED.u50(Pk); check('U50 closing a record on a wide canvas, by real input: a drag pans and leaves it open; a click on empty canvas with nothing selected closes it and says details closed once, the camera still, a record whose origin a filter has cleared included; with a node selected the click clears the selection and the record together; Escape closes it and says so once, and from a record opened from the selected node returns to that node and announces it; a click with nothing open writes nothing; the adapter\'s closed words replace the default, and an empty one announces nothing', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+      { const r = await KEYED.u52(Pk); check('U52 a record opened with no origin over a hover preview, by a real mouse, its panel collapsed: entering the record context ends the preview with a preview event, and the record opens its panel and is announced (the control); a preview listener that selects another leaf on that event, or destroys the map, stops the opening: openRecord returns false, the record is not announced over the leaf, and the restored host is left as it was', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+      { const r = await KEYED.u53(Pk); check('U53 a close on a wide canvas interrupted, by real input: an inspector listener that opens another record as Escape or a click on empty canvas closes this one leaves that record open and announced, and nothing is announced closed', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+      check('U45b no uncaught error on the record-context page', Pk.errors.length === 0, J(Pk.errors.slice(0, 3)));
+      await Pk.close(); }
     await W('U7 show-all: the head, then all, and the head again for another target', 'showAll');
     await W('U8 relation rows show direction (out, in, undirected) and flag a never-drawn plane', 'relations');
     await W('U9 under a filter, a row to a filtered-out node is flagged; following it resets the filter (the facets controls too) and selects it', 'outside');
@@ -1538,6 +1982,8 @@ async function run() {
     await W('U16 compact: a selection opens the sheet with no refit, and the selected node lands beside the sheet, not under it', 'compactReveal');
     await W('U43 compact: with a node locked and the sheet folded, a record opened with no origin clears the lock while the sheet is still folded, then opens the sheet, and the camera stays rather than bringing the cleared node beside the sheet', 'recordCamera');
     await W('U44 compact: with a node locked and the sheet folded, a select listener that destroys the map while a record opened with no origin clears the lock stops the opening: openRecord returns false and the restored host is left as it was before the mount', 'recordTeardown');
+    { const r = await KEYED.u51(P); check('U51 compact, by real touch: a drag pans and leaves the record and its sheet open; a tap on empty canvas closes the record, folds the sheet and says so', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
+    { const r = await KEYED.u54(P); check('U54 compact, by real touch: a listener that opens another record as a tap on empty canvas closes this one, on the close\'s inspector event or as the sheet folds, leaves that record\'s sheet open and announced and, as the sheet folds, the camera where its opening left it; nothing is announced closed', r.ok, J(r.d.fails || r.d).slice(0, 400)); }
     await W('U18 compact: a selection opening the sheet over an open chrome panel at the Fit closes the panel and refits nothing', 'compactClaimNoFit');
     { const r = await KEYED.u27(P); measures.u27 = r.d; check('U27 compact, with a record and a filter: collapsing, expanding and a portrait / landscape turn and back keep the record, selection and filter, with the Fit edges following the state; at the Fit, opening never refits or shrinks the drawing and keeps the leaf beside the sheet, closing returns to the same Fit, a turn refits and the turn back restores the same Fit; away from it the camera stays', r.ok, J(r.d).slice(0, 400)); }
     { const r = await KEYED.q15(P); check('Q15 compact, with the keyboard: choosing a result closes the drawer with focus on its trigger, and Escape then clears the selection', r.ok, J(r.d)); }
@@ -1757,18 +2203,83 @@ async function run() {
        ['', "      expand(true, cause || 'reader', false);\n      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      say(targetFor(id));\n"],
        'recordCamera', { width: 390, height: 844, touch: true }, (r) => r.d.still === false && r.d.s[2] === null && !!r.d.atClear && r.d.atClear.expanded === true],
       ['X39 a record planted to clear the lock only once its view is drawn fails U41: the clearing comes after the record is drawn', 'diagrams-radial-inspector.js',
-       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      render();\n      expand(true, cause || 'reader', false);\n"],
-       ['', "      render();\n      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      expand(true, cause || 'reader', false);\n"],
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      render();\n      /* drawing the view can enter"],
+       ['', "      render();\n      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      /* drawing the view can enter"],
        'recordOrigin', {}, (r) => !!r.d.page && r.d.page.drawnFirst === true && r.d.page.b.locked === null],
       ['X40 a record planted to go on opening after a select listener destroyed the map fails U44: openRecord returns true and the opening writes onto the restored host', 'diagrams-radial-inspector.js',
-       "      if (destroyed || view !== 'record' || target !== id) return false;\n", "      if (view !== 'record' || target !== id) return false;\n",
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      if (destroyed || view !== 'record' || target !== id) return false;\n", "the last word in the same way */\n      if (destroyed || view !== 'record' || target !== id) return false;\n"],
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      if (view !== 'record' || target !== id) return false;\n", "the last word in the same way */\n      if (view !== 'record' || target !== id) return false;\n"],
        'recordTeardown', { width: 390, height: 844, touch: true }, (r) => r.d.gone === true && r.d.r === true && r.d.same === false],
       ['X41 a record planted to announce at the clearing, before the record in the same task, fails U41: each live-region write is recorded, two where one is due', 'diagrams-radial-inspector.js',
        "      if (held && held !== origin) api.select(null, 'inspector', 'module');\n", "      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      api.announce('cleared');\n",
        'recordOrigin', {}, (r) => !!r.d.page && r.d.page.said.length === 2 && r.d.page.said[0] === 'cleared'],
       ['X42 a record planted to go on opening after a select listener opened another view fails U41: openRecord returns true and the record is announced over the other view', 'diagrams-radial-inspector.js',
-       "      if (destroyed || view !== 'record' || target !== id) return false;\n", "      if (destroyed) return false;\n",
-       'recordOrigin', {}, (r) => !!r.d.moved && r.d.moved.r === true && r.d.moved.said.indexOf(r.d.moved.rec) >= 0]);
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      if (destroyed || view !== 'record' || target !== id) return false;\n", "the last word in the same way */\n      if (destroyed || view !== 'record' || target !== id) return false;\n"],
+       ["      if (held && held !== origin) api.select(null, 'inspector', 'module');\n      if (destroyed) return false;\n", "the last word in the same way */\n      if (destroyed) return false;\n"],
+       'recordOrigin', {}, (r) => !!r.d.moved && r.d.moved.r === true && r.d.moved.said.indexOf(r.d.moved.rec) >= 0],
+      ['X43 hover planted to be suppressed only while a linked place is shown fails U46: with every linked place filtered out, and beside a record with no link, hover previews and dims beside the open record', 'diagrams-radial-engine.js',
+       '      if (locked || context) return;\n', '      if (locked || (context && Array.from(context).some(visible))) return;\n', KEYED.u46, {},
+       (r) => r.d.fails.length === 2 && /every linked leaf filtered out/.test(r.d.fails[0][0]) && /no recorded link/.test(r.d.fails[1][0])],
+      ['X44 the linked set planted to take every link, whatever its plane, fails U45: the greenway link frames its place', 'diagrams-radial-inspector.js',
+       '        if (linkPlanes.has(l.edge.plane) && l.other && api.node(l.other.id)) s.add(l.other.id);', '        if (l.other && api.node(l.other.id)) s.add(l.other.id);', 'recordContext', {},
+       (r) => J(r.d.open.ctx) === J(['VM-HG-243', 'VM-HG-245', 'VM-HG-246']) && r.d.open.framed.length === 3],
+      ['X45 the context planted to hold only while the record has a qualifying link fails U45: a record with no link, and an adapter that names no plane, lose it', 'diagrams-radial-inspector.js',
+       '      api.recordContext(want ? linkedTo(want) : null);', '      var ls = want ? linkedTo(want) : null; api.recordContext(ls && ls.size ? ls : null);', 'recordContext', {},
+       (r) => r.d.zero.ctx === null && r.d.unnamed.ctx === null && r.d.pass.okOpen],
+      ['X46 hover planted to preview in the record context fails U46: the hovered leaf is previewed and the rest dim beside the open record', 'diagrams-radial-engine.js',
+       '      if (locked || context) return;\n', '      if (locked) return;\n', KEYED.u46, {},
+       (r) => r.d.fails.some((f) => /in the record context, hover/.test(f[0])) && r.d.d.ctx.preview !== null && r.d.d.ctx.dim > 0],
+      ['X48 the exporter planted to keep the linked class fails W6: the plate with the context held differs from the neutral plate and carries the class', 'diagrams-radial-export.js',
+       "  var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on', 'is-linked'];", "  var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on'];", 'contextPlate', {},
+       (r) => r.d.same === false && r.d.tokens > 0],
+      ['X49 the way back planted to follow any record\'s reference fails U49: a place reached from a record opened from a node offers back to it', 'diagrams-radial-inspector.js',
+       "      var from = view === 'record' && !origin ? target : null;", "      var from = view === 'record' ? target : null;", 'recordReturn', {},
+       (r) => r.d.fromOrigin.ret === true && r.d.node.ret === 'OFFICE-N'],
+      ['X50 empty canvas planted to close only a record opened with no origin fails U50: a record whose origin a filter has cleared stays open', 'diagrams-radial-inspector.js',
+       "      if (destroyed || view !== 'record' || api.selection().locked) return;\n      closeRecord('reader');", "      if (destroyed || view !== 'record' || origin || api.selection().locked) return;\n      closeRecord('reader');", KEYED.u50, {},
+       (r) => r.d.fails.length === 1 && /filter has cleared/.test(r.d.fails[0][0])],
+      ['X51 Escape planted to close a record unannounced fails U50: closing by Escape writes nothing', 'diagrams-radial-inspector.js',
+       'if (idle && stillClosed()) sayClosed(); } });', '} });', KEYED.u50, {},
+       (r) => r.d.fails.some((f) => /^Escape closes the record/.test(f[0])) && r.d.d.esc.view === 'idle' && r.d.d.esc.said.length === 0],
+      ['X52 the chooser planted not to repaint as it closes fails U48: Escape leaves its preview drawn in place of the linked frames', 'diagrams-radial-engine.js',
+       '      previewId = null; paint(locked);\n      if (held) stage.focus({ preventScroll: true });', '      previewId = null;\n      if (held) stage.focus({ preventScroll: true });', KEYED.u48, {},
+       (r) => r.d.fails.some((f) => /restores the frames/.test(f[0]))],
+      ['X53 teardown planted to leave the record context\'s class on the stage fails U45: the host is not left as it was', 'diagrams-radial-engine.js',
+       "      stage.classList.remove('panning', 'is-over-mark', 'is-record-context');", "      stage.classList.remove('panning', 'is-over-mark');", 'recordContext', {},
+       (r) => r.d.teardown.held === true && r.d.teardown.same === false && r.d.pass.okOpen],
+      ['X54 the empty-canvas close planted not to fold the sheet fails U51: the record closes with the sheet left open', 'diagrams-radial-inspector.js',
+       "      if (compact && expanded) expand(false, 'reader');\n      if (stillClosed()) sayClosed();", "      if (stillClosed()) sayClosed();", KEYED.u51, { width: 390, height: 844, touch: true },
+       (r) => r.d.fails.length === 1 && /folds the sheet/.test(r.d.fails[0][0]) && r.d.tap.view === 'idle' && r.d.tap.expanded === true],
+      ['X55 the linked frame planted on a place the filter hides fails U45: the hidden place keeps the linked class', 'diagrams-radial-engine.js',
+       "        x.g.classList.toggle('is-linked', !!linked && linked.has(k) && visible(k));", "        x.g.classList.toggle('is-linked', !!linked && linked.has(k));", 'recordContext', {},
+       (r) => J(r.d.filtered.linked) === J(['VM-HG-243', 'VM-HG-246']) && J(r.d.filtered.ctx) === J([])],
+      ['X56 the context planted to keep its first record\'s set when another record opens fails U45: the other record shows the first one\'s frames', 'diagrams-radial-inspector.js',
+       '      if (want === contextFor) return;', '      if (!!want === !!contextFor) return;', 'recordContext', {},
+       (r) => r.d.switch.target === 'OFFICE-S' && J(r.d.switch.framed) === J(['VM-HG-243', 'VM-HG-246']) && r.d.pass.okOpen],
+      ['X57 the close planted to announce an empty closed fails U50: an adapter that silences it gets an empty write', 'diagrams-radial-inspector.js',
+       'function sayClosed() { var msg = fill(words.closed, { name: words.name }); if (msg) api.announce(msg); }', 'function sayClosed() { api.announce(fill(words.closed, { name: words.name })); }', KEYED.u50, {},
+       (r) => r.d.fails.length === 1 && /an empty closed/.test(r.d.fails[0][0]) && J(r.d.d.silent.said) === J([''])],
+      ['X58 an opening planted to go on after drawing its view fails U52: with a preview listener that selects another leaf as the preview ends, openRecord returns true and the record is announced over the leaf; with one that destroys the map, it returns true and writes onto the restored host', 'diagrams-radial-inspector.js',
+       "the last word in the same way */\n      if (destroyed || view !== 'record' || target !== id) return false;\n", "the last word in the same way */\n", KEYED.u52, {},
+       (r) => r.d.fails.length === 2 && /selects another leaf/.test(r.d.fails[0][0]) && /destroys the map/.test(r.d.fails[1][0]) && r.d.d.select.r === true && !!r.d.rec && r.d.d.select.said.indexOf(r.d.rec) >= 0 && r.d.d.destroy.r === true && r.d.d.destroy.same === false],
+      ['X59 the empty-canvas close planted to fold the sheet whatever a listener opened fails U54: the record an inspector listener opens as the tap closes the other has its sheet folded', 'diagrams-radial-inspector.js',
+       "      closeRecord('reader');\n      if (!stillClosed()) return;\n", "      closeRecord('reader');\n", KEYED.u54, { width: 390, height: 844, touch: true },
+       (r) => r.d.fails.length === 1 && /as the tap closes/.test(r.d.fails[0][0]) && r.d.d.inspector.view === 'record' && r.d.d.inspector.target === 'OFFICE-S' && r.d.d.inspector.expanded === false && r.d.d.inspector.said.indexOf('details closed') < 0],
+      ['X60 the empty-canvas close planted to announce whatever a listener opened as the sheet folds fails U54: details closed is said while the record an obstacle listener opened stays open', 'diagrams-radial-inspector.js',
+       "      if (stillClosed()) sayClosed();\n    });", "      sayClosed();\n    });", KEYED.u54, { width: 390, height: 844, touch: true },
+       (r) => r.d.fails.length === 1 && /as the sheet folds/.test(r.d.fails[0][0]) && r.d.d.obstacle.view === 'record' && r.d.d.obstacle.target === 'OFFICE-S' && r.d.d.obstacle.expanded === true && r.d.d.obstacle.said.indexOf('details closed') >= 0],
+      ['X61 Escape planted to announce its close whatever a listener opened fails U53: details closed is said while the record an inspector listener opened stays open', 'diagrams-radial-inspector.js',
+       'if (idle && stillClosed()) sayClosed(); } });', 'if (idle) sayClosed(); } });', KEYED.u53, {},
+       (r) => r.d.fails.length === 1 && /^Escape closing/.test(r.d.fails[0][0]) && r.d.d.esc.view === 'record' && r.d.d.esc.target === 'OFFICE-S' && r.d.d.esc.said.indexOf('details closed') >= 0],
+      ['X62 the fold planted to return to the Fit whatever an obstacle listener opened fails U54: the record opened as the sheet folds keeps its open sheet, and the camera goes back to the Fit under it', 'diagrams-radial-inspector.js',
+       '      if (destroyed || compact && expanded !== on) return;\n', '', KEYED.u54, { width: 390, height: 844, touch: true },
+       (r) => r.d.fails.length === 1 && /as the sheet folds/.test(r.d.fails[0][0]) && r.d.d.obstacle.view === 'record' && r.d.d.obstacle.target === 'OFFICE-S' && r.d.d.obstacle.expanded === true && r.d.d.obstacle.atFit === true && r.d.d.obstacle.said.indexOf('details closed') < 0],
+      ['X63 the follow planted to clear its way back only when the selection returns fails U55: after the adapter\'s error and after a malformed section, the linked place selected on the map after another place offers back to the record', 'diagrams-radial-inspector.js',
+       "      var ok;\n      try {\n        ok = api.select(id, 'inspector', 'reader');\n      } finally {\n        pending = null;\n      }\n", "      var ok = api.select(id, 'inspector', 'reader');\n      pending = null;\n", KEYED.u55, {},
+       (r) => r.d.fails.length === 2 && r.d.fails.every((f) => /offers no way back/.test(f[0])) && r.d.d.adapter.again.ret === 'OFFICE-N' && r.d.d.section.again.ret === 'OFFICE-N' && r.d.d.adapter.threw.caught === 1 && r.d.d.section.threw.caught === 1 && r.d.d.adapter.reported === 1 && r.d.d.section.reported === 1],
+      ['X64 the follow planted to swallow the selection\'s error fails U55: neither the adapter\'s error nor the malformed section\'s reaches the page', 'diagrams-radial-inspector.js',
+       "      } finally {\n        pending = null;\n      }\n", "      } catch (e) {\n        ok = false;\n      } finally {\n        pending = null;\n      }\n", KEYED.u55, {},
+       (r) => r.d.fails.length === 2 && r.d.fails.every((f) => /reaches the page unchanged/.test(f[0])) && r.d.d.adapter.threw.caught === 0 && r.d.d.section.threw.caught === 0 && r.d.d.adapter.reported === 0 && r.d.d.section.reported === 0 && r.d.d.adapter.again.ret === null && r.d.d.section.again.ret === null]);
     for (const [name, file, from, to, fn, opts, why] of plants) {
       const Q = await open(b, url, opts);
       const pl = await Q.ev(`C.plant(${J(file)}, ${J(from)}, ${J(to)})`);
@@ -1779,6 +2290,13 @@ async function run() {
       check(name, pl.planted && !r.ok && because, pl.planted ? J(r.d).slice(0, 200) : 'the fault could not be planted: the module text changed');
       await Q.close();
     }
+    /* the stylesheet control: the record context's hover rule dropped from the page */
+    { const Q = await open(b, url); const pl = await Q.ev(`C.dropRule('.radial-stage.is-record-context')`);
+      let r = { ok: true, d: 'not run' }; if (pl.dropped === 1) { try { r = await KEYED.u46(Q); } catch (e) { r = { ok: false, d: { fails: [], err: String(e).slice(0, 120) } }; } }
+      check('X47 the record context\'s hover rule planted out of the stylesheet fails U46: the hovered unlinked leaf takes a frame and its pixels change, in the context, with every linked leaf filtered out and beside a record with no link, while nothing is previewed',
+        pl.dropped === 1 && !r.ok && r.d.fails.length === 3 && /in the record context, hover/.test(r.d.fails[0][0]) && /every linked leaf filtered out/.test(r.d.fails[1][0]) && /no recorded link/.test(r.d.fails[2][0]) && r.d.d.zero.hoverFrame === 'inline' && r.d.d.filtered.hoverFrame === 'inline' && r.d.d.ctx.hoverFrame === 'inline' && r.d.d.ctx.same === false && r.d.d.ctx.preview === null,
+        pl.dropped === 1 ? J(r.d.fails || r.d).slice(0, 200) : 'the rule could not be dropped: ' + J(pl));
+      await Q.close(); }
     /* the controls run on the public expressions: the sheet planted to stay open over the drawer, and the
        select handler planted without the deferred check */
     { const x = await KEYED.u34(b, base, EXPR['the Vellmark parks composition'], { file: 'diagrams-radial-inspector.js', from: "inspecting() && !api.othersOpen('inspector')", to: 'inspecting()' });
@@ -1835,6 +2353,7 @@ async function groupW(b, url) {
     plain.ok && busy.ok && plain.svgHash === busy.svgHash && before === after && plain.width === 3840 && plain.height === 2880, J({ plain: plain.ok && plain.svgHash, busy: busy.ok && busy.svgHash, same: before === after }));
   const ctl = await P.ev(`Array.from(document.querySelectorAll('#D [data-radial-slot="actions"] > *')).map((x) => x.className.split(' ').filter((c) => /^radial-/.test(c)).join(' '))`);
   check('W2 the bar carries the drawer trigger, the two export controls and the theme control, in mount order', J(ctl) === J(['radial-drawer-trigger', 'radial-export-control', 'radial-export-control', 'radial-theme-control']), J(ctl));
+  { const r = await P.ev('C.contextPlate()'); check('W6 a page plate with a record context held, its linked frame drawn, is the neutral plate byte for byte, with no linked class in it, and the screen is unchanged', r.ok, J(r.d)); }
   /* the reference content: its plates, its plate lines, its shape key */
   await P.ev(`(async () => { if (FX.inst.D) { FX.inst.D.destroy(); FX.inst.D = null; } const ref = await FX.reference();
     FX.inst.D = DIAGRAM_RADIAL.mount({ host: FX.host('D'), data: ref.data, adapter: ref.adapter, modules: ref.modules }); return true; })()`);
