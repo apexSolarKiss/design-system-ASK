@@ -585,6 +585,12 @@ keeps the one violet rail</pre>
     <div data-control="a region that replaces the violet accent around a quotation" data-expect="C0.token" data-expect-token="--ask-emphasis-violet">
       <div style="--ask-emphasis-violet: #808080"><blockquote class="doc-quote"><p>A quotation whose violet rail is gray.</p></blockquote></div>
     </div>
+    <div data-control="a region that restores the retired external state token" data-expect="C0.token" data-expect-token="--state-external" style="--state-external: #AA40FF">
+      <p>An unmapped paragraph: no governed role here, so only the retired token can fire.</p>
+    </div>
+    <div data-control="a region that restores the retired external state ink around a label" data-expect="C0.token" data-expect-token="--state-external-ink">
+      <div style="--state-external-ink: #D9CDE4"><p class="doc-body">Body copy beside a <span class="doc-label surface-bordered-label">source // external</span> label, in a region that defines the retired ink.</p></div>
+    </div>
 
     <!-- Peer groups in structured text (C11): the declared rhythm, measured. Positives first. -->
     <div data-control="two peer groups sit one line apart" data-expect="">
