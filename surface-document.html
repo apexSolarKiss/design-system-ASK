@@ -508,15 +508,16 @@
 
       <!-- THE BORDERED LABEL — one box for every inert bordered label. Neutral here;
            the chips above are its emphasis member, Review Semantics' review mark
-           (review-semantics.html) is its review member, and Spectral State's and
-           Evidence State's keyed labels (spectral-state.html, evidence-state.html)
-           are its state and evidence members. -->
+           (review-semantics.html) is its review member, and Spectral State's,
+           Evidence State's and Criterion Assessment's keyed labels (spectral-state.html,
+           evidence-state.html, criterion-assessment.html) are its state, evidence and
+           assessment members. -->
       <div class="doc-section">
         <h3 class="doc-subsection-title">Bordered label</h3>
         <p class="doc-body">A short inert word inside a thin border:
           <span class="doc-label surface-bordered-label" id="bordered-label">draft</span>
           is read, never operated. The chips above use the same box, as does a review mark where a document
-          adopts Review Semantics, and a keyed state or evidence label, such as State // Held, outside a review
+          adopts Review Semantics, and a keyed state, evidence or assessment label, such as State // Held, outside a review
           annotation; only a governed meaning changes its color.</p>
         <div class="doc-table-scroll" role="region" aria-label="Items by status">
           <table class="doc-table" id="bordered-label-table">
@@ -534,8 +535,10 @@
 
       <!-- THE LABELED RANGE — a scope rail in the outer margin beside the run of
            blocks one label governs. Neutral here; Review Semantics' annotation
-           range (review-semantics.html) is its review member, and the range a
-           keyed state or evidence label opens is its state or evidence member. -->
+           range (review-semantics.html) is its review member, the range a keyed
+           state or evidence label opens is its state or evidence member, and the
+           bounded assessed range an assessment record opens
+           (criterion-assessment.html) is its assessment member. -->
       <div class="doc-section">
         <h3 class="doc-subsection-title">Labeled range</h3>
         <div class="doc-group surface-labeled-range" id="labeled-range">
@@ -845,9 +848,11 @@ headers</pre><pre class="doc-pre-part" data-lead-lines="1">body</pre></div>
         structures a section, list or block, while the ordered sequence carries succession through a run of steps.
         Who is speaking is the consuming surface's assignment, never the element, the font or a
         pair of quotation marks.</p>
+      <p class="doc-body">A short statement presented as someone else's words is a quotation, on the violet rail; the
+        explanation stays outside it:</p>
       <blockquote class="doc-quote" id="passage-quote">
-        <p>A short statement presented as someone else's words is a quotation, on the violet rail.</p>
-        <footer>represented voice</footer>
+        <p>Print the proofs on the uncoated stock, and send them before the end of the month.</p>
+        <footer>the studio's brief, illustrative</footer>
       </blockquote>
       <p class="doc-body">The document's own point, set apart from the prose around it:</p>
       <p class="doc-body surface-emphasis-rail" id="passage-callout">An authorial callout states the document's thesis in its own voice, on the magenta rail, at the body step — even when it <strong>contains a phrase in "quotation marks"</strong>.</p>
@@ -857,7 +862,7 @@ one passage behind the magenta block rail</pre>
       <p class="doc-body">A code excerpt someone else wrote is quoted: the block sits inside the quotation and draws no second rail.</p>
       <blockquote class="doc-quote" id="passage-quoted-code">
         <pre class="doc-pre">if (quoted) keep(oneRail, "violet");</pre>
-        <footer>a quoted excerpt</footer>
+        <footer>a quoted excerpt, illustrative</footer>
       </blockquote>
       <div class="surface-emphasis-rail doc-group" id="passage-emphasis">
         <p class="doc-body">A callout that introduces a block carries both as one unit:</p>
