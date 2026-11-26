@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // rail paint regression fixture</title>
-<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail, a keyed state or evidence range's and a comparison's assessment rail in green or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key, in a dark subtree and beside a structural state range, every bound rail follows the shared paint when it changes, the meaning-named paints read their color's paint, and the bordered label and the passage rail keep their own treatments.">
+<meta name="description" content="Regression fixture for the rail paint in surface-treatments.css: a rail in one governed color takes the same paint whichever meaning draws it. A review range's scope rail, a keyed state or evidence range's, a bounded assessed range's and a comparison's assessment rail in green, yellow or red are painted alike, caution's yellow is the same plain stroke beside a summary, in a value field, in a key, in a dark subtree, beside a partial state range and a partially supported evidence range and on an assessed range, structural's violet keeps the plain stroke, every bound rail follows the shared paint when it changes, the meaning-named paints read their color's paint and structural's retired alias is gone, and the bordered label and the passage rail keep their own treatments.">
 <!-- Serve from the repo root:  python3 -m http.server 8080  →  /tests/rail-paint-fixture.html
      The foundation, the register and the surface treatments, then the state modules, Review Semantics and
      Criterion Assessment, in their load order.
      ?theme=light or ?theme=dark holds a theme; without it the page follows the browser's.
      ?field=<name> declares a root field (data-surface-field): the rail paint must not read it.
      ?control=local-dose, ?control=unbound-range, ?control=unbound-keyed, ?control=label-reach,
-     ?control=field-dose or ?control=alias-value loads one regression, which must fail only the cases
-     tests/README.md names for it. -->
+     ?control=field-dose, ?control=alias-value, ?control=structural-alias or ?control=former-colors loads one
+     regression, which must fail only the cases tests/README.md names for it. -->
 <script>
   (function () {
     var q = new URLSearchParams(location.search), t = q.get('theme'), c = q.get('control'), f = q.get('field');
@@ -41,10 +41,12 @@
   /* The regressions. Each outranks the rule it replaces. */
   html.fx-control-local-dose .doc-compare-assessed[data-assessment="caution"] { --doc-compare-rail-paint: 0 0 0 1px; }
   html.fx-control-unbound-range .doc-annotation-range:has(> .doc-annotations:first-child .doc-mark[data-review]) { --surface-labeled-range-paint: none; }
-  html.fx-control-unbound-keyed .surface-labeled-range:has(> :is(.state-label, .evidence-label):first-child) { --surface-labeled-range-paint: none !important; }
+  html.fx-control-unbound-keyed .surface-labeled-range:has(> :is(.state-label, .evidence-label, .assessment-record):first-child) { --surface-labeled-range-paint: none !important; }
   html.fx-control-label-reach .doc-mark[data-review="declined"] { box-shadow: var(--surface-rail-paint-red); }
   html.fx-control-field-dose[data-surface-field] { --surface-rail-paint-yellow: 0 0 0 1px; }
   html.fx-control-alias-value { --surface-rail-paint-earned: none !important; }
+  html.fx-control-structural-alias { --surface-rail-paint-structural: var(--surface-rail-paint-yellow); }
+  html.fx-control-former-colors { --state-structural: var(--ask-state-value-yellow); --state-partial: var(--ask-state-value-orange); }
 </style>
 </head>
 <body>
@@ -54,8 +56,10 @@
     <h1 class="doc-title">Rail paint</h1>
     <p class="doc-body">Each case is measured once the fonts are ready. A rail in one governed color takes the same
       paint whichever meaning draws it: a review range's scope rail, a keyed state or evidence range's and a
-      comparison's assessment rail in green or red are painted alike, and caution's yellow is the same plain stroke
-      beside a summary, in a value field, in a key, in a dark subtree and beside a structural state range. Each paint is keyed by its color, and the meaning-named paints are aliases that read it.
+      comparison's assessment rail in green or red are painted alike, and yellow is the same plain stroke beside a
+      caution summary, in a value field, in a key, in a dark subtree, on a caution assessed range and beside a partial
+      state range and a partially supported evidence range. Structural's violet takes no paint. Each paint is keyed by its color, and the meaning-named paints are aliases that read it; structural's
+      alias is retired.
       When the shared paint changes, every rail bound to it follows; the bordered label and the passage rail keep their
       own treatments.</p>
     <p class="doc-label" id="overall">not run</p>
@@ -95,9 +99,9 @@
       <span class="doc-label surface-bordered-label state-label" data-state="earned">State // Earned</span>
       <p class="doc-body">A range whose label names an earned state.</p>
     </div>
-    <div class="doc-group surface-labeled-range" id="kr-structural" data-paint="yellow">
-      <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
-      <p class="doc-body">A range whose label names a structural state.</p>
+    <div class="doc-group surface-labeled-range" id="kr-partial" data-paint="yellow">
+      <span class="doc-label surface-bordered-label state-label" data-state="partial">State // Partial</span>
+      <p class="doc-body">A range whose label names a partial state.</p>
     </div>
     <div class="doc-group surface-labeled-range" id="kr-deflated" data-paint="red">
       <span class="doc-label surface-bordered-label state-label" data-state="deflated">State // Deflated</span>
@@ -106,6 +110,26 @@
     <div class="doc-group surface-labeled-range" id="kr-supported" data-paint="green">
       <span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span>
       <p class="doc-body">A range whose label names supported evidence.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-partially-supported" data-paint="yellow">
+      <span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span>
+      <p class="doc-body">A range whose label names partially supported evidence.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-contradicted" data-paint="red">
+      <span class="doc-label surface-bordered-label evidence-label" data-evidence="contradicted">Evidence // Contradicted</span>
+      <p class="doc-body">A range whose label names contradicted evidence.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-caution" data-paint="yellow">
+      <div class="assessment-record"><span class="doc-label surface-bordered-label assessment-label" data-assessment="caution">Assessment // Caution</span><span class="assessment-field doc-meta" data-field="criterion">criterion // effort</span><span class="assessment-field doc-meta" data-field="direction">direction // lower is better</span><span class="assessment-field doc-meta" data-field="scope">scope // this paragraph</span><span class="assessment-field doc-meta" data-field="basis">basis // illustrative</span></div>
+      <p class="doc-body">An assessed range whose record names a caution under one criterion.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-structural" data-paint="">
+      <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
+      <p class="doc-body">A range in a color with no rail paint, a structural state's violet.</p>
+    </div>
+    <div class="doc-group surface-labeled-range" id="kr-weakened" data-paint="">
+      <span class="doc-label surface-bordered-label evidence-label" data-evidence="weakened">Evidence // Weakened</span>
+      <p class="doc-body">A range in a color with no rail paint, weakened evidence's orange.</p>
     </div>
     <div class="doc-group surface-labeled-range" id="kr-held" data-paint="">
       <span class="doc-label surface-bordered-label state-label" data-state="held">State // Held</span>
@@ -146,8 +170,8 @@
 
   <section class="doc-section">
     <h2 class="doc-section-title">A dark subtree</h2>
-    <p class="doc-body">Spectral State's values follow the root theme, so a caution rail inside a dark subtree takes
-      the root's yellow, and its paint follows the root too.</p>
+    <p class="doc-body">Criterion Assessment's values follow the root theme, so a caution rail inside a dark subtree
+      takes the root's yellow, and its paint follows the root too.</p>
     <div class="theme-dark fx-subtree">
       <div class="doc-table-scroll" role="region" aria-label="One option inside a dark subtree" tabindex="0">
         <table class="doc-table doc-compare-table">
@@ -216,17 +240,27 @@
       var first = before[ids[0]], all = ids.every(function (id) { return before[id].color === first.color && before[id].shadow === first.shadow; });
       expect(name, all ? 'one paint' : ids.map(function (id) { return id + ' ' + before[id].color + ' ' + before[id].shadow; }).join(' / '), 'one paint');
     };
-    same('one red / the declined range, the deflated range and every adverse rail', ['r-declined', 'kr-deflated', 'a-adv', 'f-adv', 'k-adv']);
+    same('one red / the declined range, the deflated and contradicted ranges and every adverse rail', ['r-declined', 'kr-deflated', 'kr-contradicted', 'a-adv', 'f-adv', 'k-adv']);
     same('one green / the accepted range, the earned and supported ranges and every favorable rail', ['r-accepted', 'kr-earned', 'kr-supported', 'a-fav', 'f-fav', 'k-fav']);
-    same('one yellow / caution beside a summary, in a field, in the key and in a dark subtree, and the structural range', ['a-cau', 'f-cau', 'k-cau', 's-cau', 'kr-structural']);
+    same('one yellow / caution beside a summary, in a field, in the key, in a dark subtree and on an assessed range, and the partial and partially supported ranges', ['a-cau', 'f-cau', 'k-cau', 's-cau', 'kr-caution', 'kr-partial', 'kr-partially-supported']);
+    /* Each keyed range's rail is its role's physical color, written here as the 8-bit color it resolves to and never
+       read from the owner, and matched within 1 of each component: a browser may round an HSL value either way. */
+    var COLOR = { green: 'rgb(56, 250, 56)', yellow: 'rgb(250, 250, 56)', red: 'rgb(250, 56, 56)', violet: 'rgb(170, 64, 255)', orange: 'rgb(255, 128, 0)', cyan: 'rgb(0, 190, 255)' };
+    var rgb = function (v) { var m = String(v).match(/^rgb\((\d+), (\d+), (\d+)\)$/); return m ? [+m[1], +m[2], +m[3]] : null; };
+    var near = function (a, b) { var x = rgb(a), y = rgb(b); return !!x && !!y && [0, 1, 2].every(function (i) { return Math.abs(x[i] - y[i]) <= 1; }); };
+    [['kr-earned', 'green'], ['kr-partial', 'yellow'], ['kr-deflated', 'red'], ['kr-structural', 'violet'], ['kr-held', 'cyan'],
+     ['kr-supported', 'green'], ['kr-partially-supported', 'yellow'], ['kr-weakened', 'orange'], ['kr-contradicted', 'red'], ['kr-caution', 'yellow']]
+      .forEach(function (k) { var c = before[k[0]].color; rows.push([near(c, COLOR[k[1]]), 'color / ' + k[0] + ' is ' + k[1], c, COLOR[k[1]] + ' within 1']); });
     /* The bordered label and the passage rail keep their own treatments. */
     var label = $('l-declined'), lc = cs(label);
     expect('label / the declined mark keeps its own edge', shadow(lc.boxShadow), (dark ? '0px 0px 0px 0px' : '0px 0px 0px 1px') + ' in ' + lc.borderTopColor);
     var labelBefore = shadow(lc.boxShadow), quoteBefore = cs($('quote')).boxShadow + ' / ' + cs($('quote')).borderLeftWidth;
     /* Each meaning-named paint is an alias: it reads its color's paint and carries no value of its own. */
-    var aliases = [['earned', 'green'], ['structural', 'yellow'], ['deflated', 'red']];
+    var aliases = [['earned', 'green'], ['deflated', 'red']];
     var root = function (name) { return cs(document.documentElement).getPropertyValue('--surface-rail-paint-' + name).trim(); };
     aliases.forEach(function (a) { expect('alias / ' + a[0] + ' reads ' + a[1], root(a[0]), root(a[1])); });
+    /* Structural's alias, which read yellow, is retired with structural's move to violet: nothing declares it. */
+    expect('retired / no structural alias', root('structural'), '');
 
     /* Change the shared paint: every rail bound to it follows, and nothing else moves. */
     var perturb = document.createElement('style');

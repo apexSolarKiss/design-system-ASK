@@ -38,11 +38,13 @@
       an example keeps its relations, rings and letters where the neutral plate has them; its colored
       nodes take their system's tokens on a page and resolved roles in a file, an unassessed node keeps
       the neutral ring and its figure as plain text; it is drawn keyed only, its notes and band stay
-      in their slots, and the exporter resolves its roles from the systems' stylesheets. The engine
+      in their slots, and the exporter resolves its roles from the systems' stylesheets to their
+      approved values, each ink the exact approved recipe, written here and never read from the
+      owner (S11, S12). The engine
       and the exporter read a spec's declaration by one rule, its own property, and a plate is drawn
       only from the role values its theme owns and the engine checked (S14, S15)
    X  negative controls: each check fails for its intended reason on a mutated copy of the engine,
-      the exporter or a relation source */
+      the exporter or a relation source, or on a former binding or ink (X30, X31) */
 import vm from 'node:vm';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -552,10 +554,47 @@ const ASM = byId['triangle.A-S-K.assessment'], LEJ = byId['triangle.L-E-J.functi
 const GM = P.GEOMETRY, X0 = (GM.size - 2 * GM.radius) / 2, TEXT_MAX = GM.bandRight - X0 - GM.bandLabelWidth;
 const adv = (t, size) => [...t].reduce((w, c) => w + G.advances.em[c], 0) * size;
 const RESOLVED = { name: 'light', fieldFrom: '#D4C6E1', fieldTo: '#E2D3F0', ink: '#6A637F', fontFamily: 'Inter', labelWeight: 200, keyWeight: 400 };
+/* the approved inks (ASK, 2026-11-25) as their exact recipes, written here and never read from the owner: the
+   ink on green, yellow, orange and white is #6A637F's hue and saturation at a selected lightness, on red, violet
+   and magenta the lavender's, and on cyan #6A637F itself; each is the same in both themes */
+const INK = { green: 'hsl(255.0000 12.3894% 54.6289%)', yellow: 'hsl(255.0000 12.3894% 51.0988%)', red: 'hsl(271.1111 31.0345% 88.0838%)',
+  magenta: 'hsl(271.1111 31.0345% 91.9618%)', white: 'hsl(255.0000 12.3894% 53.9877%)', cyan: '#6A637F', lavender: '#6A637F' };
 const ROLES = {
-  'criterion-assessment': { favorable: { fill: '#38FA38', ink: '#6A637F' }, caution: { fill: '#FAFA38', ink: '#6A637F' }, adverse: { fill: '#FA3838', ink: '#D4C6E1' } },
-  'three-functions': { legislative: { fill: '#FF00FF', ink: '#D4C6E1' }, executive: { fill: '#FFFFFF', ink: '#6A637F' }, judicial: { fill: '#00BEFF', ink: '#6A637F' } },
+  'criterion-assessment': { favorable: { fill: '#38FA38', ink: INK.green }, caution: { fill: '#FAFA38', ink: INK.yellow }, adverse: { fill: '#FA3838', ink: INK.red } },
+  'three-functions': { legislative: { fill: '#FF00FF', ink: INK.magenta }, executive: { fill: '#FFFFFF', ink: INK.white }, judicial: { fill: '#00BEFF', ink: INK.cyan } },
 };
+/* each role's approved physical fill and ink, for each theme: the same in both but the executive's, white and its
+   ink in light, the lavender and #6A637F in dark */
+const APPROVED = {
+  'criterion-assessment': { light: ROLES['criterion-assessment'], dark: ROLES['criterion-assessment'] },
+  'three-functions': { light: ROLES['three-functions'], dark: { ...ROLES['three-functions'], executive: { fill: '#D4C6E1', ink: INK.lavender } } },
+};
+/* a color as #RRGGBB: a hex value as written, an hsl() in either syntax converted and rounded to 8 bits */
+const hex = (v) => {
+  const t = String(v).trim();
+  if (/^#[0-9a-f]{6}$/i.test(t)) return t.toUpperCase();
+  const m = t.match(/^hsl\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%\s*\)$/i);
+  if (!m) return 'NOT A COLOR ' + t;
+  const h = +m[1] / 360, sat = +m[2] / 100, l = +m[3] / 100, q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat, p0 = 2 * l - q;
+  const ch = (x) => { x = (x + 1) % 1; const c = x < 1 / 6 ? p0 + (q - p0) * 6 * x : x < 1 / 2 ? q : x < 2 / 3 ? p0 + (q - p0) * (2 / 3 - x) * 6 : p0;
+    return Math.round(c * 255).toString(16).padStart(2, '0'); };
+  return ('#' + ch(h + 1 / 3) + ch(h) + ch(h - 1 / 3)).toUpperCase();
+};
+/* each resolved role that is not its approved value: its fill as a color, its ink as the exact recipe */
+const offApproved = (roles, system, theme) => Object.entries(APPROVED[system][theme]).filter(([r, w]) => !roles[r] || hex(roles[r].fill) !== w.fill || roles[r].ink !== w.ink)
+  .map(([r]) => `${system} ${theme} ${r} ${roles[r] ? roles[r].fill + ' / ' + roles[r].ink : 'missing'}`);
+/* the colored roles a file's rules draw: each ring's fill and boundary, and each letter's ink, as written */
+const paintIn = (svg, attr) => {
+  const out = {};
+  for (const m of svg.matchAll(new RegExp(`\\.peer-ring\\[data-${attr}="([a-z]+)"\\]\\{fill:([^;}]+);stroke:([^;}]+)\\}`, 'g'))) out[m[1]] = { ...out[m[1]], fill: m[2], stroke: m[3] };
+  for (const m of svg.matchAll(new RegExp(`\\.peer-glyph\\[data-${attr}="([a-z]+)"\\]\\{fill:([^;}]+)\\}`, 'g'))) out[m[1]] = { ...out[m[1]], ink: m[2] };
+  return out;
+};
+/* each colored role a file draws that is not its approved value: a ring and its boundary the role's color, its letter
+   the exact approved recipe */
+const fileOff = (svg, attr, system, theme) => { const got = paintIn(svg, attr);
+  return Object.entries(APPROVED[system][theme]).filter(([r, w]) => !got[r] || hex(got[r].fill) !== w.fill || got[r].stroke !== got[r].fill || got[r].ink !== w.ink)
+    .map(([r]) => `${theme} ${r} ${JSON.stringify(got[r] || null)}`); };
 /* a copy of the assessment example with one change */
 const asm = (change) => { const x = clone(ASM); change(x); return x; };
 const lej = (change) => { const x = clone(LEJ); change(x); return x; };
@@ -621,7 +660,7 @@ const styleOf = (svg) => svg.match(/<style>([\s\S]*?)<\/style>/)[1];
     && vars(svgOf(LEJ)) === '--bg-from,--bg-to,--fg-1,--font-sans,--function-executive,--function-executive-ink,--function-judicial,--function-judicial-ink,--function-legislative,--function-legislative-ink,--fw-extralight,--fw-regular', vars(svgOf(LEJ)));
   const fixedA = svgOf(ASM, { theme: { ...RESOLVED, roles: ROLES['criterion-assessment'] } }), fixedL = svgOf(LEJ, { theme: { ...RESOLVED, roles: ROLES['three-functions'] } });
   check('S4 a standalone example carries its resolved roles and no var()', !/var\(/.test(fixedA) && !/var\(/.test(fixedL)
-    && styleOf(fixedA).includes('.peer-ring[data-assessment="adverse"]{fill:#FA3838;stroke:#FA3838}') && styleOf(fixedA).includes('.peer-glyph[data-assessment="adverse"]{fill:#D4C6E1}')
+    && styleOf(fixedA).includes('.peer-ring[data-assessment="adverse"]{fill:#FA3838;stroke:#FA3838}') && styleOf(fixedA).includes(`.peer-glyph[data-assessment="adverse"]{fill:${INK.red}}`) && styleOf(fixedA).includes('.peer-glyph[data-assessment="caution"]{fill:hsl(255.0000 12.3894% 51.0988%)}')
     && styleOf(fixedL).includes('.peer-ring[data-function="executive"]{fill:#FFFFFF;stroke:#FFFFFF}'));
   const neutralPlates = SPECS.filter((x) => !x.semantic).flatMap((x) => [svgOf(x), svgOf(x, { keyed: true }), svgOf(x, { theme: RESOLVED })]);
   check('S4 a neutral plate draws no assignment, fill rule, note or band, and refuses roles in its theme',
@@ -705,12 +744,15 @@ const styleOf = (svg) => svg.match(/<style>([\s\S]*?)<\/style>/)[1];
   const sheets = ['colors_and_type.css', ...SEMANTIC_SHEETS].map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8'));
   const ca = readRoles(sheets, P.SEMANTIC['criterion-assessment']), tf = readRoles(sheets, P.SEMANTIC['three-functions']);
   const tok = (f, n) => fs.readFileSync(path.join(ROOT, f), 'utf8').match(new RegExp(`${n}:\\s*([^;]+);`))[1].trim();
-  check('S11 the exporter resolves each role through Spectral State or Three Functions to the palette, and each ink through the fill paint',
-    ca.light.favorable.fill === tok('colors_and_type.css', '--ask-state-value-green') && ca.dark.adverse.fill === tok('colors_and_type.css', '--ask-state-value-red')
-    && ca.light.caution.ink === tok('colors_and_type.css', '--ask-fg-light') && ca.dark.adverse.ink === tok('colors_and_type.css', '--ask-lavender-ask')
-    && tf.light.executive.fill === tok('colors_and_type.css', '--ask-white') && tf.dark.executive.fill === tok('colors_and_type.css', '--ask-lavender-ask')
-    && tf.light.legislative.ink === tok('colors_and_type.css', '--ask-lavender-ask') && tf.dark.legislative.ink === tok('colors_and_type.css', '--ask-ink-light')
-    && tf.dark.executive.ink === tok('colors_and_type.css', '--ask-fg-light'), JSON.stringify(tf.dark));
+  const off = ['light', 'dark'].flatMap((t) => [...offApproved(ca[t], 'criterion-assessment', t), ...offApproved(tf[t], 'three-functions', t)]);
+  check('S11 the exporter resolves each role to its approved value, light and dark: favorable green, caution yellow and adverse red, legislative magenta, executive white in light and the lavender in dark, and judicial cyan, each ink the exact approved recipe',
+    off.length === 0 && ca.light.caution.fill === tok('colors_and_type.css', '--ask-state-value-yellow') && tf.light.executive.fill === tok('colors_and_type.css', '--ask-white'), off.join('; '));
+  const named = ['colors_and_type.css', ...SEMANTIC_SHEETS];
+  const caWithout = readRoles(sheets.filter((x, i) => named[i] !== 'spectral-state.css'), P.SEMANTIC['criterion-assessment']);
+  check('S11 Criterion Assessment resolves through the fill paint and its own stylesheet only: its roles read no Spectral State declaration, and resolve the same without spectral-state.css',
+    ca.used.map((i) => named[i]).join() === 'colors_and_type.css,surface-treatments.css,criterion-assessment.css'
+    && tf.used.map((i) => named[i]).join() === 'colors_and_type.css,surface-treatments.css,three-functions.css'
+    && JSON.stringify({ light: caWithout.light, dark: caWithout.dark }) === JSON.stringify({ light: ca.light, dark: ca.dark }), `${ca.used.map((i) => named[i])} | ${tf.used.map((i) => named[i])}`);
   let undeclared = false;
   try { readRoles(sheets.slice(0, 3), P.SEMANTIC['criterion-assessment']); } catch (e) { undeclared = /--assessment-favorable is not declared/.test(e.message); }
   check('S11 without its own stylesheet a system\'s roles fail, rather than guess', undeclared);
@@ -724,17 +766,21 @@ const styleOf = (svg) => svg.match(/<style>([\s\S]*?)<\/style>/)[1];
     check('S12 with a stylesheet missing from the list, a role that does not resolve writes nothing', r2.status === 1 && /--function-legislative is not declared/.test(r2.stderr) && !fs.existsSync(path.join(tmp, 'o2')), r2.stderr.trim());
     const r3 = run(['--out', path.join(tmp, 'o3'), '--tokens', path.join(ROOT, 'colors_and_type.css'), '--spec', 'triangle.A-S-K.assessment', '--spec', 'triangle.L-E-J.functions', ...SEMANTIC_ARGS]);
     const files = r3.status === 0 ? fs.readdirSync(path.join(tmp, 'o3')).sort() : [];
-    const one = files.length ? fs.readFileSync(path.join(tmp, 'o3', 'triangle.L-E-J.functions_keyed-dark.svg'), 'utf8') : '';
-    const two = files.length ? fs.readFileSync(path.join(tmp, 'o3', 'triangle.A-S-K.assessment_keyed-light.svg'), 'utf8') : '';
+    const read = (f) => (files.length ? fs.readFileSync(path.join(tmp, 'o3', f), 'utf8') : '');
+    const one = read('triangle.L-E-J.functions_keyed-dark.svg'), two = read('triangle.A-S-K.assessment_keyed-light.svg');
     const report = r3.status === 0 ? JSON.parse(r3.stdout) : {};
     const pins = (svg, f) => svg.includes(`${f} (sha256 ${sha256(fs.readFileSync(path.join(ROOT, f)))})`);
     check('S12 the exporter writes each example keyed only, light and dark, with its resolved roles, its band and the sha256 of each stylesheet its roles resolved through, and no other',
       files.join() === 'triangle.A-S-K.assessment_keyed-dark.svg,triangle.A-S-K.assessment_keyed-light.svg,triangle.L-E-J.functions_keyed-dark.svg,triangle.L-E-J.functions_keyed-light.svg'
-      && /\.peer-ring\[data-function="executive"\]\{fill:#D4C6E1;stroke:#D4C6E1\}/.test(one) && /\.peer-glyph\[data-function="legislative"\]\{fill:#201D26\}/.test(one)
+      && /\.peer-ring\[data-function="executive"\]\{fill:#D4C6E1;stroke:#D4C6E1\}/.test(one) && one.includes(`.peer-glyph[data-function="legislative"]{fill:${INK.magenta}}`)
       && pins(one, 'surface-treatments.css') && pins(one, 'three-functions.css') && !pins(one, 'spectral-state.css') && !pins(one, 'criterion-assessment.css')
-      && pins(two, 'surface-treatments.css') && pins(two, 'spectral-state.css') && pins(two, 'criterion-assessment.css') && !pins(two, 'three-functions.css')
+      && pins(two, 'surface-treatments.css') && pins(two, 'criterion-assessment.css') && !pins(two, 'spectral-state.css') && !pins(two, 'three-functions.css')
       && one.includes('>Three Functions</text>') && one.includes('SIL OPEN FONT LICENSE Version 1.1') && !/var\(/.test(one)
       && report.semantic['three-functions'].roles.dark.executive.fill === '#D4C6E1', `${r3.status} ${files.join()}`);
+    const fileOffs = files.flatMap((f) => { const [, sys, theme] = f.match(/\.(assessment|functions)_keyed-(light|dark)\.svg$/);
+      return fileOff(read(f), sys === 'assessment' ? 'assessment' : 'function', sys === 'assessment' ? 'criterion-assessment' : 'three-functions', theme).map((x) => `${f}: ${x}`); });
+    check('S12 each written example carries its roles\' approved values, light and dark: each ring and its boundary the role\'s color, and each letter\'s ink the exact approved recipe, spaces and all',
+      files.length === 4 && fileOffs.length === 0 && !/hsl\([^)]*var\(/.test(files.map(read).join('')), fileOffs.join('; '));
     const broken = path.join(tmp, 'broken.css'); fs.writeFileSync(broken, fs.readFileSync(path.join(ROOT, 'three-functions.css'), 'utf8') + '\n.unclosed {');
     const r4 = run(['--out', path.join(tmp, 'o4'), '--tokens', path.join(ROOT, 'colors_and_type.css'), '--spec', 'triangle.L-E-J.functions',
       '--semantic-css', path.join(ROOT, 'surface-treatments.css'), '--semantic-css', broken]);
@@ -989,6 +1035,23 @@ const ROLE_PAIRS = [
   let drawn = ''; try { drawn = rereading.render(ASM, { glyphs: G, theme: inheritedRoles(quoted) }); } catch (e) { drawn = 'THREW ' + e.message; }
   check('X29 S15 bites: an engine that draws from the theme\'s roles, not the ones it checked, throws a raw error on an inherited null role and writes an inherited quote into its rules',
     String(renderError(rereading, ASM, { glyphs: G, theme: inheritedRoles(nulled) })).startsWith('THREW') && drawn.includes("#FAFA38'"), drawn.slice(0, 60));
+}
+
+{
+  // The approved values bite: each check fails for its intended reason on the former binding and the former ink
+  const { readRoles } = await import(pathToFileURL(path.join(DIR, 'export-peer.mjs')).href);
+  const named = ['colors_and_type.css', ...SEMANTIC_SHEETS, 'former binding'];
+  const sheets = ['colors_and_type.css', ...SEMANTIC_SHEETS].map((f) => fs.readFileSync(path.join(ROOT, f), 'utf8'))
+    .concat(':root { --assessment-caution: var(--state-structural); --assessment-caution-ink: var(--state-structural-ink); }');
+  const former = readRoles(sheets, P.SEMANTIC['criterion-assessment']);
+  const off = offApproved(former.light, 'criterion-assessment', 'light');
+  check('X30 S11 bites: caution bound through Spectral State\'s structural again, as it was before structural moved to violet, resolves to the violet and its ink, which the approved values reject, and reads spectral-state.css',
+    off.length === 1 && /^criterion-assessment light caution /.test(off[0]) && hex(former.light.caution.fill) === '#AA40FF' && former.used.map((i) => named[i]).includes('spectral-state.css'), off.join('; '));
+  const lejDark = svgOf(LEJ, { theme: { ...RESOLVED, name: 'dark', roles: APPROVED['three-functions'].dark } });
+  const retired = lejDark.replace(`.peer-glyph[data-function="legislative"]{fill:${INK.magenta}}`, '.peer-glyph[data-function="legislative"]{fill:#201D26}');
+  const offs = [fileOff(lejDark, 'function', 'three-functions', 'dark'), fileOff(retired, 'function', 'three-functions', 'dark')];
+  check('X31 S12 bites: a dark Three Functions file whose legislative letter takes the retired high-contrast ink fails on that letter alone; drawn with the approved roles it passes',
+    retired !== lejDark && offs[0].length === 0 && offs[1].length === 1 && /^dark legislative .*#201D26/.test(offs[1][0]), offs.map((o) => o.join('; ')).join(' | '));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

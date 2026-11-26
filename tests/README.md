@@ -302,13 +302,15 @@ only the tables that show their words.
 
 Guards **the rail paint** in `surface-treatments.css`: a rail in one governed color takes the
 same paint whichever meaning draws it. Each paint is keyed by its color,
-`--surface-rail-paint-green`, `-yellow` and `-red`, and the meaning-named `-earned`, `-structural`
-and `-deflated` are aliases that read their color's paint. The fixture sets five review ranges,
-one per review judgment, and a neutral range; five keyed ranges, opened by Spectral State's
-earned, structural, deflated and held labels and Evidence State's supported label; a comparison that shows its words, with a
-favorable, a caution and an adverse summary; a legend-led comparison with the same three as rated
-figures in value fields, and their key; a caution summary inside a `.theme-dark` subtree; and a
-quotation.
+`--surface-rail-paint-green`, `-yellow` and `-red`, and the meaning-named `-earned` and `-deflated`
+are aliases that read their color's paint; `-structural`, which read yellow, is retired with
+structural's move to violet. The fixture sets five review ranges, one per review judgment, and a
+neutral range; ten keyed ranges, opened by Spectral State's earned, partial, deflated, structural and
+held labels, Evidence State's supported, partially supported, contradicted and weakened labels, and
+one Criterion Assessment record for a caution, a bounded assessed range; a comparison that shows its
+words, with a favorable, a caution and an adverse summary; a legend-led comparison with the same three
+as rated figures in value fields, and their key; a caution summary inside a `.theme-dark` subtree; and
+a quotation.
 
 The page measures each case once the fonts are ready and reports one overall verdict, with a row
 per case:
@@ -317,17 +319,23 @@ per case:
 stroke    every rail is a 2px solid stroke
 paint     each rail's paint is its color's: none for every color, the plain stroke, on both fields,
           in the dark subtree too
-one       the declined range's rail, the deflated range's and every adverse rail share one color
-          and one paint; the accepted range's, the earned and supported ranges' and every favorable
-          rail, another; caution beside a summary, in a field, in the key and in the dark subtree,
-          and the structural range's, a third
+one       the declined range's rail, the deflated and contradicted ranges' and every adverse rail
+          share one color and one paint; the accepted range's, the earned and supported ranges' and
+          every favorable rail, another; caution beside a summary, in a field, in the key, in the dark
+          subtree and on the assessed range, and the partial and partially supported ranges', a third
+color     each keyed range's rail is its role's physical color, written in the fixture as the 8-bit
+          color it resolves to and never read from the owner, within 1 of each component: earned and
+          supported green, partial, partially supported and caution yellow, deflated and contradicted
+          red, structural violet, weakened orange, held cyan
 label     the declined review mark keeps the bordered label's own edge, a 1px reinforcement in
           light and a 0px one in dark
-alias     on the root, earned reads green's paint, structural yellow's and deflated red's
+alias     on the root, earned reads green's paint and deflated red's, and nothing declares the
+          retired structural alias
 follows   with the color-named paints changed on the root (green 3px, yellow 2px, red 1.5px),
-          every rail bound to one follows it, and the proposed, open, no-decision, neutral and held
-          ranges' rails stay bare; each alias follows its color; the declined mark's edge and the
-          quotation's rail do not move; once the change is removed, every rail paints as before
+          every rail bound to one follows it, and the proposed, open, no-decision, neutral,
+          structural, weakened and held ranges' rails stay bare; each alias follows its color; the
+          declined mark's edge and the quotation's rail do not move; once the change is removed,
+          every rail paints as before
 ```
 
 **Run it** from the repo root:
@@ -351,19 +359,27 @@ rule; it fails only the cases named, in every one of those six settings.
 ```text
 ?control=local-dose       caution keeps a dose of its own, as the profile once did: its four rails'
                           paint and follows cases fail, and so does the one-yellow case, since the
-                          structural range keeps the shared paint
+                          assessed range and the partial and partially supported ranges keep the
+                          shared paint
 ?control=unbound-range    the review ranges lose their binding to the shared paint: the accepted
                           and declined ranges' follows cases fail
-?control=unbound-keyed    the keyed ranges lose their binding to the shared paint: the earned,
-                          structural, deflated and supported ranges' follows cases fail
+?control=unbound-keyed    the keyed and assessed ranges lose their binding to the shared paint: the
+                          earned, partial, deflated, supported, partially supported, contradicted and
+                          caution ranges' follows cases fail
 ?control=label-reach      the red rail paint, --surface-rail-paint-red, is put on the declined
                           review mark: the mark's own-edge case and its untouched case fail
 ?field=ask-lavender&control=field-dose
                           a declared field gives yellow a dose, as the retired ring did, through
-                          --surface-rail-paint-yellow: the four caution rails' and the structural
-                          range's paint cases fail; without ?field= the control is inert
+                          --surface-rail-paint-yellow: the four caution rails', the assessed range's and
+                          the partial and partially supported ranges' paint cases fail; without
+                          ?field= the control is inert
 ?control=alias-value      the earned alias carries a value of its own instead of reading green's
                           paint: its alias follows case fails
+?control=structural-alias the retired structural alias is declared again, reading yellow's paint:
+                          the retired-alias case fails
+?control=former-colors    structural takes the yellow and partial the orange again, as before
+                          Spectral State v2.0: the partial and structural ranges' color cases fail,
+                          and so does the one-yellow case
 ```
 
 Until the yellow ring was retired (Spectral State v1.2), the fixture carried two controls for the
@@ -372,26 +388,40 @@ ring's field and subtree logic; with every paint none, neither can fail, so both
 
 ## fill-paint-fixture.html
 
-Guards **the fill paint** in `surface-treatments.css` as Evidence State, Review Semantics and
-Criterion Assessment bind it: each chromatic role names its ink, `--evidence-<role>-ink`,
-`--review-<role>-ink` and `--assessment-<role>-ink`, bound by reference to the ink FILL PAINT keys
-by the fill color, and brown's ink is the lavender in both themes. The fixture sets the four
-chromatic evidence roles and the three assessment roles as filled HTML boxes and SVG shapes, each
-composed by the recipe its contract documents, and the four pending and decided review roles as
-decision nodes, which `review-semantics.css` binds itself; it loads the Evidence State, Review
-Semantics, Criterion Assessment, Spectral State and Three Functions keys and the style guide in
-frames.
+Guards **the fill paint** in `surface-treatments.css` as the semantic systems bind it: each fill
+color's ink is the ink ASK approved for it (2026-11-25), the same in both themes, magenta's included;
+each chromatic role takes its assigned physical color and names its ink, `--state-<role>-ink`,
+`--evidence-<role>-ink`, `--review-<role>-ink`, `--assessment-<role>-ink` and `--function-<role>-ink`,
+bound by reference to the ink FILL PAINT keys by the fill color; and brown, which no role draws, keeps
+the lavender ink. The fixture sets the five chromatic evidence roles and the three assessment roles as
+filled HTML boxes and SVG shapes, each composed by the recipe its contract documents, and the four
+pending and decided review roles as decision nodes, which `review-semantics.css` binds itself; it loads
+Three Functions after the state modules, and the Evidence State, Review Semantics, Criterion
+Assessment, Spectral State and Three Functions keys and the style guide in frames.
+
+Every expected color is written in the fixture as the 8-bit value the approved recipe resolves to, never
+read from the owner, and compared within 1 of each component, alpha exact: a browser may round an HSL
+recipe either way, and the closest two approved inks, white's and green's, differ by 2 in each.
 
 The page measures each case once the fonts and the frames are ready and reports one overall
 verdict, with a row per case:
 
 ```text
-ink       brown's ink, --surface-fill-ink-on-brown, is #D4C6E1
-value     each evidence, review and assessment ink is its color's: #6A637F on green, yellow, orange
-          and cyan, the lavender on red and brown, and on magenta the lavender in light and #201D26
-          in dark
-box, svg  each filled box takes its role's value as fill and edge and its ink as text color; each
-          SVG shape its role's value as fill, and its text the ink
+ink       each fill color's ink is its approved ink, in both themes: green rgb(132, 125, 154), yellow
+          rgb(123, 115, 146), orange rgb(61, 57, 73), red rgb(225, 215, 234), violet rgb(217, 205, 228),
+          magenta rgb(235, 228, 241), white rgb(130, 123, 152); cyan, lavender and the neutral shape the
+          foreground's light value, #6A637F; brown the lavender, #D4C6E1
+neutral   the neutral shape is #BFB3D4 inside a white edge at 90% in light, and the lavender, edge and
+          all, in dark
+assigned  each role takes its physical color: earned, supported, accepted and favorable green;
+          partial, partially supported and caution yellow; weakened orange; deflated, contradicted,
+          declined and adverse red; structural violet; held, unresolved, open and judicial cyan;
+          proposed, review proposed and legislative magenta; executive white in light and the lavender
+          in dark; no role brown
+value     each role's ink is its color's approved ink, the executive's white's in light and the
+          lavender's in dark, and Spectral State's neutral ink the neutral shape's
+box, svg  each filled box takes its role's color as fill and edge and that color's ink as text color;
+          each SVG shape its role's color as fill, and its text the ink
 no ink    not yet testable, no decision recorded, unassessed and lavender-gray declare no ink
 no fill   a record for no decision recorded takes no fill
 follows   with each fill color's ink changed on the root, every role's ink reads its own color's
@@ -409,22 +439,32 @@ python3 -m http.server 8080
 
 The label under the title reads `PASS`, or `FAIL` with the number of failing cases. The cases are
 also on `window.__fillPaintFixture` and the verdict on `body[data-result]`. Run it held light,
-held dark and following the browser, each with the browser's preference light and dark: brown's
-ink takes no theme exception, so every case but the magenta ink's expects the same value in all four;
-the magenta ink's follows the root theme, as FILL PAINT's one theme exception among the inks. The frames follow
-the browser's preference; lavender-gray is one value in both themes, so their case is the same in
-each. The never-filled case reads `.surface-fill` shapes only: a lavender-gray swatch in the style
-guide's color tokens is a token's specimen, not a filled shape, and is not read.
+held dark and following the browser, each with the browser's preference light and dark: every ink
+takes no theme exception, so every ink case expects the same value in all four; the executive's color
+and ink and the neutral shape follow the root theme, as Three Functions and FILL PAINT declare. The
+frames follow the browser's preference; lavender-gray is one value in both themes, so their case is the
+same in each. The never-filled case reads `.surface-fill` shapes only: a lavender-gray swatch in the
+style guide's color tokens is a token's specimen, not a filled shape, and is not read.
 
 **Verifying the fixture still bites.** Each control below loads one regression; it fails only the
 cases named.
 
 ```text
 ?control=brown-theme      brown's ink takes a dark theme exception, #6A637F: in the held-dark and
-                          follow-dark settings the brown ink case and the weakened value case fail;
-                          in the light settings the control is inert
-?control=restated-ink     the weakened ink restates #D4C6E1 instead of reading brown's: its follows
-                          case fails, in every setting
+                          follow-dark settings the brown ink case fails, and no role's, since none
+                          draws brown; in the light settings the control is inert
+?control=magenta-theme    magenta's ink takes the retired dark exception, the high-contrast #201D26:
+                          in the held-dark and follow-dark settings the magenta ink case, the proposed
+                          state's, review proposed's and legislative's value cases and the proposed
+                          node's box and SVG ink cases fail; in the light settings the control is inert
+?control=caution-structural
+                          caution reads Spectral State's structural again, as it did before structural
+                          moved to violet: caution's assigned, value and follows cases and its box and
+                          SVG cases fail, in every setting
+?control=weakened-brown   weakened takes brown and brown's ink again: weakened's assigned, value and
+                          follows cases and its box and SVG cases fail, in every setting
+?control=restated-ink     the weakened ink restates orange's recipe instead of reading orange's ink:
+                          its follows case fails, in every setting
 ?control=restated-review-ink
                           the open ink restates #6A637F instead of reading cyan's: its follows case
                           fails, in every setting
@@ -1082,10 +1122,15 @@ S  declared semantic examples: every malformed declaration, assignment and line 
    letter beside any function's name fits the band's label column; the plate grows by its band
    alone, and the band's last drawn baseline sits its foot above the plate's (S9); the
    description, determinism, ids and scoping hold (S10); the exporter resolves each role through
-   the systems' stylesheets to the palette and the fill paint's inks and fails rather than guess
-   without them (S11); it writes each example keyed only, recording the sha256 of each
-   stylesheet its roles resolved through and no other, and a malformed stylesheet writes nothing
-   and is named (S12); with no --semantic-css it reads each system's stylesheets from the
+   the systems' stylesheets to its approved value, light and dark, each fill its physical color and
+   each ink the exact approved recipe (ASK, 2026-11-25), written in the test and never read from the
+   owner, and fails rather than guess without them; Criterion Assessment resolves through the fill
+   paint and its own stylesheet, reading no Spectral State declaration, and the same without
+   spectral-state.css (S11); it writes each example keyed only, recording the sha256 of each
+   stylesheet its roles resolved through and no other, a Criterion Assessment file naming no
+   spectral-state.css; each file it writes carries every role's approved fill on its ring and
+   boundary and the exact approved ink recipe, spaces and all, on its letter, light and dark; and a
+   malformed stylesheet writes nothing and is named (S12); with no --semantic-css it reads each system's stylesheets from the
    mirrors beside it and draws what the owner's run draws (S13); a spec that only inherits a
    declaration exports the neutral plate's four files byte for byte: alone it opens no
    stylesheet, an absent --semantic-css never being read, and the same files come out with the
@@ -1114,7 +1159,12 @@ X  negative controls on mutated copies of the engine, the exporter and the relat
    a band drawn without its row gaps ends off its foot (X27), an exporter that reads a spec's
    semantic through its prototype, either to find the run's systems or to choose each spec's
    files, fails a neutral plate and writes nothing (X28), and an engine that draws from the theme's roles rather than the ones it checked
-   throws a raw error on an inherited null role and writes an inherited quote into its rules (X29)
+   throws a raw error on an inherited null role and writes an inherited quote into its rules (X29).
+   Approved-value controls: caution bound through Spectral State's structural again, as it was
+   before structural moved to violet, resolves to the violet and its ink, which S11's approved
+   values reject, and reads spectral-state.css (X30); a dark Three Functions file whose legislative
+   letter takes the retired high-contrast ink, #201D26, fails S12's approved values on that letter
+   alone (X31)
 ```
 
 **Determinism is within one runtime.** The engine rounds every coordinate to two decimals, so the
@@ -1158,13 +1208,18 @@ I4  a keyed spec mounted through the page's engine, with the page's theme, under
     styles at once measures and faces as in the control host
 I5  a key wording with edge and doubled spaces, rendered now, draws as the former rules draw it:
     its white space collapses, as an SVG text's does on its own
-I6  each declared semantic example, mounted through the page's engine with the page's theme,
-    draws each colored ring and its boundary in its role's value and its letter in the role's
-    ink, as the page's tokens resolve them, and under all the host styles at once except text
-    rendering, which the plate leaves to the page, its texts start, measure, box and face as in
-    the control host
+I6  each declared semantic example, mounted through the page's engine with the page's light
+    theme, draws each colored ring and its boundary in its role's value and its letter in the
+    role's ink, as the page's tokens resolve them, each the approved color written in the test,
+    and under all the host styles at once except text rendering, which the plate leaves to the
+    page, its texts start, measure, box and face as in the control host
 I7  under an inherited text-rendering: optimizeSpeed, each mounted example's texts keep their
     faces and stay inside the plate
+I8  each exported semantic example, at the target and at the midpoint, light and dark, inlined
+    unchanged in the control host, draws each colored ring and its boundary in its role's
+    approved fill and its letter in the approved ink on it, as the browser resolves the file's
+    own values: the approved inks (ASK, 2026-11-25) and the physical fills are written in the test
+    as the 8-bit colors Chrome resolves them to, never read from the owner
 N   negative controls on a plate whose rules declare only what the plate declared before it
     stated its text properties (its text rules with only family, weight, size, the letters'
     middle anchoring and optical sizing; no stroke rule on heads or the field), rebuilt from the
@@ -1173,8 +1228,21 @@ N   negative controls on a plate whose rules declare only what the plate declare
     wording (N2); an inherited dominant-baseline: hanging moves the letters (N3); an inherited
     italic draws the texts in an italic style (N4); an inherited stroke strokes the texts, the
     heads and the field (N5). With the page's criterion-assessment.css switched off, the
-    favorable ring no longer takes its role's value (N6)
+    favorable ring is no longer the approved green (N6). The former stylesheet sentinel, three
+    values in one string tested as /^200 \S+ \S+$/, rejects the approved ink, an HSL recipe with
+    spaces in it, while the structured fields accept it (N7); on a fresh page a stylesheet that
+    does not load is named, and with criterion-assessment.css left out the favorable ink alone
+    fails (N8). The dark Three Functions file with its legislative letter in the retired
+    high-contrast ink, #201D26, fails I8 on that letter alone (N9)
 ```
+
+**The owner's stylesheets are checked as they load.** Before anything is mounted the page loads the
+token file and the systems' stylesheets, and the harness stops unless each loaded and three
+sentinels, read as separate fields, are their expected values: the foundation's extra-light weight,
+200; Criterion Assessment's favorable ink through the fill paint, the approved ink on green; and
+Three Functions' judicial fill, the foundation cyan. Each color is checked as the color the page
+resolves, never by its spelling, so an ink written as an HSL recipe with spaces passes, and a
+stylesheet that is missing or left out still stops the run.
 
 **The guarantee is about inheritance, and only the properties the rules state.** A stylesheet rule
 written against the plate's own elements, or one marked `!important`, is not part of it. Neither is
@@ -1647,8 +1715,11 @@ node or a zoom button.
 
 ```text
 S  spine: every node at 100% of its role, the root as the neutral filled shape, its label and tag in the
-   role's ink and the ink map read as values (green, yellow, orange, cyan #6A637F; red, violet the
-   lavender; magenta the lavender in light, #201D26 in dark), its chip a hole; no frame at rest; a
+   role's ink, and the state map read as values, never from the owner, the same in both schemes: each
+   role's physical fill (earned green, partial yellow, deflated red, structural violet, held cyan,
+   proposed magenta) and the approved ink on it (ASK, 2026-11-25: green rgb(132, 125, 154), yellow
+   rgb(123, 115, 146), red rgb(225, 215, 234), violet rgb(217, 205, 228), magenta rgb(235, 228, 241),
+   cyan and the neutral shape #6A637F); its chip a hole; no frame at rest; a
    locked node 2px and a hovered related node 1px (the relation itself checked), the locked node hovered
    keeping its 2px, none of it stepping a fill or outline, dimming or filtering; a hover with nothing
    locked previewing at 1px, a real click locking at 2px; a dimmed node under the pointer in full; every
@@ -1658,7 +1729,7 @@ S  spine: every node at 100% of its role, the root as the neutral filled shape, 
    neutral fill equals the theme foreground, so this discriminates in light only); the exports, taken with
    a node locked and the pointer on the topmost node, equal to exports taken with the pointer away, and
    baking no node part-faded
-R  radial: every state mark at 100% of its role, a state mark's chip a hole, every mark asserting no
+R  radial: every state mark at 100% of its role, its fill the state map's, a state mark's chip a hole, every mark asserting no
    state at the 15% wash, no mark's fill, wash or outline stepped by selection, relation or hover, and no
    emphasized mark dimmed or filtered; the frame matrix (selected 2px, a hovered related node 1px at full,
    the other related 1px at half); a preview at 1px, a real click locking at 2px; a dimmed mark under the
@@ -1680,7 +1751,9 @@ R  the arrow fixture (R16–R19): a relation between close neighbors (the target
    lies on a filled mark (the source's center within the target's reach, the cut inside a filled source,
    the tip on a filled neighbor); the exported diagram, opened as its own document with its own styles,
    drawing the live relation paths, its heads on a fill exactly where the live drawing reports one
-N  control: with surface-treatments.css off, S's paint check fails
+N  controls: with surface-treatments.css off, S's paint check fails (N1); with structural painted its
+   former yellow, role and ink bound alike, the binding checks pass and S fails its state and ink maps on
+   the structural nodes only (N2)
 ```
 
 Each fix this guard was written for was reverted alone, in its own copy, and the suite run against it: the
