@@ -37,6 +37,9 @@
   .meta { display: flex; flex-direction: column; }
   .role { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-1); }
   .rel  { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); letter-spacing: var(--tracking-wide); }
+  /* Each swatch is one unit: the specimen, the role, its value and what it means, so a stacked phone column
+     keeps every specimen beside its explanation. */
+  .means { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); }
   .demo { margin-top: 44px; }
   .demo p { font-family: var(--font-mono); font-size: var(--fs-caption); color: var(--fg-2); margin: 0 0 16px; }
   .row { display: flex; align-items: center; gap: 10px; max-width: 420px; padding: 8px 10px; margin-bottom: 6px; }
@@ -52,11 +55,12 @@
                      font-family: var(--font-mono); font-size: var(--fs-caption); letter-spacing: var(--tracking-normal); }
   .key-fill [data-evidence="supported"]           { --surface-fill-color: var(--evidence-supported);           --surface-fill-ink: var(--evidence-supported-ink); }
   .key-fill [data-evidence="partially-supported"] { --surface-fill-color: var(--evidence-partially-supported); --surface-fill-ink: var(--evidence-partially-supported-ink); }
-  .key-fill [data-evidence="unresolved"]          { --surface-fill-color: var(--evidence-unresolved);          --surface-fill-ink: var(--evidence-unresolved-ink); }
   .key-fill [data-evidence="weakened"]            { --surface-fill-color: var(--evidence-weakened);            --surface-fill-ink: var(--evidence-weakened-ink); }
+  .key-fill [data-evidence="contradicted"]        { --surface-fill-color: var(--evidence-contradicted);        --surface-fill-ink: var(--evidence-contradicted-ink); }
+  .key-fill [data-evidence="unresolved"]          { --surface-fill-color: var(--evidence-unresolved);          --surface-fill-ink: var(--evidence-unresolved-ink); }
   /* The same roles as SVG shapes: .surface-fill on the shape and .surface-fill-ink on its text, under one group
      that carries the role. */
-  .key-nodes-svg { display: block; width: 100%; max-width: 552px; height: auto; margin-top: 18px; }
+  .key-nodes-svg { display: block; width: 100%; max-width: 698px; height: auto; margin-top: 18px; }
   .key-nodes-svg rect { stroke-width: 1.5; }
   .key-nodes-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; }
   /* An evidence role in words: framing only. The label and the range are the surface treatments';
@@ -87,32 +91,34 @@
 
   <main class="surface-payload">
   <h2 class="doc-title">Evidence State</h2>
-  <div class="sub">v0.4 // profile under the Spectral State family · each role's ink, and a role named in words</div>
+  <div class="sub">v0.5 // profile under the Spectral State family · weakened orange, contradicted red, each by its threshold</div>
 
   <div class="demo">
     <div class="doc-section">
       <h2 class="doc-section-title" id="scope">Scope // what the evidence supports</h2>
-      <p>a profile under Spectral State // it records what the evidence supports for a claim, never its acceptance, permission or maturity</p>
+      <p>a profile under Spectral State // it records what the available evidence supports for a scoped claim, never its acceptance, permission or maturity</p>
+      <p>not a verdict on what is true // supported evidence need not describe a desirable outcome</p>
       <p>color is never the whole signal // every role keeps its visible label</p>
     </div>
   </div>
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title" id="roles">Roles and colors // five roles, one value in both themes</h2>
-      <p>three Spectral State values by reference and two of its own // labels stay evidence labels</p>
+      <h2 class="doc-section-title" id="roles">Roles and colors // six roles, one value in both themes</h2>
+      <p>each role binds the foundation's physical value directly // a shared value is a shared family, never a shared meaning; labels stay evidence labels</p>
     </div>
   </div>
 
   <div class="grid">
-    <div class="arc-label">Reused Spectral State values&nbsp;// labels stay evidence labels</div>
-    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-supported)"></div><div class="meta"><span class="role">supported</span><span class="rel">= state-earned · visual-role</span></div></div>
-    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-partially-supported)"></div><div class="meta"><span class="role">partially-supported</span><span class="rel">= state-partial · visual-role</span></div></div>
-    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-unresolved)"></div><div class="meta"><span class="role">unresolved</span><span class="rel">= state-held · exact</span></div></div>
+    <div class="arc-label">The chromatic roles&nbsp;// green affirmative, yellow qualified, orange materially undermined, red negative, cyan open</div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-supported)"></div><div class="meta"><span class="role">supported</span><span class="rel">green</span><span class="means">available evidence supports the claim</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-partially-supported)"></div><div class="meta"><span class="role">partially-supported</span><span class="rel">yellow</span><span class="means">supports only a bounded part or a qualified extent</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-weakened)"></div><div class="meta"><span class="role">weakened</span><span class="rel">orange</span><span class="means">material adverse evidence, not grounds to reject</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-contradicted)"></div><div class="meta"><span class="role">contradicted</span><span class="rel">red</span><span class="means">grounds to reject the claim as stated, at its scope</span></div></div>
+    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-unresolved)"></div><div class="meta"><span class="role">unresolved</span><span class="rel">cyan // emphasis cyan</span><span class="means">no grounded disposition either way</span></div></div>
 
-    <div class="arc-label">New Evidence State roles</div>
-    <div class="swatch"><div class="surface-marker surface-marker--dot surface-marker--lg" style="--surface-marker-color:var(--evidence-weakened)"></div><div class="meta"><span class="role">weakened</span><span class="rel">muted 21° brown // tonal branch of partial</span></div></div>
-    <div class="swatch"><div class="surface-marker surface-marker--hollow surface-marker--lg" style="--surface-marker-color:var(--evidence-not-yet-testable)"></div><div class="meta"><span class="role">not-yet-testable</span><span class="rel">lavender-gray · dashed + hollow + label</span></div></div>
+    <div class="arc-label">Off the arc</div>
+    <div class="swatch"><div class="surface-marker surface-marker--hollow surface-marker--lg" style="--surface-marker-color:var(--evidence-not-yet-testable)"></div><div class="meta"><span class="role">not-yet-testable</span><span class="rel">lavender-gray · dashed + hollow + label</span><span class="means">no meaningful test yet at this stage</span></div></div>
   </div>
 
   <div class="demo">
@@ -124,47 +130,74 @@
       <div class="key-nodes">
         <div class="node surface-fill" data-evidence="supported">supported</div>
         <div class="node surface-fill" data-evidence="partially-supported">partially supported</div>
-        <div class="node surface-fill" data-evidence="unresolved">unresolved</div>
         <div class="node surface-fill" data-evidence="weakened">weakened</div>
+        <div class="node surface-fill" data-evidence="contradicted">contradicted</div>
+        <div class="node surface-fill" data-evidence="unresolved">unresolved</div>
       </div>
-      <svg class="key-nodes-svg" viewBox="0 0 552 62" role="img" aria-label="The same four filled shapes drawn in SVG">
+      <svg class="key-nodes-svg" viewBox="0 0 698 62" role="img" aria-label="The same five filled shapes drawn in SVG">
         <g data-evidence="supported"><rect class="surface-fill" x="1" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="55" y="36">supported</text></g>
         <g data-evidence="partially-supported"><rect class="surface-fill" x="123" y="8" width="184" height="46" rx="8"/><text class="surface-fill-ink" x="215" y="36">partially supported</text></g>
-        <g data-evidence="unresolved"><rect class="surface-fill" x="321" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="375" y="36">unresolved</text></g>
-        <g data-evidence="weakened"><rect class="surface-fill" x="443" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="497" y="36">weakened</text></g>
+        <g data-evidence="weakened"><rect class="surface-fill" x="321" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="375" y="36">weakened</text></g>
+        <g data-evidence="contradicted"><rect class="surface-fill" x="443" y="8" width="132" height="46" rx="8"/><text class="surface-fill-ink" x="509" y="36">contradicted</text></g>
+        <g data-evidence="unresolved"><rect class="surface-fill" x="589" y="8" width="108" height="46" rx="8"/><text class="surface-fill-ink" x="643" y="36">unresolved</text></g>
       </svg>
     </div>
     <p class="avail-caption">an evidence role in words, outside a review annotation // each chromatic role as a keyed label, and the range one opens; not yet testable takes none</p>
     <div class="key-keyed">
-      <div class="key-keyed-labels"><span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="weakened">Evidence // Weakened</span></div>
+      <div class="key-keyed-labels"><span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="weakened">Evidence // Weakened</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="contradicted">Evidence // Contradicted</span><span class="doc-label surface-bordered-label evidence-label" data-evidence="unresolved">Evidence // Unresolved</span></div>
       <div class="doc-group surface-labeled-range">
         <span class="doc-label surface-bordered-label evidence-label" data-evidence="partially-supported">Evidence // Partially supported</span>
         <div class="doc-body">Read latency stays under 40 ms at the expected load: measured in two of three regions.</div>
       </div>
+      <div class="doc-group surface-labeled-range">
+        <span class="doc-label surface-bordered-label evidence-label" data-evidence="supported">Evidence // Supported</span>
+        <div class="doc-body">Each nightly export reproduces the reviewed bytes: thirty of thirty runs matched.</div>
+      </div>
+      <div class="doc-group surface-labeled-range">
+        <span class="doc-label surface-bordered-label evidence-label" data-evidence="weakened">Evidence // Weakened</span>
+        <div class="doc-body">The pilot shortens review rounds: two of five teams report longer rounds since it began.</div>
+      </div>
+      <div class="doc-group surface-labeled-range">
+        <span class="doc-label surface-bordered-label evidence-label" data-evidence="contradicted">Evidence // Contradicted</span>
+        <div class="doc-body">Every cached response stays valid for an hour: in the third region's trace, two expired within minutes.</div>
+      </div>
+      <div class="doc-meta">The four claims and their figures are illustrative, not records. Each label is assigned by its threshold against the claim's stated scope: two contrary reports weaken a claim without grounds to reject it, and one genuine counterexample defeats a universal one.</div>
     </div>
     <p class="avail-caption">every representation the roles have, and its status // the same rows as the README's application coverage</p>
     <ul class="avail-list" aria-label="Evidence State representations and their status">
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> text color or stroke, or the fill of a mark such as a dot, in one role's value · a consumer's own element, with the evidence label visible · <code class="doc-code">evidence-state.md</code>, How to use it: a composition from the role tokens, a dot on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER); not yet testable only with its whole contract, never color alone · no key specimen</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> evidence dot, with its label: supported, partially supported, unresolved, weakened · a document annotation · <code class="doc-code">review-semantics.css</code>, on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) · Review Semantics key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> not yet testable: lavender-gray, dashed rail, hollow marker and visible label · a document annotation, as a mark or a note · <code class="doc-code">review-semantics.css</code>, on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) · Review Semantics key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> swatches and contract rows · the Evidence State key · the shared marker, <code class="doc-code">surface-treatments.css</code> MARKER, at its large and medium sizes, in each role's value · Evidence State key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled shape, any text on it in its role's ink: supported, partially supported, unresolved, weakened · a consumer-composed evidence-bearing figure, with the evidence label visible, and the key · <code class="doc-code">evidence-state.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · Evidence State key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> filled shape: not yet testable · any · its contract is hollow, dashed and labeled</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> keyed standalone label, <code class="doc-code">Evidence // Supported</code>, and its range rail: supported, partially supported, unresolved, weakened · a statement outside a multi-axis review annotation · <code class="doc-code">evidence-state.css</code> binds the role to the bordered label's edge and the labeled range's rail, which <code class="doc-code">surface-treatments.css</code> draws · Evidence State key</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a keyed label or scope rail: not yet testable · any · its contract is hollow, dashed and labeled</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a label in place of the dot · inside a Review Semantics annotation · the composition gives evidence the dot</li>
+      <li class="doc-meta">supported // text color or stroke, or the fill of a mark such as a dot, in one role's value · a consumer's own element, with the evidence label visible · <code class="doc-code">evidence-state.md</code>, How to use it: a composition from the role tokens, a dot on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER); not yet testable only with its whole contract, never color alone · no key specimen</li>
+      <li class="doc-meta">supported // evidence dot, with its label: supported, partially supported, weakened, contradicted, unresolved · a document annotation · <code class="doc-code">review-semantics.css</code>, on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) · Review Semantics key</li>
+      <li class="doc-meta">supported // not yet testable: lavender-gray, dashed rail, hollow marker and visible label · a document annotation, as a mark or a note · <code class="doc-code">review-semantics.css</code>, on the shared marker (<code class="doc-code">surface-treatments.css</code>, MARKER) · Review Semantics key</li>
+      <li class="doc-meta">supported // swatches and contract rows · the Evidence State key · the shared marker, <code class="doc-code">surface-treatments.css</code> MARKER, at its large and medium sizes, in each role's value · Evidence State key</li>
+      <li class="doc-meta">supported // filled shape, any text on it in its role's ink: supported, partially supported, weakened, contradicted, unresolved · a consumer-composed evidence-bearing figure, with the evidence label visible, and the key · <code class="doc-code">evidence-state.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · Evidence State key</li>
+      <li class="doc-meta">not applicable // filled shape: not yet testable · any · its contract is hollow, dashed and labeled</li>
+      <li class="doc-meta">supported // keyed standalone label, <code class="doc-code">Evidence // Supported</code>, and its range rail: supported, partially supported, weakened, contradicted, unresolved · a statement outside a multi-axis review annotation · <code class="doc-code">evidence-state.css</code> binds the role to the bordered label's edge and the labeled range's rail, which <code class="doc-code">surface-treatments.css</code> draws · Evidence State key</li>
+      <li class="doc-meta">not applicable // a keyed label or scope rail: not yet testable · any · its contract is hollow, dashed and labeled</li>
+      <li class="doc-meta">not applicable // a label in place of the dot · inside a Review Semantics annotation · the composition gives evidence the dot</li>
     </ul>
   </div>
 
   <div class="demo">
     <div class="doc-section">
-      <h2 class="doc-section-title" id="rules">Rules // weakened is a degraded partial, not a new wheel position</h2>
-      <p>21° beside partial's 30° // lower saturation + lightness</p>
+      <h2 class="doc-section-title" id="rules">Rules // each role by its threshold, against the claim's scope</h2>
+      <p>weakened // material adverse evidence undermines the claim, without sufficient grounds to reject it</p>
+      <p>contradicted // current evidence gives sufficient grounds to reject the claim as stated, within its declared scope and conditions; new evidence may change it</p>
+      <p>a declining confidence number alone is not weakened // a contrary observation alone is not contradicted without the claim's scope</p>
+      <p>an existing weakened record assigned under the earlier, broader reading // its owner reviews it; this profile reassigns nothing</p>
     </div>
     <div class="nodes" style="display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
-      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--evidence-partially-supported)"></div><span class="rel">partial</span></div>
-      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--evidence-weakened)"></div><span class="rel">weakened</span></div>
-      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--state-deflated)"></div><span class="rel">deflated (spectral)</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--evidence-partially-supported)"></div><span class="rel">partially supported // yellow</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--evidence-weakened)"></div><span class="rel">weakened // orange</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="width:22px;height:22px;border-radius:6px;background:var(--evidence-contradicted)"></div><span class="rel">contradicted // red</span></div>
+    </div>
+  </div>
+
+  <div class="demo">
+    <div class="doc-section">
+      <h2 class="doc-section-title" id="words">Rules // the words carry the distinction</h2>
+      <p>two close pairs // supported beside partially supported, green beside yellow; weakened beside contradicted, orange beside red</p>
+      <p>simulated color-vision output is not user testing // the visible words carry each role, on its label, beside its dot or in a key</p>
+      <p>a dot beside a square tells evidence from a state // it does not tell two evidence roles apart</p>
     </div>
   </div>
 
@@ -175,7 +208,8 @@
     </div>
     <div class="row" style="border-left:2px solid var(--evidence-supported)"><span class="surface-marker surface-marker--dot surface-marker--md" style="--surface-marker-color:var(--evidence-supported)"></span><span class="lbl">Assumption A</span><span class="st">SUPPORTED</span></div>
     <div class="row" style="border-left:2px solid var(--evidence-weakened)"><span class="surface-marker surface-marker--dot surface-marker--md" style="--surface-marker-color:var(--evidence-weakened)"></span><span class="lbl">Assumption B</span><span class="st">WEAKENED</span></div>
-    <div class="row" style="border-left:2px dashed var(--evidence-not-yet-testable)"><span class="surface-marker surface-marker--hollow surface-marker--md" style="--surface-marker-color:var(--evidence-not-yet-testable)"></span><span class="lbl">Assumption C</span><span class="st">NOT YET TESTABLE</span></div>
+    <div class="row" style="border-left:2px solid var(--evidence-contradicted)"><span class="surface-marker surface-marker--dot surface-marker--md" style="--surface-marker-color:var(--evidence-contradicted)"></span><span class="lbl">Assumption C</span><span class="st">CONTRADICTED</span></div>
+    <div class="row" style="border-left:2px dashed var(--evidence-not-yet-testable)"><span class="surface-marker surface-marker--hollow surface-marker--md" style="--surface-marker-color:var(--evidence-not-yet-testable)"></span><span class="lbl">Assumption D</span><span class="st">NOT YET TESTABLE</span></div>
   </div>
 
   <div class="demo">
@@ -189,7 +223,7 @@
   <div class="demo">
     <div class="doc-section">
       <h2 class="doc-section-title" id="usage">Usage and owners // load order and who decides what</h2>
-      <p>evidence-state.css takes three values from Spectral State by reference and two from the foundation's reserved state values // load colors_and_type.css first, then spectral-state.css and evidence-state.css with surface-panel.css and surface-treatments.css, all from one design-system commit // both declare custom properties only, role values and inks on :root and the keyed label's and range's color and paint properties on their own selectors, so their place beside the other two changes no resolved value; this key loads them directly after the foundation</p>
+      <p>evidence-state.css binds each role to the foundation's physical value directly: four reserved state values, the emphasis cyan and lavender-gray // load colors_and_type.css first, then spectral-state.css and evidence-state.css with surface-panel.css and surface-treatments.css, all from one design-system commit // both declare custom properties only, role values and inks on :root and the keyed label's and range's color and paint properties on their own selectors, so their place beside the other two changes no resolved value; this key loads them directly after the foundation</p>
       <p>evidence-state.css owns the roles, their values, their ink, label and rail bindings and the not-yet-testable contract // surface-treatments.css owns the fill paint, every ink, the marker's anatomy, the bordered label and the labeled range // review-semantics.css draws the document marks on it // the consumer owns which claim carries which role, and the evidence itself</p>
       <p><a href="evidence-state.md">the contract</a> · <a href="README.md#application-coverage">application coverage</a> · <a href="preview/styleguide.html#candidate-evidence-labels">Evidence State labels, in the style guide</a></p>
     </div>
