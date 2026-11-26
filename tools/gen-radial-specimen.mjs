@@ -7,8 +7,9 @@
 
    SYNTHETIC CONTENT. A fictional city's park system, Vellmark: district > kind of place > place.
    Every name is made up. The seeded generator (mulberry32, seed 20260929) and its tables are
-   carried forward from the neutral fixture that first exercised the radial grammar; the one
-   textual change is a US spelling. The content is example vocabulary on purpose: it is the
+   carried forward from the neutral fixture that first exercised the radial grammar; the textual
+   changes are a US spelling and, from Spectral State v2.0, the proposed status's role, which the
+   layout does not read. The content is example vocabulary on purpose: it is the
    specimen's subject, not the pattern's, and the neutrality check excludes this file by
    declared path.
 
@@ -88,14 +89,16 @@ export function parks() {
 }
 
 /* -------------------------------------------- the contract's declarations -- */
+/* a proposed place is planned and not yet built: Spectral State's proposed. It took the retired
+   external role before Spectral State v2.0; nothing about it is owned elsewhere. */
 export const STATES = [
   { role: 'earned', label: 'open', meaning: 'open to the public' },
   { role: 'partial', label: 'seasonal', meaning: 'open part of the year' },
   { role: 'held', label: 'under renovation', meaning: 'temporarily closed for works' },
-  { role: 'external', label: 'proposed', meaning: 'planned, not yet built' },
+  { role: 'proposed', label: 'proposed', meaning: 'planned, not yet built' },
   { role: 'deflated', label: 'closed', meaning: 'closed to the public' }
 ];
-const ROLE = { 'open': 'earned', 'seasonal': 'partial', 'under renovation': 'held', 'proposed': 'external', 'closed': 'deflated' };
+const ROLE = { 'open': 'earned', 'seasonal': 'partial', 'under renovation': 'held', 'proposed': 'proposed', 'closed': 'deflated' };
 export const KINDS = [
   { id: 'lawn', label: 'grass-surfaced place', shape: 'circle' },
   { id: 'paved', label: 'hard-surfaced place', shape: 'square' },

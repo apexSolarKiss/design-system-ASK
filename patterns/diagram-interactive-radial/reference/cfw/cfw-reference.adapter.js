@@ -4,16 +4,26 @@
    REFERENCE CONTENT, NOT OWNER MACHINERY. This file is the specimen's consumer side. It reads
    the captured research input (atlas-data.public.js, beside it, unchanged) and declares, in the
    radial contract's terms, everything the CFW map is: how its objects group into regions and
-   branches, how a status reads as a governed state, which relations sit on which plane, and
-   every word, field and facet the reader sees. The owner modules know none of it, load none of
-   it, and run unchanged on synthetic data (diagram-interactive-radial.neutral.html).
+   branches, how a status reads as a recorded classification and which of those assert a governed
+   state, which relations sit on which plane, and every word, field and facet the reader sees.
+   The owner modules know none of it, load none of it, and run unchanged on synthetic data
+   (diagram-interactive-radial.neutral.html).
 
    THE INPUT IS FROZEN; THE IMPLEMENTATION IS NOT. The payload is the CFW map's public data
    as captured on 2026-10-02 (provenance below). This adapter transforms it deterministically
    and rewrites nothing in it: every identifier, label, relation and field reaches the reader
    as captured, except that a reference row shows the first 120 (evidence) or 90 (evidence for)
    characters of a label, as the CFW map does; the full label is the referenced object's view. The projection rules restate the CFW map's own (its region partition, branch
-   ladder and state mapping) so the same objects group the same way. */
+   ladder and state mapping) so the same objects group the same way.
+
+   CLASSIFICATION IS NOT CONDITION. The CFW map's ordered status reading sorts every object into
+   one recorded classification, and the adapter keeps it whole: the Recorded classification facet
+   filters by it, and the inspector shows the status and disposition it was read from. Five
+   classifications assert a governed state, and color shows it. Two assert none, and their marks
+   keep the neutral wash: an unclassified object (admitted, untyped) and a recorded one. Before
+   Spectral State v2.0 retired the external state, unclassified objects were painted in it; an
+   unclassified object is not owned elsewhere, so it takes no provenance, and the classifier's
+   order still reads UNCLASSIFIED before CONTESTED. */
 (function (root) {
   'use strict';
 
@@ -44,14 +54,25 @@
     'machine-personhood-recourse_master-context-note.md', 'consciousness-free-will_master-context-note.md',
     'consciousness-free-will_relation-map.md'
   ].map(function (f) { return REGION_LABEL[f] || f; });
+  /* the recorded classifications, in the order the facet lists them, each with the condition its
+     mark paints: neutral for the two that assert no governed state */
+  var CLASSIFICATIONS = [
+    { id: 'ask-ruled', label: 'ASK-ruled', state: 'earned' },
+    { id: 're-held', label: 're-held', state: 'held' },
+    { id: 'partially-tested', label: 'partially tested', state: 'partial' },
+    { id: 'contested', label: 'contested', state: 'deflated' },
+    { id: 'unclassified', label: 'unclassified', state: 'neutral' },
+    { id: 'ask-typed', label: 'ASK-typed', state: 'structural' },
+    { id: 'recorded', label: 'recorded', state: 'neutral' }
+  ];
+  /* the condition legend: one entry per painted state, and one for no asserted state */
   var STATES = [
     { role: 'earned', label: 'ASK-ruled', meaning: 'adjudicated by a ruling' },
     { role: 'held', label: 're-held', meaning: 're-held in sharper form' },
     { role: 'partial', label: 'partially tested', meaning: 'an open obligation' },
     { role: 'deflated', label: 'contested', meaning: 'recorded and contested' },
-    { role: 'external', label: 'unclassified', meaning: 'admitted, untyped' },
     { role: 'structural', label: 'ASK-typed', meaning: 'an ASK mapping row' },
-    { role: 'neutral', label: 'recorded', meaning: 'no governed state' }
+    { role: 'neutral', label: 'no asserted state', meaning: 'no governed state: recorded, or admitted untyped' }
   ];
   var CLASS_SHAPE = {
     'CFW-N': 'circle', 'CFW-C': 'square', 'CFW-B': 'square', 'CFW-M': 'square', 'CFW-F': 'square',
@@ -68,17 +89,20 @@
 
   /* --------------------------------------------------------- the projection -- */
   function regionKeyOf(o) { return o.region || REGION_LABEL[o.owner] || o.owner; }
-  function governedState(o) {
+  /* the CFW map's ordered status reading, kept as a local classification: the first match wins */
+  function classificationOf(o) {
     var s = [o.status, o.state, o.disposition].filter(Boolean).join(' - ');
-    if (!s) return (o['class'] === 'CFW-M' || o['class'] === 'CFW-A') ? 'structural' : 'neutral';
+    if (!s) return (o['class'] === 'CFW-M' || o['class'] === 'CFW-A') ? 'ask-typed' : 'recorded';
     var u = s.toUpperCase();
-    if (u.indexOf('UNCLASSIFIED') >= 0) return 'external';
-    if (u.indexOf('RE-HELD') >= 0) return 'held';
-    if (u.indexOf('ASK-RULED') >= 0 || u.indexOf('RULED CONDITIONALLY') >= 0) return 'earned';
-    if (u.indexOf('PARTIALLY TESTED') >= 0) return 'partial';
-    if (u.indexOf('CONTESTED') >= 0) return 'deflated';
-    return 'neutral';
+    if (u.indexOf('UNCLASSIFIED') >= 0) return 'unclassified';
+    if (u.indexOf('RE-HELD') >= 0) return 're-held';
+    if (u.indexOf('ASK-RULED') >= 0 || u.indexOf('RULED CONDITIONALLY') >= 0) return 'ask-ruled';
+    if (u.indexOf('PARTIALLY TESTED') >= 0) return 'partially-tested';
+    if (u.indexOf('CONTESTED') >= 0) return 'contested';
+    return 'recorded';
   }
+  function classification(id) { for (var i = 0; i < CLASSIFICATIONS.length; i++) if (CLASSIFICATIONS[i].id === id) return CLASSIFICATIONS[i]; return null; }
+  function governedState(o) { return classification(classificationOf(o)).state; }
   function humanizeBranch(key, composed) {
     if (!key) return 'unsectioned';
     var s = String(key).replace(/^[\u00A7\s]+/, '').trim();
@@ -360,10 +384,11 @@
         value: function (x) { return x.data['class']; },
         label: function (c) { return c + ' \u2014 ' + String(CLASS_NAME[c] || '').split(' \u2014 ')[0]; },
         order: 'value' },
-      { id: 'state', title: 'governed state', family: 'items', note: 'read off status / state / disposition \u2014 the same field color encodes',
-        value: function (x) { return x.state; },
-        label: function (r) { return stateOf(r).label; },
-        order: STATES.map(function (s) { return s.role; }), swatch: true },
+      { id: 'state', title: 'recorded classification', family: 'items',
+        note: 'read off status / state / disposition, in the CFW map\u2019s order \u2014 not what color encodes: an unclassified or a recorded object asserts no governed state',
+        value: function (x) { return classificationOf(x.data); },
+        label: function (c) { return classification(c).label; },
+        order: CLASSIFICATIONS.map(function (c) { return c.id; }), swatch: false },
       { id: 'qbear', title: 'held-question bearing', family: 'items',
         note: 'IS a held question, or carries a governed relation to one \u2014 declared non-linkages excluded',
         value: function (x) { return bearing.has(x.id) ? 'yes' : 'no'; },

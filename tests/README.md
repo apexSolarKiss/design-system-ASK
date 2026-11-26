@@ -1030,11 +1030,18 @@ I  opaque identifiers through the label layer: object-property names and delimit
    identifiers change no collision relationship (I1-I3, I6) and no decision of the short-canvas
    population rule, which compares pair identities, not their number (I4, I5)
 X  negative controls: the invariant checks and the geometry comparison each fail for their
-   reason; X6 runs the I checks on mutated copies of the labels module, each of which must fail
-   the check written for it: three restore defect classes of the earlier bookkeeping (plain-object
-   grouping, pairs joined with '|', directed pairs joined with '>'), two are plausible
-   regressions (a directed pair stored undirected, the short-canvas rule comparing counts)
+   reason; X4 rejects Spectral State's retired external role, declared or on a node or a record,
+   with a message that names it retired, and accepts each of the seven remaining roles; X6 runs
+   the I checks on mutated copies of the labels module, each of which must fail the check written
+   for it: three restore defect classes of the earlier bookkeeping (plain-object grouping, pairs
+   joined with '|', directed pairs joined with '>'), two are plausible regressions (a directed pair
+   stored undirected, the short-canvas rule comparing counts)
 ```
+
+**The retired role's control is the contract before Spectral State v2.0.** Run against that
+contract, the three retired-external checks of X4 fail for their stated reason: the declared role
+is accepted, and a node or a record naming it fails only as an undeclared state, with no word of
+its retirement. The seven-role check passes there too, as it should.
 
 **Geometry is compared, not hashed.** `radial-geometry.mjs` holds the one rule both runtimes use:
 structure exactly (count, order, identifier, parent, depth, kind, mark radius, container count,
