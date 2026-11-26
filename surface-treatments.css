@@ -236,8 +236,9 @@
                      decision record's outcome label or a keyed state,
                      evidence or assessment label whose words name its axis
                      and role.
-                     Spectral State's neutral and Evidence State's not yet
-                     testable take no keyed label. Evidence dots,
+                     Spectral State's neutral, Evidence State's not yet
+                     testable and Criterion Assessment's unassessed take no
+                     keyed label. Evidence dots,
                      state squares and the not-yet-testable rail are not
                      bordered labels, and the status badge (surface-shell) is
                      an unbordered note
@@ -260,8 +261,8 @@
                      child is the label itself, a
                      neutral bordered label such as DRAFT, over the blocks it
                      marks; a neutral range claims no judgment, and content
-                     inside it keeps its own marks. Three governed meanings
-                     set its color: Review Semantics' annotation range, whose
+                     inside it keeps its own marks. Governed meanings set its
+                     color: Review Semantics' annotation range, whose
                      first child is the row naming its one review judgment,
                      and whose rail takes that judgment's value; Spectral
                      State's and Evidence State's keyed range, whose first
@@ -516,8 +517,8 @@
    THE BORDERED LABEL'S EDGE. An apparent 2px edge in light and the plain
    1px border in dark: the fixed 1px border plus a same-color, zero-blur
    reinforcement of 1px in light and 0px in dark, the same layer drawing
-   nothing. One recipe for the whole family, review marks, keyed state and
-   evidence labels, neutral labels and emphasis chips alike, calibrated
+   nothing. One recipe for the whole family, review marks, keyed state,
+   evidence and assessment labels, neutral labels and emphasis chips alike, calibrated
    by field: a 1px line in a bright color reads strongly on the dark ink and
    quietly on the light lavender, so the light field takes the stronger edge.
    The colors are the same in both themes; only the edge's
@@ -727,8 +728,8 @@
        14px of space left of the content edge, or a clipping box at the
        content edge, cuts it. The rail is drawn on the left: a right-to-left
        document is not yet served.
-     - The rail's color for an annotation range or a keyed range comes
-       through :has(). A browser without :has() draws the neutral rail beside
+     - The rail's color for an annotation range, a keyed range or a bounded
+       assessed range comes through :has(). A browser without :has() draws the neutral rail beside
        the colored label. The buffer at a list's edge comes through :has()
        too: without it, an item host's rail can meet a neighboring range's. It counts
        siblings, so a wrapper laid out beside its neighbor, a grid or flex

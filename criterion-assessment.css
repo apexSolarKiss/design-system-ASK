@@ -13,9 +13,10 @@
 
    Load order (each layers on the previous):
      colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
-     criterion-assessment.css
-   Since v0.3 this profile reads no Spectral State token, so spectral-state.css
-   is not required; a page that also loads it places it before this file.
+     spectral-state.css  →  criterion-assessment.css
+   The order is unchanged at v0.3, and the owner's exporter and scaffolds keep
+   loading spectral-state.css. Since v0.3 no Criterion value reads a Spectral
+   State token: each role binds the foundation's physical value directly.
    surface-treatments.css supplies, as FILL PAINT, the inks this profile binds
    and, as RAIL PAINT, each color's paint as a rail, and draws the bordered
    label and the labeled range. Its

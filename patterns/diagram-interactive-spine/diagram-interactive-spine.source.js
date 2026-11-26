@@ -37,7 +37,7 @@ window.IA_STATE_SPINE = {
   // Legend / state vocabulary — the seven Spectral State roles (inherited, do not rename).
   states: [
     { role: 'earned',     label: 'earned',     meaning: 'operationally grounded at full depth' },
-    { role: 'structural', label: 'structural', meaning: 'structurally / schema proven; not full-flow pressured' },
+    { role: 'structural', label: 'structural', meaning: 'structural or schema assurance established; not yet operated at this scope' },
     { role: 'partial',    label: 'partial',    meaning: 'operational at bounded depth' },
     { role: 'proposed',   label: 'proposed',   meaning: 'articulated as a candidate; not yet pressured' },
     { role: 'deflated',   label: 'deflated',   meaning: 'pressure showed it unnecessary / dead' },
@@ -59,7 +59,7 @@ window.IA_STATE_SPINE = {
 
     // ---- spine: the IA layers / surfaces (upstream → downstream) ----
     { id: 's-1', group: 'spine', label: '[upstream layer]', state: 'structural',
-      evidence: '[Structurally signaled; not full-flow pressured.]',
+      evidence: '[Schema validated; not yet operated at this scope.]',
       pointer: '[docs/...]', modes: ['m-a', 'm-b'] },
     { id: 's-2', group: 'spine', label: '[middle layer]', state: 'earned',
       evidence: '[The strongest current carrier; operationally grounded.]',
