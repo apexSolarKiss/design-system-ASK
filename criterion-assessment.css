@@ -13,14 +13,17 @@
 
    Load order (each layers on the previous):
      colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
-     spectral-state.css  →  criterion-assessment.css
-   surface-treatments.css supplies, as FILL PAINT, the inks Spectral State and
-   this profile bind and, as RAIL PAINT, each color's paint as a rail. Its
+     criterion-assessment.css
+   Since v0.3 this profile reads no Spectral State token, so spectral-state.css
+   is not required; a page that also loads it places it before this file.
+   surface-treatments.css supplies, as FILL PAINT, the inks this profile binds
+   and, as RAIL PAINT, each color's paint as a rail, and draws the bordered
+   label and the labeled range. Its
    table application also needs surface-document.css, which draws the rail's
    geometry, after surface-panel.css and before surface-treatments.css.
 
-   Offline; no CDN. Its colors are Spectral State's, one value per role in both
-   themes; its rails take surface-treatments.css's rail paint, and its filled
+   Offline; no CDN. Its colors are the foundation's physical values
+   (colors_and_type.css), one value per role in both themes; its rails take surface-treatments.css's rail paint, and its filled
    nodes its fill paint, each described below.
 
    STATUS: v0.3 — the keyed label and the bounded assessed range (ASK,
