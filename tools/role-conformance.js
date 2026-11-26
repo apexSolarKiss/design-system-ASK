@@ -1219,6 +1219,9 @@
     if (!range || !range.matches(LABELED) || range.matches('.doc-annotation-range') || range.firstElementChild !== rec) {
       return { defect: 'an assessment record opens its bounded assessed range: it is the first child of a labeled range, never set alone in text or in a comparison table, whose assessed cells keep their cell-local rail, and never an annotation range\'s' };
     }
+    if (range.closest('table, .doc-compare-assessed')) {
+      return { defect: 'a bounded assessed range never sits in a table: a comparison table\'s assessed cells keep their cell-local rail and take no record', table: path(range.closest('table, .doc-compare-assessed')) };
+    }
     const facets = ['review', 'evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
     if (facets.length) return { defect: 'an assessment record carries no facet attribute: its one assessment is its label\'s', facets };
     const lab = rec.firstElementChild;
@@ -1250,6 +1253,7 @@
         return { defect: 'an assessment field\'s words are led by its name, "' + lead + ' …", and name something after it: an empty field leaves the assessment unscoped', field: n, words: words.slice(0, 80) };
       }
     }
+    if (!rec.nextElementSibling) return { defect: 'a bounded assessed range assesses one contiguous passage: at least one block follows its record inside the range' };
     return null;
   }
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';

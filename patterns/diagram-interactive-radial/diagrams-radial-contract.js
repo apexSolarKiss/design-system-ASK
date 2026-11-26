@@ -136,7 +136,7 @@
     });
     statesIn.forEach(function (s, i) {
       closed(s, 'state', 'states[' + i + ']');
-      need(!retired(s.role), 'STATE_ROLE', show(s.role) + ' ' + RETIRED_STATE_ROLES[s.role]);
+      need(!retired(s.role), 'STATE_ROLE', retired(s.role) ? show(s.role) + ' ' + RETIRED_STATE_ROLES[s.role] : '');
       need(STATE_ROLES.indexOf(s.role) >= 0, 'STATE_ROLE', show(s.role) + ' is not a Spectral State role');
       need(!states.has(s.role), 'DUPLICATE_STATE', s.role);
       req(s, 'label', 'STATE_LABEL', 'state ' + s.role);
@@ -169,7 +169,7 @@
     nodes.concat(records).forEach(function (x) {
       if (!absent(x, 'kind')) need(typeof x.kind === 'string' && kinds.has(x.kind), 'KIND', show(x.id) + ': kind ' + show(x.kind) + ' is not a declared kind');
       if (!absent(x, 'state')) {
-        need(!retired(x.state), 'NODE_STATE', show(x.id) + ': state ' + show(x.state) + ' ' + RETIRED_STATE_ROLES[x.state]);
+        need(!retired(x.state), 'NODE_STATE', retired(x.state) ? show(x.id) + ': state ' + show(x.state) + ' ' + RETIRED_STATE_ROLES[x.state] : '');
         need(typeof x.state === 'string' && states.has(x.state), 'NODE_STATE', show(x.id) + ': state ' + show(x.state) + ' is not a declared state');
       }
       if (!absent(x, 'data')) jsonValue(x.data, show(x.id) + '.data', []);
