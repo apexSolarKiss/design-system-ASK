@@ -768,8 +768,7 @@
      or an element whose role is img; it cannot tell a diagram from a status
      board drawn as one. It compares a panel's words with the values the
      theme's text roles resolve to, so a word in another color of equal value
-     passes: in light the open and accepted inks, #6A637F, are --fg-1's value,
-     and in dark the declined ink, #D4C6E1, is. It compares a panel's
+     passes: in light the open ink, #6A637F, is --fg-1's value. It compares a panel's
      material, corners and shadow with the owner's panel probed beside it, so
      it proves the record is drawn as the owner draws a panel there, not that
      the owner's values are right. It knows a

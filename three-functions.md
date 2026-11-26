@@ -91,8 +91,10 @@ Color is a **sparse semantic signal**: a consuming surface keeps the restrained 
 role fill         the full role value, 100%: .surface-fill with --surface-fill-color: var(--function-<role>)
 role boundary     the same value, the fill's own edge, unless a composing meaning claims the outline
                   (a state outline: see Channel discipline)
-text on the fill  the role's ink, --function-<role>-ink: #D4C6E1 on legislative magenta in light and
-                  #201D26 in dark; #6A637F on judicial cyan; #6A637F on the executive white or lavender.
+text on the fill  the role's ink, --function-<role>-ink: on legislative magenta, a lighter step of the
+                  lavender, hsl(271.1111 31.0345% 91.9618%), in both themes; #6A637F on judicial cyan;
+                  on the executive, a lighter step of #6A637F, hsl(255 12.3894% 53.9877%), on white in
+                  light and #6A637F on lavender in dark.
                   Every text set on the fill takes it, a label, a note or a tag
 text beside it    notes and flow, section or relationship tags set beside the apparatus, including a
                   tag that names a role, keep their own neutral foreground roles, never the role hue
