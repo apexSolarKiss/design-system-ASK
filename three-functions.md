@@ -131,7 +131,7 @@ state           → outline, badge, or separate state marker
 evidence state  → evidence marker, rail, dash, or labeled annotation
 ```
 
-The contract holds alike for each of the three functions, legislative, executive and judicial, as [the key's channel examples](three-functions.html#channel-discipline) show: no function reserves a state, and a function alone asserts none.
+The contract holds alike for each of the three functions, legislative, executive and judicial, as [the key's channel examples](three-functions.html) show: no function reserves a state, and a function alone asserts none.
 
 **A state in its element's function color takes the badge or the separate marker.** A proposed legislative part or a held judicial part would draw its state outline in its own fill color, where the outline cannot be seen, so the state takes the badge or the separate state marker the contract already allows.
 
