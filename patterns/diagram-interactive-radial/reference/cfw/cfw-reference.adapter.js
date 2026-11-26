@@ -18,7 +18,7 @@
 
    CLASSIFICATION IS NOT CONDITION. The CFW map's ordered status reading sorts every object into
    one recorded classification, and the adapter keeps it whole: the Recorded classification facet
-   filters by it, and the inspector shows the status and disposition it was read from. Five
+   filters by it, and the inspector shows the status, recorded state and disposition it was read from. Five
    classifications assert a governed state, and color shows it. Two assert none, and their marks
    keep the neutral wash: an unclassified object (admitted, untyped) and a recorded one. Before
    Spectral State v2.0 retired the external state, unclassified objects were painted in it; an
@@ -296,6 +296,7 @@
         { label: 'node type', value: o.node_type },
         { label: 'field domain', value: o.field_domain },
         { label: 'status', value: o.status },
+        { label: 'recorded state', value: o.state },
         { label: 'disposition', value: o.disposition && upper(o.disposition) !== upper(sd ? sd.meaning : '') ? o.disposition : null },
         { label: 'question', value: o.question && o.question !== o.label ? o.question : null },
         { label: 'claim', value: o.claim_text && o.claim_text !== o.label ? o.claim_text : null },
