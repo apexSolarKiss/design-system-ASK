@@ -91,8 +91,10 @@ Color is a **sparse semantic signal**: a consuming surface keeps the restrained 
 role fill         the full role value, 100%: .surface-fill with --surface-fill-color: var(--function-<role>)
 role boundary     the same value, the fill's own edge, unless a composing meaning claims the outline
                   (a state outline: see Channel discipline)
-text on the fill  the role's ink, --function-<role>-ink: #D4C6E1 on legislative magenta in light and
-                  #201D26 in dark; #6A637F on judicial cyan; #6A637F on the executive white or lavender.
+text on the fill  the role's ink, --function-<role>-ink: on legislative magenta, a lighter step of the
+                  lavender, hsl(271.1111 31.0345% 91.9618%), in both themes; #6A637F on judicial cyan;
+                  on the executive, a lighter step of #6A637F, hsl(255 12.3894% 53.9877%), on white in
+                  light and #6A637F on lavender in dark.
                   Every text set on the fill takes it, a label, a note or a tag
 text beside it    notes and flow, section or relationship tags set beside the apparatus, including a
                   tag that names a role, keep their own neutral foreground roles, never the role hue
@@ -119,7 +121,7 @@ Three semantic axes may appear on one surface; they may not compete for one visu
 function role   ≠   element state   ≠   evidence state
 ```
 
-**Reused color does not create semantic identity.** Since [Spectral State](spectral-state.md) v1.2, `--function-legislative` and `--state-proposed` are the one foundation magenta, and `--function-judicial` and `--state-held` the one foundation cyan. Each refers to the foundation color, not to the other, and they are **not** aliases: a shared value never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) applies to its reused values. Visible labels stay mandatory.
+**Reused color does not create semantic identity.** Since [Spectral State](spectral-state.md) v1.2, `--function-legislative` and `--state-proposed` are the one foundation magenta, and `--function-judicial` and `--state-held` the one foundation cyan. Each refers to the foundation color, not to the other, and they are **not** aliases: a shared value never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) and the other profiles apply to the physical values they share with Spectral State. Visible labels stay mandatory.
 
 Channel contract when more than one system is present on an element:
 

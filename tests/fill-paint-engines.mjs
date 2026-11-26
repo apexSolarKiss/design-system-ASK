@@ -10,12 +10,12 @@
    focus real keys; selection, zoom and Fit go through the page's own API, or a dispatched click on a node
    or a zoom button.
 
-   Paint: a state node or mark is filled at 100% of its role's value, its text in that role's ink (the ink
-   map read independently, as values); the spine's root is the neutral filled shape; a radial mark that
-   asserts no state keeps the 15% wash, and the inspector's dot for it shows the wash; the spine's legend
-   and inspector dots show their node's look in their own paint (in dark the neutral fill and the theme
-   foreground share a value, so S8 discriminates only in light); every state mark's chip is a hole, where
-   the drawing anchors (the spine's backbone and edges; the radial ring's chip geometry at its center).
+   Paint: a state node or mark is filled at 100% of its role's value, its text in that role's ink (the state
+   map, each role's physical fill and its approved ink, read independently, as values); the spine's root is
+   the neutral filled shape; a radial mark that asserts no state keeps the 15% wash, and the inspector's dot
+   for it shows the wash; the spine's legend and inspector dots show their node's look in their own paint
+   (in dark the neutral fill and the theme foreground share a value, so S8 discriminates only in light);
+   every state mark's chip is a hole, where the drawing anchors (the spine's backbone and edges; the radial ring's chip geometry at its center).
    Emphasis: hover, relation and selection never step a mark's fill or outline, nor dim or filter an
    emphasized mark; one neutral frame outside a mark shows them: 1px on hover, a preview with nothing
    locked included; 1px at half strength on a related radial node, full when hovered; 2px once a node is
@@ -37,7 +37,8 @@
    a filled neighbor); the exported diagram, measured as its own document, agrees. Plates: the radial's page plate
    draws no frame and every mask it references resolves.
 
-   The negative control turns the fill paint's stylesheet off and requires the paint check to fail. */
+   The negative controls turn the fill paint's stylesheet off and require the paint check to fail, and paint the
+   structural state its former yellow and require the state and ink maps, not the binding checks, to fail. */
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -119,11 +120,13 @@ function check(id, name, ok, detail) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${id} ${name}${detail !== undefined ? '  ' + JSON.stringify(detail) : ''}`);
 }
 
-/* the ink map, as values: text on each fill (surface-treatments.css FILL PAINT) */
-const INK = { light: { earned: 'rgb(106, 99, 127)', structural: 'rgb(106, 99, 127)', partial: 'rgb(106, 99, 127)', held: 'rgb(106, 99, 127)',
-                       deflated: 'rgb(212, 198, 225)', external: 'rgb(212, 198, 225)', proposed: 'rgb(212, 198, 225)', neutral: 'rgb(106, 99, 127)' },
-              dark:  { earned: 'rgb(106, 99, 127)', structural: 'rgb(106, 99, 127)', partial: 'rgb(106, 99, 127)', held: 'rgb(106, 99, 127)',
-                       deflated: 'rgb(212, 198, 225)', external: 'rgb(212, 198, 225)', proposed: 'rgb(32, 29, 38)', neutral: 'rgb(106, 99, 127)' } };
+/* the state map, as values, never read from the owner: each Spectral State role's physical fill, and the approved ink
+   on it (surface-treatments.css FILL PAINT, ASK 2026-11-25), each the 8-bit color Chrome resolves its value to. One
+   value in both themes, magenta's ink included; the neutral shape alone follows the theme (NEUTRAL, below). */
+const FILL = { earned: 'rgb(56, 250, 56)', partial: 'rgb(250, 250, 56)', deflated: 'rgb(250, 56, 56)', structural: 'rgb(170, 64, 255)',
+               held: 'rgb(0, 190, 255)', proposed: 'rgb(255, 0, 255)' };
+const INK = { earned: 'rgb(132, 125, 154)', partial: 'rgb(123, 115, 146)', deflated: 'rgb(225, 215, 234)', structural: 'rgb(217, 205, 228)',
+              held: 'rgb(106, 99, 127)', proposed: 'rgb(235, 228, 241)', neutral: 'rgb(106, 99, 127)' };
 const NEUTRAL = { light: { fill: 'rgb(191, 179, 212)', edge: 'rgba(255, 255, 255, 0.9)' }, dark: { fill: 'rgb(212, 198, 225)', edge: 'rgb(212, 198, 225)' } };
 
 /* in-page probes */
@@ -141,10 +144,11 @@ function spineFailures(rows, scheme) {
       if (r.fill !== NEUTRAL[scheme].fill || r.edge !== NEUTRAL[scheme].edge) bad.push([r.i, 'neutral paint', r.fill, r.edge]);
     } else {
       if (r.fill !== r.role || r.edge !== r.role) bad.push([r.i, 'fill', r.fill, r.role]);
+      if (r.fill !== FILL[r.st]) bad.push([r.i, 'state map', r.st, r.fill]);
       if (r.text !== r.ink) bad.push([r.i, 'ink binding', r.text, r.ink]);
     }
     if (r.op !== '1') bad.push([r.i, 'fill-opacity', r.op]);
-    if (r.text !== INK[scheme][r.st] || r.tag !== INK[scheme][r.st]) bad.push([r.i, 'ink map', r.st, r.text, r.tag]);
+    if (r.text !== INK[r.st] || r.tag !== INK[r.st]) bad.push([r.i, 'ink map', r.st, r.text, r.tag]);
     if (!r.hole) bad.push([r.i, 'chip hole']);
   }
   return bad;
@@ -202,10 +206,11 @@ const SPINE_HOLES = `(function(){var bb=document.querySelector('.backbone'),bx=+
   return {crossed:crossed,edgeEnds:ends.length,loose:loose,bad:bad};})()`;
 
 const GID = `function gid(id){var M=window.RADIAL_MAP,i=M.layout.nodes.findIndex(function(n){return n.id===id;});return document.getElementById(M.id+'-n'+i);}`;
-const RADIAL_PAINT = `(function(){${RESOLVE}var M=window.RADIAL_MAP,out={filled:0,wash:0,bad:[],sig:{}};M.layout.nodes.forEach(function(n,i){
+const RADIAL_PAINT = `(function(){${RESOLVE}var FILL=${JSON.stringify(FILL)},M=window.RADIAL_MAP,out={filled:0,wash:0,bad:[],sig:{}};M.layout.nodes.forEach(function(n,i){
   var g=document.getElementById(M.id+'-n'+i);if(!g)return;var m=g.querySelector('.radial-mark'),c=getComputedStyle(m),st=n.kind==='root'?'neutral':(n.state||'neutral');
   out.sig[n.id]=[c.fill,c.fillOpacity,c.stroke,c.strokeWidth,c.strokeOpacity].join('|');
   if(st!=='neutral'){out.filled++;var want=res('var(--state-'+st+')');if(!m.classList.contains('surface-fill')||c.fill!==want||c.fillOpacity!=='1')out.bad.push([n.id,'fill',c.fill,want,c.fillOpacity]);
+    if(c.fill!==FILL[st])out.bad.push([n.id,'state map',st,c.fill]);
     var chip=g.querySelector('.radial-chip');if(chip){var mk=m.getAttribute('mask'),el=mk&&document.getElementById(mk.slice(5,-1));if(!el||!el.querySelector('circle[style*="#000"]')||getComputedStyle(chip).fill!=='none')out.bad.push([n.id,'chip hole']);}}
   else{out.wash++;if(c.fillOpacity!=='0.15'||c.fill!==res('var(--state-neutral)'))out.bad.push([n.id,'wash',c.fill,c.fillOpacity]);}});return out;})()`;
 const RADIAL_FRAMES = `[].map.call(document.querySelectorAll('g.radial-node'),function(g){var c=getComputedStyle(g.querySelector('.radial-frame'));
@@ -409,6 +414,14 @@ try {
     await p.evaluate(`[].forEach.call(document.styleSheets,function(s){if(s.href&&/surface-treatments\\.css$/.test(s.href))s.disabled=true;})`);
     const nbad = spineFailures(await p.evaluate(SPINE_PAINT), scheme);
     check(`${S}N1`, `control, ${scheme}: with surface-treatments.css off, S1's paint check fails`, nbad.length > 0, { failures: nbad.length, first: nbad[0] });
+    await p.close();
+    /* the negative control: structural painted its former yellow, role and ink bound alike, passes the binding
+       checks and fails S1's state and ink maps on each structural node, and nowhere else */
+    p = await page(b, SP, scheme);
+    await p.evaluate(`(function(){var s=document.createElement('style');s.textContent=':root{--state-structural:var(--ask-state-value-yellow) !important;--state-structural-ink:var(--surface-fill-ink-on-yellow) !important}';document.head.appendChild(s);return new Promise(function(r){setTimeout(r,60);});})()`);
+    const ybad = spineFailures(await p.evaluate(SPINE_PAINT), scheme), ykinds = [...new Set(ybad.map((x) => x[1] + ' ' + x[2]))].sort();
+    check(`${S}N2`, `control, ${scheme}: with structural painted its former yellow, S1 fails its state and ink maps on the structural nodes only`,
+      ybad.length > 0 && JSON.stringify(ykinds) === JSON.stringify(['ink map structural', 'state map structural']), { failures: ybad.length, kinds: ykinds });
     await p.close();
 
     /* ---- radial, the reference composition ---- */

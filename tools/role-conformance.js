@@ -54,6 +54,10 @@
                         theme roles (--fg-1, --fg-3, --line-1, --line-2) must
                         equal its light or its dark value. Each drifted token is
                         reported once per distinct value, naming the token. A
+                        retired token, --state-external or --state-external-ink,
+                        which Spectral State v2.0 removed, holds no value: one
+                        that does is a page's own bridge, never an alias the
+                        owner keeps. A
                         declared presentation assignment adds, for the theme
                         roles above, the values it binds in the page's current
                         context (light or dark, read as the foundation reads
@@ -163,8 +167,9 @@
                         .doc-annotation-list and .doc-annotation-range. A
                         data-review, data-evidence or
                         data-state attribute alone opts nothing in, and an
-                        Evidence State or Spectral State presentation authored
-                        outside the composition is its owner's, not C12's. Each
+                        Evidence State, Spectral State or Criterion Assessment
+                        presentation authored outside the composition is its
+                        owner's, not C12's. Each
                         finding names its basis: syntax (classes, attributes,
                         vocabulary) or computed (what the page computes for
                         borders, background, the ::before marker and the
@@ -176,7 +181,10 @@
                         role, so C1 holds its words (C12.role); it carries
                         exactly one of data-review, data-evidence or data-state
                         (C12.facet), a value in that facet's vocabulary
-                        (C12.vocab) and rendered words (C12.label). A review
+                        (C12.vocab: the evidence dot admits contradicted, and
+                        no state square names external, which Spectral State
+                        v2.0 retired, since provenance is not a state) and
+                        rendered words (C12.label). A review
                         mark carries .surface-bordered-label, the shared box,
                         and an annotation range .surface-labeled-range, the
                         shared scope rail, and a passage mark
@@ -198,11 +206,13 @@
                         a review mark is a bordered label, so an evidence or
                         state mark, a passage mark, a note, a row, an item, a
                         list or a range never carries .surface-bordered-label;
-                        and a keyed state or evidence label (Spectral State's
-                        .state-label, Evidence State's .evidence-label) is
-                        never an element of the composition and never sits in
-                        its rows, items, lists or notes, where state keeps its
-                        square and evidence its dot (C12.attach).
+                        and a keyed state, evidence or assessment label
+                        (Spectral State's .state-label, Evidence State's
+                        .evidence-label, Criterion Assessment's
+                        .assessment-label) is never an element of the
+                        composition and never sits in its rows, items, lists
+                        or notes, where state keeps its square, evidence its
+                        dot, and an assessment has no mark (C12.attach).
                         Computed: a mark is a rendered box, and an evidence or
                         state mark an inline-flex one; a review mark's outline,
                         where it is drawn, is its role token on all four sides
@@ -270,23 +280,32 @@
                         .surface-bordered-label and .surface-emphasis-chip in
                         scope: a neutral label, the emphasis chip, a review
                         mark, a decision record's outcome label and a keyed
-                        state or evidence label share one box. An evidence or
-                        state mark carrying the class is C12.attach's, not
-                        judged here. Syntax: a keyed label,
-                        Spectral State's .state-label or Evidence State's
-                        .evidence-label, names exactly one axis by its class;
+                        state, evidence or assessment label share one box. An
+                        evidence or state mark carrying the class is
+                        C12.attach's, not judged here. Syntax: a keyed label,
+                        Spectral State's .state-label, Evidence State's
+                        .evidence-label or Criterion Assessment's
+                        .assessment-label, names exactly one axis by its class;
                         it is a .surface-bordered-label and never an emphasis
                         chip or an annotation mark; it carries its own axis's
                         attribute and no other facet, naming a role in that
-                        axis's keyed vocabulary (state: earned, structural,
-                        partial, deflated, held, external or proposed, never
-                        neutral; evidence: supported, partially-supported,
-                        unresolved or weakened, never not-yet-testable); and
-                        its words, whitespace collapsed and case aside, are
-                        exactly its axis and its role's word, "State // Held"
-                        or "Evidence // Partially supported" (C13.key). A label
-                        whose key fails is not judged for its color: the key
-                        is the defect. On each rendered label: one
+                        axis's keyed vocabulary (state: earned, partial,
+                        deflated, structural, held or proposed, never neutral
+                        and never external, which Spectral State v2.0 retired:
+                        provenance is not a state; evidence: supported,
+                        partially-supported, weakened, contradicted or
+                        unresolved, never not-yet-testable; assessment:
+                        favorable, caution or adverse, never unassessed); its
+                        words, whitespace collapsed and case aside, are
+                        exactly its axis and its role's word, "State // Held",
+                        "Evidence // Partially supported" or "Assessment //
+                        Caution"; and an assessment label is a child of an
+                        assessment record, which it heads (C14.record), never
+                        standing alone, in text or at a range's head
+                        (C13.key). A data-assessment attribute alone keys no
+                        label, as a comparison table's assessed cell carries
+                        one. A label whose key fails is not judged for its
+                        color: the key is the defect. On each rendered label: one
                         inline-block box on the text baseline, or a block
                         where a flex or grid parent
                         blockifies it, border-box sized, as wide as its words
@@ -320,13 +339,37 @@
                         element
      C14 labeled range (surface-treatments) applies to every
                         .surface-labeled-range in scope: a neutral range,
-                        Review Semantics' annotation range and a keyed state
-                        or evidence range share one scope rail. Syntax: it
+                        Review Semantics' annotation range, a keyed state or
+                        evidence range and Criterion Assessment's bounded
+                        assessed range share one scope rail. Syntax: it
                         opens with its label — a neutral or keyed range's
                         first child is a neutral or keyed bordered label with
-                        words, never a chip or a mark, and an annotation
+                        words, never a chip or a mark, a bounded assessed
+                        range's its assessment record, and an annotation
                         range's first child is the row that holds its label
-                        (C14.label); it sits inside no other range (C14.nest),
+                        (C14.label). An assessment record, .assessment-record,
+                        is one assessment, under one criterion, of the one
+                        contiguous passage its range holds: it is the first
+                        child of a labeled range outside the composition, and
+                        never stands alone, in text or in a comparison table,
+                        whose assessed cells keep their cell-local rail; it
+                        carries no facet attribute of its own; its first child
+                        is its one keyed assessment label, and it holds no
+                        other assessment label or data-assessment, no state or
+                        evidence label and no annotation mark, so it names
+                        one assessment on one axis; and its own
+                        children include, each exactly once, the four fields,
+                        .assessment-field.doc-meta with data-field criterion,
+                        direction, scope and basis, whose words, whitespace
+                        collapsed and case aside, are led by the field's name
+                        and "//" and name something after it, with no field of
+                        another name and none set deeper: a record without one
+                        of the four is unscoped, and one naming two criteria
+                        is two assessments, which take separate records and
+                        ranges (C14.record), and an assessment field set
+                        outside any record fails C14.record too. A range whose
+                        record fails C14.record is not judged for its color:
+                        the record is the defect. It sits inside no other range (C14.nest),
                         and inside no list item, railed passage, separate
                         surface or panel, hierarchy level or annotation note,
                         whose own edges or markers sit where its scope rail
@@ -368,11 +411,14 @@
                         spacing, and a range beside this one rather than above
                         it, in a neighboring cell or column, is not counted
                         (C14.buffer); for a
-                        neutral range, the tertiary foreground, and for a
-                        keyed range, the value of the role its label names,
-                        never transparent (C14.color); and, where the page
-                        shows a neutral or keyed range, its label shown too:
-                        some of its words in an element that renders a box,
+                        neutral range, the tertiary foreground, for a keyed
+                        range, the value of the role its label names, and for
+                        a bounded assessed range, the value of the assessment
+                        its record's label names, never transparent
+                        (C14.color); and, where the page
+                        shows a neutral or keyed range, its label shown too,
+                        a bounded assessed range's the label heading its
+                        record: some of its words in an element that renders a box,
                         is seen (not hidden,
                         not at zero opacity, not skipped, its ancestors'
                         included) and whose text color is not transparent
@@ -638,8 +684,8 @@
      judged, so a page whose only governed element is such a label or range
      is not reported vacuous.
    - C13 judges a label's color against the meanings this file knows: a
-     neutral label, the emphasis chip, and Spectral State's and Evidence
-     State's keyed labels. A review mark's color is C12's, and the color of
+     neutral label, the emphasis chip, and Spectral State's, Evidence
+     State's and Criterion Assessment's keyed labels. A review mark's color is C12's, and the color of
      an outcome label heading a decision panel is C18's. A label another
      owner composes with a color of its own fails C13.color until that owner
      is added here.
@@ -647,7 +693,25 @@
      here and its words, whitespace collapsed and case aside, with its axis
      and role. It reads the words as text, so it does not show that they are
      seen (C14.label does, for a range's label), and it does not judge whether
-     the role is the right one for the element the label names.
+     the role is the right one for the element the label names. A role
+     retired from an axis, external from Spectral State, is named as retired;
+     it is otherwise a role outside the vocabulary like any other, and C12
+     treats a state square that names it the same way.
+   - C14.record reads an assessment record's fields as text, as C13.key reads
+     a label's words. It proves that the record names one assessment and
+     each of its criterion, direction, scope and basis once, each led by its
+     name and naming something after it; not that they are the right ones,
+     that the passage the range holds is the one the scope names, or that the
+     assessment follows from its basis. An assessment is authored under its
+     declared criterion, and its color generates none. It does not judge the
+     comparison table's assessed cells (.doc-compare-assessed), whose
+     cell-local rail is surface-document.css's (tests/comparison-rail-
+     fixture.html), or a record's field order or layout.
+   - C0 reports a retired token that holds a value, --state-external or its
+     ink, where it reads tokens: the owner defines neither, so a value is a
+     page's own bridge. It does not see a reference to one: a var() naming an
+     undefined token computes to its fallback, and the paint that results is
+     judged where it is drawn.
    - C14 proves the computed scope rail and its lane. It reads the rail from
      the range's ::before and the range's own box, so it does not see paint a
      consumer adds elsewhere (an ::after, an outline or a border-image on the
@@ -768,8 +832,7 @@
      or an element whose role is img; it cannot tell a diagram from a status
      board drawn as one. It compares a panel's words with the values the
      theme's text roles resolve to, so a word in another color of equal value
-     passes: in light the open and accepted inks, #6A637F, are --fg-1's value,
-     and in dark the declined ink, #D4C6E1, is. It compares a panel's
+     passes: in light the open ink, #6A637F, is --fg-1's value. It compares a panel's
      material, corners and shadow with the owner's panel probed beside it, so
      it proves the record is drawn as the owner draws a panel there, not that
      the owner's values are right. It knows a
@@ -821,6 +884,11 @@
     '--line-1': ['rgba(255, 255, 255, 0.45)', 'rgba(212, 198, 225, 0.22)'],
     '--line-2': ['rgba(255, 255, 255, 0.22)', 'rgba(212, 198, 225, 0.10)'],
   };
+  /* Tokens the owner retired, which hold no value anywhere C0 reads tokens: Spectral State v2.0
+     removed external from the state vocabulary, its token and its ink, with no alias or bridge. */
+  const RETIRED_TOKENS = { '--state-external': 'Spectral State v2.0', '--state-external-ink': 'Spectral State v2.0' };
+  /* The words naming external as retired, shared by the label, the mark and the token. */
+  const EXTERNAL_RETIRED = 'external is retired in Spectral State v2.0: provenance is not a state';
   /* The roles a presentation assignment may bind (patterns/output-artifact/README.md).
      C0 checks the theme roles above; the others are recorded, not verified. */
   const ASSIGNABLE = { '--bg-from': 1, '--bg-to': 1, '--bg-gradient': 1, '--bg-edge': 1, '--fg-1': 1, '--fg-2': 1, '--fg-3': 1,
@@ -1101,32 +1169,92 @@
   const MARKER = { sizes: { sm: 10, md: 12, lg: 30 }, square: 2, hollow: 2, edge: 1 };
   const MARKER_SHAPES = ['dot', 'square', 'hollow'];
   const MARKER_SIZES = ['sm', 'md', 'lg'];
-  /* C13: a keyed label, Spectral State's or Evidence State's state or evidence in words on the shared
-     bordered label (spectral-state.css, evidence-state.css). Per axis: its class, the word that names
-     it and its keyed roles; neutral and not yet testable take no keyed label. */
-  const KEYED = '.state-label, .evidence-label';
+  /* C13: a keyed label, Spectral State's, Evidence State's or Criterion Assessment's state, evidence
+     or assessment in words on the shared bordered label (spectral-state.css, evidence-state.css,
+     criterion-assessment.css). Per axis: its class, the word that names it and its keyed roles;
+     neutral, not yet testable and unassessed take no keyed label. */
+  const KEYED = '.state-label, .evidence-label, .assessment-label';
   const KEYED_AXES = {
-    state: { cls: 'state-label', word: 'State', roles: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed'] },
-    evidence: { cls: 'evidence-label', word: 'Evidence', roles: ['supported', 'partially-supported', 'unresolved', 'weakened'] } };
+    state: { cls: 'state-label', word: 'State', roles: ['earned', 'partial', 'deflated', 'structural', 'held', 'proposed'] },
+    evidence: { cls: 'evidence-label', word: 'Evidence', roles: ['supported', 'partially-supported', 'weakened', 'contradicted', 'unresolved'] },
+    assessment: { cls: 'assessment-label', word: 'Assessment', roles: ['favorable', 'caution', 'adverse'] } };
+  /* C14: Criterion Assessment's assessment record, which opens a bounded assessed range: its
+     four fields, each named once and led by its name. */
+  const ASSESSMENT_RECORD = '.assessment-record';
+  const ASSESSMENT_FIELDS = ['criterion', 'direction', 'scope', 'basis'];
   /* A keyed label's key: its axis and role where its class, attributes and words agree, or the
      defect that keeps it from being one. */
   function keyOf(el) {
     const axes = Object.keys(KEYED_AXES).filter((a) => el.classList.contains(KEYED_AXES[a].cls));
-    if (axes.length !== 1) return { defect: 'a keyed label names exactly one axis: .state-label or .evidence-label, never both' };
+    if (axes.length !== 1) return { defect: 'a keyed label names exactly one axis: .state-label, .evidence-label or .assessment-label, never two' };
     const axis = axes[0], k = KEYED_AXES[axis];
     if (!el.classList.contains('surface-bordered-label')) return { defect: 'a keyed label is the shared bordered label: it carries .surface-bordered-label' };
     if (el.matches('.surface-emphasis-chip, .doc-mark')) return { defect: 'a keyed label is neither an emphasis chip nor an annotation mark: inside the composition state keeps its square and evidence its dot' };
-    const others = ['review', 'evidence', 'state'].filter((f) => f !== axis && el.hasAttribute('data-' + f));
+    const others = ['review', 'evidence', 'state', 'assessment'].filter((f) => f !== axis && el.hasAttribute('data-' + f));
     if (others.length) return { defect: 'a keyed label carries its own axis\'s attribute and no other facet', facets: others };
     const v = el.getAttribute('data-' + axis);
     if (axis === 'state' && v === 'neutral') return { defect: 'neutral asserts no state: it takes no keyed label', value: v };
+    if (axis === 'state' && v === 'external') return { defect: EXTERNAL_RETIRED + ', so no keyed label names it: an element owned elsewhere takes neutral metadata or a neutral Source // External label, a plain bordered label, beside whatever state it asserts, or none', value: v };
     if (axis === 'evidence' && v === 'not-yet-testable') return { defect: 'not yet testable takes no keyed label: it keeps its whole contract, lavender-gray, a dashed rail, a hollow marker and its visible label', value: v };
+    if (axis === 'assessment' && v === 'unassessed') return { defect: 'unassessed asserts no assessment: it takes no keyed label', value: v };
     if (!k.roles.includes(v || '')) return { defect: 'a keyed ' + axis + ' label names a role in its keyed vocabulary', value: v };
     const role = v.replace(/-/g, ' ');
     const want = k.word + ' // ' + role.charAt(0).toUpperCase() + role.slice(1);
     const words = el.textContent.replace(/\s+/g, ' ').trim();
     if (words.toLowerCase() !== want.toLowerCase()) return { defect: 'a keyed label\'s words are its axis and its role, "' + want + '": color never names the axis alone', words };
+    /* An assessment label never stands alone: it heads the record that names its criterion. */
+    if (axis === 'assessment' && !(el.parentElement && el.parentElement.matches(ASSESSMENT_RECORD))) {
+      const head = el.parentElement && el.parentElement.matches(LABELED) && el.parentElement.firstElementChild === el;
+      return { defect: head
+        ? 'an assessment label never opens a range by itself: a bounded assessed range opens with its assessment record, which the label heads and which names the criterion, its direction, the scope assessed and the basis'
+        : 'an assessment label never stands alone: it heads an assessment record, which names the criterion, its direction, the scope assessed and the basis' };
+    }
     return { axis, v };
+  }
+  /* An assessment record's defect, or null: it opens a labeled range outside the composition, its
+     first child its one keyed assessment label, one assessment on one axis, and its own children
+     the four fields, each once, led by its name and naming something after it. */
+  function recordDefect(rec) {
+    const range = rec.parentElement;
+    if (!range || !range.matches(LABELED) || range.matches('.doc-annotation-range') || range.firstElementChild !== rec) {
+      return { defect: 'an assessment record opens its bounded assessed range: it is the first child of a labeled range, never set alone in text or in a comparison table, whose assessed cells keep their cell-local rail, and never an annotation range\'s' };
+    }
+    if (range.closest('table, .doc-compare-assessed')) {
+      return { defect: 'a bounded assessed range never sits in a table: a comparison table\'s assessed cells keep their cell-local rail and take no record', table: path(range.closest('table, .doc-compare-assessed')) };
+    }
+    const facets = ['review', 'evidence', 'state', 'assessment'].filter((f) => rec.hasAttribute('data-' + f));
+    if (facets.length) return { defect: 'an assessment record carries no facet attribute: its one assessment is its label\'s', facets };
+    const lab = rec.firstElementChild;
+    if (!lab || !lab.matches('.assessment-label')) return { defect: 'an assessment record opens on its keyed assessment label, Assessment // <Role>, before its fields', first: lab ? path(lab) : null };
+    const labels = rec.querySelectorAll('.assessment-label').length;
+    const named = [...rec.querySelectorAll('[data-assessment]')].filter((x) => x !== lab).length;
+    if (labels !== 1 || named) return { defect: 'one assessment: an assessment record names one, on its one keyed label, and multiple assessments take separate records and ranges', labels, named };
+    const other = rec.querySelector('.state-label, .evidence-label, .doc-mark');
+    if (other) return { defect: 'one assessment on one axis: an assessment record holds no state or evidence label and no annotation mark, which name another axis', other: path(other) };
+    const fields = [...rec.querySelectorAll('.assessment-field')];
+    const deep = fields.filter((f) => f.parentElement !== rec);
+    if (deep.length) return { defect: 'each assessment field is a child of its record, which lays them out on one wrapping line', deep: deep.map(path) };
+    const names = fields.map((f) => f.getAttribute('data-field'));
+    const unknown = names.filter((n) => !ASSESSMENT_FIELDS.includes(n || ''));
+    if (unknown.length) return { defect: 'an assessment field is the criterion, its direction, the scope assessed or the basis: data-field criterion, direction, scope or basis, and no other', unknown };
+    const missing = ASSESSMENT_FIELDS.filter((n) => !names.includes(n));
+    if (missing.length) return { defect: 'an assessment record names the criterion, its direction, the scope assessed and the basis: without its ' + missing.join(' and ') + ' field the assessment is unscoped', missing };
+    const twice = ASSESSMENT_FIELDS.filter((n) => names.filter((x) => x === n).length > 1);
+    if (twice.length) return { defect: twice.includes('criterion')
+      ? 'one assessment under one criterion: a record naming two criteria is two assessments, which take separate records and ranges'
+      : 'an assessment record names each of its criterion, direction, scope and basis once', twice };
+    const roleless = fields.filter((f) => !f.classList.contains('doc-meta'));
+    if (roleless.length) return { defect: 'an assessment field keeps the document\'s metadata role: it carries .doc-meta', fields: roleless.map(path) };
+    for (const f of fields) {
+      const n = f.getAttribute('data-field');
+      const words = f.textContent.replace(/\s+/g, ' ').trim();
+      const lead = n + ' //';
+      if (!words.toLowerCase().startsWith(lead) || !/[\p{L}\p{N}]/u.test(words.slice(lead.length))) {
+        return { defect: 'an assessment field\'s words are led by its name, "' + lead + ' …", and name something after it: an empty field leaves the assessment unscoped', field: n, words: words.slice(0, 80) };
+      }
+    }
+    if (!rec.nextElementSibling) return { defect: 'a bounded assessed range assesses one contiguous passage: at least one block follows its record inside the range' };
+    return null;
   }
   const HELD_SEL = COMPOSITION + ', .doc-annotation-list > dt, .doc-annotation-list > dd';
   const HELD_KIND = { 'doc-mark': ['a mark', 'label', 'syntax'], 'doc-passage-mark': ['a passage mark', 'passage', 'computed'],
@@ -1236,8 +1364,19 @@
         if (drift.has(k)) drift.get(k).n++;
         else drift.set(k, { el, name, want, got, n: 1 });
       }
+      /* A retired token holds no value: one that does is the page's own bridge. */
+      for (const name of Object.keys(RETIRED_TOKENS)) {
+        const got = cs.getPropertyValue(name).trim();
+        if (got === '') continue;
+        const k = name + '|' + got;
+        if (drift.has(k)) drift.get(k).n++;
+        else drift.set(k, { el, name, want: null, got, n: 1, retired: RETIRED_TOKENS[name] });
+      }
     }
-    for (const d of drift.values()) add('C0', 'token', d.el, { token: d.name, expected: d.want, got: d.got, elements: d.n });
+    for (const d of drift.values()) {
+      add('C0', 'token', d.el, { token: d.name, expected: d.want, got: d.got, elements: d.n,
+        ...(d.retired ? { message: EXTERNAL_RETIRED + ', and ' + d.retired + ' defines no ' + d.name + ': a page that gives it a value keeps a bridge the owner removed, where an element owned elsewhere takes neutral metadata or a neutral Source // External label' } : {}) });
+    }
 
     /* C10 profile declarations: validated before any is used */
     const profileReport = [];
@@ -1507,8 +1646,8 @@
     /* C12 annotations (Review Semantics): applies where the annotation composition's
        classes appear. Syntax and computed findings are named as such. */
     const VOCAB = { review: ['proposed', 'open', 'accepted', 'declined', 'none'],
-      evidence: ['supported', 'partially-supported', 'unresolved', 'weakened', 'not-yet-testable'],
-      state: ['earned', 'structural', 'partial', 'deflated', 'held', 'external', 'proposed', 'neutral'] };
+      evidence: ['supported', 'partially-supported', 'weakened', 'contradicted', 'unresolved', 'not-yet-testable'],
+      state: ['earned', 'partial', 'deflated', 'structural', 'held', 'proposed', 'neutral'] };
     const FACETS = Object.keys(VOCAB);
     const NOTE_NYT = '.doc-annotation-note[data-evidence="not-yet-testable"]';
     const clear = (color) => /^transparent$|rgba\(\s*[\d.]+,\s*[\d.]+,\s*[\d.]+,\s*0\s*\)|\/\s*0(\.0+)?\s*\)$/.test(color);
@@ -1532,6 +1671,7 @@
       if (facets.length !== 1) { syn('C12', 'facet', m, { message: 'a mark carries exactly one of data-review, data-evidence or data-state', facets }); continue; }
       const f = facets[0];
       const v = m.getAttribute('data-' + f);
+      if (f === 'state' && v === 'external') { syn('C12', 'vocab', m, { message: EXTERNAL_RETIRED + ', and with it the external state square: an item owned elsewhere says so in its basis or a neutral metadata item', value: v }); continue; }
       if (!VOCAB[f].includes(v)) { syn('C12', 'vocab', m, { message: 'a ' + f + ' mark names a role outside its vocabulary', value: v }); continue; }
       if (f === 'review' && !m.classList.contains('surface-bordered-label')) syn('C12', 'base', m, { message: 'a review mark carries .surface-bordered-label: its box and edge are the shared bordered label\'s' });
       if (collapsed(m)) {
@@ -1588,13 +1728,14 @@
       if (el.matches(RAILED + ', ' + PANEL + ', .surface-separate, .surface-action, .surface-emphasis-chip, ' + CONTENT_ROLES)) syn('C12', 'attach', el, { message: 'an annotation class never combines with a content role, a rail, a panel, a compact action or an emphasis chip' });
       else if (el.matches('.surface-bordered-label') && !el.matches('.doc-mark[data-review]')) syn('C12', 'attach', el, { message: 'only a review mark is a bordered label: an evidence or state mark draws its marker, and no other element of the composition takes the box' });
     }
-    /* A keyed state or evidence label is its owner's presentation outside the composition: no element
-       of the composition is one, and none sits in a row, an item, a list or a note, where state keeps its
-       square and evidence its dot. A keyed label in a range's content is that content's. */
+    /* A keyed state, evidence or assessment label is its owner's presentation outside the composition:
+       no element of the composition is one, and none sits in a row, an item, a list or a note, where
+       state keeps its square, evidence its dot, and an assessment has no mark. A keyed label in a
+       range's content is that content's. */
     const IN_ANNOTATION = '.doc-annotations, .doc-annotation-item, .doc-annotation-list, .doc-annotation-note';
     for (const el of all(KEYED)) {
       if (el.matches(COMPOSITION) || (el.parentElement && el.parentElement.closest(IN_ANNOTATION))) {
-        syn('C12', 'attach', el, { message: 'a keyed state or evidence label stays outside the annotation composition: inside a row, item, list or note state keeps its square and evidence its dot, and no element of the composition is a keyed label' });
+        syn('C12', 'attach', el, { message: 'a keyed state, evidence or assessment label stays outside the annotation composition: inside a row, item, list or note state keeps its square, evidence its dot, and an assessment has no mark, and no element of the composition is a keyed label' });
       }
     }
     for (const pm of all('mark.doc-passage-mark')) {
@@ -1757,7 +1898,7 @@
         } else if (!key) {
           const allowed = chip ? ['var(--ask-emphasis-magenta)', 'var(--ask-emphasis-violet)', 'var(--ask-emphasis-cyan)', 'var(--fg-3)'] : ['var(--fg-3)'];
           if (!allowed.some((v) => probe(el, `border-left:1px solid ${v}`).border === color)) {
-            cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip, a review mark or a keyed state or evidence label', got: color });
+            cmp('color', { message: chip ? 'an emphasis chip\'s border is an emphasis accent, or the tertiary foreground outside an accented surface' : 'a neutral bordered label\'s border is the tertiary foreground: a color arrives only with a governed meaning, the emphasis chip, a review mark or a keyed state, evidence or assessment label', got: color });
           }
         }
       }
@@ -1805,9 +1946,12 @@
        child of the label hides count as hidden. A range the page does not show presents no label to judge.
        An annotation range's label is its review mark, whose words C12.label judges. */
     const RANGE_LABEL = '.surface-bordered-label:not(.doc-mark):not(.surface-emphasis-chip)';
+    /* The label that opens a neutral or keyed range: its first child, or, for a bounded assessed
+       range, the label heading the assessment record that is its first child. */
+    const rangeLabel = (el) => { const h = el.firstElementChild; return h && h.matches(ASSESSMENT_RECORD) ? h.firstElementChild : h; };
     function opener(el, add) {
-      const head = el.firstElementChild;
-      if (el.matches('.doc-annotation-range') || !head || !head.matches(RANGE_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label at rest reports it */
+      const head = rangeLabel(el);
+      if (el.matches('.doc-annotation-range') || !head || !head.matches(RANGE_LABEL) || !VISIBLE.test(head.textContent)) return;   /* C14.label or C14.record at rest reports it */
       if (!seen(el)) return;
       let shows = false;
       const walk = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
@@ -1917,26 +2061,41 @@
           ? 'a list that opens or closes on an item host keeps the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) from a range or another such list beside it, so their rails never read as one'
           : 'two labeled ranges in a row keep the ' + RANGE_RAIL.buffer + 'px passage buffer (--space-5) between them, so their rails never read as one', gap: +(r.top - before.getBoundingClientRect().bottom).toFixed(2) });
       }
-      /* A keyed range's rail takes the role its label names; a range whose keyed label fails its key is
-         C13.key's alone. Any other range outside the composition is neutral. */
-      const head = el.firstElementChild;
-      const key = !el.matches('.doc-annotation-range') && head && head.matches(KEYED) ? keyOf(head) : null;
+      /* A keyed range's rail takes the role its label names, and a bounded assessed range's the
+         assessment its record's label names; a range whose keyed label fails its key is C13.key's
+         alone, and one whose record fails is C14.record's. Any other range outside the composition
+         is neutral. */
+      const record = el.firstElementChild && el.firstElementChild.matches(ASSESSMENT_RECORD) ? el.firstElementChild : null;
+      const head = rangeLabel(el);
+      const key = !el.matches('.doc-annotation-range') && !(record && recordDefect(record)) && head && head.matches(KEYED) ? keyOf(head) : null;
       if (key && !key.defect) {
         const want = probe(el, `border-left:1px solid var(--${key.axis}-${key.v}, transparent)`).border;
-        if (clear(want) || color !== want) cmp('color', { message: 'a keyed range\'s scope rail takes the value of the role its label names, and is not transparent', expected: want, got: color });
-      } else if (!key && !el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
-        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range or a keyed state or evidence range', got: color });
+        if (clear(want) || color !== want) cmp('color', { message: record ? 'a bounded assessed range\'s scope rail takes the value of the assessment its record\'s label names, and is not transparent' : 'a keyed range\'s scope rail takes the value of the role its label names, and is not transparent', expected: want, got: color });
+      } else if (!key && !record && !el.matches('.doc-annotation-range') && probe(el, 'border-left:1px solid var(--fg-3)').border !== color) {
+        cmp('color', { message: 'a neutral labeled range\'s scope rail is the tertiary foreground: a color arrives only with a governed meaning, Review Semantics\' annotation range, a keyed state or evidence range or a bounded assessed range', got: color });
       }
+    }
+    /* C14.record: an assessment record, one assessment under one criterion of the passage its range
+       holds, judged as syntax at rest wherever it sits; and a field set outside any record. */
+    for (const rec of all(ASSESSMENT_RECORD)) {
+      counts['assessment-record'] = (counts['assessment-record'] || 0) + 1;
+      const d = recordDefect(rec);
+      if (d) { const { defect, ...detail } = d; add('C14', 'record', rec, { basis: 'syntax', message: defect, ...detail }); }
+    }
+    for (const f of all('.assessment-field')) {
+      if (!f.parentElement || !f.parentElement.closest(ASSESSMENT_RECORD)) add('C14', 'record', f, { basis: 'syntax', message: 'an assessment field is a child of the assessment record whose assessment it scopes, never set alone' });
     }
     for (const el of all(LABELED)) {
       counts['labeled-range'] = (counts['labeled-range'] || 0) + 1;
       const s14 = (reason, message) => add('C14', reason, el, { basis: 'syntax', message });
       const head = el.firstElementChild;
       const review = el.matches('.doc-annotation-range');
+      /* A bounded assessed range opens with its record, whose own anatomy C14.record judges. */
+      const record = !review && head && head.matches(ASSESSMENT_RECORD);
       const labeled = review ? head && head.matches('.doc-annotations') && head.querySelector(BORDERED)
-        : head && head.matches(RANGE_LABEL);
-      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral or keyed bordered label');
-      else if (!review && !VISIBLE.test(head.textContent)) s14('label', 'a labeled range\'s label names it in words: a label with none opens nothing');
+        : record || (head && head.matches(RANGE_LABEL));
+      if (!labeled) s14('label', review ? 'an annotation range opens with its row, which holds its label' : 'a labeled range opens with its label: its first child is a neutral or keyed bordered label, or a bounded assessed range\'s assessment record');
+      else if (!review && !record && !VISIBLE.test(head.textContent)) s14('label', 'a labeled range\'s label names it in words: a label with none opens nothing');
       const parent = el.parentElement;
       if (parent && parent.closest(LABELED)) s14('nest', 'a labeled range never sits inside another');
       if (parent && parent.closest(RANGE_HOSTS)) s14('host', 'a labeled range sits in the document flow or a table cell, or is one whole item of a list in the flow, never inside a list item, a railed passage, a separate surface or panel, a hierarchy level or a note, whose own edges or markers sit where its scope rail would');

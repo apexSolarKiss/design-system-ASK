@@ -61,6 +61,11 @@ function rejects(name, data, code, opts) {
   const o = outcome(data, opts);
   check(name, !o.ok && o.code === code, o.ok ? `accepted; expected ${code}` : o.message.slice(0, 120));
 }
+/* the same, and the message must say why */
+function rejectsWith(name, data, code, why) {
+  const o = outcome(data);
+  check(name, !o.ok && o.code === code && why.test(o.message), o.ok ? `accepted; expected ${code}` : o.message.slice(0, 160));
+}
 const tiny = (extra) => Object.assign({ root: { id: 'R', label: 'root' }, nodes: [{ id: 'n', label: 'n' }] }, extra);
 const PL = [{ id: 'p', label: 'p', drawn: 'always', directed: false }];
 
@@ -529,6 +534,18 @@ rejects('X3 an itemMax of 2.5', G.base(D), 'LAYOUT_OPTION', { itemMax: 2.5 });
 rejects('X3 settings given as false', G.base(D), 'LAYOUT_OPTION', false);
 rejects('X3 settings given as a Date', G.base(D), 'LAYOUT_OPTION', new Date(0));
 rejects('X4 a state outside the Spectral State roles', { ...G.base(D), states: [{ role: 'magenta', label: 'x', meaning: 'x' }] }, 'STATE_ROLE');
+/* Spectral State v2.0 retired external, with no alias: declaring it, or naming it on a node or a record,
+   fails and says it is retired; each of the seven remaining roles is still accepted */
+const RETIRED = /"external" is retired from Spectral State: owned elsewhere is provenance, not a state/;
+rejectsWith('X4 the retired external state, declared, fails as retired', tiny({ states: [{ role: 'external', label: 'x', meaning: 'x' }] }), 'STATE_ROLE', RETIRED);
+rejectsWith('X4 the retired external state on a node fails as retired, not as undeclared', tiny({ states: [{ role: 'earned', label: 'e', meaning: 'e' }],
+  nodes: [{ id: 'n', label: 'n', state: 'external' }] }), 'NODE_STATE', RETIRED);
+rejectsWith('X4 the retired external state on a record fails as retired', tiny({ records: [{ id: 'r', label: 'r', state: 'external' }] }), 'NODE_STATE', RETIRED);
+{
+  const roles = ['earned', 'partial', 'held', 'deflated', 'structural', 'proposed', 'neutral'];
+  const o = outcome(tiny({ states: roles.map((role) => ({ role, label: role, meaning: role })), nodes: roles.map((role) => ({ id: role, label: role, state: role })) }));
+  check('X4 the seven remaining Spectral State roles are each accepted, declared and on a node', o.ok, o.ok ? roles.join(' · ') : o.message);
+}
 rejects('X4 an edge on an undeclared plane', (() => { const m = G.base(D); m.edges[0].plane = 'none'; return m; })(), 'EDGE_PLANE');
 rejects('X4 a kind with a shape outside the owner set', (() => { const m = G.base(D); m.kinds[0].shape = 'star'; return m; })(), 'KIND_SHAPE');
 

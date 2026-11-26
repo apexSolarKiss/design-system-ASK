@@ -17,9 +17,14 @@
    reads, for every text, where its first character starts, its length and box, its computed style and the
    platform font that drew it, and compares them with the control.
 
+   Each declared semantic example, mounted and exported, is also read for the paint of its colored rings and
+   letters, against the approved fills and inks written here as the colors Chrome resolves them to.
+
    The negative controls run a plate whose rules declare only what the plate declared before it stated its
    text properties, under the inherited anchor, baseline, italic and stroke, and require the checks to fail
-   on it for those reasons. The guarantee is about inheritance: a stylesheet rule written against the
+   on it for those reasons; switch the page's criterion-assessment.css off; leave a stylesheet out or point
+   at one that does not load, which the structured sentinel must name; and give an exported letter the
+   retired high-contrast ink. The guarantee is about inheritance: a stylesheet rule written against the
    plate's own elements is not part of it. */
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -149,6 +154,42 @@ for (const heads of ['target', 'midpoint']) {
 }
 fs.rmSync(EXP, { recursive: true, force: true });
 
+/* Load the given stylesheets into the page, in order, and read one sentinel from each sheet group as structured
+   fields: the foundation's --fw-extralight, Criterion Assessment's favorable ink (through the fill paint) and
+   Three Functions' judicial fill, each color as its declared value and as the color the page resolves it to (a
+   probe whose color is the token, with no fallback, so an undeclared token resolves to the probe's inherited
+   color, which is never one of these). A sheet that fails to load is named. */
+const LOAD_SHEETS = (hrefs) => `(async () => { for (const href of ${JSON.stringify(hrefs)}) {
+      const ok = await new Promise((done) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href;
+        l.onload = () => done(true); l.onerror = () => done(false); document.head.appendChild(l); });
+      if (!ok) return { missing: href }; }
+    await document.fonts.ready; const cs = getComputedStyle(document.documentElement);
+    const color = (name) => { const d = document.createElement('div'); d.style.color = 'rgb(1, 2, 3)'; const q = document.createElement('span');
+      q.style.color = 'var(' + name + ')'; d.appendChild(q); document.body.appendChild(d); const c = getComputedStyle(q).color; d.remove();
+      return { declared: cs.getPropertyValue(name).trim(), resolved: c }; };
+    return { weight: cs.getPropertyValue('--fw-extralight').trim(), favorableInk: color('--assessment-favorable-ink'), judicialFill: color('--function-judicial') }; })()`;
+/* The sentinels' expected values, written here and never read from the owner: the extra-light weight 200, the
+   approved ink on green (ASK, 2026-11-25) and the foundation cyan, each the 8-bit color Chrome resolves it to. */
+const SENTINEL = { weight: '200', favorableInk: 'rgb(132, 125, 154)', judicialFill: 'rgb(0, 190, 255)' };
+/* Each declared semantic example's colored roles, for each theme: the physical fill and the approved ink on it
+   (ASK, 2026-11-25), written here and never read from the owner, each the 8-bit color Chrome resolves it to. Only
+   the executive follows the theme: white and its ink in light, the lavender and #6A637F in dark. */
+const ROLE_PAINT = {
+  assessment: { favorable: ['rgb(56, 250, 56)', 'rgb(132, 125, 154)'], caution: ['rgb(250, 250, 56)', 'rgb(123, 115, 146)'], adverse: ['rgb(250, 56, 56)', 'rgb(225, 215, 234)'] },
+  function: { legislative: ['rgb(255, 0, 255)', 'rgb(235, 228, 241)'], judicial: ['rgb(0, 190, 255)', 'rgb(106, 99, 127)'] },
+};
+const rolePaint = (attr, r, theme) => (attr === 'function' && r === 'executive'
+  ? (theme === 'dark' ? ['rgb(212, 198, 225)', 'rgb(106, 99, 127)'] : ['rgb(255, 255, 255)', 'rgb(130, 123, 152)']) : ROLE_PAINT[attr][r]);
+/* each field that is not its expected value, named; empty when every sheet loaded */
+function sheetsUnloaded(t) {
+  if (!t || typeof t !== 'object') return 'no fields';
+  if (t.missing) return 'MISSING ' + t.missing;
+  const bad = [];
+  if (t.weight !== SENTINEL.weight) bad.push('weight');
+  for (const k of ['favorableInk', 'judicialFill']) if (!t[k] || !t[k].declared || t[k].resolved !== SENTINEL[k]) bad.push(k);
+  return bad.join(', ');
+}
+
 const b = await launch();
 const { srv, base } = await serve(ROOT);
 let p;
@@ -159,13 +200,12 @@ try {
   // to (_dsa-tokens/, _dsa-surface/), which the owner repository does not carry; a page plate takes the
   // page's foundation roles, and a declared semantic example its system's tokens, so give the page the
   // owner's files, in load order, before anything is mounted.
-  const tokens = await p.evaluate(`(async () => { for (const href of ${JSON.stringify(['/colors_and_type.css', ...SEMANTIC_SHEETS.map((f) => '/' + f)])}) {
-      const ok = await new Promise((done) => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href;
-        l.onload = () => done(true); l.onerror = () => done(false); document.head.appendChild(l); });
-      if (!ok) return 'MISSING ' + href; }
-    await document.fonts.ready; const cs = getComputedStyle(document.documentElement);
-    return cs.getPropertyValue('--fw-extralight').trim() + ' ' + cs.getPropertyValue('--assessment-favorable-ink').trim() + ' ' + cs.getPropertyValue('--function-judicial').trim(); })()`);
-  if (!/^200 \S+ \S+$/.test(tokens)) throw new Error('the owner stylesheets did not load: ' + JSON.stringify(tokens));
+  // One sentinel per sheet group, each read as its own field: the foundation's weight, a Criterion Assessment ink
+  // through the fill paint and a Three Functions fill. A color is checked as a color the page resolves, never by
+  // its spelling: an approved ink is an HSL recipe with spaces in it.
+  const tokens = await p.evaluate(LOAD_SHEETS(['/colors_and_type.css', ...SEMANTIC_SHEETS.map((f) => '/' + f)]));
+  const unloaded = sheetsUnloaded(tokens);
+  if (unloaded) throw new Error('the owner stylesheets did not load: ' + unloaded + ' ' + JSON.stringify(tokens));
   await p.evaluate(`(() => { const c = document.createElement('div'); c.id = 'nhi';
     c.style.cssText = 'position:absolute;left:0;top:0;z-index:99;background:#fff;padding:0;margin:0';
     document.body.appendChild(c); return true; })()`);
@@ -290,8 +330,9 @@ try {
     for (const r of roles) want.push([r, await rgb(`var(--${attr}-${r})`), await rgb(`var(--${attr}-${r}-ink)`)]);
     const got = await p.evaluate(`(() => ${JSON.stringify(roles)}.map((r) => { const ring = document.querySelector('#nhi-host .peer-ring[data-${attr}="' + r + '"]'),
       glyph = document.querySelector('#nhi-host .peer-glyph[data-${attr}="' + r + '"]'), a = getComputedStyle(ring), b = getComputedStyle(glyph); return [r, a.fill, a.stroke, b.fill]; }))()`);
-    const painted = got.every(([r, fill, stroke, letter], i) => fill === want[i][1] && stroke === want[i][1] && letter === want[i][2] && !/rgb\(0, 0, 0\)/.test(fill + letter));
-    check(`I6.${attr}`, `mounted through the engine with the page's theme, ${id} draws each colored ring and its boundary in its role's value and its letter in the role's ink, and under all the host styles at once but text rendering its texts start, measure, box and face as in the control host`,
+    const painted = got.every(([r, fill, stroke, letter], i) => fill === want[i][1] && stroke === want[i][1] && letter === want[i][2] && !/rgb\(0, 0, 0\)/.test(fill + letter)
+      && fill === rolePaint(attr, r, 'light')[0] && letter === rolePaint(attr, r, 'light')[1]);
+    check(`I6.${attr}`, `mounted through the engine with the page's light theme, ${id} draws each colored ring and its boundary in its role's value and its letter in the role's ink, each the approved color, and under all the host styles at once but text rendering its texts start, measure, box and face as in the control host`,
       sc.texts.some((t) => t.cls === 'peer-band') && painted && smv.which.length === 0 && outside(sa).length === 0 && faceOff(sa, sc).length === 0 && ink(sa) === 0 && sa.dropped.length === 0,
       { texts: sc.texts.length, moved: smv.which.length, painted: got.map(([r, f, , l]) => `${r} ${f} / ${l}`) });
     const sr = await mountIn(HOSTS.rendering, id), srm = moved(sr, sc);
@@ -299,6 +340,32 @@ try {
       sr.texts.length === sc.texts.length && outside(sr).length === 0 && faceOff(sr, sc).length === 0 && sr.dropped.length === 0,
       { moved: srm.which, most: srm.most });
   }
+
+  /* ------------------------------------- I8 the exported examples' resolved paint -- */
+  // Each exported semantic example, inlined unchanged in the control host: every colored ring and its boundary
+  // take the role's approved fill, and every letter the approved ink on it, in the theme the file was written for.
+  const examplePaint = async (file, svg) => {
+    const attr = /\.assessment_/.test(file) ? 'assessment' : 'function', theme = /-dark\.svg$/.test(file) ? 'dark' : 'light', bad = [];
+    await measure('', svg);
+    const got = await p.evaluate(`[...document.querySelectorAll('#nhi-host .peer-ring[data-${attr}]')].map((ring) => {
+      const r = ring.getAttribute('data-${attr}'), glyph = document.querySelector('#nhi-host .peer-glyph[data-${attr}="' + r + '"]'), a = getComputedStyle(ring);
+      return [r, a.fill, a.stroke, glyph ? getComputedStyle(glyph).fill : null]; })`);
+    if (got.length !== 3) bad.push(`${file}: ${got.length} colored rings`);
+    for (const [r, fill, stroke, letter] of got) { const w = rolePaint(attr, r, theme);
+      if (!w || fill !== w[0] || stroke !== w[0] || letter !== w[1]) bad.push(`${file}: ${r} ${fill} ${stroke} / ${letter} for ${w ? w.join(' / ') : 'no role'}`); }
+    return bad;
+  };
+  const EXAMPLES = PLATES.filter((x) => /\.(assessment|functions)_keyed-(light|dark)\.svg$/.test(x.file));
+  const I8bad = [];
+  for (const P of EXAMPLES) I8bad.push(...(await examplePaint(P.file, P.svg)));
+  check('I8', 'every exported semantic example, at the target and at the midpoint, light and dark, draws each colored ring and its boundary in its role\'s approved fill and its letter in the approved ink on it, as the browser resolves the file\'s own values',
+    EXAMPLES.length === 8 && I8bad.length === 0, { plates: EXAMPLES.length, bad: I8bad.slice(0, 4) });
+  // I8 bites: the dark Three Functions file with legislative's letter in the retired high-contrast ink, #201D26.
+  const LEJ_DARK = EXAMPLES.find((x) => x.file === 'target/triangle.L-E-J.functions_keyed-dark.svg');
+  const retired = LEJ_DARK && LEJ_DARK.svg.replace(/(\.peer-glyph\[data-function="legislative"\]\{fill:)[^}]+\}/, '$1#201D26}');
+  const retiredBad = retired && retired !== LEJ_DARK.svg ? await examplePaint(LEJ_DARK.file, retired) : null;
+  check('N9', 'I8 bites: the dark Three Functions file with its legislative letter in the retired high-contrast ink fails on that letter alone',
+    !!retiredBad && retiredBad.length === 1 && /: legislative .* \/ rgb\(32, 29, 38\) for /.test(retiredBad[0]), retiredBad);
 
   /* ----------------------------------------------- I5 white space in the content -- */
   // A text's own white space collapses, as an SVG text's does on its own: a key wording with edge and doubled
@@ -341,10 +408,24 @@ try {
   if (switched) {
     await mountIn('', 'triangle.A-S-K.assessment');
     const off = await p.evaluate(`(() => { const ring = document.querySelector('#nhi-host .peer-ring[data-assessment="favorable"]'); return getComputedStyle(ring).fill; })()`);
-    const on = await rgb('var(--state-earned)');
+    const on = rolePaint('assessment', 'favorable', 'light')[0];
     await p.evaluate(`(() => { [...document.querySelectorAll('link')].find((x) => x.getAttribute('href') === '/criterion-assessment.css').disabled = false; return true; })()`);
     check('N6', 'I6 bites: with the page\'s criterion-assessment.css switched off, the favorable ring no longer takes its role\'s value', off !== on, { off, on });
   } else check('N6', 'I6 bites: the page carries the criterion-assessment.css it can switch off', false);
+  // The sentinel bites, on a fresh page of its own: the former parser, which split one string at its spaces,
+  // rejects the approved ink the structured fields accept; a stylesheet that fails to load is named; and one left
+  // out leaves its own field failing, the others passing.
+  const former = `${tokens.weight} ${tokens.favorableInk.declared} ${tokens.judicialFill.declared}`;
+  check('N7', 'the former sentinel, three values in one string tested as /^200 \\S+ \\S+$/, rejects the approved ink, an HSL recipe with spaces in it, while the structured fields accept every sheet',
+    !/^200 \S+ \S+$/.test(former) && /\s/.test(tokens.favorableInk.declared) && sheetsUnloaded(tokens) === '', { former, fields: tokens });
+  const q = await page(b, `${base}/patterns/diagram-static-peer/diagram-static-peer.html`);
+  try {
+    const hrefs = ['/colors_and_type.css', ...SEMANTIC_SHEETS.map((f) => '/' + f)];
+    const broken = await q.evaluate(LOAD_SHEETS(hrefs.map((h) => (h === '/criterion-assessment.css' ? '/criterion-assessment.absent.css' : h))));
+    const rest = await q.evaluate(LOAD_SHEETS(hrefs.slice(hrefs.indexOf('/criterion-assessment.css') + 1)));
+    check('N8', 'the sentinel bites: a stylesheet that does not load is named, and with criterion-assessment.css left out the favorable ink alone fails while the weight and the judicial fill pass',
+      sheetsUnloaded(broken) === 'MISSING /criterion-assessment.absent.css' && sheetsUnloaded(rest) === 'favorableInk', { broken: sheetsUnloaded(broken), leftOut: sheetsUnloaded(rest), fields: rest });
+  } finally { await q.close(); }
   check('P1', 'the page raised no exception', p.errors.length === 0, p.errors.slice(0, 3));
 } catch (e) {
   check('RUN', 'the harness completed', false, String(e && e.stack || e));

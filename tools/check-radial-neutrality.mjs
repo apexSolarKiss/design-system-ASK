@@ -80,7 +80,7 @@ canvas capacity carries census center children chip choose chooser chrome circle
 clears click close coarse complete conflict container containers contains contract contracterror control
 controls count crowding cycle d dark data declared declares deeper defer deflated defs depth destroy
 diagram diagrams dialog diamond dim directed div draw drawn duplicate earned edge edges element empty
-emptycontainers end endpoint ends engine enter equal escape every explicit export external facets false
+emptycontainers end endpoint ends engine enter equal escape every explicit export facets false
 field filenamebase filtered finite first fit float focus focusout font frame framed from function g
 gesturestart getview glyph got group h halo has hash hashchange header headings height held here hex hg
 hidden hide hole hook host http hud id identifiers idle ids in index inside inspector instance is item
@@ -115,6 +115,7 @@ summary swatch system tag toggle tokens tone truetype tspan ttf unavailable unex
 values variant vector weight with wof woff word xml yields
 cut cx cy fff mask points rx ry userspaceonuse wash
 context linked linkplanes undeclared
+retired owned elsewhere provenance migrate what it meant
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;

@@ -28,7 +28,12 @@
   'use strict';
 
   var SHAPES = ['circle', 'square', 'diamond', 'hex', 'tri', 'ring'];
-  var STATE_ROLES = ['earned', 'partial', 'held', 'deflated', 'external', 'structural', 'proposed', 'neutral'];
+  var STATE_ROLES = ['earned', 'partial', 'held', 'deflated', 'structural', 'proposed', 'neutral'];
+  /* A role Spectral State retired, kept by name so data that still declares it fails with what to
+     do instead. v2.0 removed external: owned elsewhere is provenance, not a state. There is no
+     alias: a consumer migrates each use by what it meant before it mounts. */
+  var RETIRED_STATE_ROLES = { external: 'is retired from Spectral State: owned elsewhere is provenance, not a state; migrate the data by what it meant' };
+  function retired(role) { return typeof role === 'string' && has(RETIRED_STATE_ROLES, role); }
   var DRAWN = ['always', 'selection', 'never'];
   var LIMITS = { depth: 6, placed: 2500 };
 
@@ -131,6 +136,7 @@
     });
     statesIn.forEach(function (s, i) {
       closed(s, 'state', 'states[' + i + ']');
+      need(!retired(s.role), 'STATE_ROLE', retired(s.role) ? show(s.role) + ' ' + RETIRED_STATE_ROLES[s.role] : '');
       need(STATE_ROLES.indexOf(s.role) >= 0, 'STATE_ROLE', show(s.role) + ' is not a Spectral State role');
       need(!states.has(s.role), 'DUPLICATE_STATE', s.role);
       req(s, 'label', 'STATE_LABEL', 'state ' + s.role);
@@ -162,7 +168,10 @@
     });
     nodes.concat(records).forEach(function (x) {
       if (!absent(x, 'kind')) need(typeof x.kind === 'string' && kinds.has(x.kind), 'KIND', show(x.id) + ': kind ' + show(x.kind) + ' is not a declared kind');
-      if (!absent(x, 'state')) need(typeof x.state === 'string' && states.has(x.state), 'NODE_STATE', show(x.id) + ': state ' + show(x.state) + ' is not a declared state');
+      if (!absent(x, 'state')) {
+        need(!retired(x.state), 'NODE_STATE', retired(x.state) ? show(x.id) + ': state ' + show(x.state) + ' ' + RETIRED_STATE_ROLES[x.state] : '');
+        need(typeof x.state === 'string' && states.has(x.state), 'NODE_STATE', show(x.id) + ': state ' + show(x.state) + ' is not a declared state');
+      }
       if (!absent(x, 'data')) jsonValue(x.data, show(x.id) + '.data', []);
     });
 

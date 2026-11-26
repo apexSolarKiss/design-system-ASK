@@ -7,23 +7,40 @@
    declares; or unassessed, where no such judgment is asserted.
 
    It is a SANCTIONED PROFILE, not a separate palette and not a change to
-   Spectral State. Spectral State's eight-role vocabulary is unchanged. This
-   profile REUSES three Spectral State values by reference and adds no value
-   of its own.
+   Spectral State. This profile binds three of the foundation's physical
+   values directly, green, yellow and red, the same physical colors Spectral
+   State and the other profiles bind, and adds no value of its own.
 
    Load order (each layers on the previous):
      colors_and_type.css  →  surface-panel.css  →  surface-treatments.css  →
      spectral-state.css  →  criterion-assessment.css
-   surface-treatments.css supplies, as FILL PAINT, the inks Spectral State and
-   this profile bind and, as RAIL PAINT, each color's paint as a rail. Its
+   The order is unchanged at v0.3, and the owner's exporter and scaffolds keep
+   loading spectral-state.css. Since v0.3 no Criterion value reads a Spectral
+   State token: each role binds the foundation's physical value directly.
+   surface-treatments.css supplies, as FILL PAINT, the inks this profile binds
+   and, as RAIL PAINT, each color's paint as a rail, and draws the bordered
+   label and the labeled range. Its
    table application also needs surface-document.css, which draws the rail's
    geometry, after surface-panel.css and before surface-treatments.css.
 
-   Offline; no CDN. Its colors are Spectral State's, one value per role in both
-   themes; its rails take surface-treatments.css's rail paint, and its filled
+   Offline; no CDN. Its colors are the foundation's physical values
+   (colors_and_type.css), one value per role in both themes; its rails take surface-treatments.css's rail paint, and its filled
    nodes its fill paint, each described below.
 
-   STATUS: v0.2 — the filled-node application. A node in an
+   STATUS: v0.3 — the keyed label and the bounded assessed range (ASK,
+   2026-11-25). Each role binds its physical value directly from the
+   foundation, favorable green, caution yellow and adverse red, so caution no
+   longer reads Spectral State's structural, which is now violet. Outside a
+   table, an assessment may be named on a keyed bordered label,
+   .assessment-label with data-assessment, whose words are exactly
+   Assessment // <Role>, and a labeled range may be one assessment of one
+   contiguous passage under one criterion, opened by an assessment record
+   that names the criterion, its direction, the scope assessed and the basis
+   (A BOUNDED ASSESSED RANGE, below). The table application and the filled
+   node are unchanged. Re-sync this file with surface-treatments.css and
+   colors_and_type.css from the same owner commit.
+
+   v0.2 — the filled-node application. A node in an
    assessment-bearing figure the consumer composes may be filled in its role
    through FILL PAINT, in surface-treatments.css: each role names its ink,
    --assessment-<role>-ink, favorable on green, caution on yellow and adverse
@@ -41,16 +58,17 @@
    ---------------------------------------------------------------------------
    ROLE MAP
    ---------------------------------------------------------------------------
-   Assessment meaning   Visual implementation          Relationship
-     favorable          value of --state-earned        visual-role mapping
-     caution            value of --state-structural    visual-role mapping
-     adverse            value of --state-deflated      visual-role mapping
-     unassessed         no color                       no assessment asserted
+   Assessment meaning   Physical value                       Shared family
+     favorable          green   --ask-state-value-green      affirmative
+     caution            yellow  --ask-state-value-yellow     qualified
+     adverse            red     --ask-state-value-red        negative
+     unassessed         no color                             no assessment asserted
 
-   The three reused values are VISUAL-ROLE mappings, not semantic aliases. A
+   The shared physical values are a shared family, never a shared meaning. A
    consuming surface keeps the assessment LABELS — Favorable / Caution /
-   Adverse — and never relabels them earned / structural / deflated because a
-   color value is shared. Nor is an assessment a review or an evidence state:
+   Adverse — and never relabels them earned / partial / deflated, or by an
+   evidence or review word, because a color value is shared. Adverse under
+   one criterion does not reject the whole option. Nor is an assessment a review or an evidence state:
    favorable is not accepted, and favorable is not supported. A supported
    disadvantage is still adverse.
 
@@ -81,8 +99,8 @@
    gives its color as a rail (RAIL PAINT), the paint every rail in that color
    takes, whichever meaning draws it. Favorable and adverse keep the plain
    2px stroke, as a review range's green and red rails do, and so does
-   caution: Spectral State's yellow reads as a plain stroke on both fields
-   since v1.2, and the light field's ring is retired. This file binds each role
+   caution: the yellow reads as a plain stroke on both fields since Spectral
+   State v1.2, and the light field's ring is retired. This file binds each role
    to its color's paint and sets no dose of its own.
 
    In the table application, never a fill, tint, backplate, glow or colored
@@ -110,19 +128,51 @@
    never a table cell. The structural diagram scaffolds (diagram-static-H,
    -V, -SEQ, -FLOW) take no assessment fill, as FILL PAINT excludes them.
 
-   In any application, never the labeled range, whose rail takes neutral, a
-   review value or a keyed state or evidence value, never an assessment;
-   never a review, evidence or state attribute standing in for an
-   assessment.
+   Never a review, evidence or state attribute standing in for an
+   assessment, in any application.
+
+   ---------------------------------------------------------------------------
+   AN ASSESSMENT IN WORDS
+   ---------------------------------------------------------------------------
+   Outside a table and a multi-axis review annotation, an assessment may be
+   named in words on the surface treatments' bordered label: .assessment-label
+   on a .surface-bordered-label (.doc-label in a document) with
+   data-assessment, its words exactly the axis and the role's word,
+   "Assessment // Caution". Its edge takes the role's value. The label is a
+   word that is read: inert and unfilled, never a status chip, a button or a
+   link. Unassessed takes no keyed label. The label never stands alone: it
+   heads an assessment record, below, which keeps the criterion in view.
+
+   ---------------------------------------------------------------------------
+   A BOUNDED ASSESSED RANGE
+   ---------------------------------------------------------------------------
+   One assessment, under one criterion, of one contiguous passage. The range is
+   the surface treatments' labeled range, .surface-labeled-range, whose first
+   child is the ASSESSMENT RECORD, .assessment-record: the keyed label first,
+   then four fields, each a .assessment-field with data-field and its words
+   led by its name:
+     criterion   data-field="criterion"   the criterion judged against
+     direction   data-field="direction"   which way serves it, e.g. lower is better
+     scope       data-field="scope"       the target or passage assessed
+     basis       data-field="basis"       what the judgment rests on
+   The range's scope rail takes the role's value and its color's rail paint,
+   green, yellow or red, and ends after the range's last block, before the
+   text that follows. Multiple criteria take separate records and separate
+   ranges, never one record naming two; ranges never nest or overlap. The
+   record lays out on one wrapping line; its fields keep the document's
+   metadata role (.doc-meta). The table application keeps its own cell-local
+   rails and takes no record. An assessment is authored under its declared
+   criterion: a color generates no judgment, and the record is how a reader
+   checks it (tools/role-conformance.js, C13 and C14).
    ========================================================================= */
 
 /* ---------- The three roles — both themes ----------
-   Each resolves through --state-*, one value in both themes, so no theme block
-   is needed here. */
+   Each binds the foundation's physical value directly, one value in both
+   themes, so no theme block is needed here. */
 :root {
-  --assessment-favorable: var(--state-earned);     /* visual-role mapping */
-  --assessment-caution:   var(--state-structural); /* visual-role mapping */
-  --assessment-adverse:   var(--state-deflated);   /* visual-role mapping */
+  --assessment-favorable: var(--ask-state-value-green);   /* affirmative */
+  --assessment-caution:   var(--ask-state-value-yellow);  /* qualified */
+  --assessment-adverse:   var(--ask-state-value-red);     /* negative */
 
   /* Each role's ink: the color of text set on a node filled in that role's
      color, bound to the surface treatments' FILL PAINT, which keys each ink by
@@ -147,4 +197,34 @@
 .doc-compare-assessed[data-assessment="adverse"] {
   --doc-compare-rail-color: var(--assessment-adverse);
   --doc-compare-rail-paint: var(--surface-rail-paint-red);
+}
+
+/* ---------- An assessment in words: the keyed label ----------
+   Each role colors the bordered label's edge (surface-treatments.css).
+   Unassessed takes no keyed label. */
+.assessment-label[data-assessment="favorable"] { --surface-bordered-label-color: var(--assessment-favorable); }
+.assessment-label[data-assessment="caution"]   { --surface-bordered-label-color: var(--assessment-caution); }
+.assessment-label[data-assessment="adverse"]   { --surface-bordered-label-color: var(--assessment-adverse); }
+
+/* ---------- A bounded assessed range: the record and the range it opens ----------
+   The record is the range's first child; its keyed label is the record's
+   first child. Each role binds its color and that color's rail paint
+   (A BOUNDED ASSESSED RANGE, above). */
+.assessment-record {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+.surface-labeled-range:has(> .assessment-record:first-child > .assessment-label[data-assessment="favorable"]:first-child) {
+  --surface-labeled-range-color: var(--assessment-favorable);
+  --surface-labeled-range-paint: var(--surface-rail-paint-green);
+}
+.surface-labeled-range:has(> .assessment-record:first-child > .assessment-label[data-assessment="caution"]:first-child) {
+  --surface-labeled-range-color: var(--assessment-caution);
+  --surface-labeled-range-paint: var(--surface-rail-paint-yellow);
+}
+.surface-labeled-range:has(> .assessment-record:first-child > .assessment-label[data-assessment="adverse"]:first-child) {
+  --surface-labeled-range-color: var(--assessment-adverse);
+  --surface-labeled-range-paint: var(--surface-rail-paint-red);
 }

@@ -27,8 +27,8 @@
    file, for each theme, resolved now: the file records the token file's sha256 and freezes them. A
    declared semantic example is written keyed only, with its explanation band, and its role values are
    resolved the same way from its system's stylesheets: --assessment-<role> and --assessment-<role>-ink
-   through Criterion Assessment and Spectral State, or --function-<role> and --function-<role>-ink
-   through Three Functions, each ink through the surface treatments' fill paint. The file records the
+   through Criterion Assessment, or --function-<role> and --function-<role>-ink through Three
+   Functions, each ink through the surface treatments' fill paint. The file records the
    sha256 of each stylesheet its roles resolved through; the exporter carries no copy of a color. It
    embeds the Inter subset from diagrams-static-peer-font.js and carries Inter's copyright and the SIL
    Open Font License text in <metadata>. Every spec it exports is validated before any file is written,
