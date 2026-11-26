@@ -131,6 +131,8 @@ state           → outline, badge, or separate state marker
 evidence state  → evidence marker, rail, dash, or labeled annotation
 ```
 
+The contract holds alike for each of the three functions, legislative, executive and judicial, as [the key's channel examples](three-functions.html) show: no function reserves a state, and a function alone asserts none.
+
 **A state in its element's function color takes the badge or the separate marker.** A proposed legislative part or a held judicial part would draw its state outline in its own fill color, where the outline cannot be seen, so the state takes the badge or the separate state marker the contract already allows.
 
 In a document that adopts [Review Semantics](review-semantics.md), review is a further axis, and the composition applies this contract with all three apart: state takes the separate state marker (a square), evidence the evidence marker (a dot), and review the outline. A diagram keeps the contract above.

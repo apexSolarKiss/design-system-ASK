@@ -208,6 +208,10 @@
      fill: geometry only, its color is FILL PAINT's --surface-fill-edge. */
   .cat-box--outlined { border-width: 2px; }
   .cat-svg--outlined rect { stroke-width: 2; }
+  /* The composition entry's anatomy: the specimen, then the names of its
+     parts beside it, or under it where the row wraps. Layout only. */
+  .cat-anatomy { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-6); }
+  .cat-anatomy-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
   /* A filled shape that carries its role's word is as wide as the word. */
   .cat-box--word { width: auto; min-width: 108px; padding: 0 var(--space-3); }
   .cat-pairs { display: flex; flex-direction: column; gap: var(--space-4); }
@@ -754,16 +758,6 @@
           <p class="doc-meta">availability // supported</p>
         </div>
         <div class="cat-cell">
-          <h4 class="cat-name">magenta, violet outline</h4>
-          <div class="cat-spec" style="--surface-fill-color: var(--ask-emphasis-magenta); --surface-fill-ink: var(--surface-fill-ink-on-magenta); --surface-fill-edge: var(--state-structural);">
-            <span class="cat-box cat-box--outlined surface-fill">legislative</span>
-            <svg class="cat-svg cat-svg--outlined" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="1" y="1" width="106" height="44" rx="8"/><text class="surface-fill-ink" x="54" y="23">legislative</text></svg>
-            <span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span>
-          </div>
-          <p class="note">Function: Legislative takes the fill and a Structural state claims the outline, its label beside the part. Where the state's color is the fill's, as proposed on a legislative part, a separate marker carries it instead.</p>
-          <p class="doc-meta">availability // supported · Three Functions</p>
-        </div>
-        <div class="cat-cell">
           <h4 class="cat-name">white</h4>
           <div class="cat-spec" style="--surface-fill-color: var(--ask-white); --surface-fill-ink: var(--surface-fill-ink-on-white);">
             <span class="cat-box surface-fill">white</span>
@@ -797,6 +791,28 @@
           <p class="doc-meta">availability // not applicable</p>
         </div>
       </div>
+      <!-- A composition, not a color: the filled shape's edge carries a second
+           meaning only where a composing system assigns it one. It sits outside
+           the grid, under its own heading, so it never reads as another
+           physical color or as a default border on a function's fill. -->
+      <div class="cat-cell cat-cell--wide" id="treatment-fill-composition">
+        <h4 class="cat-name">Composition // function + state</h4>
+        <div class="cat-anatomy">
+          <div class="cat-spec cat-spec--centered" style="--surface-fill-color: var(--ask-emphasis-magenta); --surface-fill-ink: var(--surface-fill-ink-on-magenta); --surface-fill-edge: var(--state-structural);">
+            <span class="cat-box cat-box--outlined surface-fill">legislative</span>
+            <svg class="cat-svg cat-svg--outlined" viewBox="0 0 108 46" aria-hidden="true"><rect class="surface-fill" x="1" y="1" width="106" height="44" rx="8"/><text class="surface-fill-ink" x="54" y="23">legislative</text></svg>
+            <span class="surface-bordered-label doc-label state-label" data-state="structural">State // Structural</span>
+          </div>
+          <ul class="cat-anatomy-parts" aria-label="The composition's parts">
+            <li class="note"><b>function fill</b> // Legislative's magenta, and its ink on the text</li>
+            <li class="note"><b>state outline</b> // Structural's violet, on the fill's own edge</li>
+            <li class="note"><b>state label</b> // the state's words, visible beside the part</li>
+          </ul>
+        </div>
+        <p class="note">A function takes the fill, and an independently asserted state may take the outline, with its state label visible; where the two colors match, as Proposed on Legislative or Held on Judicial, a separate labeled state marker, or a badge the consumer draws, carries the state instead. A function alone keeps its same-color edge, as the magenta shape above: the outline is never a default border.</p>
+        <p class="note"><a class="surface-text-link" href="../three-functions.html#channel-discipline">Three Functions // channel discipline</a>: illustrative examples, Structural on each of the three functions and the two same-color cases on a separate marker</p>
+        <p class="doc-meta">availability // supported · a Three Functions composition, not a physical color</p>
+      </div>
       <details class="cat-detail surface-disclosure surface-material-panel surface-attach-free surface-elevation-flush">
         <summary><span class="surface-disclosure-label">tokens and resolved values</span><span class="surface-disclosure-indicator" aria-hidden="true">&#9660;</span></summary>
         <ul class="cat-tokens surface-disclosure-body">
@@ -807,12 +823,12 @@
           <li class="note">violet // <code>--ask-emphasis-violet</code> <span data-fg="--ask-emphasis-violet"></span> · ink <code>--surface-fill-ink-on-violet</code> <span data-fg="--surface-fill-ink-on-violet"></span></li>
           <li class="note">cyan // <code>--ask-emphasis-cyan</code> <span data-fg="--ask-emphasis-cyan"></span> · ink <code>--surface-fill-ink-on-cyan</code> <span data-fg="--surface-fill-ink-on-cyan"></span></li>
           <li class="note">magenta // <code>--ask-emphasis-magenta</code> <span data-fg="--ask-emphasis-magenta"></span> · ink <code>--surface-fill-ink-on-magenta</code> <span data-fg="--surface-fill-ink-on-magenta"></span></li>
-          <li class="note">a claimed outline // <code>--surface-fill-edge</code>, here <code>--state-structural</code> <span data-fg="--state-structural"></span></li>
           <li class="note">white // <code>--ask-white</code> <span data-fg="--ask-white"></span> · ink <code>--surface-fill-ink-on-white</code> <span data-fg="--surface-fill-ink-on-white"></span></li>
           <li class="note">lavender // <code>--ask-lavender-ask</code> <span data-fg="--ask-lavender-ask"></span> · ink <code>--surface-fill-ink-on-lavender</code> <span data-fg="--surface-fill-ink-on-lavender"></span></li>
           <li class="note">neutral shape // <code>--surface-fill-neutral</code> <span data-fg="--surface-fill-neutral"></span> · edge <code>--surface-fill-neutral-edge</code> <span data-fg="--surface-fill-neutral-edge"></span> · ink <code>--surface-fill-ink-on-neutral</code> <span data-fg="--surface-fill-ink-on-neutral"></span></li>
           <li class="note">brown // <code>--ask-state-value-brown</code> <span data-fg="--ask-state-value-brown"></span> · ink <code>--surface-fill-ink-on-brown</code> <span data-fg="--surface-fill-ink-on-brown"></span></li>
           <li class="note">lavender-gray // <code>--ask-state-value-lavender-gray</code> <span data-fg="--ask-state-value-lavender-gray"></span> · no ink</li>
+          <li class="note">the composition's state outline // <code>--surface-fill-edge</code>, here <code>--state-structural</code> <span data-fg="--state-structural"></span></li>
         </ul>
       </details>
     </div>
