@@ -23,8 +23,9 @@
    values and inks on :root, and the keyed label's and range's color and
    paint properties on their own selectors, which no other module sets on
    those elements. So their place beside those two changes no resolved
-   value; the rendered key loads them directly after the foundation. Its two
-   own values are the foundation's reserved state values (colors_and_type.css).
+   value; the rendered key loads them directly after the foundation. Every
+   role value is a foundation physical value (colors_and_type.css): the
+   reserved state values and the emphasis cyan.
 
    Offline; no CDN. One value per role in both themes: no theme block.
 
