@@ -116,6 +116,7 @@ values variant vector weight with wof woff word xml yields
 cut cx cy fff mask points rx ry userspaceonuse wash
 context linked linkplanes undeclared
 retired owned elsewhere provenance migrate what it meant
+attention query
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;

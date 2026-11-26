@@ -310,9 +310,9 @@ body.radial-page {
 .radial-drawer-close:hover { color: var(--fg-1); }
 .radial-drawer-lbl { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3);
                      display: block; margin-bottom: 5px; }
-.radial-drawer-q { width: 100%; font-family: var(--font-mono); font-size: 12px; color: var(--fg-1); background: var(--surface-glass-2);
-                   border: 1px solid var(--surface-glass-2); border-radius: var(--radius-sm); padding: 8px 10px; -webkit-appearance: none; appearance: none; }
-.radial-drawer-q::placeholder { color: var(--fg-3); }
+/* The search takes the shared input (surface-input.css: compact density, query role, adopted edge). The pattern
+   keeps its width and nothing else: a type, paint or focus rule here would override the shared input. */
+.radial-drawer-q { width: 100%; }
 .radial-drawer-results { margin-top: 8px; max-height: 236px; overflow-y: auto; }
 .radial-drawer-r { display: grid; grid-template-columns: 52px 1fr auto; gap: 8px; align-items: baseline; width: 100%; text-align: left;
                    background: transparent; border: none; border-bottom: 1px solid var(--line-2); color: var(--fg-1); padding: 7px 4px;
@@ -347,7 +347,8 @@ body.radial-page {
                        color: var(--fg-1); background: var(--surface-glass-2); border: 1px solid var(--surface-glass-2); border-radius: var(--radius-sm);
                        padding: 9px; cursor: pointer; }
 .radial-drawer-reset:hover { opacity: 0.9; }
-.radial-drawer :focus-visible { outline: 2px solid var(--fg-1); outline-offset: 2px; border-radius: var(--radius-sm); }
+/* The search field takes the shared attention edge as its focus indicator, so this outline skips it. */
+.radial-drawer :focus-visible:where(:not(.surface-attention-edge)) { outline: 2px solid var(--fg-1); outline-offset: 2px; border-radius: var(--radius-sm); }
 .radial-hud .readout--filter { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); padding: 0 8px 0 4px; min-width: 0; }
 .radial-hud .readout--filter.is-active { color: var(--fg-1); font-weight: 500; }
 .radial-hud .readout--filter:empty { display: none; }

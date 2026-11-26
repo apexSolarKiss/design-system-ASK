@@ -416,7 +416,7 @@
                            'It is a CFW-S ledger field; it is shown in the evidence-owner inspector instead.' }],
     search: {
       label: 'search \u2014 name or exact identifier',
-      placeholder: 'recourse \u00B7 CFW-Q-001 \u00B7 CFW-S-479',
+      placeholder: 'recourse \u00B7 CFW-S-479',
       prefix: /^cfw-/i,
       text: function (e) {
         if (e.type === 'container') {

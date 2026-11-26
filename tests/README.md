@@ -937,7 +937,9 @@ bordered    an image card that lifts and raises its own shadow on hover, a launc
             shadow with the ring, as an adopting object with a shadow must. Two
             calls to action from surface-cta.css, a primary button and a ghost
             anchor, take the same edge: the primary's transparent rest border
-            turns magenta, as the ghost's hairline does
+            turns magenta, as the ghost's hairline does. Two text inputs from
+            surface-input.css, at the standard density and at the compact density
+            in the query role, take it on their --fg-3 border
 borderless  three overlay controls with no border of their own
             (.surface-attention-edge--borderless): an inset 1px ring where a border
             would sit, with the 0.5px ring outside it in light
@@ -989,6 +991,11 @@ shared hover and focus rule and its outline rule       case, on focus, with the 
                                                        own ring; the reference cases pass
 remove .surface-attention-edge from a CTA's markup     that CTA, on focus, with the
                                                        browser's own ring
+remove .surface-attention-edge from an input's markup  that input, on focus, with the
+                                                       browser's own ring
+add a page rule that sets the inputs' border color on  both inputs, on focus: each
+focus above the shared rule's specificity              border keeps the page rule's
+(.row input:focus-visible)                             color
 set the primary CTA's transparent border at a          the primary CTA, on focus: its
 specificity above the shared edge rule                 border stays transparent
 remove the borderless rules                            the three overlay controls
