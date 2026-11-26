@@ -203,7 +203,7 @@
                      label measures the same wherever it appears and only its
                      meaning changes its color
      population      .surface-bordered-label, neutral by default: a status
-                     word such as DRAFT. Five governed meanings take the same
+                     word such as DRAFT. Six governed meanings take the same
                      box: the emphasis chip, by selector grouping in this file,
                      its border the emphasis accent; Review Semantics' review
                      mark, which carries the class, its border the review
@@ -212,10 +212,11 @@
                      .review-record-outcome, which carries the class, its
                      border the record's role value; and, outside a
                      multi-axis review annotation, Spectral State's
-                     .state-label and Evidence
-                     State's .evidence-label, which carry the class and name
-                     their axis and role in their words (State // Held,
-                     Evidence // Supported), each border the role's value
+                     .state-label, Evidence State's .evidence-label and
+                     Criterion Assessment's .assessment-label, which carry
+                     the class and name their axis and role in their words
+                     (State // Held, Evidence // Supported, Assessment //
+                     Caution), each border the role's value
      owner           this module: display, size, baseline, wrapping, padding,
                      corners, the 1px layout border, the per-theme edge
                      reinforcement, the clearance that keeps the reinforcement
@@ -232,8 +233,9 @@
                      interaction. Never a color chosen for contrast or
                      decoration: a neutral label stays --fg-3, and a color
                      arrives only with the emphasis chip, a review mark, a
-                     decision record's outcome label or a keyed state or
-                     evidence label whose words name its axis and role.
+                     decision record's outcome label or a keyed state,
+                     evidence or assessment label whose words name its axis
+                     and role.
                      Spectral State's neutral and Evidence State's not yet
                      testable take no keyed label. Evidence dots,
                      state squares and the not-yet-testable rail are not
@@ -261,10 +263,14 @@
                      inside it keeps its own marks. Three governed meanings
                      set its color: Review Semantics' annotation range, whose
                      first child is the row naming its one review judgment,
-                     and whose rail takes that judgment's value; and Spectral
+                     and whose rail takes that judgment's value; Spectral
                      State's and Evidence State's keyed range, whose first
                      child is a keyed state or evidence label, and whose rail
-                     takes that label's role value
+                     takes that label's role value; and Criterion
+                     Assessment's bounded assessed range, whose first child
+                     is its assessment record, headed by a keyed assessment
+                     label and naming the criterion, direction, scope and
+                     basis, and whose rail takes that assessment's value
      owner           this module: the rail's stroke, its lane outside the
                      content edge, its reach past the range's first child, the
                      label or its row, and its last block (whose outer margins
@@ -299,9 +305,9 @@
                      dot or arrow. Never the cue for words inside a block:
                      that is the scope underline. Colors other than neutral,
                      the governed review value and a keyed label's role value
-                     are not admitted: emphasis keeps its own rail, an
-                     assessment its own, and not yet testable's lavender-gray
-                     is never a scope rail
+                     are not admitted: emphasis keeps its own rail, a
+                     comparison table's assessment its cell-local rail, and
+                     not yet testable's lavender-gray is never a scope rail
      example         two paragraphs beside a magenta scope rail under
                      PROPOSED, then one beside a green rail under ACCEPTED; a
                      quotation and the sentence that reads it, beside one
@@ -324,16 +330,18 @@
                      each color both of them draw, keyed by the color and not
                      by any meaning that draws it: --surface-rail-paint-green,
                      --surface-rail-paint-yellow and --surface-rail-paint-red.
-                     The meaning-named --surface-rail-paint-earned,
-                     -structural and -deflated are aliases of green, yellow
-                     and red: each reads its color's paint and carries no
-                     value of its own
+                     The meaning-named --surface-rail-paint-earned and
+                     -deflated are aliases of green and red: each reads its
+                     color's paint and carries no value of its own. The
+                     -structural alias, which read yellow, is retired with
+                     structural's move to violet (2026-11-25)
      owner           this module: each paint and its dose. The semantic
                      systems own each color. The composing meaning
                      binds a role to its color and to that color's paint:
                      Review Semantics for an annotation range, Spectral State
                      and Evidence State for a keyed range, Criterion
-                     Assessment for an assessment. Each rail's composition
+                     Assessment for an assessment's table rail and its
+                     bounded assessed range. Each rail's composition
                      keeps its place, length, gap and containment
      reuses          the rail's own color, through currentColor
      variation       none today: every color takes none, the plain 2px stroke,
@@ -347,7 +355,7 @@
                      color: a meaning paints only colors it is already
                      admitted. A rail in a color with no paint here, such as
                      a passage rail's emphasis accent, a range's magenta,
-                     cyan, violet, orange or brown, or a neutral, keeps the
+                     cyan, violet or orange, or a neutral, keeps the
                      plain stroke; a paint for one of those colors would bind
                      every rail drawn in it. A meaning binds the color's
                      paint, never an alias: an alias is read-only, and
@@ -355,7 +363,7 @@
      example         a declined range's scope rail and an adverse
                      assessment's rail: one red, one paint, in two places;
                      caution's yellow the same plain stroke beside a summary, a
-                     value field and the key, and beside a structural state
+                     value field and the key, and beside a partial state
                      range
      counterexample  a meaning setting its own dose or theme branch for a
                      color this module paints; the bordered label's edge
@@ -579,8 +587,8 @@
    color and draws both its 2px stroke and the paint in that color, so a
    paint can never drift from its rail's color. Each paint is named by the
    color it is drawn in, as each ink is named by the fill it is set on (THE
-   FILL'S PAINT); the names earned, structural and deflated are only aliases
-   of green, yellow and red. Every paint is none: since
+   FILL'S PAINT); the names earned and deflated are only aliases of green
+   and red, and structural's alias is retired. Every paint is none: since
    Spectral State v1.2 a color takes one value in both themes, and in it the
    plain 2px stroke reads on the light lavender and the dark ink alike,
    caution's yellow included. Until then caution's rail took
@@ -999,7 +1007,6 @@
   --surface-rail-paint-yellow:     none;
   --surface-rail-paint-red:        none;
   --surface-rail-paint-earned:     var(--surface-rail-paint-green);
-  --surface-rail-paint-structural: var(--surface-rail-paint-yellow);
   --surface-rail-paint-deflated:   var(--surface-rail-paint-red);
 }
 
