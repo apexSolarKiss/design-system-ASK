@@ -1,30 +1,32 @@
 # Criterion Assessment
 
-A semantic state-color **profile** under the Spectral State family. It answers one question: **how does this characteristic serve the stated criterion?** Defined in [`criterion-assessment.css`](criterion-assessment.css); rendered visual key and worked table in [`criterion-assessment.html`](criterion-assessment.html). Its table application is drawn by the document register's comparison table, in [`surface-document.css`](surface-document.css), and its filled-node application by the surface treatments' fill paint, in [`surface-treatments.css`](surface-treatments.css).
+A semantic state-color **profile** under the Spectral State family. It answers one question: **how does this characteristic serve the stated criterion?** Defined in [`criterion-assessment.css`](criterion-assessment.css); rendered visual key and worked table in [`criterion-assessment.html`](criterion-assessment.html). Its table application is drawn by the document register's comparison table, in [`surface-document.css`](surface-document.css), its filled-node application by the surface treatments' fill paint, and its keyed label and bounded assessed range by their bordered label and labeled range, in [`surface-treatments.css`](surface-treatments.css).
 
-It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** Spectral State's eight-role vocabulary is unchanged. This profile **reuses three Spectral State values by reference** and adds no value of its own.
+It is a **sanctioned profile, not a separate palette and not a change to Spectral State.** This profile **binds three of the foundation's physical values directly**, green, yellow and red, the same physical colors Spectral State and the other profiles bind, and adds no value of its own.
 
-> **Status: v0.2 // the filled-node application.** A node in an assessment-bearing figure the consumer composes may be filled in its role through [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT: each role names its ink, `--assessment-<role>-ink`, favorable on green, caution on yellow and adverse on red. Each filled node shows its word, or the figure has a key, and an unassessed node takes no assessment fill (The filled-node application, below). The table application stays rail-only, and its rails bind the rail paint by color, green, yellow and red, with no change to what they draw. A labeled range takes neutral, a review value or a keyed state or evidence value, never an assessment. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
+> **Status: v0.3 // the keyed label and the bounded assessed range (ASK, 2026-11-25).** Each role binds its physical value directly from the foundation, `favorable` green, `caution` yellow and `adverse` red, so `caution` no longer reads Spectral State's `structural`, which is now violet. Outside a table and a multi-axis review annotation, an assessment may be named on a keyed bordered label, `.assessment-label` with `data-assessment`, whose words are exactly `Assessment // <Role>`, and a labeled range may be one assessment of one contiguous passage under one criterion, opened by an **assessment record** that names the criterion, its direction, the scope assessed and the basis (An assessment in words and A bounded assessed range, below). This admits what v0.2 excluded: a labeled range may now take an assessment, through its record. The table application and the filled node are unchanged. Re-sync this file with [`surface-treatments.css`](surface-treatments.css) and [`colors_and_type.css`](colors_and_type.css) from the same owner commit.
+>
+> **v0.2 // the filled-node application.** A node in an assessment-bearing figure the consumer composes may be filled in its role through [`surface-treatments.css`](surface-treatments.css)'s FILL PAINT: each role names its ink, `--assessment-<role>-ink`, favorable on green, caution on yellow and adverse on red. Each filled node shows its word, or the figure has a key, and an unassessed node takes no assessment fill (The filled-node application, below). The table application stays rail-only, and its rails bind the rail paint by color, green, yellow and red, with no change to what they draw. A labeled range takes neutral, a review value or a keyed state or evidence value, never an assessment. The role values are unchanged. Re-sync this file with `surface-treatments.css` from the same owner commit.
 >
 > **v0.1.** Authorized by ASK source-of-intent (2026-11-05) as a shared capability, with colored rails selected for its table application. The role list may firm up as the profile sees more use.
 
 ## The four roles
 
-| Assessment meaning | Visual implementation | Relationship |
+| Assessment meaning | Physical value | Shared family |
 | --- | --- | --- |
-| `favorable` | value of `--state-earned` | visual-role mapping |
-| `caution` | value of `--state-structural` | visual-role mapping |
-| `adverse` | value of `--state-deflated` | visual-role mapping |
+| `favorable` | green, `--ask-state-value-green` | affirmative |
+| `caution` | yellow, `--ask-state-value-yellow` | qualified |
+| `adverse` | red, `--ask-state-value-red` | negative |
 | `unassessed` | no color | no assessment asserted |
 
 - **Favorable:** the characteristic supports the declared criterion.
 - **Caution:** it is conditional, mixed or intermediate against that criterion. It is not a claim of danger.
-- **Adverse:** it works against that criterion.
+- **Adverse:** it works against that criterion. Adverse under one criterion does not reject the whole option.
 - **Unassessed:** no criterion-based judgment is asserted. It is not a neutral rating, a warning or a gray badge: no assessment is drawn.
 
-**Each rail takes its color's shared paint.** How a color is painted as a rail belongs to the surface treatments' **rail paint** ([`surface-treatments.css`](surface-treatments.css), RAIL PAINT), not to this profile: the same color drawn as a rail on the same field takes the same paint, whichever meaning draws it. This profile binds each role to its color's paint and sets no dose of its own. Every role keeps the plain 2px stroke, as a review range's green and red rails do. Until Spectral State v1.2, caution's deeper light yellow all but disappeared as a bare rail on the light lavender, and its paint added a same-color ring there; with one value per color in both themes the brighter yellow reads as a plain stroke on both fields, and the ring is retired.
+**Each rail takes its color's shared paint.** How a color is painted as a rail belongs to the surface treatments' **rail paint** ([`surface-treatments.css`](surface-treatments.css), RAIL PAINT), not to this profile: the same color drawn as a rail on the same field takes the same paint, whichever meaning draws it. This profile binds each role to its color's paint and sets no dose of its own. Every role keeps the plain 2px stroke, as a review range's green and red rails do, and a bounded assessed range takes the same paint in the outer margin. Until Spectral State v1.2, caution's deeper light yellow all but disappeared as a bare rail on the light lavender, and its paint added a same-color ring there; with one value per color in both themes the brighter yellow reads as a plain stroke on both fields, and the ring is retired.
 
-**Labels stay assessment labels.** A consuming surface keeps **Favorable**, **Caution** and **Adverse**. It never relabels them `earned`, `structural` or `deflated` because a color value is shared: the reused values are visual-role mappings, not semantic aliases.
+**Labels stay assessment labels.** A consuming surface keeps **Favorable**, **Caution** and **Adverse**. It never relabels them `earned`, `partial` or `deflated`, or by an evidence or review word, because a color value is shared: the shared physical values are a shared family — green affirmative, yellow qualified, red negative, each within the question its own system asks — never a shared meaning.
 
 ## What it is not
 
@@ -33,7 +35,7 @@ The ASK semantic profiles answer different questions, and a shared color never m
 | Profile | The question it answers |
 | --- | --- |
 | [Spectral State](spectral-state.md) | What is the state of an architectural element? |
-| [Evidence State](evidence-state.md) | What does current evidence show about an assumption? |
+| [Evidence State](evidence-state.md) | What does the available evidence support about a scoped claim? |
 | [Review Semantics](review-semantics.md) (Review State) | What review decision was recorded at this scope? |
 | **Criterion Assessment** | How does this characteristic serve the stated criterion? |
 
@@ -43,7 +45,7 @@ The ASK semantic profiles answer different questions, and a shared color never m
 
 ## The criterion is the author's
 
-This profile owns each role's meaning and its presentation, binding each role to a color, to that color's shared rail paint and to its fill ink. The consuming author owns the **criterion** each row or node is judged against and every **assignment**, and records them where the surface keeps its decisions. A color token supplies no judgment.
+This profile owns each role's meaning and its presentation, binding each role to a color, to that color's shared rail paint and to its fill ink. The consuming author owns the **criterion** each row, node or passage is judged against and every **assignment**, and records them where the surface keeps its decisions. An assessment is authored under its declared criterion: a color generates no judgment, and the words in a cell, such as "fast" or "limited", generate no color.
 
 Every assessed row declares, at least in the consumer's own record (where the ratings are a source author's own, the criterion and its direction are the author's, as the source labels the row, and the record says the ratings are carried):
 - **its criterion and direction:** what is favorable here, such as less set-up time and cost;
@@ -94,7 +96,57 @@ A **key** (`ul.doc-compare-key`) lists the assessments a table uses, each item a
 
 **A value field, for rated figures.** In a legend-led table a rated figure's wrapper may take `data-value-field`, a template of the widest value its group shows, such as `"0.00"` or `"-00.0%"`. The wrapper then sits at the column's end, as wide as that template on the column's tabular figures, or as its own figure where that is wider, and its rail sits 12px before it. Every wrapper in the group carries the same template, so their fields share one width and each column's rails share one line. The figure takes the cell's type; a template narrower than its figure is an authoring defect, since that field widens and its rail leaves the line. The field never reaches past the column's content edge: in a column too narrow for it, it fills the column and the rail begins on that edge. In an auto-sized table the template also sets the column's least width, so that happens only where a fixed layout or a declared width makes the column narrower. In a table that shows its words, and under forced colors, the template is ignored and the rail keeps the content edge.
 
-**It is not the labeled range.** The labeled range's scope rail sits in the outer margin and takes neutral, a review value or a keyed state or evidence value, never an assessment. A comparison rail sits inside its cell and admits only this profile's. Where the two draw the same color, green, yellow or red, they take the same paint, in different places. A cell that also carries a review or evidence mark keeps that mark whole: its own box or marker, its own color and its own scope.
+**It is not the bounded assessed range.** A comparison rail sits inside its cell, in its lane, and marks one summary or figure; it takes no assessment record. A bounded assessed range (below) sits in the outer margin beside a passage, outside a table. Where a comparison rail and a labeled range draw the same color, green, yellow or red, they take the same paint, in different places. A cell that also carries a review or evidence mark keeps that mark whole: its own box or marker, its own color and its own scope.
+
+## An assessment in words
+
+Outside a table and a multi-axis review annotation, an assessment may be named in words on the surface treatments' **bordered label** ([`surface-treatments.css`](surface-treatments.css), BORDERED LABEL): `.assessment-label` on a `.surface-bordered-label`, `.doc-label` in a document, with `data-assessment`. Its words are exactly the axis and the role's word, `Assessment // Caution`, so a green edge never reads as an earned state, supported evidence or an accepted review. Its edge takes the role's value.
+
+- **Words, not a control.** The label is inert and unfilled: no ink, hover, press or focus, and never a status chip, a button or a link.
+- **Never alone.** The label heads an assessment record, below, which keeps the criterion in view.
+- **Unassessed takes no keyed label.** It asserts no judgment.
+- **Not inside Review Semantics.** The annotation composition admits review, evidence and state marks; a keyed assessment label never sits in its rows, items, lists or notes.
+- **The class, the attribute and the words together.** `data-assessment` without `.assessment-label` keys no label, and a label whose words do not name its axis and role is not an assessment label.
+
+## A bounded assessed range
+
+One assessment, under one criterion, of one contiguous passage. The range is the surface treatments' **labeled range**, `.surface-labeled-range` (LABELED RANGE), whose first child is the **assessment record**, `.assessment-record`. The record's first child is the keyed label, and four fields follow it, each a `.assessment-field` with `.doc-meta` and `data-field`, its words led by its name:
+
+| Field | `data-field` | Its words begin | What it names |
+| --- | --- | --- | --- |
+| criterion | `criterion` | `criterion // ` | the criterion judged against |
+| direction | `direction` | `direction // ` | which way serves it, e.g. lower is better |
+| scope | `scope` | `scope // ` | the target or passage assessed |
+| basis | `basis` | `basis // ` | what the judgment rests on |
+
+The range's scope rail takes the role's value and its color's rail paint (RAIL PAINT), green, yellow or red, and ends after the range's last block, before the text that follows. The record lays out on one wrapping line, and its fields keep the document's metadata role.
+
+```html
+<!-- example — illustrative: one assessment of one passage, under one criterion -->
+<div class="doc-group surface-labeled-range">
+  <div class="assessment-record">
+    <span class="doc-label surface-bordered-label assessment-label" data-assessment="caution">Assessment // Caution</span>
+    <span class="assessment-field doc-meta" data-field="criterion">criterion // set-up work before a reader can open it</span>
+    <span class="assessment-field doc-meta" data-field="direction">direction // less work is better</span>
+    <span class="assessment-field doc-meta" data-field="scope">scope // the hosted-site option, as described here</span>
+    <span class="assessment-field doc-meta" data-field="basis">basis // the steps below, as the author counts them</span>
+  </div>
+  <p class="doc-body">A hosted site needs a repository, a deployment and a domain before anyone can read it.</p>
+</div>
+```
+
+| Concern | Rule |
+| --- | --- |
+| One judgment | One range carries one assessment under one criterion over one contiguous passage. |
+| Several criteria | Separate records and separate ranges, never one record naming two criteria. |
+| Nesting | Ranges never nest or overlap. |
+| The record | Always first, the keyed label first inside it, then criterion, direction, scope and basis, each in words. A record that omits a field is not an assessment record. |
+| The rail | Beside the passage only, ending at the range's boundary. Never through the text that follows. |
+| Unassessed | No record, no label and no range. |
+| Where it applies | A passage in a document or report, outside a table and a multi-axis review annotation. A comparison table keeps its own cell-local rails and takes no record. |
+| Authorship | The author assigns the role under the declared criterion and records the basis; the color supplies no judgment, and the record is how a reader checks it. |
+
+`tools/role-conformance.js` checks the record's anatomy and the range's rail (C13 and C14).
 
 ## The filled-node application
 
@@ -118,20 +170,21 @@ In an **assessment-bearing figure** the consuming surface composes, a node judge
 
 ## Tiers
 
-- **Tier 1 (identity-free):** the `--assessment-*` role names and the `data-assessment` vocabulary.
-- **Tier 2 (ASK design language):** the three values, inherited from [Spectral State](spectral-state.md)'s Tier 2 by reference.
+- **Tier 1 (identity-free):** the `--assessment-*` role names, the `data-assessment` vocabulary, the `.assessment-label` class and the assessment record's `.assessment-record`, `.assessment-field` and `data-field` names.
+- **Tier 2 (ASK design language):** the three values, the foundation's green, yellow and red, bound directly.
 - **No Tier 3.** This profile carries no instance identity.
 
 ## How to use it
 
-1. Load `colors_and_type.css`, then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks Spectral State and this profile bind), then `spectral-state.css`, then `criterion-assessment.css`, all from one design-system commit. For the table application, also load `surface-document.css`, after `surface-panel.css` and ahead of `surface-treatments.css`: the document register draws the rails' geometry and the treatments their paint.
+1. Load `colors_and_type.css`, then `surface-panel.css` and `surface-treatments.css` (whose FILL PAINT supplies the inks this profile binds, and whose bordered label and labeled range draw the keyed label and the bounded assessed range), then `spectral-state.css`, then `criterion-assessment.css`, all from one design-system commit, in the order the stylesheet's contract gives. For the table application, also load `surface-document.css`, after `surface-panel.css` and ahead of `surface-treatments.css`: the document register draws the rails' geometry and the treatments their paint.
 2. Declare the comparison: `table.doc-table.doc-compare-table` directly inside a named `.doc-table-scroll` box.
 3. Wrap each assessed summary and its word in `.doc-compare-assessed` with one `data-assessment` value, the word marked `.doc-compare-word`. Leave unassessed summaries unwrapped.
 4. Give the table a key. Keep the words beside the rails, or declare `doc-compare-legend-led` on the table to let the key name them; there, a group of rated figures may share a value field, each wrapper carrying the same `data-value-field` template.
 5. For a figure, fill each assessed node with `.surface-fill`, `--assessment-<role>` and `--assessment-<role>-ink`, and show each node's word or give the figure a key. Leave an unassessed node without an assessment fill or word.
-6. Record each row's or node's criterion and each assignment's basis in the consumer's own decision record.
+6. For a passage outside a table, open a `.surface-labeled-range` with an `.assessment-record`: the keyed label `Assessment // <Role>` first, then the criterion, direction, scope and basis fields. One record per criterion; ranges never nest or overlap.
+7. Record each row's, node's or passage's criterion and each assignment's basis in the consumer's own decision record.
 
 ## What is upstream vs consumer-local
 
-- **Upstream (this repo):** the four roles, their meanings and labels, the reuse-by-reference mapping, the table application's binding of each role to its color and that color's rail paint, the filled-node application's binding of each role to its color and that color's fill ink, the comparison table's geometry in the document register, and the rail paint in the surface treatments.
-- **Consumer-local:** the criteria, every assignment and its basis, the table's content and columns, and where the table sits in its page.
+- **Upstream (this repo):** the four roles, their meanings and labels, each role's binding to a physical value, the table application's binding of each role to its color and that color's rail paint, the filled-node application's binding of each role to its color and that color's fill ink, the keyed label's and the bounded assessed range's bindings and the assessment record's anatomy, the comparison table's geometry in the document register, and the rail paint in the surface treatments.
+- **Consumer-local:** the criteria, every assignment and its basis, the table's content and columns, each assessed passage and its record's words, and where they sit in the page.

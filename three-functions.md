@@ -121,7 +121,7 @@ Three semantic axes may appear on one surface; they may not compete for one visu
 function role   ≠   element state   ≠   evidence state
 ```
 
-**Reused color does not create semantic identity.** Since [Spectral State](spectral-state.md) v1.2, `--function-legislative` and `--state-proposed` are the one foundation magenta, and `--function-judicial` and `--state-held` the one foundation cyan. Each refers to the foundation color, not to the other, and they are **not** aliases: a shared value never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) applies to its reused values. Visible labels stay mandatory.
+**Reused color does not create semantic identity.** Since [Spectral State](spectral-state.md) v1.2, `--function-legislative` and `--state-proposed` are the one foundation magenta, and `--function-judicial` and `--state-held` the one foundation cyan. Each refers to the foundation color, not to the other, and they are **not** aliases: a shared value never turns different labels into the same meaning — the same discipline [Evidence State](evidence-state.md) and the other profiles apply to the physical values they share with Spectral State. Visible labels stay mandatory.
 
 Channel contract when more than one system is present on an element:
 

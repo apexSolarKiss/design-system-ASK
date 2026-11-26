@@ -15,8 +15,8 @@
      and this profile live, in the contract's load order; theme-aware (light
      default · dark via prefers-color-scheme / [data-theme="dark"]), inside the
      site's surface-shell chrome, which loads after them. Open directly. The
-     comparison's content is schematic; the last table's figures are the
-     register's own. -->
+     comparisons, the assessed passage and their ratings are illustrative; the
+     last table's figures are the register's own. -->
 <link rel="stylesheet" href="colors_and_type.css">
 <link rel="stylesheet" href="surface-action.css">
 <link rel="stylesheet" href="surface-panel.css">
@@ -57,6 +57,8 @@
   .key-nodes-svg text { font-family: var(--font-mono); font-size: var(--fs-caption); text-anchor: middle; }
   /* The representations list: framing only; its items take the register's metadata role. */
   .avail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+  /* The keyed labels: framing only. The label, the record and the range are the owner's. */
+  .key-keyed-labels { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-5); }
 </style>
 </head>
 <body>
@@ -80,9 +82,9 @@
 <div class="doc-flow">
 
   <header class="doc-titled key-prose">
-    <p class="doc-label">v0.2 // profile under the Spectral State family // Spectral State unchanged</p>
+    <p class="doc-label">v0.3 // profile under the Spectral State family // the keyed label and the bounded assessed range</p>
     <h2 class="doc-title">Criterion Assessment</h2>
-    <p class="doc-lede">How does this characteristic serve the stated criterion? Favorable, caution or adverse, against a criterion the author declares, or unassessed. The profile owns what each role means and how it is drawn; the author owns the criterion and every assignment.</p>
+    <p class="doc-lede">How does this characteristic serve the stated criterion? Favorable, caution or adverse, against a criterion the author declares, or unassessed. The profile owns what each role means and how it is drawn; the author owns the criterion and every assignment, and a color generates no judgment.</p>
   </header>
 
   <section class="doc-section" aria-labelledby="scope-title">
@@ -93,9 +95,9 @@
   <section class="doc-section" aria-labelledby="roles-title">
     <h2 class="doc-section-title key-prose" id="roles-title">Roles and colors // four roles, three colors</h2>
     <ul class="doc-compare-key" aria-label="The four roles">
-      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // value of state-earned</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // value of state-structural</p></li>
-      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // value of state-deflated</p></li>
+      <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // green, affirmative</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // yellow, qualified</p></li>
+      <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // red, negative</p></li>
       <li><p class="doc-meta">unassessed // no rail</p></li>
     </ul>
     <div class="doc-table-scroll key-prose" role="region" aria-label="What each role means" tabindex="0">
@@ -104,17 +106,17 @@
         <tbody>
           <tr><td class="doc-body">Favorable</td><td class="doc-body">supports the row's criterion</td><td class="doc-body">accepted, supported, or good overall</td></tr>
           <tr><td class="doc-body">Caution</td><td class="doc-body">conditional, mixed or intermediate against it</td><td class="doc-body">danger, or an unknown</td></tr>
-          <tr><td class="doc-body">Adverse</td><td class="doc-body">works against the row's criterion</td><td class="doc-body">declined, weakened, or bad overall</td></tr>
+          <tr><td class="doc-body">Adverse</td><td class="doc-body">works against the row's criterion</td><td class="doc-body">declined, contradicted, or a rejection of the whole option</td></tr>
           <tr><td class="doc-body">Unassessed</td><td class="doc-body">no judgment asserted</td><td class="doc-body">a neutral rating or a warning</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="doc-body key-prose">The three colors are Spectral State's, by reference: one value each, the same in both themes, and each rail is a plain 2px stroke on either field. They are visual-role mappings, not aliases: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, structural or deflated for them.</p>
+    <p class="doc-body key-prose">The three colors are the foundation's green, yellow and red, bound directly: one value each, the same in both themes, and each rail is a plain 2px stroke on either field. A shared value is a shared family, green affirmative, yellow qualified and red negative within the question each system asks, never a shared meaning: a surface keeps the words Favorable, Caution and Adverse, and never writes earned, partial or deflated for them.</p>
   </section>
 
   <section class="doc-section" aria-labelledby="representations-title">
     <h2 class="doc-section-title key-prose" id="representations-title">Representations // where the roles are drawn, and their status</h2>
-    <p class="doc-body key-prose">The table application is rail-only: a rail and its word, a legend-led key, or a value field, never a fill or a tint. A node in an assessment-bearing figure is filled instead, in its role's color and that color's existing ink, and shows its word, or the figure has a key. An unassessed node keeps the figure's own node, here the neutral shape, and shows no word.</p>
+    <p class="doc-body key-prose">The table application is rail-only: a rail and its word, a legend-led key, or a value field, never a fill or a tint. A node in an assessment-bearing figure is filled instead, in its role's color and that color's ink, and shows its word, or the figure has a key. An unassessed node keeps the figure's own node, here the neutral shape, and shows no word.</p>
     <div class="key-fill key-prose">
       <div class="key-nodes">
         <div class="node surface-fill" data-assessment="favorable">favorable</div>
@@ -129,14 +131,32 @@
         <g class="surface-fill--neutral"><rect class="surface-fill" x="367" y="8" width="108" height="46" rx="8"/></g>
       </svg>
     </div>
+    <p class="doc-body key-prose">Outside a table and a review annotation, an assessment may be named in words on a keyed bordered label, its words exactly Assessment // and the role. The label never stands alone: it heads an assessment record, which names the criterion, its direction, the scope assessed and the basis, and which opens one bounded assessed range over one contiguous passage. The range's rail takes the role's color and ends after the passage, before the text that follows. Unassessed takes no label.</p>
+    <div class="key-keyed-labels key-prose"><span class="doc-label surface-bordered-label assessment-label" data-assessment="favorable">Assessment // Favorable</span><span class="doc-label surface-bordered-label assessment-label" data-assessment="caution">Assessment // Caution</span><span class="doc-label surface-bordered-label assessment-label" data-assessment="adverse">Assessment // Adverse</span></div>
+    <div class="doc-group surface-labeled-range key-prose" id="assessed-range">
+      <div class="assessment-record">
+        <span class="doc-label surface-bordered-label assessment-label" data-assessment="caution">Assessment // Caution</span>
+        <span class="assessment-field doc-meta" data-field="criterion">criterion // set-up work before a reader can open it</span>
+        <span class="assessment-field doc-meta" data-field="direction">direction // less work is better</span>
+        <span class="assessment-field doc-meta" data-field="scope">scope // the hosted-site option, these two paragraphs</span>
+        <span class="assessment-field doc-meta" data-field="basis">basis // the steps listed here, as the sample's author counts them</span>
+      </div>
+      <p class="doc-body">A hosted site needs a repository, a deployment and a domain before anyone can read it.</p>
+      <p class="doc-body">Once those exist, each later version is one deployment.</p>
+    </div>
+    <p class="doc-body key-prose">The text after a range is outside it: the rail above ends with the second paragraph. The passage and its rating are illustrative; the sample's author assigns caution under the stated criterion. A second criterion takes a record and a range of its own, never a second line in this one, and ranges never nest or overlap.</p>
     <p class="doc-body key-prose">The peer pattern draws a filled node in its declared Criterion Assessment example. The rows are the README's application coverage.</p>
     <ul class="avail-list key-prose" aria-label="Criterion Assessment representations and their status">
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> assessment rail and word; legend-led; value field · a comparison table · <code class="doc-code">criterion-assessment.css</code> with <code class="doc-code">surface-document.css</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> unassessed: no assessment drawn · any · <code class="doc-code">criterion-assessment.md</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled node in favorable, caution or adverse, any text on it in its role's ink · a consumer-composed assessment-bearing figure, each node showing its word or the figure a key, and the key · <code class="doc-code">criterion-assessment.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> filled node in favorable, caution or adverse, its letter in its role's ink, its figure and word beside it · the peer pattern's declared Criterion Assessment example · <code class="doc-code">diagram-static-peer</code>'s engine, with the values <code class="doc-code">criterion-assessment.css</code> binds and FILL PAINT's inks · <a class="surface-text-link" href="patterns/view/diagram-static-peer.html">Peer relations</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> cell fill, tint or backplate · a comparison table · the table application is rail-only</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> the labeled range · any · its rail takes neutral, a review value or a keyed state or evidence value, never an assessment</li>
+      <li class="doc-meta">supported // assessment rail and word; legend-led; value field · a comparison table · <code class="doc-code">criterion-assessment.css</code> with <code class="doc-code">surface-document.css</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
+      <li class="doc-meta">supported // unassessed: no assessment drawn · any · <code class="doc-code">criterion-assessment.md</code> · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
+      <li class="doc-meta">supported // filled node in favorable, caution or adverse, any text on it in its role's ink · a consumer-composed assessment-bearing figure, each node showing its word or the figure a key, and the key · <code class="doc-code">criterion-assessment.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it · <a class="surface-text-link" href="criterion-assessment.html">Criterion Assessment key</a></li>
+      <li class="doc-meta">supported // filled node in favorable, caution or adverse, its letter in its role's ink, its figure and word beside it · the peer pattern's declared Criterion Assessment example · <code class="doc-code">diagram-static-peer</code>'s engine, with the values <code class="doc-code">criterion-assessment.css</code> binds and FILL PAINT's inks · <a class="surface-text-link" href="patterns/view/diagram-static-peer.html">Peer relations</a></li>
+      <li class="doc-meta">not applicable // cell fill, tint or backplate · a comparison table · the table application is rail-only</li>
+      <li class="doc-meta">supported // keyed label, <code class="doc-code">Assessment // Caution</code>, heading an assessment record of criterion, direction, scope and basis, and the bounded assessed range it opens · one passage assessed under one criterion, outside a table and a multi-axis review annotation · <code class="doc-code">criterion-assessment.css</code> binds the role to the bordered label's edge and the labeled range's rail, which <code class="doc-code">surface-treatments.css</code> draws · <a class="surface-text-link" href="criterion-assessment.html#assessed-range">Criterion Assessment key</a></li>
+      <li class="doc-meta">not applicable // a keyed label: unassessed · any · unassessed asserts no judgment</li>
+      <li class="doc-meta">not applicable // a record or range over two criteria, or ranges nested or overlapping · any · one range, one criterion, one contiguous passage</li>
+      <li class="doc-meta">not applicable // an assessment record or range in a comparison table · a comparison table · its rails stay cell-local, and take no record</li>
+      <li class="doc-meta">not applicable // an assessment label or range inside a review annotation · inside a Review Semantics annotation · the composition admits review, evidence and state marks only</li>
     </ul>
   </section>
 
@@ -150,7 +170,7 @@
 
   <section class="doc-section" aria-labelledby="paint-title">
     <h2 class="doc-section-title key-prose" id="paint-title">Rules // one paint per rail color</h2>
-    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's and Spectral State a keyed range's. Here a declined range and an adverse assessment share one red, an accepted range and a favorable assessment one green, and a structural state range and a caution assessment one yellow, each rail in its own place: a range's in the outer margin, an assessment's in its lane.</p>
+    <p class="doc-body key-prose">How a color is painted as a rail belongs to the surface treatments, not to this profile: a rail in one color takes the same paint whichever meaning draws it. This profile binds each role to its color's paint, as Review Semantics binds a review range's and Spectral State a keyed range's. Here a declined range and an adverse assessment share one red, an accepted range and a favorable assessment one green, and a partial state range and a caution assessment one yellow, each rail in its own place: a range's in the outer margin, a table assessment's in its lane.</p>
     <div class="doc-group doc-annotation-range surface-labeled-range key-prose" id="paint-declined">
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
       <p class="doc-body">The shipment is not split across two carriers.</p>
@@ -159,23 +179,23 @@
       <div class="doc-annotations"><span class="doc-annotation-item"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span><span class="doc-meta">owner, round 1 · this paragraph</span></span></div>
       <p class="doc-body">Each parcel is tracked from its first scan.</p>
     </div>
-    <div class="doc-group surface-labeled-range key-prose" id="paint-structural">
-      <span class="doc-label surface-bordered-label state-label" data-state="structural">State // Structural</span>
-      <p class="doc-body">The tracking schema is proven; the full flow has not yet run under load.</p>
+    <div class="doc-group surface-labeled-range key-prose" id="paint-partial">
+      <span class="doc-label surface-bordered-label state-label" data-state="partial">State // Partial</span>
+      <p class="doc-body">The tracking flow runs in one region; it has not yet run at full depth.</p>
     </div>
     <ul class="doc-compare-key" aria-label="The rails' three paints">
       <li class="doc-compare-assessed" data-assessment="favorable"><p class="doc-meta">favorable // the accepted range's green</p></li>
-      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the structural range's yellow</p></li>
+      <li class="doc-compare-assessed" data-assessment="caution"><p class="doc-meta">caution // the partial range's yellow</p></li>
       <li class="doc-compare-assessed" data-assessment="adverse"><p class="doc-meta">adverse // the declined range's red</p></li>
     </ul>
-    <p class="doc-body key-prose">Caution's yellow is the same plain stroke beside a summary, in a value field and in a key on this page, and beside the structural state range above. A review range is never yellow, and an assessment never opens a range.</p>
+    <p class="doc-body key-prose">Caution's yellow is the same plain stroke beside a summary, in a value field, in a key and beside the assessed range on this page, and beside the partial state range above. A review range is never yellow, and an assessment opens a range only through its record.</p>
   </section>
 
   <!-- PLAIN ON BOTH FIELDS — the three assessment rails as they ship. The account
        is surface-treatments.css, RAIL PAINT and THE RAIL'S PAINT. -->
   <section class="doc-section" aria-labelledby="calibration-title">
     <h2 class="doc-section-title key-prose" id="calibration-title">Rules // plain on both fields</h2>
-    <p class="doc-body key-prose">Each rail is a plain 2px stroke in its color, on the light lavender field and the dark ink alike. Spectral State gives each color one value in both themes, and in it every rail reads on both fields. Until Spectral State v1.2 the light theme took a deeper yellow, which as a bare rail all but disappeared on the lavender, so caution's rail took a 1px same-color ring there; that ring is retired with the value it answered.</p>
+    <p class="doc-body key-prose">Each rail is a plain 2px stroke in its color, on the light lavender field and the dark ink alike. The foundation gives each color one value in both themes, and in it every rail reads on both fields. Until Spectral State v1.2 the light theme took a deeper yellow, which as a bare rail all but disappeared on the lavender, so caution's rail took a 1px same-color ring there; that ring is retired with the value it answered.</p>
     <div class="doc-group key-prose" id="calibration-shipped">
       <p class="doc-label">as shipped // the plain stroke</p>
       <ul class="doc-compare-key" aria-label="The three assessment rails, as shipped">
@@ -189,7 +209,7 @@
 
   <section class="doc-section" aria-labelledby="worked-title">
     <h2 class="doc-section-title key-prose" id="worked-title">Worked applications // a worked comparison</h2>
-    <p class="doc-body key-prose">Three ways to deliver a reviewed document, against four rows. Each assessed summary carries one rail in its cell's lane, beginning on the edge its column's header begins on, and the word that names it; the rail is as tall as the summary and its word, never the row. The last row declares no criterion, so its summaries carry no rail, and their text sits where the others' does.</p>
+    <p class="doc-body key-prose">Three ways to deliver a reviewed document, against four rows: an illustrative comparison, not a record. The sample's author assigns each rating under the row's stated criterion; the words fast, full or limited generate no color. Each assessed summary carries one rail in its cell's lane, beginning on the edge its column's header begins on, and the word that names it; the rail is as tall as the summary and its word, never the row. The last row declares no criterion, so its summaries carry no rail, and their text sits where the others' does.</p>
     <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document" tabindex="0">
       <table class="doc-table doc-compare-table" id="worked-table">
         <colgroup><col class="key-criterion"></colgroup>
@@ -265,7 +285,7 @@
 
   <section class="doc-section" aria-labelledby="legend-title">
     <h2 class="doc-section-title key-prose" id="legend-title">Worked applications // a legend-led comparison</h2>
-    <p class="doc-body key-prose">The same three options, with a row of summaries and two rows of figures. The table is legend-led: its key names each rail, so the words stay in the cells as text for assistive technology and draw nothing, and each rail is as tall as its summary or figure. Each summary spans its family's columns, so its rail begins where the family's header does. The figures share a value field, as wide as the template 000.00 that their widest needs: each sits at its column's end, and in each column the rails share one line, 12px before the field, however wide the figure. A sighted reader reads these assessments from the rails' colors against the key, so the worked comparison above keeps its words.</p>
+    <p class="doc-body key-prose">The same three options, with a row of summaries and two rows of illustrative figures, rated under the thresholds each row declares. The table is legend-led: its key names each rail, so the words stay in the cells as text for assistive technology and draw nothing, and each rail is as tall as its summary or figure. Each summary spans its family's columns, so its rail begins where the family's header does. The figures share a value field, as wide as the template 000.00 that their widest needs: each sits at its column's end, and in each column the rails share one line, 12px before the field, however wide the figure. A sighted reader reads these assessments from the rails' colors against the key, so the worked comparison above keeps its words.</p>
     <div class="doc-table-scroll" role="region" aria-label="Three ways to deliver a reviewed document, with figures" tabindex="0">
       <table class="doc-table doc-compare-table doc-compare-legend-led" id="legend-table">
         <colgroup><col></colgroup>
@@ -327,12 +347,12 @@
 
   <section class="doc-section" aria-labelledby="usage-title">
     <h2 class="doc-section-title key-prose" id="usage-title">Usage and owners // load order and who decides what</h2>
-    <p class="doc-body key-prose">Load <code class="doc-code">criterion-assessment.css</code> after <code class="doc-code">spectral-state.css</code>, <code class="doc-code">surface-document.css</code> and <code class="doc-code">surface-treatments.css</code>, whose rail paint and fill inks it binds, all from one design-system commit, in the order its contract gives. The profile owns what each role means and how a table or a filled node draws it; the surface treatments own each rail's paint and each fill's ink; the author owns the criterion, its direction and scope, and every assignment.</p>
+    <p class="doc-body key-prose">Load <code class="doc-code">criterion-assessment.css</code> after <code class="doc-code">spectral-state.css</code>, <code class="doc-code">surface-document.css</code> and <code class="doc-code">surface-treatments.css</code>, whose rail paint, fill inks, bordered label and labeled range it binds, all from one design-system commit, in the order its contract gives. The profile owns what each role means and how a table, a filled node, a keyed label and an assessed range draw it, and the assessment record's anatomy; the surface treatments own each rail's paint, each fill's ink, the label's box and the range's rail; the author owns the criterion, its direction and scope, its basis and every assignment.</p>
     <p class="doc-meta key-prose"><a class="surface-text-link" href="criterion-assessment.md">the contract</a> · <a class="surface-text-link" href="README.md#application-coverage">application coverage</a> · <a class="surface-text-link" href="preview/styleguide.html#treatment-rail">the rails by color</a></p>
   </section>
 
   <footer class="doc-group key-prose">
-    <p class="doc-meta">Schematic comparison; the numeric table's figures are the register's own. Reads the foundation, the register modules, Spectral State, Evidence State, Review Semantics and criterion-assessment.css live. Contract: <a class="surface-text-link" href="criterion-assessment.md">criterion-assessment.md</a>.</p>
+    <p class="doc-meta">Illustrative comparisons and passage: the ratings are the sample's author's, under each stated criterion. The numeric table's figures are the register's own. Reads the foundation, the register modules, Spectral State, Evidence State, Review Semantics and criterion-assessment.css live. Contract: <a class="surface-text-link" href="criterion-assessment.md">criterion-assessment.md</a>.</p>
   </footer>
 </div>
   </main>

@@ -78,7 +78,7 @@
 <div class="key-measure doc-flow">
 
   <header class="doc-titled">
-    <p class="doc-label">v0.3 // profile under the Spectral State family · opt-in document composition</p>
+    <p class="doc-label">v0.4 // profile under the Spectral State family · opt-in document composition</p>
     <h2 class="doc-title">Review Semantics</h2>
     <p class="doc-lede">One review vocabulary, composed with the document register, Evidence State and Spectral State. Each of five questions keeps its own answer: what a passage is doing, where it came from, what the evidence supports, what judgment is asked or made, and what condition an architectural element is in.</p>
   </header>
@@ -105,11 +105,11 @@
       <table class="doc-table">
         <thead><tr><th class="doc-label" scope="col">Mark</th><th class="doc-label" scope="col">Meaning</th><th class="doc-label" scope="col">Value and relationship</th></tr></thead>
         <tbody>
-          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></td><td class="doc-body">A candidate statement or change, awaiting a decision. It says nothing about whether the content is wrong or weakly supported.</td><td class="doc-body">The emphasis magenta, by reference: the same value as Spectral proposed; a candidate on another axis</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Proposed</span></td><td class="doc-body">A proposal or a requested change, awaiting a decision. It says nothing about whether the content is wrong or weakly supported.</td><td class="doc-body">The emphasis magenta, by reference: a proposal or a requested change. The same value as Spectral proposed, a candidate on another axis</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="proposed">Correction requested</span></td><td class="doc-body">The same role, used only when someone has asked for existing words to change. It shares paint with Proposed, not event identity.</td><td class="doc-body">As above</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="open">Open question</span></td><td class="doc-body">A named matter held until someone answers it.</td><td class="doc-body">The emphasis cyan, by reference: the same value as Spectral held and Evidence unresolved. It shares their meaning, a matter not yet settled, on another axis.</td></tr>
-          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></td><td class="doc-body">A recorded decision to adopt or to permit, naming what, who and the scope. A narrow scope is a whole decision, not a partial one.</td><td class="doc-body">Spectral earned, by reference: green</td></tr>
-          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></td><td class="doc-body">A recorded decision not to adopt or not to permit, naming what, who and the scope. It does not say the statement is false.</td><td class="doc-body">Spectral deflated, by reference: red</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="accepted">Accepted</span></td><td class="doc-body">A recorded decision to adopt or to permit, naming what, who and the scope. A narrow scope is a whole decision, not a partial one.</td><td class="doc-body">The foundation's green, bound directly: affirmative within the named question, as Spectral earned, Evidence supported and Criterion favorable are within theirs</td></tr>
+          <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span></td><td class="doc-body">A recorded decision not to adopt or not to permit, naming what, who and the scope. It does not say the statement is false, and a Declined review can be a sound review decision.</td><td class="doc-body">The foundation's red, bound directly: negative within the named question, as Spectral deflated, Evidence contradicted and Criterion adverse are within theirs</td></tr>
           <tr><td class="doc-body"><span class="doc-mark doc-label surface-bordered-label" data-review="none">No decision recorded</span></td><td class="doc-body">Shown only where the absence matters. It is not a refusal or an acceptance, and not a hold: a hold is an open question.</td><td class="doc-body">The faintest neutral</td></tr>
         </tbody>
       </table>
@@ -122,28 +122,28 @@
       <dt class="doc-label">State</dt>
       <dd>
         <span class="doc-mark doc-label" data-state="earned">Earned</span>
-        <span class="doc-mark doc-label" data-state="structural">Structural</span>
         <span class="doc-mark doc-label" data-state="partial">Partial</span>
         <span class="doc-mark doc-label" data-state="deflated">Deflated</span>
+        <span class="doc-mark doc-label" data-state="structural">Structural</span>
         <span class="doc-mark doc-label" data-state="held">Held</span>
-        <span class="doc-mark doc-label" data-state="external">External</span>
         <span class="doc-mark doc-label" data-state="proposed">Proposed</span>
       </dd>
       <dt class="doc-label">Basis</dt>
-      <dd><span class="doc-meta">owner-stated, observed in supplied material, analyst synthesis</span></dd>
+      <dd><span class="doc-meta">owner-stated, observed in supplied material, analyst synthesis, owned elsewhere: inherited from upstream</span></dd>
       <dt class="doc-label">Evidence</dt>
       <dd>
         <span class="doc-mark doc-label" data-evidence="supported">Supported</span>
         <span class="doc-mark doc-label" data-evidence="partially-supported">Partially supported</span>
-        <span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span>
         <span class="doc-mark doc-label" data-evidence="weakened">Weakened</span>
+        <span class="doc-mark doc-label" data-evidence="contradicted">Contradicted</span>
+        <span class="doc-mark doc-label" data-evidence="unresolved">Unresolved</span>
         <span class="doc-mark doc-label" data-evidence="not-yet-testable">Not yet testable</span>
       </dd>
       <dt class="doc-label">Check</dt>
       <dd><span class="doc-meta">a named check and its result, as plain metadata: never a dot, never an outline</span></dd>
     </dl>
     <div class="doc-prose">
-      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, a whole list item's included, or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved both name something not yet settled, and both take the emphasis cyan: their geometry and their words say which axis is speaking.</p>
+      <p class="doc-body">Rows and lists read in one order: state, basis, evidence, review. A row that opens a range, a whole list item's included, or stands as a prompt before a range leads with its review item, and its other items follow in that order. The same value on two axes is a correlation, not a synonym. Open question and Unresolved both name something not yet settled, and both take the emphasis cyan: their geometry and their words say which axis is speaking. Provenance is not a state: that an item is owned elsewhere goes in its basis or a neutral metadata item, never a state square, and no External square exists.</p>
     </div>
   </section>
 
@@ -182,24 +182,25 @@
     </figure>
     <p class="doc-body">The rows are the README's application coverage.</p>
     <ul class="avail-list" aria-label="Review Semantics representations and their status">
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> review mark: the bordered label in its role's value · a document annotation · <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> the scope rail of an annotation range · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> passage mark: the scope underline · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> decision record: what, who and scope beside the mark · a document annotation · <code class="doc-code">review-semantics.md</code>, The decision record: a composition beside the shared mark · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> decision panel, its outcome label and blooming perimeter in its role's value: proposed, open, accepted, declined · a standalone review summary or status board · <code class="doc-code">review-semantics.css</code> binds the role, and <code class="doc-code">surface-treatments.css</code> draws it with PERIMETER PAINT and the bordered label; its words keep the theme's text roles, and the record names its object or version, actor, scope and any material condition · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">supported</span> decision node, its words in its role's ink: proposed, open, accepted, declined · a diagram · <code class="doc-code">review-semantics.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it; declared with <code class="doc-code">data-record-presentation="node"</code>, it names the same fields · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> decision record: no decision recorded · any · a missing record is no decision: none binds no color</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a filled record read as a card · a review summary or status board · a record that is read is a panel; full fill is a diagram node's</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> a decision record in place of the mark, range or passage mark · inside a Review Semantics annotation · the composition gives review the outline, the scope rail and the scope underline</li>
-      <li class="doc-meta"><span class="surface-bordered-label doc-label">not applicable</span> color behind reviewed words · any · a judgment is recorded, never painted onto the content</li>
+      <li class="doc-meta">supported // review mark: the bordered label in its role's value · a document annotation · <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">supported // the scope rail of an annotation range · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">supported // passage mark: the scope underline · a document annotation · <code class="doc-code">surface-treatments.css</code>, bound by <code class="doc-code">review-semantics.css</code> · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">supported // decision record: what, who and scope beside the mark · a document annotation · <code class="doc-code">review-semantics.md</code>, The decision record: a composition beside the shared mark · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">supported // decision panel, its outcome label and blooming perimeter in its role's value: proposed, open, accepted, declined · a standalone review summary or status board · <code class="doc-code">review-semantics.css</code> binds the role, and <code class="doc-code">surface-treatments.css</code> draws it with PERIMETER PAINT and the bordered label; its words keep the theme's text roles, and the record names its object or version, actor, scope and any material condition · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">supported // decision node, its words in its role's ink: proposed, open, accepted, declined · a diagram · <code class="doc-code">review-semantics.css</code> binds the role and <code class="doc-code">surface-treatments.css</code> FILL PAINT paints it; declared with <code class="doc-code">data-record-presentation="node"</code>, it names the same fields · <a class="surface-text-link" href="review-semantics.html">Review Semantics key</a></li>
+      <li class="doc-meta">not applicable // decision record: no decision recorded · any · a missing record is no decision: none binds no color</li>
+      <li class="doc-meta">not applicable // a filled record read as a card · a review summary or status board · a record that is read is a panel; full fill is a diagram node's</li>
+      <li class="doc-meta">not applicable // a decision record in place of the mark, range or passage mark · inside a Review Semantics annotation · the composition gives review the outline, the scope rail and the scope underline</li>
+      <li class="doc-meta">not applicable // color behind reviewed words · any · a judgment is recorded, never painted onto the content</li>
     </ul>
   </section>
 
   <section class="doc-section" aria-labelledby="roles-title">
     <h2 class="doc-section-title" id="roles-title">Rules // document roles stay as they are</h2>
+    <p class="doc-meta">A quotation, someone's words on the violet rail; the explanation stays outside it:</p>
     <blockquote class="doc-quote">
-      <p>A quotation: someone's words, on the violet rail.</p>
-      <footer>Represented voice</footer>
+      <p>Keep each frame to the product and two props, no more.</p>
+      <footer>the client's brief, illustrative</footer>
     </blockquote>
     <p class="doc-body surface-emphasis-rail">A callout: the document's own point, on the magenta rail.</p>
     <div class="doc-hierarchy doc-group">
@@ -356,7 +357,7 @@
           <dt class="doc-label">Item</dt>
           <dd><span class="doc-meta">a method component, version 0.3</span></dd>
           <dt class="doc-label">State</dt>
-          <dd><span class="doc-mark doc-label" data-state="structural">Structural</span><span class="doc-meta">schema-proven; not yet run end to end</span></dd>
+          <dd><span class="doc-mark doc-label" data-state="structural">Structural</span><span class="doc-meta">schema proven; no operational run at this scope</span></dd>
           <dt class="doc-label">Basis</dt>
           <dd><span class="doc-meta">analyst synthesis</span></dd>
           <dt class="doc-label">Evidence</dt>
@@ -446,7 +447,7 @@
     <h2 class="doc-section-title" id="compare-title">Worked applications // comparisons</h2>
 
     <div class="doc-section">
-      <h3 class="doc-subsection-title">One value, two axes</h3>
+      <h3 class="doc-subsection-title">One value, several axes</h3>
       <dl class="doc-annotation-list" aria-label="Shared values across axes">
         <dt class="doc-label">Green</dt>
         <dd>
@@ -457,11 +458,12 @@
         <dt class="doc-label">Red</dt>
         <dd>
           <span class="doc-mark doc-label" data-state="deflated">Deflated</span>
+          <span class="doc-mark doc-label" data-evidence="contradicted">Contradicted</span>
           <span class="doc-mark doc-label surface-bordered-label" data-review="declined">Declined</span>
         </dd>
       </dl>
       <div class="doc-prose">
-        <p class="doc-body">A shared value is not a shared meaning. The square, the dot and the outline, the key and the words say which question each mark answers.</p>
+        <p class="doc-body">A shared value is a shared family, never a shared meaning. Green is affirmative and red negative within the named question, and magenta is a proposal or a requested change: not a universal ranking. A Declined review can be a sound review decision, Contradicted evidence rejects a claim as stated within its scope, and neither says the other. The square, the dot and the outline, the key and the words say which question each mark answers.</p>
       </div>
     </div>
 
