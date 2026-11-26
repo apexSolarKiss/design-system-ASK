@@ -39,6 +39,10 @@
      contract changes. -->
 <link rel="stylesheet" href="../surface-action.css">
 <link rel="stylesheet" href="../surface-cta.css">
+<!-- The canonical text-input contract, loaded so the text-input specimens
+     RENDER from the module. Each field takes its hover and focus edge from
+     surface-action.css, above, by class. -->
+<link rel="stylesheet" href="../surface-input.css">
 
 <!-- The panel, textual-link, document-register and treatment rules, then the
      semantic modules, in the load order the Review Semantics and Criterion
@@ -121,6 +125,14 @@
   /* A deliberately narrow column, so the long specimen anchor fragments across
      lines in the same viewport as everything else. */
   .spec-narrow-prose { max-width: 300px; }
+  /* Text-input specimen framing: the column the fields stack in, and each
+     field's width, which the contract leaves to the consumer. No type, paint,
+     edge or clear-mark value is restated here, so every field resolves from
+     surface-input.css and surface-action.css. Each label uses the document
+     register's label composition (.doc-labeled, .doc-label); its words are
+     the specimen's own. */
+  .spec-fields { display: flex; flex-direction: column; gap: var(--space-4); }
+  .spec-fields .surface-input { width: 100%; max-width: 360px; }
   .reserved { opacity: 0.9; }
   .bar { height: 14px; border-radius: var(--radius-xs); background: var(--ask-ui-accent-1); }
   .rbox { height: 72px; background: var(--surface-glass); border: 1px solid var(--line-1); }
@@ -543,6 +555,55 @@
         <p class="spec-narrow-prose" style="margin: 0; font-size: var(--fs-small); line-height: var(--lh-body);">At this column width <a class="surface-text-link" href="#textual-link">a single anchor long enough to break across more than one line</a> fragments, and the rule follows each fragment.</p>
         <p style="margin: var(--space-4) 0 0; font-size: var(--fs-small); line-height: var(--lh-body);">A shaped object announces itself by geometry and takes no class: <a class="surface-action" href="#textual-link">compact action</a> — while <a class="surface-text-link" href="#textual-link">an unboxed link</a> announces itself only by its rule.</p>
         <p class="note" style="margin: var(--space-3) 0 0;">Top: the fragmenting case — a text decoration follows each line's own text, which a box-drawn indicator cannot. Bottom: the boundary on one line. The module is <strong>opt-in</strong> for that reason — the excluded set is open-ended, so the class is added to the links that qualify rather than withheld from the ones that do not.</p>
+      </div>
+    </div>
+
+    <!-- The fourth interactive role, and the one a reader types into. It
+         follows the three a reader points at because its boundary is its
+         enclosure: an editable area, neither a shaped control nor a rule.
+         Every field renders from the real module and adopts the shared edge
+         by class; the page sets each field's width and nothing else. -->
+    <h3 class="spec-role" id="text-input">Text input <span class="spec-role-meta">18px Inter 300 · compact 14px · tracking 0 · query role in JetBrains Mono · canonical <code>.surface-input</code></span></h3>
+    <p class="note" style="margin: 0 0 var(--space-3);">The single-line field a surface offers for a search, a lookup or a short entry. Entered text keeps the case the reader types. The query role, <code>.surface-input--query</code>, sets the same metrics in JetBrains Mono for an operative name or identifier lookup; that class allocates mono, never what is typed. The compact density, <code>.surface-input--compact</code>, is 14px on tighter padding, with the same paint and states. Each field also carries <code>.surface-attention-edge</code>, whose rule turns the edge magenta on <code>:hover</code> and on <code>:focus-visible</code>. A search field's native clear control keeps its action and takes the 16px stroke mark. No disabled, read-only or validation state is defined.</p>
+    <p class="note" style="margin: 0 0 var(--space-3);">The visual rule is the design system's. The label's words, the field's width and placement, the query, what it finds and where its results appear are the consumer's. Every field has a visible associated label, and a placeholder is an example, never the field's name. The first adopter is the <a class="surface-text-link" href="../patterns/view/diagram-interactive-radial.html">interactive radial</a>'s drawer search, at the compact density in the query role.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="spec-fields">
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-text-placeholder">Working title</label>
+            <input class="surface-input surface-attention-edge" id="sg-input-text-placeholder" type="text" placeholder="e.g. Field notes, spring">
+          </div>
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-text-value">Collection name</label>
+            <input class="surface-input surface-attention-edge" id="sg-input-text-value" type="text" value="Notes on the ASK Palette">
+          </div>
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-text-bare">Short note</label>
+            <input class="surface-input surface-attention-edge" id="sg-input-text-bare" type="text">
+          </div>
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-query-value">Search by name or identifier</label>
+            <input class="surface-input surface-input--query surface-attention-edge" id="sg-input-query-value" type="search" value="surface-action">
+          </div>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">Standard density. Top to bottom: the text role empty with a placeholder, populated, and empty with no placeholder, where the enclosure alone marks the field as editable; then the query role, populated, as a search field. Hover a field, then click into it, type and move the pointer away. Focus the populated search field to see its clear mark.</p>
+      </div>
+      <div class="card">
+        <div class="spec-fields">
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-compact-placeholder">Find a module</label>
+            <input class="surface-input surface-input--query surface-input--compact surface-attention-edge" id="sg-input-compact-placeholder" type="search" placeholder="e.g. surface-cta">
+          </div>
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-compact-value">Find a token</label>
+            <input class="surface-input surface-input--query surface-input--compact surface-attention-edge" id="sg-input-compact-value" type="search" value="--surface-glass-2">
+          </div>
+          <div class="doc-labeled">
+            <label class="doc-label" for="sg-input-compact-text">Filter by title</label>
+            <input class="surface-input surface-input--compact surface-attention-edge" id="sg-input-compact-text" type="text" value="Spring Survey">
+          </div>
+        </div>
+        <p class="note" style="margin: var(--space-3) 0 0;">Compact density, for a pattern's own compact chrome. Top to bottom: the query role empty with a placeholder and populated, both as search fields, then the text role populated. Tab through the fields for keyboard focus, and use the mode selector above to check both themes.</p>
       </div>
     </div>
   </section>
@@ -1195,7 +1256,7 @@
   <!-- ============ INTERACTION ============ -->
   <section id="interaction">
     <p class="sg-h">Interaction // states by role</p>
-    <p class="note" style="margin: 0 0 var(--space-4);">Hover, press and focus follow the role, as the README's <a class="surface-text-link" href="../README.md#hover-press-focus">Hover, press, focus</a> sets them. The compact action, the CTA and the textual link are shown under Components; these are the other operated roles. Hover or Tab to each. A bordered label, an emphasis chip, a filled shape, a marker, a rail and a scope underline are inert and take none of these states. Selection belongs to the diagram patterns: open the <a class="surface-text-link" href="../patterns/view/diagram-interactive-spine.html">spine</a> or the <a class="surface-text-link" href="../patterns/view/diagram-interactive-radial.html">radial</a> preview.</p>
+    <p class="note" style="margin: 0 0 var(--space-4);">Hover, press and focus follow the role, as the README's <a class="surface-text-link" href="../README.md#hover-press-focus">Hover, press, focus</a> sets them. The compact action, the CTA, the textual link and the text input are shown under Components; these are the other operated roles. Hover or Tab to each. A bordered label, an emphasis chip, a filled shape, a marker, a rail and a scope underline are inert and take none of these states. Selection belongs to the diagram patterns: open the <a class="surface-text-link" href="../patterns/view/diagram-interactive-spine.html">spine</a> or the <a class="surface-text-link" href="../patterns/view/diagram-interactive-radial.html">radial</a> preview.</p>
     <div class="grid cols-2">
       <a class="surface-panel" href="#interaction">
         <p class="surface-panel-title">Full-panel link</p>

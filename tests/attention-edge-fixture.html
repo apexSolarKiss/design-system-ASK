@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>design-system-ASK // attention edge adopted by class regression fixture</title>
-<meta name="description" content="Regression fixture for surface-action.css .surface-attention-edge: the attention edge on an adopting object's own border, a call to action's included, on a borderless control, and on a marked shape inside an SVG link, beside the compact action and the full-panel link; unmarked, unlinked and persistent-state shapes unaffected.">
-<!-- Foundation, the compact-action, call-to-action and panel modules, then the diagram layer
+<meta name="description" content="Regression fixture for surface-action.css .surface-attention-edge: the attention edge on an adopting object's own border, a call to action's and a text input's included, on a borderless control, and on a marked shape inside an SVG link, beside the compact action and the full-panel link; unmarked, unlinked and persistent-state shapes unaffected.">
+<!-- Foundation, the compact-action, call-to-action, text-input and panel modules, then the diagram layer
      for the SVG vocabulary (serve from the repo root:  python3 -m http.server 8080  →
      /tests/attention-edge-fixture.html; add ?theme=dark or ?theme=light to hold a mode). -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../surface-action.css">
 <link rel="stylesheet" href="../surface-cta.css">
+<link rel="stylesheet" href="../surface-input.css">
 <link rel="stylesheet" href="../surface-panel.css">
 <link rel="stylesheet" href="../patterns/diagram-static-H/diagrams.css">
 <script>
@@ -123,6 +124,14 @@
     <div class="row">
       <button class="surface-cta surface-cta--primary surface-attention-edge" type="button" data-case="cta-primary" data-anatomy="bordered">Primary</button>
       <a class="surface-cta surface-attention-edge" href="#overall" data-case="cta-ghost" data-anatomy="bordered">Ghost</a>
+    </div>
+    <p>A text input (<code>surface-input.css</code>) takes the edge on its own --fg-3 border, at
+      the standard density and at the compact density in the query role.</p>
+    <div class="row">
+      <label for="fx-input">Search</label>
+      <input id="fx-input" class="surface-input surface-attention-edge" type="search" placeholder="e.g. a name" data-case="input" data-anatomy="bordered">
+      <label for="fx-input-compact">Lookup</label>
+      <input id="fx-input-compact" class="surface-input surface-input--query surface-input--compact surface-attention-edge" type="search" placeholder="e.g. an identifier" data-case="input-compact" data-anatomy="bordered">
     </div>
   </section>
 

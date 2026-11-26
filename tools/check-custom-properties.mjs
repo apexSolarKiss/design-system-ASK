@@ -61,6 +61,7 @@ const DEPENDENCIES = {
   'colors_and_type.css':                                               [SELF],
   'surface-action.css':                                                [FOUNDATION],
   'surface-cta.css':                                                   [FOUNDATION],
+  'surface-input.css':                                                 [FOUNDATION],
   'surface-panel.css':                                                 [FOUNDATION],
   'surface-text-link.css':                                             [FOUNDATION, SELF],
   'surface-document.css':                                              [FOUNDATION, SELF],

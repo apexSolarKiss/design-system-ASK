@@ -260,7 +260,7 @@
     var qid = pid + '-q', rid = pid + '-results';
     var qlabel = el('label', 'radial-drawer-lbl', scfg.label); qlabel.htmlFor = qid;
     drawer.appendChild(qlabel);
-    var input = el('input', 'radial-drawer-q');
+    var input = el('input', 'radial-drawer-q surface-input surface-input--query surface-input--compact surface-attention-edge');
     input.id = qid; input.type = 'search'; input.autocomplete = 'off'; input.spellcheck = false;
     input.placeholder = scfg.placeholder;
     input.setAttribute('role', 'combobox'); input.setAttribute('aria-expanded', 'false');

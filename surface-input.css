@@ -1,0 +1,146 @@
+/* ============================================================
+   surface-input.css — the shared text input contract
+
+   An OPT-IN live-surface visual rule under Foundations: the single-line text
+   input a surface offers for a search, a lookup or a short entry. A surface
+   that renders one gives it .surface-input and .surface-attention-edge and
+   loads this module with surface-action.css, which owns the edge.
+
+   Presentation and interaction only. It owns no markup, no semantics, no
+   behavior and no layout, and it ships no template, catalog card or
+   generated preview.
+
+   WHAT IT DOES NOT OWN, deliberately:
+
+     the label         every input has a visible label the consumer supplies
+                       and associates; a placeholder is an example, never the
+                       name of the field
+     width/placement   the consuming surface's; a consumer rule on an input
+                       may set width, margin and placement and nothing else
+     behavior          what a search finds, when it runs, what clearing does
+                       beyond the native control, and where results appear
+     element           <input> of type search or text; no textarea, select,
+                       checkbox or other control
+
+   NOT for: buttons or calls to action (surface-action.css and surface-cta.css
+   own those), labels or badges, or a field that only displays a value.
+
+   NO DISABLED, READ-ONLY OR VALIDATION STATE. This contract defines none. A
+   surface that needs one adds it at the owner, never as a local paint.
+
+   THE ROLE. 18px Inter at 300 (--fs-small, --fw-light) on --lh-tight and
+   zero tracking. Entered text keeps the case the reader types: the module
+   sets text-transform: none, so no transform from the surrounding context
+   reaches the entry. The placeholder takes --fg-2 at full opacity, so it
+   reads as a quieter example rather than as entered text.
+   .surface-input--query is the QUERY role: the same metrics in JetBrains
+   Mono, for a field whose entry is an operative lookup — a name or an
+   identifier the surface matches against its records. Mono is allocated by
+   this selector, never by what the reader types.
+
+   ONE PAINT, TWO DENSITIES. The base is the standard density: the glass fill
+   (--surface-glass-2), a 1px --fg-3 edge, --radius-sm corners and
+   --space-3 / --space-4 padding. .surface-input--compact is a DENSITY variant
+   for a pattern's own compact chrome, never a second paint: 14px
+   (--fs-caption) on --space-2 / --space-3 padding, with the same fill, edge,
+   corners and states. The compact density takes the query role the same way.
+
+   HOVER AND FOCUS. An input takes the shared attention edge by ADOPTING it:
+   every input also carries .surface-attention-edge. The shared rule turns
+   the 1px edge pure magenta, with the 0.5px ring outside it in light, on
+   :hover and on :focus-visible. When :focus-visible matches is the browser's
+   heuristic, not this module's: Selectors Level 4 suggests matching it for an
+   element that takes keyboard input however it gained focus. Where the
+   engine matches it for an input focused from the pointer, the edge stays on
+   while the reader types with the pointer elsewhere; where it does not, that
+   input shows the edge only while the pointer rests on it. After blur, :hover
+   keeps the edge magenta while the pointer rests on the input; it returns to
+   --fg-3 when the pointer leaves. The edge
+   brings no opacity drop and no press, and this module adds none: an input
+   is not pressed. The border and shadow transitions are this module's.
+
+   Load order is not load-bearing for the edge: the shared hover and focus
+   rule (0,2,0) outranks the resting edge here (0,1,0). A consumer rule that
+   sets an input's border, background, type or outline overrides the shared
+   input, which is why a consumer keeps width and placement only.
+
+   THE CLEAR MARK. A search input's native clear control keeps its action and
+   takes the iconography rules: a 16px stroke-only mark, 1.25 stroke, round
+   caps and joins, in currentColor — --fg-2 at rest, --fg-1 on hover. The
+   drawing is carried in this file as an alpha mask, so the module stays one
+   file with no url() to another, and a page opened from disk draws the mark
+   as a served one does. It applies where the engine draws a native clear
+   control; an engine that draws none shows none. The search decoration is
+   removed so the entry starts at the padding.
+
+   WHY THESE VALUES. The contract uses existing role tokens for type,
+   spacing, radius, foreground, fill and motion, and it introduces no token
+   and no palette role. The 1px edge and the 16px mark are the action
+   family's and the iconography rules' existing literals.
+
+   Requires colors_and_type.css, and surface-action.css for the edge it
+   adopts. Rebinds no token.
+   ============================================================ */
+
+.surface-input {
+  box-sizing: border-box;
+  margin: 0;
+
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-normal);
+  text-transform: none;
+  color: var(--fg-1);
+  caret-color: var(--fg-1);
+
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-glass-2);
+  border: 1px solid var(--fg-3);
+  border-radius: var(--radius-sm);
+
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+/* The query role: an operative name or identifier lookup. Mono, same metrics. */
+.surface-input--query { font-family: var(--font-mono); }
+
+/* The compact density, for a pattern's own compact chrome. Same paint and states. */
+.surface-input--compact {
+  font-size: var(--fs-caption);
+  padding: var(--space-2) var(--space-3);
+}
+
+.surface-input::placeholder { color: var(--fg-2); opacity: 1; }
+
+/* The search decoration reserves space before the entry in some engines. */
+.surface-input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* The native clear control: presentation only, the action stays native. */
+.surface-input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  inline-size: 16px;
+  block-size: 16px;
+  margin-inline-start: var(--space-2);
+  cursor: pointer;
+  color: var(--fg-2);
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 4.5l7 7M11.5 4.5l-7 7'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 4.5l7 7M11.5 4.5l-7 7'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+.surface-input[type="search"]::-webkit-search-cancel-button:hover { color: var(--fg-1); }
+
+/* Reduced motion. The transitions are removed; the adopted edge still applies,
+   without animation. */
+@media (prefers-reduced-motion: reduce) {
+  .surface-input { transition: none; }
+}

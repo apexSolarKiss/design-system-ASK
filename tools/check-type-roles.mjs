@@ -114,6 +114,7 @@ const GOVERNED = [
   'surface-panel.css',
   'surface-action.css',
   'surface-cta.css',
+  'surface-input.css',
   'surface-text-link.css',
   'surface-document.css',
   'surface-treatments.css',
