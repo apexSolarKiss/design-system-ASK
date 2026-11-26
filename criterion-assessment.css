@@ -215,7 +215,6 @@
   align-items: baseline;
   gap: var(--space-1) var(--space-3);
 }
-.assessment-record > .assessment-label { margin-inline-end: var(--space-1); }
 .surface-labeled-range:has(> .assessment-record:first-child > .assessment-label[data-assessment="favorable"]:first-child) {
   --surface-labeled-range-color: var(--assessment-favorable);
   --surface-labeled-range-paint: var(--surface-rail-paint-green);
