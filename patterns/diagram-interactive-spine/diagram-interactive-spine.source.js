@@ -7,14 +7,21 @@
    the engine / CSS / export are design-system-owned — do not edit them.
 
    DISCIPLINE: color encodes STATE only. Everything else — evidence, qualifier,
-   mode coverage, repo pointer — is metadata shown in the inspector panel, never
-   in hue. One state role per node. Draw states from current repo truth; give
-   every state an honest example, do not invent nodes just for palette coverage.
-   Illustrative, not source truth — repo prose remains authoritative.
+   provenance, mode coverage, repo pointer — is metadata shown in the inspector
+   panel, never in hue. One state role per node. Draw states from current repo
+   truth; give every state an honest example, do not invent nodes just for
+   palette coverage. Illustrative, not source truth — repo prose remains
+   authoritative.
+
+   PROVENANCE IS NOT A STATE. A node owned elsewhere (inherited / upstream) sits
+   in group 'external' and asserts whatever state it has at this scope, or none
+   ('neutral'); its qualifier names the source, Source // External. Spectral
+   State v2.0 retired the external state, and the engine refuses a source that
+   still names it.
 
    Node: { id, group, label, state, evidence, qualifier?, pointer, modes? }
      group: 'root' | 'mode' | 'spine' | 'question' | 'external'
-     state: one of the eight Spectral State roles (see `states` below)
+     state: one of the seven Spectral State roles (see `states` below)
      modes: ids of the mode nodes this node intersects (selection isolates them)
 
    window.IA_SPINE.render(window.IA_STATE_SPINE) is called by the page.
@@ -27,7 +34,7 @@ window.IA_STATE_SPINE = {
     stamp: { source: 'source-v1', render: 'render-v1', date: '[YYYY-MM-DD]' },
   },
 
-  // Legend / state vocabulary — the eight Spectral State roles (inherited, do not rename).
+  // Legend / state vocabulary — the seven Spectral State roles (inherited, do not rename).
   states: [
     { role: 'earned',     label: 'earned',     meaning: 'operationally grounded at full depth' },
     { role: 'structural', label: 'structural', meaning: 'structurally / schema proven; not full-flow pressured' },
@@ -35,7 +42,6 @@ window.IA_STATE_SPINE = {
     { role: 'proposed',   label: 'proposed',   meaning: 'articulated as a candidate; not yet pressured' },
     { role: 'deflated',   label: 'deflated',   meaning: 'pressure showed it unnecessary / dead' },
     { role: 'held',       label: 'held',       meaning: 'a named open question, not yet resolved' },
-    { role: 'external',   label: 'external',   meaning: 'owned elsewhere (inherited / upstream)' },
     { role: 'neutral',    label: 'neutral',    meaning: 'no asserted state (the lavender field)' },
   ],
 
@@ -74,9 +80,9 @@ window.IA_STATE_SPINE = {
       evidence: '[Pressure showed it unnecessary / dead.]',
       qualifier: '[held for other modes]', pointer: '[docs/...]', modes: ['m-b'] },
 
-    // ---- external (owned elsewhere / inherited) ----
-    { id: 'x-1', group: 'external', label: '[upstream / inherited surface]', state: 'external',
-      evidence: '[Owned elsewhere — inherited by reference; this project is the consumer.]',
-      pointer: '[docs/.../MANIFEST.md]' },
+    // ---- external (owned elsewhere / inherited): provenance, not a state ----
+    { id: 'x-1', group: 'external', label: '[upstream / inherited surface]', state: 'neutral',
+      evidence: '[Owned elsewhere — inherited by reference; this project is the consumer and asserts no state for it.]',
+      qualifier: 'Source // External', pointer: '[docs/.../MANIFEST.md]' },
   ],
 };

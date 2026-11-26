@@ -36,7 +36,8 @@
         a resize arrives where a fresh load does; both exports read the same panels in every
         arrangement and run to their download
      E  error paths: without diagrams-pointer.js, or without diagrams-fit.js, the engine fails closed
-        with its named error and draws nothing
+        with its named error and draws nothing; a source that names Spectral State's retired external
+        state, on a node or in a legend row, fails closed likewise, and the specimen names it nowhere
 
    CONTROLS. Run against a tree without the shared pointer (the spine before it consumed the
    carrier), M3, M4, M7, T0-T6, L1, L4 and E1 fail for their stated reason (T6 because no tap
@@ -733,6 +734,29 @@ try {
     check('E2 without diagrams-fit.js the engine fails closed with its named error and draws nothing',
       errs2.some((s) => /Diagram fit support is missing/.test(s)) && (await Q.ev('H.svgChildren()')) === 0, J({ errors: errs2 }));
     await Q.close();
+    /* Spectral State v2.0 retired external: spectral-state.css no longer paints it, so a node naming it
+       would draw black. The engine refuses the source instead, before it draws. */
+    const RETIRED = /Spectral State retired the external state/;
+    const N = await open(b, URLE + '?retired=node');
+    const errs3 = await N.ev('FX.errors'), svg3 = await N.ev('H.svgChildren()');
+    check('E3 a node naming the retired external state fails closed with its named error, naming the node, and draws nothing',
+      errs3.some((s) => RETIRED.test(s) && /node x-1/.test(s)) && svg3 === 0, J({ errors: errs3, svg: svg3 }));
+    await N.close();
+    const Lg = await open(b, URLE + '?retired=legend');
+    const errs4 = await Lg.ev('FX.errors'), svg4 = await Lg.ev('H.svgChildren()');
+    check('E4 a legend row for the retired external state fails closed with its named error and draws nothing',
+      errs4.some((s) => RETIRED.test(s) && /legend row/.test(s)) && svg4 === 0, J({ errors: errs4, svg: svg4 }));
+    await Lg.close();
+    /* the control: the specimen itself, with nothing planted, renders through the same fixture; it
+       names the retired state nowhere, and its owned-elsewhere node keeps its group and provenance */
+    const S = await open(b, URLE);
+    const errs5 = await S.ev('FX.errors'), svg5 = await S.ev('H.svgChildren()');
+    const x1 = await S.ev('(() => { const n = IA_STATE_SPINE.nodes.find((n) => n.id === "x-1"); return { group: n.group, state: n.state, qualifier: n.qualifier, ' +
+      'roles: IA_STATE_SPINE.states.map((s) => s.role), states: IA_STATE_SPINE.nodes.map((n) => n.state) }; })()');
+    check('E5 the control: the unplanted specimen renders; no legend row or node names external; x-1 keeps group external, asserts no state and names its source',
+      errs5.length === 0 && svg5 > 0 && !x1.roles.includes('external') && !x1.states.includes('external') &&
+      x1.group === 'external' && x1.state === 'neutral' && x1.qualifier === 'Source // External', J({ errors: errs5, svg: svg5, x1 }));
+    await S.close();
   }
 } finally {
   srv.close();

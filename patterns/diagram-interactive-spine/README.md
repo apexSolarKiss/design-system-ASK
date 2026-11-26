@@ -39,22 +39,23 @@ It is **not** a component library, a generator, a build pipeline, or a project-s
 
 ## It consumes Spectral State (unlike the static scaffolds' default plates)
 
-The static diagram scaffolds are **structural** and, by default, assert no state — they do not load `spectral-state.css`, except a declared Criterion Assessment example of [`diagram-static-peer`](../diagram-static-peer/README.md#declared-semantic-examples), which reads it only for that profile's values. This interactive surface is **state-bearing**: each node is colored by one of the eight [**Spectral State**](../../spectral-state.md) roles (`--state-*`). The engine sets each node's `--surface-fill-color` and `--surface-fill-ink` from its role and that role's ink (`--st`, the role itself, is still set on each node and on the inspector. The legend's swatches and the inspector's dot are a key's dots, not filled shapes: they show their node's look in their own paint, the state's color, or for the root the neutral fill inside its edge). The surface treatments' fill paint ([`surface-treatments.css`](../../surface-treatments.css), FILL PAINT) paints each node: a state node at 100% of its color, its boundary in the same color and its label and group tag in that color's ink; a node that asserts no state, the framing root, as the neutral filled shape. Each node's state chip is a hole cut through its box, so what runs behind it shows through: the backbone on a spine node, and a selected node's edges, which anchor at the chip. So it loads, in order: `colors_and_type.css` → `spectral-state.css` → `diagrams-interactive-spine.css`, then the surface modules, for the node paint and the compact triggers (`surface-panel.css` → `surface-treatments.css`). **Color encodes state only.**
+The static diagram scaffolds are **structural** and, by default, assert no state — they do not load `spectral-state.css`, except a declared Criterion Assessment example of [`diagram-static-peer`](../diagram-static-peer/README.md#declared-semantic-examples), which reads it only for that profile's values. This interactive surface is **state-bearing**: each node is colored by one of the seven [**Spectral State**](../../spectral-state.md) roles (`--state-*`). The engine sets each node's `--surface-fill-color` and `--surface-fill-ink` from its role and that role's ink (`--st`, the role itself, is still set on each node and on the inspector. The legend's swatches and the inspector's dot are a key's dots, not filled shapes: they show their node's look in their own paint, the state's color, or for the root the neutral fill inside its edge). The surface treatments' fill paint ([`surface-treatments.css`](../../surface-treatments.css), FILL PAINT) paints each node: a state node at 100% of its color, its boundary in the same color and its label and group tag in that color's ink; a node that asserts no state, the framing root or a node owned elsewhere that asserts none, as the neutral filled shape. Each node's state chip is a hole cut through its box, so what runs behind it shows through: the backbone on a spine node, and a selected node's edges, which anchor at the chip. So it loads, in order: `colors_and_type.css` → `spectral-state.css` → `diagrams-interactive-spine.css`, then the surface modules, for the node paint and the compact triggers (`surface-panel.css` → `surface-treatments.css`). **Color encodes state only.**
 
 ## Data grammar
 
 ```js
 window.IA_STATE_SPINE = {
   meta:   { title, subtitle, stamp },
-  states: [ { role, label, meaning }, … ],   // the eight Spectral State roles (the legend)
+  states: [ { role, label, meaning }, … ],   // the seven Spectral State roles (the legend)
   nodes:  [ { id, group, label, state, evidence, qualifier?, pointer, modes? }, … ],
 };
 ```
 
-- **`group`** // `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state).
-- **`state`** // exactly one of the eight [Spectral State](../../spectral-state.md) roles. Drives node color.
+- **`group`** // `'root' | 'mode' | 'spine' | 'question' | 'external'`. The spine is the main vertical axis (layers upstream→downstream); `mode` nodes are orthogonal facets a node may intersect (selecting one isolates them); `question` nodes are open questions / candidates; `external` is owned-elsewhere; `root` is the framing node (asserts no state). A group is placement, not state: an `external` node asserts the state it has at this scope, or none.
+- **`state`** // exactly one of the seven [Spectral State](../../spectral-state.md) roles. Drives node color. Spectral State v2.0 retired `external`, and `render()` refuses a legend row or a node that names it, with a named error, before it draws anything.
 - **`modes`** // ids of the mode nodes a node intersects; selection draws the relationships and isolates the set.
 - **`evidence` / `qualifier` / `pointer`** // inspector metadata (never encoded in hue). `pointer` is the authoritative repo source for that node.
+- **Provenance is not a state.** That a node is owned elsewhere (inherited / upstream) is metadata: place it in `group: 'external'`, which the node's group tag and the inspector's heading show, give it the state it asserts at this scope or `neutral` where it asserts none, and name its source in `qualifier`, as the specimen's `x-1` does with `Source // External`. Never take Structural, or any state, from the violet the retired `external` used to paint. A source written before v2.0 migrates each `state: 'external'` by what it meant before it renders: outside ownership becomes `neutral` (or the state the node does assert) with its provenance kept; a proposal becomes `proposed`. There is no alias.
 
 ## Interactions
 
@@ -74,7 +75,7 @@ Hover previews a node (its relationships + inspector) for a mouse; click or tap 
 ## How to use it
 
 1. Copy the eight files into your project (e.g. `docs/diagrams/interactive/`).
-2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts + `fonts-embedded.js` (the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server) — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs. Also sync `surface-panel.css` and `surface-treatments.css` into a surface-module mirror: `surface-treatments.css` paints the nodes and gives the compact triggers their disclosure grammar. The HTML expects `./_dsa-surface/` (adjust if yours differs) and loads `surface-panel.css` first, as `surface-treatments.css` requires. Both are required: without `surface-treatments.css` the boxes draw black, and without a `spectral-state.css` that carries the `--state-*-ink` bindings the labels do. **Re-sync as one set, from one design-system commit:** `spectral-state.css`, `surface-panel.css`, `surface-treatments.css`, the engine, `diagrams-interactive-spine.css` and `export-png.js`, which keeps the frames out of an export. A newer engine against older treatments draws black nodes, silently; against treatments from before orange and cyan took the `#6A637F` ink, it prints those nodes' labels in the retired `#201D26`.
+2. Sync a local `_dsa-tokens` mirror — `colors_and_type.css` **and `spectral-state.css`** + fonts + `fonts-embedded.js` (the embedded-font carrier that lets `PNG page` / `PNG diagram` export offline from a `file://` page, no server) — pinned to a known design-system-ASK commit SHA. **No CDN.** The HTML expects `./_dsa-tokens/`; adjust if yours differs. Also sync `surface-panel.css` and `surface-treatments.css` into a surface-module mirror: `surface-treatments.css` paints the nodes and gives the compact triggers their disclosure grammar. The HTML expects `./_dsa-surface/` (adjust if yours differs) and loads `surface-panel.css` first, as `surface-treatments.css` requires. Both are required: without `surface-treatments.css` the boxes draw black, and without a `spectral-state.css` that carries the `--state-*-ink` bindings the labels do. **Re-sync as one set, from one design-system commit:** `spectral-state.css`, `surface-panel.css`, `surface-treatments.css`, the engine, `diagrams-interactive-spine.css` and `export-png.js`, which keeps the frames out of an export. A newer engine against older treatments draws black nodes, silently; against treatments from before orange and cyan took the `#6A637F` ink, it prints those nodes' labels in the retired `#201D26`. From Spectral State v2.0 (2026-11-25), `spectral-state.css` paints structural violet and partial yellow and defines no external role: re-sync the source's legend and nodes with it in the same step.
 3. Rename `diagram-interactive-spine.html` / `.source.js` to your project; update the `<script src>` ref.
 4. Replace `diagram-interactive-spine.source.js` with your own IA (`window.IA_STATE_SPINE`).
 5. Edit the HTML chrome (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`). Do not edit the canvas / inspector / legend / HUD / caption / corner-tick structure; the engine adds the trigger row itself.
@@ -116,7 +117,7 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 ## What downstream must replace
 
-- All IA data in `diagram-interactive-spine.source.js` (states are inherited — keep the eight roles; author your own nodes)
+- All IA data in `diagram-interactive-spine.source.js` (states are inherited — keep the seven roles; author your own nodes)
 - The chrome strings in the HTML (`.mark`, `.title-block`, `.stamp`, `<title>`, `<meta>`)
 - The file names (`diagram-interactive-spine.html` / `.source.js`) if you prefer project-specific names
 
@@ -124,12 +125,12 @@ This rule selects which existing render is embedded. It does not suppress, renam
 
 - `diagrams-interactive-spine-engine.js`, `diagrams-interactive-spine.css`, `export-png.js`, `diagrams-fit.js`, `diagrams-pointer.js` (the shared engine + style + export + support — modifications break inheritance)
 - The script load order in the shell — `diagrams-pointer.js` and `diagrams-fit.js` must load before the engine; the engine hard-fails if either is absent
-- The Spectral State role vocabulary (the eight `--state-*` roles) — inherited; do not rename or recolor
+- The Spectral State role vocabulary (the seven `--state-*` roles) — inherited; do not rename or recolor
 - The load order (`colors_and_type.css` → `spectral-state.css` → pattern CSS → `surface-panel.css` → `surface-treatments.css`)
 
 ## Discipline
 
-- **Color encodes state only.** Evidence depth, risk, mode coverage, repo pointers live in the inspector, never in hue.
+- **Color encodes state only.** Evidence depth, risk, provenance, mode coverage, repo pointers live in the inspector, never in hue.
 - **One state role per node.**
 - **Title by dimension, not the umbrella.** This surface depicts *state* (status / maturity) of the architecture — it is not "the" information architecture. Title it for its dimension, e.g. **"Information architecture // state"** (the placeholder default), not the bare "Information architecture". Structural diagrams name their axis (ontology, inheritance); this one names its dimension (state). Claiming the umbrella title would imply the other diagrams are sub-views of this one — they are peers.
 - **Consumer owns** source data, chrome, generation, sealing + the frozen artifact; **design-system owns** engine / CSS / export script.

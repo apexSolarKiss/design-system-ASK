@@ -1451,7 +1451,9 @@ and font carrier included, through the consumer mirrors `_dsa-tokens/` and `_dsa
 server maps onto this repository's root. The camera
 is read from `#vp`'s transform, the selection from `.node.sel` and the inspector, the gesture
 controller's listeners by the browser's own count. `spine-error-fixture.html` serves the fail-closed
-checks: it leaves out the one support file `?omit=pointer` or `?omit=fit` names. No npm dependency;
+checks: it leaves out the one support file `?omit=pointer` or `?omit=fit` names, or, with
+`?retired=node` or `?retired=legend`, gives the specimen the retired external state on its node
+`x-1` or in a legend row, as a source written before Spectral State v2.0 would. No npm dependency;
 Node 22+, Chrome at `$CHROME` or the default locations.
 
 ```
@@ -1495,7 +1497,10 @@ C  composition, the complete shell (exporter and font carrier included). C1-C5 a
    caption, legend title or trigger word and does not depend on the arrangement; both run to their
    download without an alert
 E  error paths: without diagrams-pointer.js, or without diagrams-fit.js, the engine throws its
-   named error and draws nothing
+   named error and draws nothing. E3-E4: a node, or a legend row, naming Spectral State's retired
+   external state is refused the same way, the node by its identifier. E5 is their control: the
+   unplanted specimen renders through the same fixture, names external in no legend row or node,
+   and keeps x-1 in group external, asserting no state, with Source // External as its qualifier
 ```
 
 **Its control is the spine before it consumed the shared pointer.** Run against that tree, M3
@@ -1503,7 +1508,9 @@ E  error paths: without diagrams-pointer.js, or without diagrams-fit.js, the eng
 anything to clear), L1 (listener count), L4 (a render during a drag) and E1 (the pointer guard) fail
 for their stated reason. The mouse click, drag, wheel step, floor, hover and Fit checks pass
 unchanged, and so do E2 (the fit guard predates the pointer) and L2 and L3 (a stale handler acts on
-its own detached view).
+its own detached view). **E3 and E4's control is the engine before Spectral State v2.0**, which
+had no retired-state guard: there both render the planted source, so the drawing is not empty and
+no named error is recorded.
 **The composition group's control is the spine with the shared pointer but before its responsive
 chrome** (the pointer integration alone, with this harness). There C1 fails at every view: the
 exporter's buttons arrive after the first Fit, and an explicit Fit then lands elsewhere — smaller on
