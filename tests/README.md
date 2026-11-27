@@ -1430,7 +1430,11 @@ R  the relation layer's first state in both compositions: mount, remount, arriva
    composition with motion not reduced, the first frame
 G  the reference geometry, computed in the browser                  L  renamed identifiers
 O  overlapping marks and the chooser; its focus when a resize closes it (to the figure, unless
-   a reader moved it elsewhere; none on destroy)                    T  touch: tap, pan, pinch
+   a reader moved it elsewhere; none on destroy); a press on a chooser button keeping focus, so
+   a real click and a real tap choose, and "zoom in here" zooms, where a pressed button takes no
+   focus, as in WebKit, which the harness emulates (X8 and X9 its controls); Tab out of it; a
+   long list scrolled by touch
+T  touch: tap, pan, pinch
 F  Fit, the zoom floor, resize     K  the keyboard path             I  two instances, the event bus
 D  destroy and remount             E  error paths                   A  deep-link arrival
 V  a second label target           X  controls on the harness's own checks

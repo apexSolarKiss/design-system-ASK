@@ -997,6 +997,9 @@
       box.addEventListener('click', function (ev) { ev.stopPropagation(); });
       box.addEventListener('focusout', function (ev) { if (!box.contains(ev.relatedTarget)) closeChooser(); });
       box.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
+      /* a press on an item keeps focus where it is: WebKit gives a pressed button no focus, so the
+         press would move focus out of the chooser, close it on focusout, and lose the click */
+      box.addEventListener('mousedown', function (ev) { if (ev.target.closest('button')) ev.preventDefault(); });
       canvas.appendChild(box);
       var cw = canvas.clientWidth, ch = canvas.clientHeight, bw = box.offsetWidth, bh = box.offsetHeight;
       var sr = stage.getBoundingClientRect(), cr = canvas.getBoundingClientRect();

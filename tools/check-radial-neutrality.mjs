@@ -87,7 +87,7 @@ hidden hide hole hook host http hud id identifiers idle ids in index inside insp
 itemmax items its js json k keep key keyboard keydown keys kind kinds l label labelerror labels layout
 layouterror lbl leader leaf leaves left legend light limit line listed live load loadingdone loop m map
 maps mark marker marks max meaning middle minleaves missing module modules more mount mounted mounterror
-mouse move must n name names near needs neutral never no node nodes nomatch non none not note nothing nouns
+mouse mousedown move must n name names near needs neutral never no node nodes nomatch non none not note nothing nouns
 number object of on one only option options or org out over overview own owner owns pan panels panning
 parent partial path pill pinch placed plain plane planes pointer pointercancel pointerdown pointerenter
 pointerleave pointermove pointerup polite polygon present preview previous probe profiles proposed px q r
