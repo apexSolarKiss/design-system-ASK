@@ -32,7 +32,11 @@
         pointer and by keyboard, closed by a pan or a zoom; every visible mark resolves from a
         click at its own center, and sampled real clicks agree; a resize that closes the chooser
         while it holds focus hands focus to the figure, so the next Escape reaches it, while focus a
-        reader moved elsewhere stays, Escape keeps its own path and destroy moves no focus
+        reader moved elsewhere stays, Escape keeps its own path and destroy moves no focus; a press
+        on a chooser button keeps focus where it is, so a real click and a real tap choose an item's
+        mark, and a tap on "zoom in here" zooms, where a pressed button takes no focus, as in WebKit,
+        which the harness emulates; Tab from the last button closes the chooser; a list longer than
+        its box scrolls by touch
      T  touch: a tap selects; a one-finger drag pans without selecting; a pinch zooms about its centroid
      F  Fit: an explicit Fit restores the fitted view and reports it; the zoom floor; a resize refits
      K  keyboard: Tab reaches the figure; the arrows walk the hierarchy and reach every visible node;
@@ -55,8 +59,8 @@
         straddling a tier settles with no flip or refit loop, a selection never changes the
         arrangement, Escape forgets a set-aside panel, a short wide canvas keeps no unreadable
         legend strip, focus never passes through another control, and refits carry their cause
-     X  controls: the isolation, teardown, reach, relation and chrome-collision checks each fail for their
-        intended reason
+     X  controls: the isolation, teardown, reach, relation, chrome-collision and press-focus checks each
+        fail for their intended reason
 
    MEASUREMENTS (reported, not judged): per shape at 1280x800, the Fit, the names it defers, the
    pairs of marks whose shapes overlap, how the click resolution resolves at each mark's center,
@@ -280,6 +284,39 @@ window.H = {
   },
   code(f) { try { f(); return 'accepted'; } catch (e) { return e.code || e.message; } }
 };`;
+
+/* WebKit gives a pressed button no focus: a mousedown that nothing prevents moves focus off the
+   focused element, to the body. WK(false) reproduces that in Chrome. On window, bubbling, it acts
+   at the end of the dispatch, after the chooser's own handler, and only where nothing prevented
+   the press. WK(true) acts in the capture phase, before the chooser can keep focus: the control.
+   It counts the presses on a chooser's buttons that reached it, so a check can tell an emulation
+   that saw the item's press from one the press never reached, and the blurs it made, and notes at
+   mouseup where focus is. */
+const WK = (capture) => `(() => { const w = window.WK = { items: 0, blurs: 0, up: null, capture: ${capture} };
+  w.down = (e) => { const b = e.target.closest && e.target.closest('button');
+    if (b && b.closest('.radial-chooser')) w.items++;
+    if (!w.capture && e.defaultPrevented) return;
+    const a = document.activeElement;
+    if (b && a && a !== document.body) { w.blurs++; a.blur(); } };
+  w.mup = () => { const a = document.activeElement; w.up = a && a.closest && a.closest('.radial-chooser') ? 'chooser' : a === document.body ? 'body' : 'other'; };
+  window.addEventListener('mousedown', w.down, w.capture); window.addEventListener('mouseup', w.mup, true); return true; })()`;
+const WK_OFF = `(() => { const w = window.WK; window.removeEventListener('mousedown', w.down, w.capture);
+  window.removeEventListener('mouseup', w.mup, true); return { items: w.items, blurs: w.blurs, up: w.up }; })()`;
+/* the open chooser on host A: each item's center, and the mark it names, read from the item's own
+   label and its parent's label (null unless exactly one visible mark matches both) */
+const chooserAt = (p) => p.ev(`(() => { const i = FX.inst.A, c = FX.host('A').querySelector('.radial-chooser');
+  const named = (b) => { const lbl = b.querySelector('.radial-chooser-lbl').textContent, sub = b.querySelector('.radial-chooser-sub');
+    const m = i.layout.nodes.filter((n) => !i.model.hidden.has(n.id) && n.label === lbl &&
+      ((i.layout.nodes.find((x) => x.id === n.parent) || {}).label || null) === (sub ? sub.textContent : null));
+    return m.length === 1 ? m[0].id : null; };
+  const all = c ? [...c.querySelectorAll('.radial-chooser-item')] : [];
+  const items = all.map((b) => { const q = b.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2, id: named(b) }; });
+  return { open: !!c, items, shown: items.map((x) => x.id), named: items.every((x) => !!x.id), focused: !!c && c.contains(document.activeElement) }; })()`);
+/* host A after a choice: its selection, whether a chooser is open, where focus is, how it selected */
+const choseA = (p) => p.ev(`(() => { const s = FX.inst.A.state(), a = document.activeElement, st = FX.host('A').querySelector('[data-radial-slot="stage"]');
+  return { sel: s.selection.locked, open: !!FX.host('A').querySelector('.radial-chooser'),
+           focus: a === st ? 'stage' : a === document.body ? 'body' : a && a.closest && a.closest('.radial-chooser') ? 'chooser' : 'other',
+           via: (FX.log.A.filter((e) => e.type === 'select').pop() || {}).via }; })()`);
 
 async function page(b, base, opts = {}) {
   const p = await open(b, `${base}/tests/radial-fixture.html${opts.hash || ''}`, opts);
@@ -589,8 +626,117 @@ async function run() {
         check('O11 control: destroy with focus in the chooser moves no focus to the stage it leaves; the remount\'s chooser hands focus to the figure on a resize',
           opened(o11a) && o11b.focused === 0 && !o11b.stage && o11b.tabindex === null && !o11b.chooser && opened(o11c) && !o11d.open && o11d.focus === 'stage', J({ destroyed: o11b, remount: o11d.focus }));
         await p.size(1280, 800); await settle();
+
+        /* a press on a chooser item keeps focus where it is, so the click that follows chooses, also
+           where a pressed button takes no focus (WK). Each opening selects nothing first, so a lost
+           choice leaves no selection behind; the remounted instance's events are recorded afresh */
+        await p.ev(`H.record('A'); true`);
+        const openFresh = async () => {
+          await p.ev(`(() => { const i = FX.inst.A; i.fit(); i.select(null); return true; })()`); await settle();
+          const q = await p.ev(`H.overlapPoint('A')`);
+          await p.click(q.px, q.py);
+          return chooserAt(p);
+        };
+        const clearUp = async () => { for (let i = 0; i < 3; i++) await p.key('Escape'); await p.ev(`FX.inst.A.select(null); true`); await settle(); };
+        await p.ev(WK(false));
+        const o12a = await openFresh();
+        if (o12a.items.length >= 2) { await p.click(o12a.items[1].x, o12a.items[1].y); await settle(); }
+        const o12b = await choseA(p), o12w = await p.ev(WK_OFF);
+        check('O12 with a pressed button given no focus, as in WebKit, a real click on the chooser\'s second item selects that mark: focus stays in the chooser through the press, then goes to the figure',
+          o12a.open && o12a.named && o12a.focused && o12a.items.length >= 2 && o12b.sel === o12a.shown[1] && !o12b.open && o12b.focus === 'stage' &&
+          o12b.via === 'chooser' && o12w.items === 1 && o12w.blurs === 0 && o12w.up === 'chooser', J({ want: o12a.shown[1], got: o12b, press: o12w }));
+        await clearUp();
+        await p.ev(WK(true));
+        const x8a = await openFresh();
+        if (x8a.items.length >= 2) { await p.click(x8a.items[1].x, x8a.items[1].y); await settle(); }
+        const x8b = await choseA(p), x8w = await p.ev(WK_OFF);
+        check('X8 control: the same press by mouse, emulated before the chooser can keep focus, loses the choice: nothing is selected and focus is on the body, so O12 fails for its intended reason',
+          x8a.open && x8a.named && x8a.items.length >= 2 && x8b.sel === null && x8w.items === 1 && x8w.blurs === 1 && x8w.up === 'body', J({ want: x8a.shown[1], got: x8b, press: x8w }));
+        await clearUp();
+        const o15a = await openFresh();
+        await p.key('ArrowUp');                                 /* wraps to the last button */
+        const o15m = await p.ev(`(() => { const c = FX.host('A').querySelector('.radial-chooser'), b = c ? [...c.querySelectorAll('button')] : [];
+          return { open: !!c, last: b.length > 0 && document.activeElement === b[b.length - 1] }; })()`);
+        await p.key('Tab');
+        const o15b = await choseA(p);
+        /* nothing focusable follows the chooser in this fixture, so focus leaves for the body; the chooser takes none back for the figure */
+        check('O15 Tab from the chooser\'s last button leaves it, which closes it, selects nothing and hands no focus back to the figure (O3 chooses by keys, O10 returns focus on Escape)',
+          o15a.open && o15a.focused && o15m.open && o15m.last && !o15b.open && o15b.sel === null && o15b.focus !== 'chooser' && o15b.focus !== 'stage', J({ before: o15m, after: o15b }));
+        await clearUp();
       }
       check('O6 no exception', p.errors.length === 0, p.errors.join(' | '));
+      await p.close();
+    }
+
+    /* ------------------------------------------------------- O, by touch -- */
+    {
+      const p = await page(b, base, { width: 390, height: 844, touch: true });
+      const settle = async () => { await p.frames(); await p.ev('new Promise((r) => setTimeout(r, 120))'); await p.frames(); };
+      await p.ev(`FX.mount('A', 'deeper', { noArrival: true }); H.record('A'); true`);
+      /* opens the chooser at the overlap by a real tap, with nothing selected first */
+      const openTap = async () => {
+        await p.ev(`(() => { const i = FX.inst.A; i.fit(); i.select(null); return true; })()`); await settle();
+        const q = await p.ev(`H.overlapPoint('A')`);
+        if (!q) return { open: false, named: false, items: [] };
+        await p.tap(q.px, q.py);
+        return chooserAt(p);
+      };
+      await p.ev(WK(false));
+      const o13a = await openTap();
+      if (o13a.items.length >= 2) { await p.tap(o13a.items[1].x, o13a.items[1].y); await settle(); }
+      const o13b = await choseA(p), o13w = await p.ev(WK_OFF);
+      check('O13 with a pressed button given no focus, as in WebKit, a real tap on the chooser\'s second item selects that mark: focus stays in the chooser through the press, then goes to the figure',
+        o13a.open && o13a.named && o13a.focused && o13a.items.length >= 2 && o13b.sel === o13a.shown[1] && !o13b.open && o13b.focus === 'stage' &&
+        o13b.via === 'chooser' && o13w.items === 1 && o13w.blurs === 0 && o13w.up === 'chooser', J({ want: o13a.shown[1], got: o13b, press: o13w }));
+      await p.ev(WK(true));
+      const x9a = await openTap();
+      if (x9a.items.length >= 2) { await p.tap(x9a.items[1].x, x9a.items[1].y); await settle(); }
+      const x9b = await choseA(p), x9w = await p.ev(WK_OFF);
+      check('X9 control: the same press by touch, emulated before the chooser can keep focus, loses the choice: nothing is selected and focus is on the body, so O13 fails for its intended reason',
+        x9a.open && x9a.named && x9a.items.length >= 2 && x9b.sel === null && x9w.items === 1 && x9w.blurs === 1 && x9w.up === 'body', J({ want: x9a.shown[1], got: x9b, press: x9w }));
+      await p.ev(`FX.inst.A.select(null); true`); await settle();
+
+      /* a chooser longer than its box scrolls by touch. The point inside the most overlapping marks of
+         the capacity shape opens it: a tap between marks can be adjusted onto one of them by the
+         browser, while a tap inside marks stays where it lands */
+      await p.size(390, 560); await settle();                  /* a short phone canvas: the box holds at most 60% of it */
+      await p.ev(`(() => { FX.inst.A.destroy(); FX.mount('A', 'capacity', { noArrival: true }); H.record('A'); return true; })()`); await settle();
+      const dense = await p.ev(`(() => { const i = FX.inst.A, r = FX.stageRect('A'); let best = null;
+        for (let y = 24; y < r.h - 24; y += 6) for (let x = 24; x < r.w - 24; x += 6) {
+          const u = i.hits(x, y, 0).inside.length, t = i.tap(x, y, 10);
+          if (t.action === 'choose' && (!best || u > best.u || (u === best.u && t.shown.length > best.n))) best = { u, n: t.shown.length, x: r.x + x, y: r.y + y }; }
+        return best; })()`);
+      let o14 = null, box = null;
+      if (dense) {
+        await p.tap(dense.x, dense.y);
+        box = await p.ev(`(() => { const c = FX.host('A').querySelector('.radial-chooser'); if (!c) return null; const r = c.getBoundingClientRect();
+          return { x: r.left + r.width / 2, top: r.top, bottom: r.bottom, scroll: c.scrollHeight, client: c.clientHeight, st0: c.scrollTop,
+                   items: c.querySelectorAll('.radial-chooser-item').length, zoom: !!c.querySelector('.radial-chooser-zoom'), view: JSON.stringify(FX.inst.A.view()) }; })()`);
+        if (box) {
+          await p.swipe(box.x, box.bottom - 24, box.x, box.top + 24, 10);
+          await settle();
+          o14 = await p.ev(`(() => { const c = FX.host('A').querySelector('.radial-chooser');
+            return { open: !!c, st1: c ? c.scrollTop : null, sel: FX.inst.A.state().selection.locked, view: JSON.stringify(FX.inst.A.view()) }; })()`);
+          o14 = Object.assign({ items: box.items, zoom: box.zoom, overflow: box.scroll > box.client, st0: box.st0, moved: o14.view !== box.view }, o14);
+        }
+      }
+      check('O14 a chooser longer than its box scrolls by a touch drag on its list, which keeps it open, selects nothing and pans no map',
+        !!o14 && o14.overflow && o14.open && o14.st0 === 0 && o14.st1 > 0 && o14.sel === null && !o14.moved, J(o14 || { dense, box }));
+
+      /* the same press emulation on "zoom in here", the chooser's other button: the tap zooms about
+         the chooser's point and closes it, selecting nothing */
+      let o17 = null;
+      if (o14 && o14.open && o14.zoom) {
+        const z = await p.ev(`(() => { const b = FX.host('A').querySelector('.radial-chooser-zoom'); b.scrollIntoView({ block: 'nearest' });
+          const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, k: FX.inst.A.view().k }; })()`);
+        await p.ev(WK(false));
+        await p.tap(z.x, z.y); await settle();
+        const w = await p.ev(WK_OFF);
+        o17 = Object.assign(await p.ev(`({ k: FX.inst.A.view().k, open: !!FX.host('A').querySelector('.radial-chooser'), sel: FX.inst.A.state().selection.locked })`), { k0: z.k, press: w });
+      }
+      check('O17 with a pressed button given no focus, as in WebKit, a real tap on "zoom in here" zooms in and closes the chooser, selecting nothing',
+        !!o17 && o17.k > o17.k0 && !o17.open && o17.sel === null && o17.press.items === 1 && o17.press.blurs === 0, J(o17));
+      check('O16 no exception', p.errors.length === 0, p.errors.join(' | '));
       await p.close();
     }
 
