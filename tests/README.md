@@ -1045,7 +1045,9 @@ C  Criterion Assessment's contract: every SEMANTIC_SYSTEM, SEMANTIC_DECLARATION,
    NODE_ASSIGNMENT and ASSIGNMENT_SCOPE refusal, each with its whole message; each role accepted on
    a leaf; the visitor-facilities composition accepted with its counts (220 leaves: 26 favorable,
    103 caution, 70 adverse, 21 unassessed) and laid out at the parks specimen's geometry,
-   identifier for identifier, under both allocations
+   identifier for identifier, under both allocations; C8 SYSTEMS, ASSESSMENT_ROLES and
+   DECLARATIONS frozen, each refusing a host script's push, and a system name pushed onto SYSTEMS
+   still SEMANTIC_SYSTEM
 X  negative controls: the invariant checks and the geometry comparison each fail for their
    reason; X4 rejects Spectral State's retired external role, declared or on a node or a record,
    with a message that names it retired, and accepts each of the seven remaining roles; X6 runs
@@ -1056,7 +1058,8 @@ X  negative controls: the invariant checks and the geometry comparison each fail
    copies of the contract module (a leaf without an assessment accepted, an assessment on a
    container or a record accepted, states admitted beside Criterion, an empty declaration
    accepted, an unknown system read as Spectral State, the unassessed wash painted from a --state-
-   token, an absent role painted as no token, an explicit declaration reordering the states), each
+   token, an absent role painted as no token, an explicit declaration reordering the states, the
+   system names left open to a host script), each
    failing the check written for it, and shows the geometry and model comparisons detect a moved
    leaf, a 1e-9 displacement, a reordered state, a changed label and a hidden container
 ```
@@ -1468,7 +1471,22 @@ C  the responsive chrome, on the third host and once on the specimen shell: one 
    scrolled whole into the panel and the canvas and drawn on top; withdrawn with every other
    trigger at 520x190 and 320x170, with and without a selection; kept open and readable over the
    inspector's pill where the panels' own room falls below 72px (568x320 proves the trap fires);
-   no uncaught error. X10, a chrome copy with the keyed branch removed, fails C29
+   no uncaught error. X10, a chrome copy with the keyed branch removed, fails C29. C31 the same
+   legend over the pill at 568x320, the camera away from the Fit, set aside at 520x190 and
+   restored, the pill still leaving the panels less than 72px: it reopens on that first settled
+   measure with the room it first opened with, every row readable; X11, a chrome copy that does
+   not set the budget again once it is restored, fails C31 with a box under 72px. C32 the shell's
+   legend slot closed to every reader: by a wrapper carrying hidden (until-found too), inert or
+   aria-hidden="true", or a closed <dialog> or a popover not showing around it; by its own hidden
+   with no module to disclose it (the chrome listed without a legend panel included); by its own
+   inert or aria-hidden="true": each mount refused KEY_REQUIRED, naming what closes it, the host
+   left as it was. C33 folded at the mount but open to the reader: the chrome's compact
+   disclosure and the slot's own hidden the chrome discloses, each opened by a real press and
+   readable row by row; a closed <details>, unseen until opened, then its three words and five
+   declarations shown; the canvas, which holds the stage, hidden with the key, mounted and shown
+   with it; an open <dialog>. X12, an engine copy without the open-key check, fails C32 with every
+   closed legend mounted; X13, a check that walks past the element holding the map, fails C33 at
+   the hidden canvas
 ```
 
 M6 checks that `DIAGRAM_RADIAL.VERSION` is 2.

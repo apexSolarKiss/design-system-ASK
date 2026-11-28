@@ -62,9 +62,12 @@
         legend strip, focus never passes through another control, and refits carry their cause; and
         a keyed system's legend, on the facilities shell: offered, opened by a real press and readable
         row by row at the compact sizes, kept open over the inspector's pill where that leaves the
-        panels less than 72px, and withdrawn with every trigger below 72px of canvas
-     X  controls: the isolation, teardown, reach, relation, chrome-collision, press-focus and
-        keyed-legend checks each fail for their intended reason
+        panels less than 72px, reopened with that room on the measure that restores it after a
+        set-aside, and withdrawn with every trigger below 72px of canvas; its mount refused where
+        the legend slot or a wrapper of it is closed to every reader, and open where a disclosure
+        folds it
+     X  controls: the isolation, teardown, reach, relation, chrome-collision, press-focus,
+        keyed-legend, restored-legend and open-key checks each fail for their intended reason
 
    MEASUREMENTS (reported, not judged): per shape at 1280x800, the Fit, the names it defers, the
    pairs of marks whose shapes overlap, how the click resolution resolves at each mark's center,
@@ -1399,6 +1402,119 @@ async function run() {
         check('C30 no uncaught error on the facilities shell through the sweep', kp.errors.length === 0, kp.errors.join(' | '));
         await kp.close();
       }
+      /* C31: the legend set aside and restored, on the first settled measure. At 568x320 the inspector's pill
+         leaves the panels' own room below 72px, so the open legend takes the room from the canvas top. The
+         window shrinks until no panel can be read, which sets it aside, then returns: the legend reopens
+         with that same room on the measure that restores it, with the camera away from the Fit so no refit
+         brings a second one */
+      const restoredKey = async (kp) => {
+        const press = async () => { const t = await kp.ev('KL.at()'); if (t) await kp.click(t.x, t.y); await settleC(kp); return t; };
+        await kp.size(568, 320); await settleC(kp);
+        const c = await kp.ev(`(() => { const r = document.querySelector('[data-radial-slot="stage"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+        await kp.wheel(c.x, c.y, 0, -240); await settleC(kp);
+        await kp.ev(`RADIAL_MAP.select(${ASSESSED}); true`); await settleC(kp);
+        const t = await press(), s1 = await kp.ev('KL.snap()'), r1 = await kp.ev('KL.rows()');
+        await kp.size(520, 190); await settleC(kp);
+        const s2 = await kp.ev('KL.snap()');
+        await kp.size(568, 320); await settleC(kp);
+        const s3 = await kp.ev('KL.snap()'), atFit = await kp.ev('RADIAL_MAP.view().atFit'), r3 = await kp.ev('KL.rows()');
+        const readable = (r) => !!r && r.box >= 72 && J(r.rows.map((x) => x.k)) === KEYED_ROWS && r.rows.every((x) => x.whole && x.canvas && x.onTop);
+        const ok = !!t && t.hit && s1.chrome.open === 'legend' && s1.chrome.offered === false && readable(r1) &&
+          s2.chrome.open === null && s2.chrome.setAside === 'legend' && s2.shown === 0 &&
+          s3.chrome.open === 'legend' && s3.chrome.setAside === null && s3.chrome.offered === false && s3.open && atFit === false && readable(r3) && r3.box === r1.box;
+        return { ok, d: { press: t, opened: { chrome: s1.chrome, box: r1 && r1.box }, shrunk: s2.chrome, restored: { chrome: s3.chrome, shown: s3.open, atFit, box: r3 && r3.box,
+          unread: r3 ? r3.rows.filter((x) => !(x.whole && x.canvas && x.onTop)).map((x) => x.k) : null } } };
+      };
+      {
+        const kp = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kp.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        await kp.ev(KL); await settleC(kp);
+        const r = await restoredKey(kp);
+        check('C31 the facilities shell at 568x320, the camera away from the Fit, a selection\'s pill under the legend a real press opened: shrunk to 520x190 the legend is set aside, and restored to 568x320, where the pill still leaves the panels less than 72px, it reopens on that first settled measure with the room it first opened with, its three words and five declarations each readable',
+          r.ok && kp.errors.length === 0, J(r.d).slice(0, 400));
+        await kp.close();
+      }
+      /* C32-C33: the key is open to every reader, or the mount is refused. The same shell, its legend slot
+         closed by a wrapper (hidden, inert, aria-hidden="true") or by itself (hidden with no module to
+         disclose it, inert): each mount is refused, the host left as it was. Folded at the mount but open to
+         the reader: the chrome's compact disclosure, the slot's own hidden the chrome discloses, and a closed
+         <details>; each mounts, and opened by the reader its word rows and declarations read */
+      const KEYDOOR = `window.KD = {
+        host() { return document.querySelector('[data-radial]'); },
+        slot() { return this.host().querySelector('[data-radial-slot="legend"]'); },
+        mount(modules, adapt) { const S = window.RADIAL_FACILITIES, N = window.RADIAL_NEUTRAL, a = N.adapterFor(S.data, S.adapter); if (adapt) adapt(a);
+          return DIAGRAM_RADIAL.mount({ host: this.host(), data: S.data, adapter: a, modules: modules || N.modules }); },
+        bare() { return window.RADIAL_NEUTRAL.modules.filter((m) => m !== 'chrome'); },
+        clear() { if (window.RADIAL_MAP) { RADIAL_MAP.destroy(); window.RADIAL_MAP = null; } },
+        wrap(tag, attrs) { const el = this.slot(), w = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => w.setAttribute(k, v)); el.parentNode.insertBefore(w, el); w.appendChild(el); return w; },
+        unwrap(w) { w.parentNode.insertBefore(this.slot(), w); w.remove(); },
+        refused(modules, adapt) { this.clear(); const before = this.host().outerHTML;
+          try { window.RADIAL_MAP = this.mount(modules, adapt); return { code: 'mounted' }; } catch (e) { return { code: e.code, msg: e.message, same: this.host().outerHTML === before }; } finally { this.clear(); } },
+        /* the word rows and declarations a reader sees: rendered, and not inside a closed <details> */
+        seen() { return Array.from(this.slot().querySelectorAll('.radial-legend-row')).filter((r) => (r.querySelector('.radial-legend-sw') || r.classList.contains('radial-legend-decl')) &&
+          r.getClientRects().length > 0 && r.checkVisibility({ visibilityProperty: true })).map((r) => r.querySelector(r.classList.contains('radial-legend-decl') ? '.radial-legend-sub' : '.radial-legend-lbl').textContent); }
+      };`;
+      const KEYDOOR_WHY = 'radial mount KEY_REQUIRED: a Criterion Assessment instance is drawn keyed only: its legend must be open to every reader, and ';
+      const keyDoor = async (kp) => {
+        const closed = await kp.ev(`(() => { const out = [];
+          for (const [k, tag, a] of [['hidden', 'div', { hidden: '' }], ['hidden until-found', 'div', { hidden: 'until-found' }], ['inert', 'div', { inert: '' }],
+                                     ['aria-hidden', 'div', { 'aria-hidden': 'true' }], ['a closed dialog', 'dialog', {}], ['a popover not showing', 'div', { popover: '' }]]) {
+            const w = KD.wrap(tag, a); out.push(['a wrapper, ' + k, KD.refused()]); KD.unwrap(w); }
+          const self = (k, v, modules, adapt) => { KD.slot().setAttribute(k, v); const r = KD.refused(modules, adapt); KD.slot().removeAttribute(k); return r; };
+          out.push(['the slot hidden, no chrome', self('hidden', '', KD.bare())]);
+          let left = -1;
+          out.push(['the slot hidden, the chrome listed without a legend panel', self('hidden', '', null, (a) => { a.chrome = { panels: a.chrome.panels.filter((x) => x.slot !== 'legend') }; left = a.chrome.panels.length; })]);
+          out.push(['the slot inert', self('inert', '')]);
+          out.push(['the slot aria-hidden', self('aria-hidden', 'true')]);
+          return { out, left }; })()`);
+        const want = { 'a wrapper, hidden': 'a wrapper of its legend slot carries hidden', 'a wrapper, hidden until-found': 'a wrapper of its legend slot carries hidden',
+          'a wrapper, inert': 'a wrapper of its legend slot carries inert', 'a wrapper, aria-hidden': 'a wrapper of its legend slot carries aria-hidden="true"',
+          'a wrapper, a closed dialog': 'a wrapper of its legend slot is a closed <dialog>', 'a wrapper, a popover not showing': 'a wrapper of its legend slot is a popover not showing',
+          'the slot hidden, no chrome': 'its legend slot carries hidden', 'the slot hidden, the chrome listed without a legend panel': 'its legend slot carries hidden',
+          'the slot inert': 'its legend slot carries inert', 'the slot aria-hidden': 'its legend slot carries aria-hidden="true"' };
+        const refusedOk = closed.left >= 1 && closed.out.length === 10 && closed.out.every(([k, r]) => r.code === 'KEY_REQUIRED' && r.msg === KEYDOOR_WHY + want[k] && r.same);
+        /* folded at the mount, opened by the reader */
+        const press = async () => { const t = await kp.ev('KL.at()'); if (t) await kp.click(t.x, t.y); await settleC(kp); return t; };
+        const folded = [];
+        for (const [k, pre] of [['the chrome\'s compact disclosure', ''], ['the slot\'s own hidden, the chrome discloses it', `KD.slot().setAttribute('hidden', '');`]]) {
+          await kp.size(390, 844); await kp.ev(`KD.clear(); ${pre} window.RADIAL_MAP = KD.mount(); true`); await settleC(kp);
+          const s0 = await kp.ev('KL.snap()'), seen0 = await kp.ev('KD.seen()'), t = await press(), s1 = await kp.ev('KL.snap()'), r1 = await kp.ev('KL.rows()');
+          folded.push([k, { arrangement: s0.chrome.arrangement, open0: s0.chrome.open, seen0: seen0.length, press: t, open1: s1.chrome.open,
+            ok: s0.chrome.arrangement === 'compact' && s0.chrome.open === null && seen0.length === 0 && !!t && t.hit && s1.chrome.open === 'legend' &&
+                !!r1 && r1.box >= 72 && J(r1.rows.map((x) => x.k)) === KEYED_ROWS && r1.rows.every((x) => x.whole && x.canvas && x.onTop) }]);
+        }
+        await kp.size(1600, 1000);
+        const det = await kp.ev(`(async () => { KD.clear(); KD.slot().removeAttribute('hidden'); const w = KD.wrap('details', {}); window.RADIAL_MAP = KD.mount(KD.bare());
+          await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const shut = KD.seen(); w.open = true; await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const opened = KD.seen(); KD.clear(); KD.unwrap(w); window.RADIAL_MAP = KD.mount(); return { shut, opened }; })()`);
+        folded.push(['a closed <details>', Object.assign(det, { ok: det.shut.length === 0 && J(det.opened) === KEYED_ROWS })]);
+        /* closed with the map: the canvas, which holds the stage, hidden at the mount and shown after; and an open <dialog> */
+        const withMap = await kp.ev(`(async () => { const two = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          KD.clear(); const cv = KD.host().querySelector('[data-radial-slot="canvas"]'); cv.setAttribute('hidden', '');
+          let code = 'mounted'; try { window.RADIAL_MAP = KD.mount(); } catch (e) { code = e.code; }
+          await two(); const shut = KD.seen(); cv.removeAttribute('hidden'); await two(); await new Promise((r) => setTimeout(r, 150)); await two();
+          const shown = KD.seen(); KD.clear();
+          const d = KD.wrap('dialog', { open: '' }); let dcode = 'mounted'; try { window.RADIAL_MAP = KD.mount(KD.bare()); } catch (e) { dcode = e.code; }
+          await two(); const dseen = KD.seen(); KD.clear(); KD.unwrap(d); window.RADIAL_MAP = KD.mount();
+          return { code, shut, shown, dcode, dseen }; })()`);
+        folded.push(['the canvas, which holds the stage, hidden with the key', { code: withMap.code, shut: withMap.shut.length, shown: withMap.shown,
+          ok: withMap.code === 'mounted' && withMap.shut.length === 0 && J(withMap.shown) === KEYED_ROWS }]);
+        folded.push(['an open <dialog>', { code: withMap.dcode, seen: withMap.dseen, ok: withMap.dcode === 'mounted' && J(withMap.dseen) === KEYED_ROWS }]);
+        await settleC(kp);
+        return { c32: { ok: refusedOk, d: closed.out, left: closed.left }, c33: { ok: folded.every(([, x]) => x.ok), d: folded } };
+      };
+      {
+        const kp = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kp.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        await kp.ev(KL); await kp.ev(KEYDOOR); await settleC(kp);
+        const r = await keyDoor(kp);
+        check('C32 the facilities shell\'s legend slot closed to every reader: by a wrapper carrying hidden (also until-found), inert or aria-hidden="true", or a closed <dialog> or a popover not showing around it; by its own hidden with no module to disclose it, the chrome listed without a legend panel included; by its own inert or aria-hidden="true": each mount is refused KEY_REQUIRED, naming what closes it, the host left as it was',
+          r.c32.ok, J({ left: r.c32.left, d: r.c32.d }).slice(0, 400));
+        check('C33 folded at the mount, open to the reader: under the chrome\'s compact disclosure, and with the slot\'s own hidden the chrome discloses, the legend mounts closed and a real press on its trigger opens it readable row by row; in a closed <details> it mounts unseen, and opened its three words and five declarations show; closed with the map, the canvas hidden, it mounts and shows them once the canvas shows; in an open <dialog> it mounts and shows them; no error',
+          r.c33.ok && kp.errors.length === 0, J({ d: r.c33.d, errors: kp.errors }).slice(0, 400));
+        await kp.close();
+      }
       /* X10: the keyed branch planted out of a copy of the chrome, the shell's map mounted again */
       {
         const kx = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
@@ -1415,6 +1531,58 @@ async function run() {
         check('X10 control: a chrome copy with the keyed branch removed fails C29 on the facilities shell for its intended reason: at 568x320, where the pill leaves the panels less than 72px, the legend a real press opened is set aside at the next measure; C27 and C28 still pass',
           planted && x.c27.ok && x.c28.ok && !x.c29.ok && x.c29.fails.length === 1 && x.c29.fails[0][0] === '568x320' && x.c29.fails[0][1].setAside === 'legend',
           planted ? J(x.c29).slice(0, 400) : 'the fault could not be planted: the module text changed');
+        await kx.close();
+      }
+      /* X11: the budget set again for the panel as resolved, planted out of a copy of the chrome */
+      {
+        const kx = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kx.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        const planted = await kx.ev(`(async () => { const src = await (await fetch('/patterns/diagram-interactive-radial/diagrams-radial-chrome.js')).text();
+          const from = '        budget();                                         /* for the open panel as resolved, not as measured */';
+          if (src.split(from).length !== 2) return false;
+          (0, eval)(src.replace(from, ''));
+          const S = window.RADIAL_FACILITIES, N = window.RADIAL_NEUTRAL; RADIAL_MAP.destroy();
+          window.RADIAL_MAP = DIAGRAM_RADIAL.mount({ host: document.querySelector('[data-radial]'), data: S.data, adapter: N.adapterFor(S.data, S.adapter), modules: N.modules });
+          return true; })()`);
+        await kx.ev(KL); await settleC(kx);
+        const x = planted ? await restoredKey(kx) : null;
+        check('X11 control: a chrome copy that does not set the budget again once the set-aside legend is restored fails C31 for its intended reason: the legend reopens, unrefitted, over the pill, but in a box under 72px',
+          planted && !x.ok && x.d.restored.chrome.open === 'legend' && x.d.restored.chrome.offered === false && x.d.restored.atFit === false &&
+          typeof x.d.restored.box === 'number' && x.d.restored.box < 72 && x.d.opened.box >= 72,
+          planted ? J(x.d).slice(0, 400) : 'the fault could not be planted: the module text changed');
+        await kx.close();
+      }
+      /* X12: the open-key check planted out of a copy of the engine */
+      {
+        const kx = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kx.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        const planted = await kx.ev(`(async () => { const src = await (await fetch('/patterns/diagram-interactive-radial/diagrams-radial-engine.js')).text();
+          const from = '      for (var w = keySlot; w && w !== host && !w.contains(stage); w = w.parentElement) {';
+          if (src.split(from).length !== 2) return false;
+          (0, eval)(src.replace(from, '      for (var w = null; w; ) {'));
+          return true; })()`);
+        await kx.ev(KL); await kx.ev(KEYDOOR); await settleC(kx);
+        const x = planted ? await keyDoor(kx) : null;
+        check('X12 control: an engine copy without the open-key check fails C32 for its intended reason: every closed legend mounts; C33 still passes',
+          planted && !x.c32.ok && x.c32.d.every(([, r]) => r.code === 'mounted') && x.c33.ok,
+          planted ? J(x.c32.d).slice(0, 400) : 'the fault could not be planted: the module text changed');
+        await kx.close();
+      }
+      /* X13: the open-key check planted to walk past the element that holds the map, up to the host */
+      {
+        const kx = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kx.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        const planted = await kx.ev(`(async () => { const src = await (await fetch('/patterns/diagram-interactive-radial/diagrams-radial-engine.js')).text();
+          const from = '      for (var w = keySlot; w && w !== host && !w.contains(stage); w = w.parentElement) {';
+          if (src.split(from).length !== 2) return false;
+          (0, eval)(src.replace(from, '      for (var w = keySlot; w && w !== host; w = w.parentElement) {'));
+          return true; })()`);
+        await kx.ev(KL); await kx.ev(KEYDOOR); await settleC(kx);
+        const x = planted ? await keyDoor(kx) : null;
+        const fails = x ? x.c33.d.filter(([, y]) => !y.ok).map(([k, y]) => [k, y.code]) : null;
+        check('X13 control: an open-key check that walks past the element holding the map fails C33 for its intended reason: the hidden canvas is refused KEY_REQUIRED; C32 still passes',
+          planted && x.c32.ok && !x.c33.ok && fails.length === 1 && fails[0][0] === 'the canvas, which holds the stage, hidden with the key' && fails[0][1] === 'KEY_REQUIRED',
+          planted ? J(fails).slice(0, 400) : 'the fault could not be planted: the module text changed');
         await kx.close();
       }
     }

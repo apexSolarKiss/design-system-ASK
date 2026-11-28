@@ -23,7 +23,8 @@
       spectral-state declaration identical to none, and Criterion Assessment's values on the
       visitor-facilities composition
    C  the Criterion Assessment contract: every refusal with its code and its exact message, the
-      visitor-facilities composition accepted with its counts, its geometry the specimen's
+      visitor-facilities composition accepted with its counts, its geometry the specimen's, and the
+      admission tables frozen
    X  negative controls: each check fails for its intended reason, including X6, mutated copies of
       the labels module with the old bookkeeping put back, and X7, mutated copies of the contract
       module with one plausible regression of the semantic system each */
@@ -689,6 +690,18 @@ function criterion(RC, P = FIX) {
   const geo = ['weighted', 'equal'].map((allocation) => { try { return { allocation, ...sameGeometry(RC, P.specimen, fac, allocation) }; } catch (e) { return { allocation, ok: false, error: e.message }; } });
   add('C7', 'C7 the visitor-facilities layout is the specimen\'s: every identifier in the same order at the same position, radius, bearing, depth and parent, under both allocations',
     geo.every((g) => g.ok && g.nodes === 249), geo.map((g) => g.error ? `${g.allocation}: ${g.error}` : `${g.allocation}: ${g.nodes} nodes, ${g.moved.length} moved`).join(' · '));
+  /* C8: SYSTEMS, ASSESSMENT_ROLES and DECLARATIONS, which R.contract exposes, are frozen. A host script's push on each throws and leaves
+     it as it was, and a system name pushed onto SYSTEMS is refused SEMANTIC_SYSTEM, never drawn as another
+     system; a push that lands is taken back, so the run reads the tables as written */
+  const tables = ['SYSTEMS', 'ASSESSMENT_ROLES', 'DECLARATIONS'].map((k) => {
+    const a = RC.contract[k], n = a.length; let threw = false, sys = null;
+    try { a.push('magenta'); } catch (e) { threw = e.name === 'TypeError'; }
+    if (k === 'SYSTEMS') sys = result(tiny({ semantic: { system: 'magenta' } }));
+    const kept = a.length === n; if (!kept) a.length = n;
+    return { k, frozen: Object.isFrozen(a), threw, kept, sys: sys && (sys.ok ? 'accepted' : sys.code) };
+  });
+  add('C8', 'C8 the admission tables are frozen: SYSTEMS, ASSESSMENT_ROLES and DECLARATIONS each refuse a host script\'s push, and a system name pushed onto SYSTEMS is still SEMANTIC_SYSTEM',
+    tables.every((t) => t.frozen && t.threw && t.kept) && tables[0].sys === 'SEMANTIC_SYSTEM', JSON.stringify(tables));
   return out;
 }
 {
@@ -810,6 +823,7 @@ rejects('X4 a kind with a shape outside the owner set', (() => { const m = G.bas
     ['the unassessed wash painted from a Spectral State token', 'M3', [["'var(--fg-1)'; }", "'var(--state-neutral)'; }"]]],
     ['Spectral State painting an absent role as no token', 'M1.paint', [["(role || 'neutral')", '(role)']]],
     ['an explicit spectral-state declaration reordering the declared states', 'M2', [["statesIn = list(d, 'states')", "statesIn = has(d, 'semantic') ? list(d, 'states').slice().reverse() : list(d, 'states')"]]],
+    ['the system names left open to a host script', 'C8', [["var SYSTEMS = Object.freeze(['spectral-state', 'criterion-assessment']);", "var SYSTEMS = ['spectral-state', 'criterion-assessment'];"]]],
   ];
   MUTATIONS.forEach(([what, target, pairs]) => {
     const text = mutate(pairs);

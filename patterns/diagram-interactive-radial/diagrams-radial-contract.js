@@ -41,12 +41,14 @@
      reads its roles from the data's own states; Criterion Assessment takes its owner's three words
      and the five declarations the peer example declares (its owner's four record fields and the
      rule that assigns them; criterion-assessment.md), and every leaf declares
-     its assessment. No other name is admitted, and nothing falls back from one system to another. */
-  var SYSTEMS = ['spectral-state', 'criterion-assessment'];
-  var ASSESSMENT_ROLES = ['favorable', 'caution', 'adverse', 'unassessed'];
+     its assessment. No other name is admitted, and nothing falls back from one system to another.
+     SYSTEMS, ASSESSMENT_ROLES and DECLARATIONS, which R.contract exposes, are frozen: no host script
+     can add a system, a role or a declaration to them. */
+  var SYSTEMS = Object.freeze(['spectral-state', 'criterion-assessment']);
+  var ASSESSMENT_ROLES = Object.freeze(['favorable', 'caution', 'adverse', 'unassessed']);
   var ASSESSED = ['favorable', 'caution', 'adverse'];
   var ASSESSMENT_WORDS = { favorable: 'Favorable', caution: 'Caution', adverse: 'Adverse' };
-  var DECLARATIONS = ['criterion', 'direction', 'scope', 'basis', 'rule'];
+  var DECLARATIONS = Object.freeze(['criterion', 'direction', 'scope', 'basis', 'rule']);
   var DECLARATION_LABELS = { criterion: 'Criterion', direction: 'Direction', scope: 'Scope', basis: 'Basis', rule: 'Rule' };
 
   /* every key set is closed; `data` is the one opaque value */

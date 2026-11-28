@@ -122,6 +122,7 @@ attention query
 semantic semanticspectral semanticcriterion topcriterion nodecriterion recordcriterion decl declaration keyed under
 criterion assessment favorable caution adverse unassessed direction scope basis assignment
 cannot does exports refused resolve stylesheet words colors css
+inert popover open wrapper
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;

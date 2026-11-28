@@ -147,10 +147,28 @@
 
     var model = R.contract.assemble(opts.data);                 /* throws: radial contract <CODE> */
     var SYS = model.system;                                     /* the declared system: every role's paint and word */
-    /* a keyed system is read with its key: the legend module is listed, and the system's role tokens
-       and the structural wash resolve in this host, before anything is drawn */
+    /* a keyed system is read with its key: the legend module is listed, its key is open to every
+       reader, and the system's role tokens and the structural wash resolve in this host, before
+       anything is drawn. Open: from the legend slot up to the nearest element that holds the map too,
+       nothing carries hidden (in any state), inert or aria-hidden="true", and nothing is a closed
+       <dialog> or a popover not showing. A closed <details> opens by its summary, and the chrome
+       module's compact disclosure keeps the slot's own hidden attribute for the reader to open, so
+       both pass. An element that closes the map with its key, the host included, leaves no color
+       drawn without its key, and passes. The markup is read at the mount, never the host's
+       stylesheets */
     if (SYS.keyed) {
       if (listed.indexOf('legend') < 0) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: list the legend module');
+      var keySlot = host.querySelector('[data-radial-slot="legend"]');
+      var disclosed = listed.indexOf('chrome') >= 0 && adapter.chrome.panels.some(function (x) { return x.slot === 'legend'; });
+      for (var w = keySlot; w && w !== host && !w.contains(stage); w = w.parentElement) {
+        var shut = w.hasAttribute('inert') ? 'carries inert'
+          : (w.getAttribute('aria-hidden') || '').trim().toLowerCase() === 'true' ? 'carries aria-hidden="true"'
+          : w.hasAttribute('hidden') && !(w === keySlot && disclosed) ? 'carries hidden'
+          : w.localName === 'dialog' && typeof w.showModal === 'function' && !w.open ? 'is a closed <dialog>'
+          : w.hasAttribute('popover') && typeof w.showPopover === 'function' && !w.matches(':popover-open') ? 'is a popover not showing' : null;
+        if (shut) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: its legend must be open to every reader, and ' +
+          (w === keySlot ? 'its legend slot' : 'a wrapper of its legend slot') + ' ' + shut);
+      }
       var tcs = root.getComputedStyle(host);
       SYS.tokenNames.concat(['--fg-1']).forEach(function (t) {
         if (!tcs.getPropertyValue(t).trim()) throw MountError('TOKENS', t + ' does not resolve in the host; load colors_and_type.css and the ' + SYS.title + ' stylesheet');
