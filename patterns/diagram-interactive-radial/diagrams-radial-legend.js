@@ -1,5 +1,6 @@
 /* diagrams-radial-legend.js — the legend module of the interactive radial pattern: a legend
-   model built from the declared states, planes and kinds, and a live legend rendered into the
+   model built from the declared system's key rows (Spectral State's declared states, or Criterion
+   Assessment's owner words, name and declarations), planes and kinds, and a live legend rendered into the
    host's [data-radial-slot="legend"].
 
    design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
@@ -8,8 +9,9 @@
 
    The owner draws the legend's grammar (a state swatch, a plane's line style, a kind's shape)
    and escapes every string; the adapter supplies every word: the three headings, and an
-   optional bound line stating what the geometry does not encode. State labels and meanings,
-   plane labels and kind labels come from the data's own declarations. Optionally the adapter
+   optional bound line stating what the geometry does not encode. Spectral State's labels and
+   meanings, plane labels and kind labels come from the data's own declarations; Criterion
+   Assessment's words and declaration labels are its owner's, and its declared values the data's. Optionally the adapter
    adds a note under a plane or a kind (notes.planes, notes.kinds, by id), and may replace the
    per-kind rows with one line of text (shapes) where its kinds are better read as a sentence. */
 (function (root) {
@@ -56,12 +58,18 @@
   /* the legend model: data only, shared by the live legend and any other renderer */
   function model(M, cfg) {
     var states = [], planes = [], kinds = [];
-    M.states.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
+    M.system.rows.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
     M.planes.forEach(function (p) { planes.push({ id: p.id, label: p.label, drawn: p.drawn, directed: p.directed, note: note(cfg, 'planes', p.id) }); });
     M.kinds.forEach(function (k) { kinds.push({ id: k.id, label: k.label, shape: k.shape, note: note(cfg, 'kinds', k.id) }); });
-    return { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
-             states: states, planes: planes, kinds: kinds, shapes: cfg.shapes === undefined ? null : cfg.shapes,
-             bound: cfg.bound === undefined ? null : cfg.bound };
+    var m = { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
+              states: states, planes: planes, kinds: kinds, shapes: cfg.shapes === undefined ? null : cfg.shapes,
+              bound: cfg.bound === undefined ? null : cfg.bound };
+    /* a keyed system's key carries its name and declarations, under its rows; Spectral's model is unchanged */
+    if (M.system.keyed) {
+      m.system = M.system.title;
+      m.declarations = M.system.declarations.map(function (x) { return { field: x.field, label: x.label, value: x.value }; });
+    }
+    return m;
   }
 
   function div(cls, txt) { var e = document.createElement('div'); e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
@@ -97,16 +105,26 @@
     return r;
   }
 
-  function render(slot, m) {
+  function render(slot, m, sys) {
     var frag = document.createDocumentFragment();
     if (m.states.length) {
       frag.appendChild(div('radial-legend-h', m.headings.state));
       m.states.forEach(function (s) {
         /* no asserted state draws as the marks' wash, a state as its fill */
-        var sw = span('radial-legend-sw' + (s.role === 'neutral' ? ' radial-sw--wash' : ''));
-        sw.style.setProperty('--st', 'var(--state-' + s.role + ')');
+        var sw = span('radial-legend-sw' + (sys.asserts(s.role) ? '' : ' radial-sw--wash'));
+        sw.style.setProperty('--st', sys.paint(s.role));
         frag.appendChild(row(sw, s.label, s.meaning));
       });
+      if (m.declarations) {
+        frag.appendChild(div('radial-legend-h', m.system));
+        m.declarations.forEach(function (x) {
+          var r = div('radial-legend-row radial-legend-decl'), t = span('radial-legend-txt');
+          t.appendChild(span('radial-legend-sub', x.label));
+          t.appendChild(span('radial-legend-lbl', x.value));
+          r.appendChild(t);
+          frag.appendChild(r);
+        });
+      }
     }
     if (m.planes.length) {
       frag.appendChild(div('radial-legend-h', m.headings.line));
@@ -143,7 +161,7 @@
       var slot = api.slot('legend');                         /* required: the engine checked it */
       var m = model(api.model, cfg);
       var before = Array.prototype.slice.call(slot.childNodes);
-      render(slot, m);
+      render(slot, m, api.model.system);
       /* the same model for any other renderer of this instance (the export's page plate) */
       if (api.provide) api.provide('legend', { model: m });
       return {

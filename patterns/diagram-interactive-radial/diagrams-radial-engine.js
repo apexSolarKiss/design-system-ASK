@@ -146,6 +146,34 @@
     MODULES.forEach(function (m) { if (adapter[m] !== undefined && listed.indexOf(m) < 0 && m !== 'theme') ignored.push(m); });
 
     var model = R.contract.assemble(opts.data);                 /* throws: radial contract <CODE> */
+    var SYS = model.system;                                     /* the declared system: every role's paint and word */
+    /* a keyed system is read with its key: the legend module is listed, its key is open to every
+       reader, and the system's role tokens and the structural wash resolve in this host, before
+       anything is drawn. Open: from the legend slot up to the nearest element that holds the map too,
+       nothing carries hidden (in any state), inert or aria-hidden="true", and nothing is a closed
+       <dialog> or a popover not showing. A closed <details> opens by its summary, and the chrome
+       module's compact disclosure keeps the slot's own hidden attribute for the reader to open, so
+       both pass. An element that closes the map with its key, the host included, leaves no color
+       drawn without its key, and passes. The markup is read at the mount, never the host's
+       stylesheets */
+    if (SYS.keyed) {
+      if (listed.indexOf('legend') < 0) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: list the legend module');
+      var keySlot = host.querySelector('[data-radial-slot="legend"]');
+      var disclosed = listed.indexOf('chrome') >= 0 && adapter.chrome.panels.some(function (x) { return x.slot === 'legend'; });
+      for (var w = keySlot; w && w !== host && !w.contains(stage); w = w.parentElement) {
+        var shut = w.hasAttribute('inert') ? 'carries inert'
+          : (w.getAttribute('aria-hidden') || '').trim().toLowerCase() === 'true' ? 'carries aria-hidden="true"'
+          : w.hasAttribute('hidden') && !(w === keySlot && disclosed) ? 'carries hidden'
+          : w.localName === 'dialog' && typeof w.showModal === 'function' && !w.open ? 'is a closed <dialog>'
+          : w.hasAttribute('popover') && typeof w.showPopover === 'function' && !w.matches(':popover-open') ? 'is a popover not showing' : null;
+        if (shut) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: its legend must be open to every reader, and ' +
+          (w === keySlot ? 'its legend slot' : 'a wrapper of its legend slot') + ' ' + shut);
+      }
+      var tcs = root.getComputedStyle(host);
+      SYS.tokenNames.concat(['--fg-1']).forEach(function (t) {
+        if (!tcs.getPropertyValue(t).trim()) throw MountError('TOKENS', t + ' does not resolve in the host; load colors_and_type.css and the ' + SYS.title + ' stylesheet');
+      });
+    }
     var L = R.layout.layout(model, adapter.layout);             /* throws: radial layout <CODE> */
     var LC = R.labels.configure(adapter.labels);                /* throws: radial labels <CODE> */
 
@@ -252,8 +280,8 @@
        clears the fill: the curve is cut where it meets that reach, by splitting it (de Casteljau),
        so the part drawn is the same curve. */
     var edgeEls = [], undrawn = 0, obscured = [];
-    /* a mark that asserts a state is filled at 100%; the root and a mark asserting none keep the wash */
-    function filled(n) { return n.kind !== 'root' && !!n.state && n.state !== 'neutral'; }
+    /* a mark that asserts a role is filled at 100%; the root and a mark asserting none keep the wash */
+    function filled(n) { return n.kind !== 'root' && SYS.asserts(n.state); }
     var filledMarks = L.nodes.filter(filled).map(function (n) { return { n: n, shape: shapeOf(n) }; });
     var strokeOf = {};                                       /* a plane's stroke width, read once per drawn class */
     function tipUnderFill(cut, p, target, drawn) {
@@ -374,7 +402,7 @@
     drawOrder.forEach(function (n) {
       var g = el('g', { 'class': 'radial-node radial-node--' + nodeClass(n), id: id + '-n' + index.get(n.id) });
       g.setAttribute('data-radial-id', n.id);
-      g.style.setProperty('--st', 'var(--state-' + (n.kind === 'root' ? 'neutral' : n.state) + ')');
+      g.style.setProperty('--st', SYS.paint(n.kind === 'root' ? null : n.state));
       var r = n.r, sh = n.kind === 'root' ? 'circle' : shapeOf(n);
       if (sh === 'pill')
         g.appendChild(el('rect', { 'class': 'radial-mark', x: n.x - r, y: n.y - r * 0.62, width: r * 2, height: r * 1.24, rx: r * 0.5, ry: r * 0.5 }));
@@ -398,8 +426,8 @@
          stylesheet's neutral wash. Every mark has one neutral frame outside it, drawn only for
          hover, relation and selection: emphasis never steps the fill. */
       var mark = g.querySelector('.radial-mark'), chip = g.querySelector('.radial-chip');
-      if (n.kind !== 'root' && n.state && n.state !== 'neutral') {
-        g.style.setProperty('--surface-fill-color', 'var(--state-' + n.state + ')');
+      if (filled(n)) {
+        g.style.setProperty('--surface-fill-color', SYS.paint(n.state));
         mark.setAttribute('class', 'radial-mark surface-fill');
         if (chip) {
           var cutId = id + '-cut' + index.get(n.id), cut = el('mask', { id: cutId, maskUnits: 'userSpaceOnUse',
@@ -784,7 +812,7 @@
       locked = nid; previewId = null;
       paint(nid);
       selectedReadout();
-      if (nid) announce(fill(announceT.select, { label: byId.get(nid).label }));
+      if (nid) announce(fill(announceT.select, { label: byId.get(nid).label }) + word(nid));
       emit('select', { id: nid, cause: cause || (via === 'api' ? 'module' : 'reader'), via: via || 'api' });
       return true;
     }
@@ -964,14 +992,14 @@
       shown.forEach(function (k) {
         var n = byId.get(k), b = html('button', 'radial-chooser-item');
         b.type = 'button';
-        var swNeutral = n.kind === 'root' || !n.state || n.state === 'neutral';
-        var sw = html('span', 'radial-chooser-sw' + (swNeutral ? ' radial-sw--wash' : ''));
-        sw.style.setProperty('--st', 'var(--state-' + (n.kind === 'root' ? 'neutral' : n.state) + ')');
+        var sw = html('span', 'radial-chooser-sw' + (filled(n) ? '' : ' radial-sw--wash'));
+        sw.style.setProperty('--st', SYS.paint(n.kind === 'root' ? null : n.state));
         b.appendChild(sw);
         var tx = html('span', 'radial-chooser-txt');
         tx.appendChild(html('span', 'radial-chooser-lbl', n.label));
-        var par = byId.get(n.parent);
-        if (par) tx.appendChild(html('span', 'radial-chooser-sub', par.label));
+        var par = byId.get(n.parent), w = SYS.keyed && n.kind !== 'root' ? SYS.word(n.state) : null;
+        /* a keyed system's colored swatch sits beside its owner word */
+        if (par || w) tx.appendChild(html('span', 'radial-chooser-sub', (par ? par.label : '') + (par && w ? ' \u00B7 ' : '') + (w || '')));
         b.appendChild(tx);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -1047,6 +1075,11 @@
     setAttr(stage, 'aria-roledescription', 'radial diagram');
     setAttr(stage, 'aria-label', model.root.label);
     var keyboard = false;
+    /* a keyed system's owner word for an assessed node, spoken after its name; nothing otherwise */
+    function word(nid) {
+      var n = byId.get(nid), w = SYS.keyed && n && n.kind !== 'root' ? SYS.word(n.state) : null;
+      return w ? ', ' + w : '';
+    }
     function position(nid) {
       var n = byId.get(nid);
       if (n.kind === 'root') return fill(announceT.focusRoot, { label: n.label });
@@ -1069,7 +1102,7 @@
       raise();
       reveal(nid);
       drawFocus();
-      announce(position(nid));
+      announce(position(nid) + word(nid));
       emit('focus', { id: nid, cause: cause || 'reader' });
       return true;
     }
@@ -1078,7 +1111,8 @@
       if (!keyboard) return;
       if (!focusId || !visible(focusId)) focusId = locked || model.root.id;
       raise(); drawFocus();
-      announce(fill(announceT.start, { label: byId.get(focusId).label }) + ' ' + position(focusId));
+      announce(fill(announceT.start, { label: byId.get(focusId).label }) + ' ' + position(focusId) + word(focusId) +
+               (SYS.keyed ? '. Color is ' + SYS.title + ': ' + SYS.declarations[0].value + '.' : ''));
     });
     on(stage, 'blur', function () { drawFocus(); });
     on(stage, 'keydown', function (ev) {
@@ -1335,5 +1369,5 @@
 
   R.mount = mount;
   R.MountError = MountError;
-  R.VERSION = 1;
+  R.VERSION = 2;
 })(typeof window !== 'undefined' ? window : globalThis);

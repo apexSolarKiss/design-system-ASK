@@ -29,7 +29,9 @@
    - When the room above the control area falls below READ_MIN, no panel can be read there: the
      triggers are NOT OFFERED (they leave the display and the tab order, with focus handed to the
      HUD's Fit control), and an open panel is SET ASIDE. When the room returns, the triggers
-     return and the set-aside panel reopens by itself.
+     return and the set-aside panel reopens by itself. A keyed system's legend is the one
+     exception: while the room from the canvas top to the control area is READ_MIN or more, its
+     trigger stays offered and it opens with that room, over an obstacle (see mount).
    - A reader action — Escape anywhere in the host, a selection — forgets the set-aside panel,
      so nothing reopens behind the reader's back. A trigger opening or closing a panel forgets
      it too. A resize is never counted as a reader action.
@@ -114,6 +116,11 @@
     var canvas = api.canvas, hud = api.slot('hud');
     var fitControl = hud ? hud.querySelector('[data-radial-control="fit"]') : null;
     var n = ++seq;
+    /* a keyed system's legend is part of reading the map's color: where the canvas gives READ_MIN
+       between its top and the control area, its trigger stays offered and it opens there, over any
+       obstacle that leaves the panels' own room below READ_MIN. A canvas shorter than that reads no
+       panel, and the legend's trigger is withdrawn with the others. */
+    var keyed = !!(api.model && api.model.system && api.model.system.keyed);
 
     /* every declared panel's slot must exist; nothing is changed before this holds */
     var panels = cfg.panels.map(function (d) {
@@ -171,6 +178,8 @@
     function noCaption() { keepStyle(); cs.removeProperty('--radial-caption-left'); cs.removeProperty('--radial-caption-w'); }
 
     var arrangement = null, open = null, aside = null, offered = true, sig = null, destroyed = false;
+    var full = 0, room = 0;          /* the room from the canvas top to the control area, and the panels' own room */
+    function offers(p) { return offered || (keyed && p.slot === 'legend' && full >= READ_MIN); }
 
     function setOpen(p, on, quiet) {
       if (!on && !quiet && p.el.contains(document.activeElement)) handoff(p);
@@ -262,13 +271,23 @@
       obstacles().forEach(function (o) {
         if (o.left < lane.right && lane.left < o.right && o.top < floor && o.bottom + GAP > ceil) ceil = o.bottom + GAP;
       });
-      var room = Math.floor(floor - GAP - ceil);
+      room = Math.floor(floor - GAP - ceil);
+      full = Math.floor(floor - GAP - (cr.top + EDGE));
       cs.setProperty('--radial-panel-bottom', Math.round(cr.bottom - floor + GAP) + 'px');
-      cs.setProperty('--radial-panel-max', Math.max(0, room) + 'px');
+      budget();
       return room;
     }
+    /* the open panel's height: the panels' own room, or, for a keyed legend opened without READ_MIN of
+       it, the room from the canvas top, over any obstacle there; the panels' own room is still judged
+       without it. Set again wherever the open panel changes after the room is measured, so a set-aside
+       legend reopens with the room it opens into, on that same measure */
+    function budget() {
+      var b = keyed && room < READ_MIN && open && open.slot === 'legend' ? full : room;
+      keepStyle();
+      cs.setProperty('--radial-panel-max', Math.max(0, b) + 'px');
+    }
     /* the triggers leave the display and the tab order together when the room is too small to read a panel */
-    function offer() { panels.forEach(function (p) { p.trigger.hidden = !offered; }); row.hidden = !offered; }
+    function offer() { panels.forEach(function (p) { p.trigger.hidden = !offers(p); }); row.hidden = !panels.some(offers); }
     function unplace() {
       ['--radial-row-left', '--radial-row-bottom', '--radial-row-h', '--radial-panel-bottom', '--radial-panel-max']
         .forEach(function (k) { keepStyle(); cs.removeProperty(k); });
@@ -337,10 +356,11 @@
         /* the one state, applied again after the wide measurement showed every panel; focus is
            settled once, at the end, so it never passes through a control on its way */
         panels.forEach(function (p) { setOpen(p, p === open, true); set(p.el, 'tabindex', '0'); });
-        var room = place();
+        place();
         offered = room >= READ_MIN;
-        if (!offered && open) { aside = open; setOpen(open, false, true); open = null; }
-        else if (offered && aside) { open = aside; aside = null; setOpen(open, true); }
+        if (open && !offers(open)) { aside = open; setOpen(open, false, true); open = null; }
+        else if (aside && offers(aside)) { open = aside; aside = null; setOpen(open, true); }
+        budget();                                         /* for the open panel as resolved, not as measured */
         offer();
         if (open) open.el.scrollTop = top;
       }
@@ -349,7 +369,7 @@
     }
 
     function toggle(p) {
-      if (arrangement !== 'compact' || !offered) return;
+      if (arrangement !== 'compact' || !offers(p)) return;
       var on = open !== p;
       if (open && open !== p) setOpen(open, false);
       if (on) api.claim(p.slot);                          /* one exclusive panel at a time */

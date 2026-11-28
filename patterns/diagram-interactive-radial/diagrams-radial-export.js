@@ -57,7 +57,7 @@
               mark: 'no mark is displayed for this theme', image: 'mark image unavailable', markOut: 'mark outside the plate',
               tokens: 'theme tokens missing', lines: 'plate lines must be strings', chrome: 'chrome text outside the plate',
               overlap: 'chrome blocks overlap', label: 'label outside the label area', raster: 'raster failed',
-              busy: 'export busy', stopped: 'export stopped', profile: 'no such profile',
+              busy: 'export busy', stopped: 'export stopped', profile: 'no such profile', key: 'key missing',
               capture: 'plate style not captured at the click' };
   /* the state the screen paints and a plate never shows */
   var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on', 'is-linked'];
@@ -204,6 +204,9 @@
     ['page', 'diagram'].forEach(function (name) {
       if (!given(cfg.profiles, name)) return;
       var v = cfg.profiles[name] === true ? {} : cfg.profiles[name];
+      /* a keyed system is exported with its key: the page plate only, its legend always drawn */
+      if (model.system.keyed && name === 'diagram') throw ExportError('export.profiles.diagram is refused: a ' + model.system.title + ' instance exports the page plate with its key');
+      if (model.system.keyed && given(v, 'legend') && !v.legend) throw ExportError('export.profiles.page.legend cannot be off: a ' + model.system.title + ' instance exports its key');
       var P = { name: name, scale: given(v, 'scale') ? v.scale : 2 };
       if (given(v, 'detail')) {
         if (v.detail >= LC.tiers.length) throw ExportError('export.profiles.' + name + '.detail names no tier');
@@ -301,10 +304,10 @@
 
     /* the theme tokens, resolved now, as custom properties on the plate's root */
     function tokensRule() {
-      var cs = getComputedStyle(document.documentElement), roles = ['neutral'], out = [];
-      model.states.forEach(function (s, role) { if (roles.indexOf(role) < 0) roles.push(role); });
-      L.nodes.forEach(function (n) { if (n.state && roles.indexOf(n.state) < 0) roles.push(n.state); });
-      ['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to'].concat(roles.map(function (r) { return '--state-' + r; })).forEach(function (t) {
+      var cs = getComputedStyle(document.documentElement), out = [];
+      var base = ['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to'];
+      /* the declared system's role tokens, in its own order; a role painted from a base token adds none */
+      base.concat(model.system.tokenNames.filter(function (t) { return base.indexOf(t) < 0; })).forEach(function (t) {
         var v = cs.getPropertyValue(t).trim();
         if (!v) throw fail(WHY.tokens);
         out.push(t + ':' + v);
@@ -491,6 +494,7 @@
       var legendSvc = api.service('legend');
       var showLegend = page && P.legend && !!legendSvc && !!legendSvc.model;
       var legendModel = showLegend ? legendSvc.model : null;
+      if (page && model.system.keyed && !(legendModel && legendModel.declarations)) throw fail(WHY.key);
       var FA = figureArea(P, showLegend), b = L.bounds;
       var k = Math.min((FA.w - 2 * G.gutterX) / b.w, (FA.h - 2 * G.gutterY) / b.h);
       var view = { k: k, x: FA.w / 2 - (b.x + b.w / 2) * k, y: FA.h / 2 - (b.y + b.h / 2) * k };
@@ -668,14 +672,24 @@
           if (m.states.length) {
             heading(m.headings.state);
             m.states.forEach(function (s) {
-              /* no asserted state is drawn as the marks' wash, a state as its fill */
-              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: s.role === 'neutral'
-                ? 'fill: var(--state-neutral); fill-opacity: 0.15; stroke: var(--state-neutral); stroke-width: 1.5'
-                : 'fill: var(--state-' + s.role + ')' }));
+              /* no asserted role is drawn as the marks' wash, a role as its fill */
+              var pnt = model.system.paint(s.role);
+              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: model.system.asserts(s.role)
+                ? 'fill: ' + pnt
+                : 'fill: ' + pnt + '; fill-opacity: 0.15; stroke: ' + pnt + '; stroke-width: 1.5' }));
               rowText('label', s.label, 19, 14);
               if (note(s.meaning)) rowText('meaning', s.meaning, 16, 12);
               y += 7;
             });
+            /* a keyed system's name, then each declaration under its label, across the column */
+            if (m.declarations) {
+              heading(m.system);
+              m.declarations.forEach(function (d) {
+                y += cellText('meaning', d.label, x0, G.legendW, 12, 16, y);
+                y += cellText('label', d.value, x0, G.legendW, 14, 19, y);
+                y += 7;
+              });
+            }
           }
           if (m.planes.length) {
             heading(m.headings.line);

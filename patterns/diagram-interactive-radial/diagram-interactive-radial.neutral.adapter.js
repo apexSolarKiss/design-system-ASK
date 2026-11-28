@@ -5,7 +5,9 @@
    DEVELOPMENT AND TEST COMPOSITION. It shows the owner modules running on content that shares
    nothing with the reference specimen: other identifiers, other fields, another hierarchy. It
    derives everything from the data it is given, so the same function serves every hierarchy
-   shape the owner tests use (base, shallow, ragged, deeper, flat).
+   shape the owner tests use (base, shallow, ragged, deeper, flat), and the visitor-facilities
+   composition, whose data declares Criterion Assessment: there the status facet becomes the
+   assessment facet, which takes the owner's words, and the export offers the page plate only.
    DOWNSTREAM: write your own; nothing here is part of the owner contract. */
 (function (root) {
   'use strict';
@@ -69,13 +71,19 @@
       }
     };
 
+    /* a Criterion Assessment declaration: the assessment facet in place of the status facet */
+    var criterion = !!(data.semantic && data.semantic.system === 'criterion-assessment');
+    var colorFacet = criterion
+      ? { id: 'assessment', title: 'visitor facilities', family: 'items', value: function (x) { return x.assessment; },
+          order: ['favorable', 'caution', 'adverse'], swatch: true }
+      : { id: 'status', title: 'status', family: 'items', value: function (x) { return x.state; },
+          label: function (r) { return states.has(r) ? states.get(r).label : r; },
+          order: (data.states || []).map(function (s) { return s.role; }), swatch: true };
     var facets = {
       name: 'find',
       note: 'A filter shows a subset and reports how many; it never moves a place.',
       declared: [
-        { id: 'status', title: 'status', family: 'items', value: function (x) { return x.state; },
-          label: function (r) { return states.has(r) ? states.get(r).label : r; },
-          order: (data.states || []).map(function (s) { return s.role; }), swatch: true },
+        colorFacet,
         { id: 'surface', title: 'surface', family: 'items', value: function (x) { return x.kind; },
           label: function (k) { return kinds.has(k) ? kinds.get(k).label : k; }, order: 'value' },
         { id: 'group', title: 'group', family: 'items', value: function (x) { var g = top(x); return g ? g.id : undefined; },
@@ -101,8 +109,8 @@
       inspector: inspector,
       facets: facets,
       export: {
-        filenameBase: 'radial-specimen',
-        profiles: { page: true, diagram: true },
+        filenameBase: criterion ? 'radial-facilities' : 'radial-specimen',
+        profiles: criterion ? { page: true } : { page: true, diagram: true },
         mark: 'required',
         fonts: 'carrier',
         header: { subtitle: 'specimen \u00B7 synthetic data' },

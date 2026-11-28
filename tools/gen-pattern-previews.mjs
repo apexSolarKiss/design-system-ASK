@@ -56,13 +56,15 @@ const SHELLS = [
   { src: 'diagram-static-network/diagram-static-network.html',     dir: 'diagram-static-network',     out: 'diagram-static-network.html' },
   // The spine preview takes the canonical Fit unchanged: it shows what a consumer receives.
   { src: 'diagram-interactive-spine/diagram-interactive-spine.html', dir: 'diagram-interactive-spine', out: 'diagram-interactive-spine.html' },
-  // The radial surface pattern has two shells. Its primary shell is the REFERENCE specimen: captured
+  // The radial surface pattern has three shells. Its primary shell is the REFERENCE specimen: captured
   // research content under reference/ (a pattern-local subdirectory, declared in localDirs), drawn
   // through the complete module stack. The neutral shell runs the same stack on the generated synthetic
-  // source, for development inspection. Both take the engine's own Fit, so the previews add no fit tuning.
+  // source, for development inspection, and the facilities shell runs it on the same synthetic source
+  // under Criterion Assessment. All three take the engine's own Fit, so the previews add no fit tuning.
   { src: 'diagram-interactive-radial/diagram-interactive-radial.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.html',
     localDirs: ['reference/'] },
   { src: 'diagram-interactive-radial/diagram-interactive-radial.neutral.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.neutral.html' },
+  { src: 'diagram-interactive-radial/diagram-interactive-radial.facilities.html', dir: 'diagram-interactive-radial', out: 'diagram-interactive-radial.facilities.html' },
   // The output artifact is a document-register consumer: it loads the register's four root modules,
   // and the two profile modules an assessed comparison needs, by bare filename, as a consumer vendors
   // them beside its template, so they are declared in rootRefs rather than routed through
@@ -327,6 +329,7 @@ const HOST_SPECS = {
   'diagram-interactive-spine.html':          { stage: 'viewport', why: FIXED_APP },
   'diagram-interactive-radial.html':         { stage: 'viewport', why: FIXED_APP, note: 'Consciousness + free will, the captured research reference' },
   'diagram-interactive-radial.neutral.html': { stage: 'viewport', why: FIXED_APP, note: 'Vellmark parks, the synthetic composition' },
+  'diagram-interactive-radial.facilities.html': { stage: 'viewport', why: FIXED_APP, note: 'Vellmark parks // visitor facilities, the synthetic composition under Criterion Assessment' },
   'output-artifact.html':                    { stage: 'flow', why: 'a sealed-use document scaffold with its own root theme rules, main landmark and h1' },
   'message-archive-default-ASK.html':        { stage: 'viewport', why: 'a document whose sticky search bar and day headings scroll inside its own window' },
   'surface-shell.html':                      { stage: 'viewport', why: SHELL_SPECIMEN },

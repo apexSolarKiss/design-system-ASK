@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* radial-export.mjs — the export harness of the interactive radial pattern: the export module's
-   page and diagram plates, on the synthetic specimen.
+   page and diagram plates, on the synthetic specimen, and the page plate with its key on the
+   visitor-facilities composition, the specimen under Criterion Assessment (E23-E28).
 
      node tests/radial-export.mjs              run every check; exit 1 on any failure
      node tests/radial-export.mjs --out DIR    and keep the review PNGs and test-results.json in DIR
@@ -440,6 +441,84 @@ try {
   check('E16c', 'destroy leaves the host as it was (outerHTML equal) and no faces beyond the page\'s own', fin.html &&
     JSON.stringify(fin.faces) === JSON.stringify(own.faces) && fin.body === own.body && fin.shadowed === 0 && fin.buttons === 0,
     { html: fin.html, faces: fin.faces.length, ownFaces: own.faces.length, body: fin.body, ownBody: own.body });
+
+  /* ---------------------------------------- E23-E28 Criterion Assessment -- */
+  /* The visitor-facilities composition, the specimen under Criterion Assessment: a keyed instance,
+     exported with its key. The diagram plate and a page plate without its legend are refused at the
+     mount; the same sections mount on the specimen, so the refusal is the keyed system's. */
+  const WHYK = 'a Criterion Assessment instance';
+  const refusedK = await ev(`(() => { const out = {}, B = { diagram: { profiles: { page: true, diagram: true } }, diagramOnly: { profiles: { diagram: true } },
+      legendOff: { profiles: { page: { legend: false } } } };
+    for (const k of Object.keys(B)) { try { FX.mount(B[k], 'facilities'); out[k] = 'mounted'; } catch (e) { out[k] = [e.name, e.code, e.message, FX.host.outerHTML === FX.pristine]; } }
+    FX.map = null;
+    const spec = {}; for (const k of Object.keys(B)) { try { FX.mount(B[k]); spec[k] = 'mounted'; } catch (e) { spec[k] = e.code; } }
+    return { facilities: out, specimen: spec }; })()`);
+  const mk = (detail) => ['MountError', 'HOOK_MISSING', 'radial mount HOOK_MISSING: ' + detail, true];
+  const wantK = { diagram: mk(`export.profiles.diagram is refused: ${WHYK} exports the page plate with its key`),
+                  diagramOnly: mk(`export.profiles.diagram is refused: ${WHYK} exports the page plate with its key`),
+                  legendOff: mk(`export.profiles.page.legend cannot be off: ${WHYK} exports its key`) };
+  check('E23', 'Criterion Assessment: the diagram plate and a page plate with its legend off fail the mount (MountError HOOK_MISSING, saying why) and leave the host as it was; on the specimen the same sections mount',
+    JSON.stringify(refusedK.facilities) === JSON.stringify(wantK) && Object.values(refusedK.specimen).every((v) => v === 'mounted'), refusedK);
+  /* the key is part of reading the color: without the legend module, or without the role tokens, nothing is drawn */
+  const keyless = await ev(`(() => { if (FX.map) { FX.map.destroy(); FX.map = null; }
+    const S = window.RADIAL_FACILITIES, a = JSON.parse(JSON.stringify(S.adapter)), out = {};
+    a.export = Object.assign(FX.section(), { filenameBase: 'radial-facilities', profiles: { page: true } });
+    const attempt = (modules) => { try { window.DIAGRAM_RADIAL.mount({ host: FX.host, data: S.data, adapter: a, modules }).destroy(); return 'mounted'; }
+      catch (e) { return [e.name, e.code, e.message, FX.host.outerHTML === FX.pristine]; } };
+    out.noLegend = attempt(['chrome', 'export']);
+    const sheet = Array.from(document.styleSheets).find((s) => s.href && /criterion-assessment\\.css$/.test(s.href));
+    sheet.disabled = true; out.noSheet = attempt(['legend', 'chrome', 'export']); sheet.disabled = false;
+    out.restored = attempt(['legend', 'chrome', 'export']);
+    return out; })()`);
+  check('E24', 'Criterion Assessment: a plate without its key is impossible at the mount: no legend module (MountError KEY_REQUIRED), no Criterion Assessment stylesheet (MountError TOKENS), each before anything is drawn; with both it mounts',
+    JSON.stringify(keyless.noLegend) === JSON.stringify(['MountError', 'KEY_REQUIRED', `radial mount KEY_REQUIRED: ${WHYK} is drawn keyed only: list the legend module`, true]) &&
+    JSON.stringify(keyless.noSheet) === JSON.stringify(['MountError', 'TOKENS', 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load colors_and_type.css and the Criterion Assessment stylesheet', true]) &&
+    keyless.restored === 'mounted', keyless);
+  /* the page plate only: one control, and the diagram profile is no profile */
+  await ev(`(FX.mount({}, 'facilities'), true)`);
+  const kc = await ev(`Array.from(document.querySelectorAll('.radial-export-control')).map((b) => [b.type, b.textContent, b.parentNode.getAttribute('data-radial-slot')])`);
+  const kd = await run('diagram');
+  check('E25', 'Criterion Assessment: one control, "PNG page"; run("diagram") is refused as no such profile',
+    JSON.stringify(kc) === JSON.stringify([['button', 'PNG page', 'export']]) && kd.ok === false && kd.reason === 'no such profile', { controls: kc, diagram: kd });
+  /* the page plate: the three words, then the system's name (a plate heading, set in capitals as every
+     plate heading is) and each declaration's label then value; the base tokens and the three assessment
+     tokens only; no Spectral State token and no word for unassessed */
+  const SEMK = await ev('window.RADIAL_FACILITIES.data.semantic');
+  const DECLK = [['criterion', 'Criterion'], ['direction', 'Direction'], ['scope', 'Scope'], ['basis', 'Basis'], ['rule', 'Rule']];
+  const keyOrder = ['Favorable', 'Caution', 'Adverse', 'CRITERION ASSESSMENT', ...DECLK.flatMap(([f, l]) => [l, SEMK[f]])];
+  /* the first part of keyOrder the legend column lacks, in that order, or null */
+  const missingK = (s) => { const t = legendText(s); let at = 0; for (const w of keyOrder) { const i = t.indexOf(' ' + w + ' ', at); if (i < 0) return w; at = i + w.length + 1; } return null; };
+  const plateTokens = (s) => ((s.match(/\.radial-export-plate\{([^}]*)\}/) || [])[1] || '').split(';').map((x) => x.split(':')[0]);
+  const TOKK = ['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to', '--assessment-favorable', '--assessment-caution', '--assessment-adverse'];
+  const keyPlate = async (scheme) => {
+    await theme(scheme);
+    const r = await run('page');
+    const s = r.svg || '', d = r.png ? ihdr(save(r, r.filename)) : null;
+    return { ok: r.ok, reason: r.reason, filename: r.filename, theme: r.theme, png: d && `${d.width}x${d.height}`, missing: missingK(s),
+             heading: /class="radial-plate-heading"[^>]*>(?:<tspan>)?CRITERION ASSESSMENT</.test(s), tokens: plateTokens(s),
+             favorableToken: s.includes('--assessment-favorable:'), state: (s.match(/--state-/g) || []).length, unassessed: (s.match(/Unassessed/g) || []).length };
+  };
+  const kpL = await keyPlate('light'), kpD = await keyPlate('dark');
+  await theme(null);
+  const plateOk = (x, t) => x.ok && x.theme === t && x.filename === `radial-facilities-page-3840x2880-${t}.png` && x.png === '3840x2880' && x.missing === null && x.heading &&
+    JSON.stringify(x.tokens) === JSON.stringify(TOKK) && x.favorableToken && x.state === 0 && x.unassessed === 0;
+  check('E26', 'Criterion Assessment, the page plate, light: the three words, then the heading "Criterion Assessment" and each declaration\'s label and value in the legend column; the base and --assessment-* tokens only; no --state- and no "Unassessed" anywhere',
+    plateOk(kpL, 'light'), kpL);
+  check('E27', 'Criterion Assessment, the page plate, dark: the same key and declarations, the same tokens, no --state- and no "Unassessed"', plateOk(kpD, 'dark'), kpD);
+  /* planted at the click: the legend's model without its declarations fails the page plate as key missing;
+     restored, the plate is made again */
+  const keyGone = await ev(`(async () => { const m = FX.map.service('legend').model, kept = m.declarations; delete m.declarations; let gone, back;
+    try { await FX.exp.run('page'); gone = 'ran'; } catch (e) { gone = e.reason; } finally { m.declarations = kept; }
+    try { back = (await FX.exp.run('page')).ok; } catch (e) { back = e.reason; }
+    return { gone, back }; })()`);
+  check('E28a', 'negative control: the legend model without its declarations at the click fails the page plate as key missing; restored, it is made',
+    keyGone.gone === 'key missing' && keyGone.back === true, keyGone);
+  /* E26's reading of a plate, on the specimen's light page plate (E1): no key words, no heading, Spectral State tokens */
+  const ctlK = { missing: missingK(pageL.svg), heading: /class="radial-plate-heading"[^>]*>(?:<tspan>)?CRITERION ASSESSMENT</.test(pageL.svg),
+                 state: (pageL.svg.match(/--state-/g) || []).length, tokens: plateTokens(pageL.svg).filter((t) => /^--state-/.test(t)).length };
+  check('E28b', 'negative control: E26\'s reading fails on the specimen\'s page plate, for its reasons: no Favorable, no Criterion Assessment heading, --state- tokens',
+    ctlK.missing === 'Favorable' && !ctlK.heading && ctlK.state > 0 && ctlK.tokens > 0, ctlK);
+  await ev('(FX.mount(), true)');
 
   check('E17', 'no page error or console error during the run', p.errors.length === 0, p.errors.slice(0, 5));
 

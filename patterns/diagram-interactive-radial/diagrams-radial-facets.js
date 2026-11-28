@@ -187,11 +187,19 @@
     var countSlots = {}; Object.keys(counts).forEach(function (k) { countSlots[k] = num(counts[k]); });
 
     /* the facets: values per item or relation, options with their counts over the whole data */
+    /* under a keyed system a swatch facet is strict: its values are the system's roles, its labels
+       the owner words, and a role that asserts nothing (unassessed) is no option */
+    var strict = function (f) { return M.system.keyed && !!f.swatch; };
     var facets = cfg.declared.map(function (f, fi) {
+      if (strict(f) && f.label !== undefined) throw FacetsError('facets.declared[' + fi + ']: a swatch facet under ' + M.system.title + ' takes the owner words, not a label');
       var pop = f.family === 'items' ? items.map(function (n) { return M.byId.get(n.id); }) : M.relations;
       var of = new Map(), tally = new Map(), present = 0;
       pop.forEach(function (x) {
         var vs = values(f.value(x));
+        if (strict(f)) vs = vs.filter(function (v) {
+          if (M.system.roles.indexOf(v) < 0) throw FacetsError('facets.declared[' + fi + ']: ' + JSON.stringify(String(v)) + ' is not a ' + M.system.title + ' role');
+          return M.system.asserts(v);
+        });
         of.set(f.family === 'items' ? x.id : x.key, vs);
         if (vs.length) present++;
         vs.forEach(function (v) { tally.set(v, (tally.get(v) || 0) + 1); });
@@ -208,7 +216,7 @@
       var locked = values(f.locked);
       return { def: f, index: fi, of: of, present: present, total: pop.length,
                options: opts.map(function (v) {
-                 return { value: v, label: f.label ? String(f.label(v)) : v, count: tally.get(v), locked: locked.indexOf(v) >= 0 };
+                 return { value: v, label: strict(f) ? M.system.word(v) : f.label ? String(f.label(v)) : v, count: tally.get(v), locked: locked.indexOf(v) >= 0 };
                }),
                chosen: new Set() };
     });
@@ -288,7 +296,7 @@
         var cb = el('input'); cb.type = 'checkbox'; cb.id = id; cb.value = o.value; cb.disabled = o.locked;
         cb.setAttribute('data-radial-facet', f.def.id);
         lab.appendChild(cb);
-        if (f.def.swatch) { var sw = el('span', 'radial-facet-sw' + (o.value === 'neutral' ? ' radial-sw--wash' : '')); sw.style.setProperty('--st', 'var(--state-' + o.value + ')'); lab.appendChild(sw); }
+        if (f.def.swatch) { var sw = el('span', 'radial-facet-sw' + (M.system.asserts(o.value) ? '' : ' radial-sw--wash')); sw.style.setProperty('--st', M.system.paint(o.value)); lab.appendChild(sw); }
         lab.appendChild(el('span', 'radial-facet-lbl', o.label));
         lab.appendChild(el('span', 'radial-facet-n', num(o.count)));
         d.appendChild(lab);

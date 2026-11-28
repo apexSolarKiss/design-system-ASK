@@ -3,15 +3,19 @@
    design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
    byte-identical, never hand-edit in a consumer. Load after colors_and_type.css and
    spectral-state.css, with surface-panel.css then surface-treatments.css: the fill paint that
-   paints every state mark is theirs, so the core needs them as the modules' triggers do. It
+   paints every role mark is theirs, so the core needs them as the modules' triggers do. An
+   instance that declares Criterion Assessment also loads criterion-assessment.css after
+   spectral-state.css, for its role values. It
    owns the pattern's own metrics (label sizes, marks, chrome), so it
    stands outside the type-role checker's governed set by declared disposition, as the other
    diagram patterns do.
 
    ENCODING
-     color   state only: one --st custom property per mark, set to a --state-* role. A mark that
-             asserts a state is filled at 100% by FILL PAINT (surface-treatments.css, .surface-fill);
-             a mark that asserts none is structure and keeps this sheet's neutral wash
+     color   the instance's one declared system only: one --st custom property per mark, which
+             the engine sets from that system's role — a --state-* role under Spectral State, an
+             --assessment-* role under Criterion Assessment. A mark that asserts a role is filled
+             at 100% by FILL PAINT (surface-treatments.css, .surface-fill); a mark that asserts
+             none, an unassessed leaf included, is structure and keeps this sheet's neutral wash
      shape   a declared kind
      line    a relation's plane: drawn always (solid), drawn on selection (dashed)
      radius  containment depth; never importance
@@ -82,8 +86,8 @@ body.radial-page {
 .radial-arrow path { fill: var(--fg-1); }
 
 /* ---- marks ----
-   A state mark takes FILL PAINT through .surface-fill, which the engine sets; its chip is a hole,
-   the engine's mask. A mark with no asserted state keeps the neutral wash, steady through hover,
+   A role mark takes FILL PAINT through .surface-fill, which the engine sets; its chip is a hole,
+   the engine's mask. A mark with no asserted role keeps the neutral wash, steady through hover,
    relation and selection. Emphasis never steps a fill: one neutral frame outside the mark, which
    follows its shape, shows it — 1px on hover (a preview included), 1px at half strength on a
    related node (full when hovered), 2px on the locked selection, which keeps it when hovered. A
@@ -156,7 +160,7 @@ body.radial-page {
 .radial-legend-lbl { color: var(--fg-1); display: block; }
 .radial-legend-sub { color: var(--fg-2); font-size: 10px; display: block; line-height: 1.28; }
 .radial-legend-sw { width: 11px; height: 11px; border-radius: 3px; flex: none; margin-top: 3px; background: var(--st); }
-/* a swatch for no asserted state shows the marks' wash: the color at 15% inside its own line */
+/* a swatch for no asserted role shows the marks' wash: the color at 15% inside its own line */
 :is(.radial-legend-sw, .radial-chooser-sw, .radial-facet-sw, .radial-insp-dot).radial-sw--wash {
   position: relative; background: transparent; box-shadow: inset 0 0 0 1.5px var(--st); }
 :is(.radial-legend-sw, .radial-chooser-sw, .radial-facet-sw, .radial-insp-dot).radial-sw--wash::before {
@@ -364,7 +368,7 @@ body.radial-page {
 .radial-theme-glyph { font-size: 1.05em; line-height: 1; }
 
 /* ---- the export controls (diagrams-radial-export.js): compact actions (surface-action.css); a run
-   in progress and a failure are UI state, never a Spectral State color. The failure's words are on
+   in progress and a failure are UI state, never a semantic system's color. The failure's words are on
    the control itself for five seconds; its edge marks it too ---- */
 .radial-export-control[aria-busy="true"] { opacity: 0.6; cursor: progress; }
 .radial-export-control.is-failed { border-color: var(--fg-1); }

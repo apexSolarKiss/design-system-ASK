@@ -6,7 +6,8 @@
    file implements.
 
    It knows a containment hierarchy (a root, placed nodes, containers and leaves), undrawn
-   records, typed edges, planes, kinds and states. It knows nothing about any consumer.
+   records, typed edges, planes, kinds, and the one semantic system an instance declares: Spectral
+   State by default, or Criterion Assessment. It knows nothing about any consumer.
 
    IDENTITY. Identifiers are opaque strings in one namespace across the root, the placed
    nodes and the records. They are held in Maps, so any string is a valid identifier,
@@ -36,10 +37,23 @@
   function retired(role) { return typeof role === 'string' && has(RETIRED_STATE_ROLES, role); }
   var DRAWN = ['always', 'selection', 'never'];
   var LIMITS = { depth: 6, placed: 2500 };
+  /* The semantic systems an instance may declare, one each. Spectral State is the default and
+     reads its roles from the data's own states; Criterion Assessment takes its owner's three words
+     and the five declarations the peer example declares (its owner's four record fields and the
+     rule that assigns them; criterion-assessment.md), and every leaf declares
+     its assessment. No other name is admitted, and nothing falls back from one system to another.
+     SYSTEMS, ASSESSMENT_ROLES and DECLARATIONS, which R.contract exposes, are frozen: no host script
+     can add a system, a role or a declaration to them. */
+  var SYSTEMS = Object.freeze(['spectral-state', 'criterion-assessment']);
+  var ASSESSMENT_ROLES = Object.freeze(['favorable', 'caution', 'adverse', 'unassessed']);
+  var ASSESSED = ['favorable', 'caution', 'adverse'];
+  var ASSESSMENT_WORDS = { favorable: 'Favorable', caution: 'Caution', adverse: 'Adverse' };
+  var DECLARATIONS = Object.freeze(['criterion', 'direction', 'scope', 'basis', 'rule']);
+  var DECLARATION_LABELS = { criterion: 'Criterion', direction: 'Direction', scope: 'Scope', basis: 'Basis', rule: 'Rule' };
 
   /* every key set is closed; `data` is the one opaque value */
   var KEYS = {
-    top: ['root', 'nodes', 'records', 'planes', 'states', 'kinds', 'edges', 'options'],
+    top: ['root', 'nodes', 'records', 'planes', 'states', 'kinds', 'edges', 'options', 'semantic'],
     root: ['id', 'label'],
     node: ['id', 'label', 'parent', 'container', 'kind', 'state', 'data'],
     record: ['id', 'label', 'kind', 'state', 'data'],
@@ -47,7 +61,14 @@
     state: ['role', 'label', 'meaning'],
     kind: ['id', 'label', 'shape'],
     edge: ['id', 'from', 'to', 'plane', 'type', 'note'],
-    options: ['emptyContainers']
+    options: ['emptyContainers'],
+    /* the semantic declaration, and the key sets a Criterion Assessment instance takes in place of
+       Spectral State's: no states, and an assessment where a state was */
+    semanticSpectral: ['system'],
+    semanticCriterion: ['system', 'criterion', 'direction', 'scope', 'basis', 'rule'],
+    topCriterion: ['root', 'nodes', 'records', 'planes', 'kinds', 'edges', 'options', 'semantic'],
+    nodeCriterion: ['id', 'label', 'parent', 'container', 'kind', 'assessment', 'data'],
+    recordCriterion: ['id', 'label', 'kind', 'assessment', 'data']
   };
 
   function ContractError(code, detail) {
@@ -107,9 +128,30 @@
     return d[k];
   }
 
+  /* The semantic declaration: absent, or { system } for Spectral State, which is the same; or
+     Criterion Assessment's system and its five non-empty declarations. */
+  function semantic(d) {
+    if (absent(d, 'semantic')) return { name: 'spectral-state', criterion: false, decl: null };
+    var s = d.semantic;
+    need(plain(s), 'SEMANTIC_SYSTEM', 'semantic must be a plain object when present, got ' + show(s));
+    need(has(s, 'system') && typeof s.system === 'string' && SYSTEMS.indexOf(s.system) >= 0, 'SEMANTIC_SYSTEM',
+         'semantic.system must be one of ' + SYSTEMS.join(', ') + ', got ' + show(s.system));
+    var crit = s.system === 'criterion-assessment';
+    closed(s, crit ? 'semanticCriterion' : 'semanticSpectral', 'semantic');
+    if (!crit) return { name: 'spectral-state', criterion: false, decl: null };
+    var decl = {};
+    DECLARATIONS.forEach(function (k) {
+      need(text(s[k]), 'SEMANTIC_DECLARATION', 'semantic.' + k + ' must be a non-empty string, got ' + show(s[k]));
+      decl[k] = s[k];
+    });
+    return { name: 'criterion-assessment', criterion: true, decl: decl };
+  }
+
   /* Validation. Structural errors throw; unresolved and unsupported references are returned. */
   function validate(d) {
-    closed(d, 'top', 'contract');
+    need(plain(d), 'NOT_AN_OBJECT', 'contract must be a plain object, got ' + show(d));
+    var sem = semantic(d);
+    closed(d, sem.criterion ? 'topCriterion' : 'top', 'contract');
     var nodes = list(d, 'nodes'), records = list(d, 'records'), planesIn = list(d, 'planes'),
         statesIn = list(d, 'states'), kindsIn = list(d, 'kinds'), edges = list(d, 'edges');
     closed(d.root, 'root', 'root');
@@ -153,14 +195,14 @@
 
     var ids = new Map([[d.root.id, 'root']]);     // one namespace: the root, placed nodes, records
     nodes.forEach(function (n, i) {
-      closed(n, 'node', 'nodes[' + i + ']');
+      closed(n, sem.criterion ? 'nodeCriterion' : 'node', 'nodes[' + i + ']');
       need(text(n.id), 'NODE', 'nodes[' + i + '].id must be a non-empty string, got ' + show(n.id));
       req(n, 'label', 'NODE', 'node ' + show(n.id));
       need(!ids.has(n.id), 'DUPLICATE_ID', show(n.id));
       ids.set(n.id, 'node');
     });
     records.forEach(function (r, i) {
-      closed(r, 'record', 'records[' + i + ']');
+      closed(r, sem.criterion ? 'recordCriterion' : 'record', 'records[' + i + ']');
       need(text(r.id), 'RECORD', 'records[' + i + '].id must be a non-empty string, got ' + show(r.id));
       req(r, 'label', 'RECORD', 'record ' + show(r.id));
       need(!ids.has(r.id), 'DUPLICATE_ID', show(r.id));
@@ -188,6 +230,22 @@
     nodes.forEach(function (n) {
       need(!(n.container === false && children.get(n.id).length), 'CONTAINER_CONFLICT', show(n.id) + ' declares container: false and has children');
     });
+    /* Criterion Assessment: every leaf declares its assessment, unassessed included; a container
+       and an undrawn record take none, and nothing is inferred or aggregated */
+    if (sem.criterion) {
+      nodes.forEach(function (n) {
+        if (n.container === true || children.get(n.id).length > 0) {
+          need(absent(n, 'assessment'), 'ASSIGNMENT_SCOPE', show(n.id) + ' is a container: only a leaf takes an assessment');
+          return;
+        }
+        need(!absent(n, 'assessment'), 'NODE_ASSIGNMENT', show(n.id) + ': every leaf declares its assessment, one of ' + ASSESSMENT_ROLES.join(', '));
+        need(typeof n.assessment === 'string' && ASSESSMENT_ROLES.indexOf(n.assessment) >= 0, 'NODE_ASSIGNMENT',
+             show(n.id) + ': assessment ' + show(n.assessment) + ' is not one of ' + ASSESSMENT_ROLES.join(', '));
+      });
+      records.forEach(function (r) {
+        need(absent(r, 'assessment'), 'ASSIGNMENT_SCOPE', show(r.id) + ' is an undrawn record: only a leaf takes an assessment');
+      });
+    }
 
     /* depth, cycles and capacity: walk from the root; a node never reached sits on a cycle */
     var depth = new Map([[d.root.id, 0]]), stack = [d.root.id];
@@ -230,8 +288,62 @@
       if (e.from === e.to) { ref.reason = 'self-loop'; ref.ends = [e.from]; unsupported.push(ref); }
     });
     return { ids: ids, children: children, depth: depth, planes: planes, states: states, kinds: kinds,
-             emptyContainers: emptyContainers, unresolved: unresolved, unsupported: unsupported };
+             emptyContainers: emptyContainers, unresolved: unresolved, unsupported: unsupported, semantic: sem };
   }
+  /* The semantic system: the one resolver every module reads a role's paint, word, key rows and
+     export tokens through, so no module builds a token name of its own. Spectral State resolves
+     to exactly the strings the modules wrote before the resolver existed: a role's paint is
+     `var(--state-<role>)`, and the framing root, a node with no state and `neutral` paint
+     `var(--state-neutral)`, the wash. Criterion Assessment paints an assessed leaf
+     `var(--assessment-<role>)`, never a `--state-*` token, and everything that asserts none — an
+     unassessed leaf, a container, the root — the structural wash from `var(--fg-1)`: no word, no
+     key row, no fourth color. Its instance is keyed: the key and the five declarations are part
+     of reading its color. */
+  function spectralSystem(states) {
+    var rows = [], tokens = ['--state-neutral'];
+    states.forEach(function (s, role) {
+      rows.push({ role: s.role, label: s.label, meaning: s.meaning });
+      if (tokens.indexOf('--state-' + role) < 0) tokens.push('--state-' + role);
+    });
+    return Object.freeze({
+      name: 'spectral-state',
+      title: 'Spectral State',
+      roles: Object.freeze(Array.from(states.keys())),
+      keyed: false,
+      declarations: null,
+      none: 'neutral',
+      rows: Object.freeze(rows),
+      tokenNames: Object.freeze(tokens),
+      roleOf: function (x) { return x.state === undefined ? 'neutral' : x.state; },
+      asserts: function (role) { return !!role && role !== 'neutral'; },
+      paint: function (role) { return 'var(--state-' + (role || 'neutral') + ')'; },
+      word: function (role) { var s = states.get(role); return s ? s.label : null; },
+      stateOf: function (x) { return x && x.state !== undefined ? states.get(x.state) || null : null; }
+    });
+  }
+  function criterionSystem(decl) {
+    function asserts(role) { return ASSESSED.indexOf(role) >= 0; }
+    var byRole = {};
+    ASSESSED.forEach(function (r) { byRole[r] = Object.freeze({ role: r, label: ASSESSMENT_WORDS[r], meaning: decl.criterion }); });
+    return Object.freeze({
+      name: 'criterion-assessment',
+      title: 'Criterion Assessment',
+      roles: Object.freeze(ASSESSMENT_ROLES.slice()),
+      keyed: true,
+      declarations: Object.freeze(DECLARATIONS.map(function (k) {
+        return Object.freeze({ field: k, label: DECLARATION_LABELS[k], value: decl[k] });
+      })),
+      none: 'unassessed',
+      rows: Object.freeze(ASSESSED.map(function (r) { return Object.freeze({ role: r, label: ASSESSMENT_WORDS[r], meaning: null }); })),
+      tokenNames: Object.freeze(ASSESSED.map(function (r) { return '--assessment-' + r; })),
+      roleOf: function (x) { return x.assessment === undefined ? 'unassessed' : x.assessment; },
+      asserts: asserts,
+      paint: function (role) { return asserts(role) ? 'var(--assessment-' + role + ')' : 'var(--fg-1)'; },
+      word: function (role) { return asserts(role) ? ASSESSMENT_WORDS[role] : null; },
+      stateOf: function (x) { return x && asserts(x.assessment) ? byRole[x.assessment] : null; }
+    });
+  }
+
   /* an edge's own reference information, kept whole in every diagnostic */
   function reference(e, i) {
     var r = { index: i, from: e.from, to: e.to, plane: e.plane };
@@ -303,11 +415,13 @@
       relations: relations, links: links, recordLinks: recordLinks,
       unresolved: v.unresolved, unsupported: v.unsupported, hiddenRefs: hiddenRefs,
       kinds: v.kinds, planes: v.planes, states: v.states, emptyContainers: v.emptyContainers,
-      kindOf: function (id) { return v.ids.get(id); }
+      kindOf: function (id) { return v.ids.get(id); },
+      system: v.semantic.criterion ? criterionSystem(v.semantic.decl) : spectralSystem(v.states)
     };
   }
 
   var R = root.DIAGRAM_RADIAL = root.DIAGRAM_RADIAL || {};
   R.contract = { SHAPES: SHAPES, STATE_ROLES: STATE_ROLES, DRAWN: DRAWN, LIMITS: LIMITS, KEYS: KEYS,
+                 SYSTEMS: SYSTEMS, ASSESSMENT_ROLES: ASSESSMENT_ROLES, DECLARATIONS: DECLARATIONS,
                  ContractError: ContractError, validate: validate, assemble: assemble, plain: plain };
 })(typeof window !== 'undefined' ? window : globalThis);

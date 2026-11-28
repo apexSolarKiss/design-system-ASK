@@ -7,11 +7,13 @@
 <!-- The full-stack fixture of the interactive radial pattern: every owner module (inspector,
      facets, legend, chrome, export, theme) on the synthetic composition, in two hosts. Served from
      the repository root by tests/radial-stack.mjs. It loads no reference content unless a check
-     asks for it (FX.reference()), so a neutral run can be shown to load none. -->
+     asks for it (FX.reference()), so a neutral run can be shown to load none. Criterion
+     Assessment's stylesheet follows Spectral State's, for the visitor-facilities composition. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../spectral-state.css">
 <link rel="stylesheet" href="../surface-panel.css">
 <link rel="stylesheet" href="../surface-treatments.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
 <link rel="stylesheet" href="../surface-action.css">
 <link rel="stylesheet" href="../surface-text-link.css">
 <link rel="stylesheet" href="../surface-input.css">
@@ -96,12 +98,13 @@ import * as G from '../tools/gen-radial-specimen.mjs';
 const D = G.parks();
 const DATA = {
   specimen: () => G.specimen(D), base: () => G.base(D), shallow: () => G.shallow(D), ragged: () => G.ragged(D, 'show'),
-  deeper: () => G.deeper(D), flat: () => G.flat(D)
+  deeper: () => G.deeper(D), flat: () => G.flat(D), facilities: () => G.facilities(D)
 };
 const ALL = ['inspector', 'facets', 'legend', 'chrome', 'export', 'theme'];
-/* the full-stack adapter for any shape: the specimen's words, then the neutral sections */
+/* the full-stack adapter for any shape: the specimen's words (the visitor-facilities composition's
+   under Criterion Assessment), then the neutral sections */
 function adapterFor(data, o) {
-  const base = JSON.parse(JSON.stringify(G.ADAPTER));
+  const base = JSON.parse(JSON.stringify(data.semantic ? G.FACILITIES_ADAPTER : G.ADAPTER));
   delete base.arrival;
   const a = window.RADIAL_NEUTRAL.adapterFor(data, base);
   if (o.theme !== undefined) a.theme = o.theme;

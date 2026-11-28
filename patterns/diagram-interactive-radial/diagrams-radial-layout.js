@@ -96,7 +96,7 @@
                   x: x, y: y, r: markR(d, isC), ang: ang,
                   label: isC ? n.label : (S.itemMax ? cut(n.label, S.itemMax) : n.label),
                   kindId: n.kind === undefined ? null : n.kind,
-                  state: n.state === undefined ? 'neutral' : n.state };
+                  state: A.system.roleOf(n) };
       if (isC) rec.count = A.leafCount.get(n.id);
       nodes.push(rec);
       spines.push({ d: 'M' + parent.x + ' ' + parent.y + ' L' + x + ' ' + y, id: n.id, depth: d });

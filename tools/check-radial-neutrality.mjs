@@ -59,6 +59,8 @@ const EXCLUDED = [
   P + 'diagram-interactive-radial.html',        // the reference shell: example content
   P + 'diagram-interactive-radial.neutral.html',        // the synthetic composition's shell: example content
   P + 'diagram-interactive-radial.neutral.adapter.js',  // the synthetic composition's full-stack adapter: example content
+  P + 'diagram-interactive-radial.facilities.html',     // the visitor-facilities composition's shell: example content
+  P + 'diagram-interactive-radial.facilities.source.js', // its data and adapter, generated: example content
   P + 'README.md',                              // the contract's prose, which names its example
   P + 'diagrams-fit.js',                        // the shared Fit helper, byte-identical to its owner copy
   P + 'diagrams-pointer.js',                    // a generated mirror of the scanned canonical
@@ -117,6 +119,10 @@ cut cx cy fff mask points rx ry userspaceonuse wash
 context linked linkplanes undeclared
 retired owned elsewhere provenance migrate what it meant
 attention query
+semantic semanticspectral semanticcriterion topcriterion nodecriterion recordcriterion decl declaration keyed under
+criterion assessment favorable caution adverse unassessed direction scope basis assignment
+cannot does exports refused resolve stylesheet words colors css
+inert popover open wrapper
 `.split(/\s+/).filter(Boolean));
 
 const USAGE = `usage: check-radial-neutrality.mjs [--deny FILE] | --self-test`;
