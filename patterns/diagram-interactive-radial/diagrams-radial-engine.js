@@ -153,7 +153,7 @@
       if (listed.indexOf('legend') < 0) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: list the legend module');
       var tcs = root.getComputedStyle(host);
       SYS.tokenNames.concat(['--fg-1']).forEach(function (t) {
-        if (!tcs.getPropertyValue(t).trim()) throw MountError('TOKENS', t + ' does not resolve in the host; load the ' + SYS.title + ' stylesheet');
+        if (!tcs.getPropertyValue(t).trim()) throw MountError('TOKENS', t + ' does not resolve in the host; load colors_and_type.css and the ' + SYS.title + ' stylesheet');
       });
     }
     var L = R.layout.layout(model, adapter.layout);             /* throws: radial layout <CODE> */

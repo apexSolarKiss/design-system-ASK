@@ -472,7 +472,7 @@ try {
     return out; })()`);
   check('E24', 'Criterion Assessment: a plate without its key is impossible at the mount: no legend module (MountError KEY_REQUIRED), no Criterion Assessment stylesheet (MountError TOKENS), each before anything is drawn; with both it mounts',
     JSON.stringify(keyless.noLegend) === JSON.stringify(['MountError', 'KEY_REQUIRED', `radial mount KEY_REQUIRED: ${WHYK} is drawn keyed only: list the legend module`, true]) &&
-    JSON.stringify(keyless.noSheet) === JSON.stringify(['MountError', 'TOKENS', 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load the Criterion Assessment stylesheet', true]) &&
+    JSON.stringify(keyless.noSheet) === JSON.stringify(['MountError', 'TOKENS', 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load colors_and_type.css and the Criterion Assessment stylesheet', true]) &&
     keyless.restored === 'mounted', keyless);
   /* the page plate only: one control, and the diagram profile is no profile */
   await ev(`(FX.mount({}, 'facilities'), true)`);

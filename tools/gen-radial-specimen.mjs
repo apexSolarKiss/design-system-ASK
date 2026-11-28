@@ -323,7 +323,7 @@ export function facilities(D = parks()) {
 export const FACILITIES_ADAPTER = Object.assign(JSON.parse(JSON.stringify(ADAPTER)), {
   legend: {
     headings: { state: 'color = visitor facilities', line: 'line = link kind', shape: 'shape = surface' },
-    bound: 'Distance from the center is depth and wedge width is size; position and adjacency encode nothing. Color is the declared criterion only: an unassessed place keeps the neutral wash.'
+    bound: 'Distance from the center is depth and wedge width is size; position and adjacency encode nothing. Color is the declared criterion only: an unassessed place keeps the structural wash, and no assessment is drawn.'
   }
 });
 

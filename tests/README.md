@@ -1695,7 +1695,7 @@ A  Criterion Assessment on the visitor-facilities composition, on its own page: 
    words on their own --assessment- tokens, then the system's name and its five declarations); the
    default announcements carrying the owner word, and the start message the criterion; the
    chooser's words by a real click; the facet's three options with their counts and no unassessed
-   option; the inspector's word, criterion line and tint, and none for an unassessed leaf, a
+   option; the inspector's word, criterion line and the slot's `--st`, and none for an unassessed leaf, a
    container, the root or a record; KEY_REQUIRED, TOKENS, the strict swatch facet and the muted-only
    tone, each refused with its message and the host untouched; the export's one control, its page
    plate, key and refusals; no uncaught error. X65 to X70 plant the Criterion paint read from a

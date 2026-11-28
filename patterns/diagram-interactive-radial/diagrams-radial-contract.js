@@ -39,7 +39,8 @@
   var LIMITS = { depth: 6, placed: 2500 };
   /* The semantic systems an instance may declare, one each. Spectral State is the default and
      reads its roles from the data's own states; Criterion Assessment takes its owner's three words
-     and the five declarations its owner names (criterion-assessment.md), and every leaf declares
+     and the five declarations the peer example declares (its owner's four record fields and the
+     rule that assigns them; criterion-assessment.md), and every leaf declares
      its assessment. No other name is admitted, and nothing falls back from one system to another. */
   var SYSTEMS = ['spectral-state', 'criterion-assessment'];
   var ASSESSMENT_ROLES = ['favorable', 'caution', 'adverse', 'unassessed'];

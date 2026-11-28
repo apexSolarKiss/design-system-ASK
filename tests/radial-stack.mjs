@@ -1099,7 +1099,7 @@ window.C = (function () {
     const resolved = getComputedStyle(FX.host('D')).getPropertyValue('--assessment-favorable'); let r;
     try { r = refused({}); } finally { sheet.remove(); }
     const control = refused({}).code;
-    return { ok: resolved.trim() === '' && r.code === 'TOKENS' && r.msg === 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load the Criterion Assessment stylesheet' &&
+    return { ok: resolved.trim() === '' && r.code === 'TOKENS' && r.msg === 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load colors_and_type.css and the Criterion Assessment stylesheet' &&
                  r.same && control === 'mounted', d: { resolved, r, control } }; };
   /* a swatch facet under Criterion Assessment takes the owner words: an adapter's label, or a value no role names, is refused */
   C.critFacetErrors = async () => { const a = FX.adapterFor('facilities'); a.facets.declared[0].label = (v) => v;

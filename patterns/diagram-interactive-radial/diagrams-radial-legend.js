@@ -1,5 +1,6 @@
 /* diagrams-radial-legend.js — the legend module of the interactive radial pattern: a legend
-   model built from the declared states, planes and kinds, and a live legend rendered into the
+   model built from the declared system's key rows (Spectral State's declared states, or Criterion
+   Assessment's owner words, name and declarations), planes and kinds, and a live legend rendered into the
    host's [data-radial-slot="legend"].
 
    design-system-ASK surface pattern `diagram-interactive-radial`. DS-owned: re-vendor
@@ -8,8 +9,9 @@
 
    The owner draws the legend's grammar (a state swatch, a plane's line style, a kind's shape)
    and escapes every string; the adapter supplies every word: the three headings, and an
-   optional bound line stating what the geometry does not encode. State labels and meanings,
-   plane labels and kind labels come from the data's own declarations. Optionally the adapter
+   optional bound line stating what the geometry does not encode. Spectral State's labels and
+   meanings, plane labels and kind labels come from the data's own declarations; Criterion
+   Assessment's words and declaration labels are its owner's, and its declared values the data's. Optionally the adapter
    adds a note under a plane or a kind (notes.planes, notes.kinds, by id), and may replace the
    per-kind rows with one line of text (shapes) where its kinds are better read as a sentence. */
 (function (root) {
