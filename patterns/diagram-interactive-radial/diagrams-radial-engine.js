@@ -1094,7 +1094,7 @@
       if (!focusId || !visible(focusId)) focusId = locked || model.root.id;
       raise(); drawFocus();
       announce(fill(announceT.start, { label: byId.get(focusId).label }) + ' ' + position(focusId) + word(focusId) +
-               (SYS.keyed ? ' Color is ' + SYS.title + ': ' + SYS.declarations[0].value + '.' : ''));
+               (SYS.keyed ? '. Color is ' + SYS.title + ': ' + SYS.declarations[0].value + '.' : ''));
     });
     on(stage, 'blur', function () { drawFocus(); });
     on(stage, 'keydown', function (ev) {

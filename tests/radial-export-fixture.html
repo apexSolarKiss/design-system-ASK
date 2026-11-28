@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>radial export fixture</title>
 <!-- The export fixture of the interactive radial pattern. Served from the repository root by
-     tests/radial-export.mjs, which drives it in headless Chrome. The specimen data and adapter,
-     the owner files in their load order, the font carrier, and the export module after the chrome
-     module; the page reaches the export through the instance's service('export'). -->
+     tests/radial-export.mjs, which drives it in headless Chrome. The specimen data and adapter, and
+     the visitor-facilities data and adapter (the specimen under Criterion Assessment), the owner
+     files in their load order, the font carrier, and the export module after the chrome module; the
+     page reaches the export through the instance's service('export'). criterion-assessment.css
+     follows spectral-state.css, for the Criterion Assessment role values. -->
 <link rel="stylesheet" href="../colors_and_type.css">
 <link rel="stylesheet" href="../spectral-state.css">
+<link rel="stylesheet" href="../criterion-assessment.css">
 <link rel="stylesheet" href="../surface-panel.css">
 <link rel="stylesheet" href="../surface-treatments.css">
 <link rel="stylesheet" href="../patterns/diagram-interactive-radial/diagrams-radial.css">
@@ -55,6 +58,7 @@
 </div>
 
 <script src="../patterns/diagram-interactive-radial/diagram-interactive-radial.source.js"></script>
+<script src="../patterns/diagram-interactive-radial/diagram-interactive-radial.facilities.source.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-contract.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-layout.js"></script>
 <script src="../patterns/diagram-interactive-radial/diagrams-radial-labels.js"></script>
@@ -89,16 +93,19 @@
     };
   };
   /* mount the specimen with ['legend', 'chrome', 'export']; `over` replaces export keys (undefined
-     deletes one) */
-  FX.mount = function (over) {
+     deletes one). `source` 'facilities' mounts the visitor-facilities composition instead, whose
+     section offers the page plate only, under its own filename */
+  FX.mount = function (over, source) {
     if (FX.map) { FX.map.destroy(); FX.map = null; }
-    var adapter = JSON.parse(JSON.stringify(window.RADIAL_SPECIMEN.adapter)), ex = FX.section();
+    var S = source === 'facilities' ? window.RADIAL_FACILITIES : window.RADIAL_SPECIMEN;
+    var adapter = JSON.parse(JSON.stringify(S.adapter)), ex = FX.section();
+    if (source === 'facilities') { ex.filenameBase = 'radial-facilities'; ex.profiles = { page: true }; }
     Object.keys(over || {}).forEach(function (k) { if (over[k] === undefined) delete ex[k]; else ex[k] = over[k]; });
     adapter.export = ex;
     /* legend notes and a one-line shapes text, when a check asks for them */
     if (FX.notes) { adapter.legend.notes = { planes: FX.notes.plane, kinds: FX.notes.kind }; adapter.legend.shapes = FX.notes.shapes; }
     FX.exp = null;
-    FX.map = R.mount({ host: host, data: window.RADIAL_SPECIMEN.data, adapter: adapter, modules: ['legend', 'chrome', 'export'] });
+    FX.map = R.mount({ host: host, data: S.data, adapter: adapter, modules: ['legend', 'chrome', 'export'] });
     FX.exp = FX.map.service('export');
     FX.events = [];
     ['export', 'fit', 'select', 'focus', 'preview', 'arrangement'].forEach(function (t) {

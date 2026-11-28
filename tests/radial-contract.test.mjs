@@ -19,8 +19,14 @@
       crowding, the Fit's population over a sweep of small canvases, template slots
    I  opaque identifiers through the label layer: the clearance bookkeeping and the short-canvas
       population rule decide the same whatever the identifiers are
+   M  the semantic system's resolver: Spectral State's strings for every role, an explicit
+      spectral-state declaration identical to none, and Criterion Assessment's values on the
+      visitor-facilities composition
+   C  the Criterion Assessment contract: every refusal with its code and its exact message, the
+      visitor-facilities composition accepted with its counts, its geometry the specimen's
    X  negative controls: each check fails for its intended reason, including X6, mutated copies of
-      the labels module with the old bookkeeping put back */
+      the labels module with the old bookkeeping put back, and X7, mutated copies of the contract
+      module with one plausible regression of the semantic system each */
 import vm from 'node:vm';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,11 +36,13 @@ import { compare, TOLERANCE } from './radial-geometry.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = path.join(ROOT, 'patterns/diagram-interactive-radial');
-/* labelsSource, when given, replaces the labels module's text: the X6 controls load mutated copies */
-function load(labelsSource) {
+/* labelsSource, when given, replaces the labels module's text, and contractSource the contract
+   module's: the X6 and X7 controls load mutated copies */
+function load(labelsSource, contractSource) {
   const ctx = {}; ctx.window = ctx; vm.createContext(ctx);
+  const given = { 'diagrams-radial-contract.js': contractSource, 'diagrams-radial-labels.js': labelsSource };
   for (const f of ['diagrams-radial-contract.js', 'diagrams-radial-layout.js', 'diagrams-radial-labels.js'])
-    vm.runInContext(f.endsWith('labels.js') && labelsSource ? labelsSource : fs.readFileSync(path.join(DIR, f), 'utf8'), ctx, { filename: f });
+    vm.runInContext(given[f] || fs.readFileSync(path.join(DIR, f), 'utf8'), ctx, { filename: f });
   return ctx.DIAGRAM_RADIAL;
 }
 const R = load();
@@ -483,6 +491,210 @@ function identity(RL) {
   check('I6 directed relationships whose identifiers hold \'>\' stay distinct', real.I6.ok, real.I6.detail);
 }
 
+/* ------------------------------------------------------------------ M -- */
+/* model.system, the one resolver every module reads a role's paint, word, key rows and export tokens
+   through. resolver(RC) and criterion(RC), below, run their checks against one contract module and
+   return them, each under its own key; the real module must pass all of them, and each X7 mutation, a
+   copy of the contract module with one plausible regression, must fail the check written for it. The
+   expected values are written here, never read from the owner. */
+/* a value as comparable data: a Map or a Set by its entries in order, an object by its keys in order,
+   a function as a marker (its outputs are compared where it matters), a cycle as a marker. The owner
+   modules run in their own context, so a Map is known by its tag, never by instanceof */
+function canon(v, seen = []) {
+  if (typeof v === 'function') return ['function'];
+  if (typeof v === 'number' && !Number.isFinite(v)) return ['number', String(v)];
+  if (v === undefined) return ['undefined'];
+  if (v === null || typeof v !== 'object') return v;
+  if (seen.includes(v)) return ['cycle'];
+  const s = seen.concat([v]);
+  const tag = Object.prototype.toString.call(v);
+  if (tag === '[object Map]') return ['Map', [...v.entries()].map(([k, x]) => [canon(k, s), canon(x, s)])];
+  if (tag === '[object Set]') return ['Set', [...v.values()].map((x) => canon(x, s))];
+  if (Array.isArray(v)) return ['Array', v.map((x) => canon(x, s))];
+  return ['Object', Object.keys(v).map((k) => [k, canon(v[k], s)])];
+}
+const same = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
+const call = (f, x) => { try { return f(x); } catch (e) { return 'throws ' + e.message; } };
+const SEVEN = ['earned', 'partial', 'held', 'deflated', 'structural', 'proposed', 'neutral'];
+const WORDS = { favorable: 'Favorable', caution: 'Caution', adverse: 'Adverse' };
+const ASSESSED = ['favorable', 'caution', 'adverse'];
+const DECLARED = [['criterion', 'Criterion'], ['direction', 'Direction'], ['scope', 'Scope'], ['basis', 'Basis'], ['rule', 'Rule']];
+/* every probe a role function is asked about: the seven Spectral roles, the four assessment roles, and
+   the values that name no role */
+const PROBES = [...SEVEN, ...ASSESSED, 'unassessed', null, undefined, '', 'Favorable', 'external'];
+/* the contracts these groups read, taken once, before X4 changes a shape in the generator's shared
+   tables, so the X7 runs read the same content as the real one */
+const FIX = { specimen: clone(G.specimen(D)), ragged: clone(G.ragged(D, 'show')), raggedHidden: clone(G.ragged(D, 'hide')), facilities: clone(G.facilities(D)) };
+/* the resolver's data and its answers to every probe and every node: two systems equal under this
+   resolve everything alike */
+const systemSig = (S, nodes) => canon({
+  data: ['name', 'title', 'roles', 'keyed', 'declarations', 'none', 'rows', 'tokenNames'].map((k) => S[k]),
+  paint: PROBES.map((r) => call(S.paint, r)), word: PROBES.map((r) => call(S.word, r)), asserts: PROBES.map((r) => call(S.asserts, r)),
+  roleOf: nodes.map((n) => call(S.roleOf, n)), stateOf: nodes.map((n) => call(S.stateOf, n)), none: call(S.stateOf, null) });
+function resolver(RC, P = FIX) {
+  const out = [], add = (key, name, ok, detail) => out.push({ key, name, ok: !!ok, detail });
+  const asm = (d) => { try { return RC.contract.assemble(d); } catch (e) { return { error: e.message }; } };
+  /* M1: Spectral State, on the specimen */
+  const spec = P.specimen, A = asm(spec), S = A.system || {};
+  const declared = spec.states.map((s) => s.role);
+  const paints = SEVEN.map((r) => [r, call(S.paint, r)]).filter(([r, v]) => v !== 'var(--state-' + r + ')');
+  const wash = [null, undefined, 'neutral'].map((r) => call(S.paint, r));
+  add('M1.paint', 'M1 Spectral State paints each of its seven roles var(--state-<role>), and null, an absent role and neutral var(--state-neutral)',
+    !A.error && paints.length === 0 && wash.every((v) => v === 'var(--state-neutral)'),
+    A.error || (paints.length ? 'off: ' + JSON.stringify(paints) : SEVEN.join(' · ') + ' · ' + JSON.stringify(wash)));
+  const tokens = ['--state-neutral', ...declared.map((r) => '--state-' + r)];
+  const N = asm(tiny({ states: [{ role: 'earned', label: 'e', meaning: 'e' }, { role: 'neutral', label: 'n', meaning: 'n' }] }));
+  add('M1.tokens', 'M1 Spectral State\'s tokenNames are --state-neutral, then each declared role in its order, neutral never twice',
+    !A.error && JSON.stringify(S.tokenNames) === JSON.stringify(tokens) && N.system && JSON.stringify(N.system.tokenNames) === '["--state-neutral","--state-earned"]',
+    JSON.stringify(S.tokenNames));
+  const byRole = new Map(spec.states.map((s) => [s.role, s]));
+  const placed = spec.nodes.find((n) => n.state !== undefined);
+  const rest = !A.error && S.name === 'spectral-state' && S.title === 'Spectral State' && S.keyed === false && S.declarations === null && S.none === 'neutral' &&
+    JSON.stringify(S.roles) === JSON.stringify(declared) &&
+    same(S.rows, spec.states.map((s) => ({ role: s.role, label: s.label, meaning: s.meaning }))) &&
+    declared.every((r) => call(S.word, r) === byRole.get(r).label && call(S.asserts, r) === true) &&
+    [null, undefined, '', 'neutral'].every((r) => call(S.asserts, r) === false) && call(S.word, 'structural') === null &&
+    call(S.roleOf, { id: 'x' }) === 'neutral' && call(S.roleOf, placed) === placed.state &&
+    call(S.stateOf, placed) === A.states.get(placed.state) && call(S.stateOf, { id: 'x' }) === null && call(S.stateOf, null) === null;
+  add('M1.rest', 'M1 Spectral State\'s resolver otherwise: unkeyed, no declarations, its declared roles, rows, words and states, neutral asserting nothing', rest,
+    `roles ${JSON.stringify(S.roles)} · none ${S.none} · keyed ${S.keyed}`);
+  /* M2: an explicit { system: 'spectral-state' } is the absent declaration, field for field */
+  const shapes = [['specimen', spec], ['ragged', P.ragged], ['ragged, empties hidden', P.raggedHidden]];
+  const m2 = shapes.map(([name, d]) => {
+    const e = clone(d); e.semantic = { system: 'spectral-state' };
+    const A0 = asm(d), A1 = asm(e);
+    if (A0.error || A1.error) return { name, error: A0.error || A1.error };
+    const ids = [d.root.id, ...d.nodes.map((n) => n.id), ...(d.records || []).map((r) => r.id), 'no such id'];
+    const keys = JSON.stringify(Object.keys(A0)) === JSON.stringify(Object.keys(A1));
+    const fields = Object.keys(A0).filter((k) => k !== 'system');
+    const differ = fields.filter((k) => typeof A0[k] === 'function' ? !ids.every((id) => same(call(A0[k], id), call(A1[k], id))) : !same(A0[k], A1[k]));
+    const sys = JSON.stringify(systemSig(A0.system, d.nodes)) === JSON.stringify(systemSig(A1.system, d.nodes));
+    const lay = ['weighted', 'equal'].every((allocation) => same(RC.layout.layout(A0, { allocation }), RC.layout.layout(A1, { allocation })));
+    return { name, ok: keys && differ.length === 0 && sys && lay, fields: fields.length, differ, sys, lay };
+  });
+  add('M2', 'M2 an explicit { system: "spectral-state" } gives the model of no declaration, every field (Maps and Sets by their entries in order), the same resolver and the same layout',
+    m2.every((x) => x.ok), m2.map((x) => x.error ? `${x.name}: ${x.error}` : `${x.name}: ${x.fields} fields${x.differ.length ? ', differ ' + x.differ.join(',') : ''}${x.sys ? '' : ', resolver differs'}${x.lay ? '' : ', layout differs'}`).join(' · '));
+  /* M3: Criterion Assessment, on the visitor-facilities composition */
+  const fac = P.facilities, B = asm(fac), C = B.system || {}, SEM = G.FACILITIES_SEMANTIC;
+  const offPaint = PROBES.map((r) => [r, call(C.paint, r), ASSESSED.includes(r) ? 'var(--assessment-' + r + ')' : 'var(--fg-1)']).filter(([, v, w]) => v !== w);
+  const offWord = PROBES.filter((r) => call(C.word, r) !== (ASSESSED.includes(r) ? WORDS[r] : null));
+  const offAsserts = PROBES.filter((r) => call(C.asserts, r) !== ASSESSED.includes(r));
+  const kids = new Set(fac.nodes.map((n) => n.parent).filter(Boolean));
+  const leaves = fac.nodes.filter((n) => !kids.has(n.id) && n.container !== true), groups = fac.nodes.filter((n) => kids.has(n.id) || n.container === true);
+  const offState = leaves.filter((n) => !same(call(C.stateOf, n), ASSESSED.includes(n.assessment) ? { role: n.assessment, label: WORDS[n.assessment], meaning: SEM.criterion } : null) ||
+    call(C.roleOf, n) !== n.assessment);
+  const offGroup = groups.filter((n) => call(C.stateOf, n) !== null || call(C.roleOf, n) !== 'unassessed');
+  const data = !B.error && C.name === 'criterion-assessment' && C.title === 'Criterion Assessment' && C.keyed === true && C.none === 'unassessed' &&
+    JSON.stringify(C.roles) === '["favorable","caution","adverse","unassessed"]' &&
+    same(C.declarations, DECLARED.map(([field, label]) => ({ field, label, value: SEM[field] }))) &&
+    same(C.rows, ASSESSED.map((role) => ({ role, label: WORDS[role], meaning: null }))) &&
+    JSON.stringify(C.tokenNames) === '["--assessment-favorable","--assessment-caution","--assessment-adverse"]';
+  add('M3', 'M3 Criterion Assessment\'s resolver: keyed, its five declarations, three word rows and tokens; an assessed role paints var(--assessment-<role>), anything else var(--fg-1); words, states and roles from each leaf, none for a group',
+    data && offPaint.length === 0 && offWord.length === 0 && offAsserts.length === 0 && offState.length === 0 && offGroup.length === 0 && call(C.stateOf, null) === null,
+    B.error || `declarations ${(C.declarations || []).map((x) => x.label).join(' · ')} · tokens ${JSON.stringify(C.tokenNames)}` +
+      (offPaint.length ? ' · paint off ' + JSON.stringify(offPaint) : '') + (offWord.length ? ' · word off ' + JSON.stringify(offWord) : '') +
+      (offAsserts.length ? ' · asserts off ' + JSON.stringify(offAsserts) : '') + (offState.length ? ' · leaves off ' + offState.length : '') +
+      (offGroup.length ? ' · groups off ' + offGroup.length : '') + ` · ${leaves.length} leaves, ${groups.length} groups`);
+  return out;
+}
+{
+  for (const r of resolver(R)) check(r.name, r.ok, r.detail);
+}
+
+/* ------------------------------------------------------------------ C -- */
+const CRIT = { system: 'criterion-assessment', criterion: 'c', direction: 'd', scope: 's', basis: 'b', rule: 'r' };
+const without = (o, k) => { const c = { ...o }; delete c[k]; return c; };
+/* a Criterion Assessment instance: one assessed leaf unless the nodes are given */
+const crit = (extra, sem = CRIT) => Object.assign({ root: { id: 'R', label: 'root' }, semantic: sem, nodes: [{ id: 'n', label: 'n', assessment: 'favorable' }] }, extra);
+/* the leaves of a contract: placed nodes no node names as its parent and not declared containers */
+const leavesOf = (d) => { const kids = new Set(d.nodes.map((n) => n.parent).filter(Boolean)); return d.nodes.filter((n) => !kids.has(n.id) && n.container !== true); };
+/* the layout of two contracts compared by identifier: the same identifiers in the same order, each at
+   the same position, radius, bearing, depth, parent and kind, and the same wedges and bounds */
+function geometryDiff(La, Lb) {
+  const pos = (L) => new Map(L.nodes.map((n) => [n.id, [n.x, n.y, n.r, n.ang, n.depth, n.parent === undefined ? null : n.parent, n.kind]]));
+  const pa = pos(La), pb = pos(Lb), moved = [...pa.keys()].filter((id) => JSON.stringify(pa.get(id)) !== JSON.stringify(pb.get(id)));
+  const order = JSON.stringify([...pa.keys()]) === JSON.stringify([...pb.keys()]);
+  return { ok: order && moved.length === 0 && same(La.wedges, Lb.wedges) && same(La.bounds, Lb.bounds), nodes: pa.size, order, moved };
+}
+const sameGeometry = (RC, a, b, allocation) => geometryDiff(RC.layout.layout(RC.contract.assemble(a), { allocation }), RC.layout.layout(RC.contract.assemble(b), { allocation }));
+function criterion(RC, P = FIX) {
+  const out = [], add = (key, name, ok, detail) => out.push({ key, name, ok: !!ok, detail });
+  const result = (data) => { try { RC.contract.assemble(data); return { ok: true }; } catch (e) { return { ok: false, code: e.code, message: e.message }; } };
+  /* the refusal, its code and its whole message */
+  const refuses = (key, name, data, code, msg) => {
+    const o = result(data), want = `radial contract ${code}: ${msg}`;
+    add(key, name, !o.ok && o.code === code && o.message === want, o.ok ? `accepted; expected ${code}` : o.message.slice(0, 170));
+  };
+  refuses('C1.string', 'C1 semantic given as a string is SEMANTIC_SYSTEM', tiny({ semantic: 'criterion-assessment' }), 'SEMANTIC_SYSTEM',
+    'semantic must be a plain object when present, got "criterion-assessment"');
+  refuses('C1.null', 'C1 semantic: null is SEMANTIC_SYSTEM, not "the default"', tiny({ semantic: null }), 'SEMANTIC_SYSTEM', 'semantic must be a plain object when present, got null');
+  refuses('C1.array', 'C1 semantic given as an array is SEMANTIC_SYSTEM', tiny({ semantic: [] }), 'SEMANTIC_SYSTEM', 'semantic must be a plain object when present, got an array');
+  refuses('C1.missing', 'C1 a semantic declaration without its system is SEMANTIC_SYSTEM', tiny({ semantic: {} }), 'SEMANTIC_SYSTEM',
+    'semantic.system must be one of spectral-state, criterion-assessment, got undefined');
+  refuses('C1.unknown', 'C1 a system outside the two is SEMANTIC_SYSTEM, with no fallback to Spectral State', tiny({ semantic: { system: 'criterion' } }), 'SEMANTIC_SYSTEM',
+    'semantic.system must be one of spectral-state, criterion-assessment, got "criterion"');
+  refuses('C1.number', 'C1 a system given as a number is SEMANTIC_SYSTEM', tiny({ semantic: { system: 2 } }), 'SEMANTIC_SYSTEM',
+    'semantic.system must be one of spectral-state, criterion-assessment, got 2');
+  refuses('C2.extra', 'C2 an extra key on the Criterion Assessment declaration is UNKNOWN_FIELD', crit({}, { ...CRIT, weight: 'w' }), 'UNKNOWN_FIELD', 'semantic: weight');
+  refuses('C2.spectral', 'C2 a declaration key on { system: "spectral-state" } is UNKNOWN_FIELD', tiny({ semantic: { system: 'spectral-state', criterion: 'c' } }), 'UNKNOWN_FIELD', 'semantic: criterion');
+  refuses('C2.states', 'C2 top-level states under Criterion Assessment are UNKNOWN_FIELD', crit({ states: [{ role: 'earned', label: 'e', meaning: 'e' }] }), 'UNKNOWN_FIELD', 'contract: states');
+  refuses('C2.nodeState', 'C2 a node state under Criterion Assessment is UNKNOWN_FIELD', crit({ nodes: [{ id: 'n', label: 'n', state: 'earned' }] }), 'UNKNOWN_FIELD', 'nodes[0]: state');
+  refuses('C2.recordState', 'C2 a record state under Criterion Assessment is UNKNOWN_FIELD', crit({ records: [{ id: 'r', label: 'r', state: 'earned' }] }), 'UNKNOWN_FIELD', 'records[0]: state');
+  refuses('C2.root', 'C2 root.assessment is UNKNOWN_FIELD: the framing root takes none', crit({ root: { id: 'R', label: 'root', assessment: 'favorable' } }), 'UNKNOWN_FIELD', 'root: assessment');
+  refuses('C2.spectralAssessment', 'C2 an assessment under Spectral State is UNKNOWN_FIELD', tiny({ nodes: [{ id: 'n', label: 'n', assessment: 'favorable' }] }), 'UNKNOWN_FIELD', 'nodes[0]: assessment');
+  /* each declaration missing, empty, a number and an object, the others present */
+  for (const [k] of DECLARED) {
+    const got = [[without(CRIT, k), 'undefined'], [{ ...CRIT, [k]: '' }, '""'], [{ ...CRIT, [k]: 7 }, '7'], [{ ...CRIT, [k]: { text: 'x' } }, 'an object']].map(([sem, shown]) => {
+      const o = result(crit({}, sem)), want = `radial contract SEMANTIC_DECLARATION: semantic.${k} must be a non-empty string, got ${shown}`;
+      return { ok: !o.ok && o.code === 'SEMANTIC_DECLARATION' && o.message === want, got: o.ok ? 'accepted' : o.message };
+    });
+    add('C3.' + k, `C3 semantic.${k} missing, empty, a number or an object is SEMANTIC_DECLARATION, naming the field`, got.every((g) => g.ok),
+      got.filter((g) => !g.ok).map((g) => g.got).join(' · ') || 'missing · empty · 7 · an object');
+  }
+  const ONE = 'one of favorable, caution, adverse, unassessed';
+  refuses('C4.missing', 'C4 a leaf without an assessment is NODE_ASSIGNMENT: nothing is inferred', crit({ nodes: [{ id: 'n', label: 'n' }] }), 'NODE_ASSIGNMENT',
+    `"n": every leaf declares its assessment, ${ONE}`);
+  refuses('C4.second', 'C4 every leaf is checked: the second leaf without one is named', crit({ nodes: [{ id: 'a', label: 'a', assessment: 'caution' }, { id: 'b', label: 'b' }] }), 'NODE_ASSIGNMENT',
+    `"b": every leaf declares its assessment, ${ONE}`);
+  refuses('C4.word', 'C4 an assessment outside the four roles is NODE_ASSIGNMENT', crit({ nodes: [{ id: 'n', label: 'n', assessment: 'good' }] }), 'NODE_ASSIGNMENT',
+    `"n": assessment "good" is not ${ONE}`);
+  refuses('C4.spectral', 'C4 a Spectral State role as an assessment is NODE_ASSIGNMENT', crit({ nodes: [{ id: 'n', label: 'n', assessment: 'earned' }] }), 'NODE_ASSIGNMENT',
+    `"n": assessment "earned" is not ${ONE}`);
+  refuses('C4.label', 'C4 an owner word in place of its role is NODE_ASSIGNMENT', crit({ nodes: [{ id: 'n', label: 'n', assessment: 'Favorable' }] }), 'NODE_ASSIGNMENT',
+    `"n": assessment "Favorable" is not ${ONE}`);
+  refuses('C4.number', 'C4 an assessment given as a number is NODE_ASSIGNMENT', crit({ nodes: [{ id: 'n', label: 'n', assessment: 1 }] }), 'NODE_ASSIGNMENT', `"n": assessment 1 is not ${ONE}`);
+  refuses('C4.null', 'C4 an assessment given as null is NODE_ASSIGNMENT', crit({ nodes: [{ id: 'n', label: 'n', assessment: null }] }), 'NODE_ASSIGNMENT', `"n": assessment null is not ${ONE}`);
+  refuses('C5.container', 'C5 an assessment on a declared container is ASSIGNMENT_SCOPE', crit({ nodes: [{ id: 'g', label: 'g', container: true, assessment: 'favorable' }, { id: 'n', label: 'n', assessment: 'favorable' }] }),
+    'ASSIGNMENT_SCOPE', '"g" is a container: only a leaf takes an assessment');
+  refuses('C5.parent', 'C5 an assessment on a node with children is ASSIGNMENT_SCOPE, nothing aggregated', crit({ nodes: [{ id: 'g', label: 'g', assessment: 'adverse' }, { id: 'n', label: 'n', parent: 'g', assessment: 'adverse' }] }),
+    'ASSIGNMENT_SCOPE', '"g" is a container: only a leaf takes an assessment');
+  refuses('C5.unassessed', 'C5 even unassessed on a container is ASSIGNMENT_SCOPE', crit({ nodes: [{ id: 'g', label: 'g', container: true, assessment: 'unassessed' }, { id: 'n', label: 'n', parent: 'g', assessment: 'caution' }] }),
+    'ASSIGNMENT_SCOPE', '"g" is a container: only a leaf takes an assessment');
+  refuses('C5.record', 'C5 an assessment on an undrawn record is ASSIGNMENT_SCOPE', crit({ records: [{ id: 'r', label: 'r', assessment: 'favorable' }] }), 'ASSIGNMENT_SCOPE',
+    '"r" is an undrawn record: only a leaf takes an assessment');
+  /* acceptance: each role on a leaf; a container and a record with none; the visitor-facilities composition */
+  const each = ['favorable', 'caution', 'adverse', 'unassessed'].filter((a) => !result(crit({ nodes: [{ id: 'n', label: 'n', assessment: a }] })).ok);
+  const grouped = result(crit({ nodes: [{ id: 'g', label: 'g', container: true }, { id: 'n', label: 'n', parent: 'g', assessment: 'adverse' }], records: [{ id: 'r', label: 'r' }] }));
+  add('C6.roles', 'C6 each of the four roles is accepted on a leaf, and a container and a record with none', each.length === 0 && grouped.ok,
+    each.length ? 'refused: ' + each.join(', ') : grouped.ok ? 'favorable · caution · adverse · unassessed' : grouped.message);
+  const fac = P.facilities, fo = result(fac), L = leavesOf(fac), tally = {};
+  L.forEach((n) => { tally[n.assessment] = (tally[n.assessment] || 0) + 1; });
+  const others = fac.nodes.filter((n) => !L.includes(n));
+  add('C6.facilities', 'C6 the visitor-facilities composition is accepted: 220 leaves, 26 favorable, 103 caution, 70 adverse, 21 unassessed; 28 containers and 2 records with none',
+    fo.ok && L.length === 220 && tally.favorable === 26 && tally.caution === 103 && tally.adverse === 70 && tally.unassessed === 21 && Object.keys(tally).length === 4 &&
+    others.length === 28 && others.every((n) => n.assessment === undefined && n.state === undefined) &&
+    fac.records.length === 2 && fac.records.every((r) => r.assessment === undefined && r.state === undefined) && fac.states === undefined,
+    fo.ok ? `${L.length} leaves ${JSON.stringify(tally)} · ${others.length} containers · ${fac.records.length} records` : fo.message);
+  /* the same specimen under the other system: the geometry the parks specimen has, identifier for identifier */
+  const geo = ['weighted', 'equal'].map((allocation) => { try { return { allocation, ...sameGeometry(RC, P.specimen, fac, allocation) }; } catch (e) { return { allocation, ok: false, error: e.message }; } });
+  add('C7', 'C7 the visitor-facilities layout is the specimen\'s: every identifier in the same order at the same position, radius, bearing, depth and parent, under both allocations',
+    geo.every((g) => g.ok && g.nodes === 249), geo.map((g) => g.error ? `${g.allocation}: ${g.error}` : `${g.allocation}: ${g.nodes} nodes, ${g.moved.length} moved`).join(' · '));
+  return out;
+}
+{
+  for (const r of criterion(R)) check(r.name, r.ok, r.detail);
+}
+
 /* ------------------------------------------------------------------ X -- */
 { const L = layout(assemble(G.shallow(D))); const n = L.nodes.find((x) => x.kind === 'leaf'); n.ang += 1.0;
   check('X1 the invariant check detects a node pushed outside its parent\'s wedge', invariants(L).contain === 1); }
@@ -578,6 +790,52 @@ rejects('X4 a kind with a shape outside the owner set', (() => { const m = G.bas
   const joined = identity(load(mutate(MUTATIONS[1][2])));
   check('X6 pairs joined with \'|\' collapse the two pairs into one and keep the delimiter candidate (I2, I4)',
     joined.I2.crowdingSize === 1 && JSON.stringify(joined.I4.keptDelimiter) === '["a"]', `crowding size ${joined.I2.crowdingSize}; kept ${JSON.stringify(joined.I4.keptDelimiter)}`);
+}
+/* X7: the M and C checks against mutated copies of the contract module, each with one plausible
+   regression of the semantic system: a rule dropped, a key set widened, a fallback put in, an explicit
+   declaration that reorders what it declares. Every mutation must fail the check written for it; a
+   replacement that no longer matches the source is itself a failure, as in X6. */
+{
+  const src = fs.readFileSync(path.join(DIR, 'diagrams-radial-contract.js'), 'utf8');
+  const mutate = (pairs) => pairs.reduce((t, [a, b]) => (t !== null && t.split(a).length === 2 ? t.split(a).join(b) : null), src);
+  const MUTATIONS = [
+    ['a leaf without an assessment accepted as unassessed', 'C4.missing', [["need(!absent(n, 'assessment'), 'NODE_ASSIGNMENT', show(n.id) + ': every leaf declares its assessment, one of ' + ASSESSMENT_ROLES.join(', '));",
+      "if (absent(n, 'assessment')) return;"]]],
+    ['an assessment on a container accepted', 'C5.container', [["need(absent(n, 'assessment'), 'ASSIGNMENT_SCOPE', show(n.id) + ' is a container: only a leaf takes an assessment');", '']]],
+    ['an assessment on an undrawn record accepted', 'C5.record', [["need(absent(r, 'assessment'), 'ASSIGNMENT_SCOPE', show(r.id) + ' is an undrawn record: only a leaf takes an assessment');", '']]],
+    ['states admitted beside Criterion Assessment', 'C2.states', [["topCriterion: ['root', 'nodes', 'records', 'planes', 'kinds', 'edges', 'options', 'semantic']",
+      "topCriterion: ['root', 'nodes', 'records', 'planes', 'states', 'kinds', 'edges', 'options', 'semantic']"]]],
+    ['an empty declaration accepted', 'C3.criterion', [["need(text(s[k]), 'SEMANTIC_DECLARATION'", "need(typeof s[k] === 'string', 'SEMANTIC_DECLARATION'"]]],
+    ['an unknown system read as Spectral State', 'C1.unknown', [['SYSTEMS.indexOf(s.system) >= 0, ', 'true, ']]],
+    ['the unassessed wash painted from a Spectral State token', 'M3', [["'var(--fg-1)'; }", "'var(--state-neutral)'; }"]]],
+    ['Spectral State painting an absent role as no token', 'M1.paint', [["(role || 'neutral')", '(role)']]],
+    ['an explicit spectral-state declaration reordering the declared states', 'M2', [["statesIn = list(d, 'states')", "statesIn = has(d, 'semantic') ? list(d, 'states').slice().reverse() : list(d, 'states')"]]],
+  ];
+  MUTATIONS.forEach(([what, target, pairs]) => {
+    const text = mutate(pairs);
+    if (text === null) { check(`X7 ${what}: the mutation applies`, false, 'a replacement no longer matches the contract source'); return; }
+    const RC = load(null, text), res = [...resolver(RC), ...criterion(RC)], failing = res.filter((r) => !r.ok).map((r) => r.key);
+    const hit = res.find((r) => r.key === target);
+    check(`X7 ${what} fails ${target}`, failing.includes(target), `failing: ${failing.join(', ') || 'none'} · ${hit ? String(hit.detail).slice(0, 110) : 'no such check'}`);
+  });
+  /* the C7 comparison sees one leaf moved to another container, and one leaf moved a hair */
+  const fac = FIX.facilities, moved = clone(fac);
+  const L = leavesOf(moved), i = moved.nodes.indexOf(L[0]), other = L.find((n) => n.parent !== L[0].parent);
+  moved.nodes[i].parent = other.parent;
+  const a = sameGeometry(R, FIX.specimen, moved, 'equal');
+  const lt = layout(assemble(fac), { allocation: 'equal' }), lb = layout(assemble(FIX.specimen), { allocation: 'equal' });
+  lt.nodes.find((n) => n.kind === 'leaf').x += 1e-9;
+  const b = geometryDiff(lb, lt);
+  check('X7 the C7 comparison detects one leaf moved to another container, and a 1e-9 displacement of one leaf',
+    !a.ok && a.moved.length > 0 && !b.ok && b.moved.length === 1, `moved container: ${a.moved.length} identifiers differ · nudged: ${b.moved.length} differs`);
+  /* the M2 comparison sees inside the module's own Maps and Sets: the declared states in another order,
+     one placed label changed, two containers hidden, each differs, and the same content compares equal */
+  const sp = FIX.specimen, rev = clone(sp), lab = clone(sp);
+  rev.states.reverse(); lab.nodes[5].label += ' changed';
+  const A0 = assemble(sp), Ar = assemble(rev), Al = assemble(lab), Hs = assemble(FIX.ragged), Hh = assemble(FIX.raggedHidden);
+  check('X7 the M2 comparison sees inside the contract module\'s Maps and Sets: states reordered, a label changed, containers hidden each differ; the same content is equal',
+    !same(A0.states, Ar.states) && !same(A0.byId, Al.byId) && !same(Hs.hidden, Hh.hidden) && same(A0.states, assemble(clone(sp)).states) && same(Hh.hidden, assemble(clone(FIX.raggedHidden)).hidden) &&
+    Hh.hidden.size === 2, `hidden ${Hs.hidden.size} · ${Hh.hidden.size}`);
 }
 
 console.log(`\nRESULT ${failed === 0 ? 'ALL PASS' : failed + ' FAILED'} · ${passed} passed`);

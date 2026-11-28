@@ -1036,13 +1036,29 @@ V  the label tiers, held names, a second target independent of the first, crowdi
 I  opaque identifiers through the label layer: object-property names and delimiter-bearing
    identifiers change no collision relationship (I1-I3, I6) and no decision of the short-canvas
    population rule, which compares pair identities, not their number (I4, I5)
+M  the semantic resolver: Spectral State's paint, token and row strings for every role, read as
+   literals, never from the owner; an explicit { system: 'spectral-state' } giving the model and
+   layout of no declaration, every field compared, Maps and Sets by their entries in order, on the
+   specimen and the ragged shapes under both allocations; Criterion Assessment's resolver on the
+   visitor-facilities composition
+C  Criterion Assessment's contract: every SEMANTIC_SYSTEM, SEMANTIC_DECLARATION, UNKNOWN_FIELD,
+   NODE_ASSIGNMENT and ASSIGNMENT_SCOPE refusal, each with its whole message; each role accepted on
+   a leaf; the visitor-facilities composition accepted with its counts (220 leaves: 26 favorable,
+   103 caution, 70 adverse, 21 unassessed) and laid out at the parks specimen's geometry,
+   identifier for identifier, under both allocations
 X  negative controls: the invariant checks and the geometry comparison each fail for their
    reason; X4 rejects Spectral State's retired external role, declared or on a node or a record,
    with a message that names it retired, and accepts each of the seven remaining roles; X6 runs
    the I checks on mutated copies of the labels module, each of which must fail the check written
    for it: three restore defect classes of the earlier bookkeeping (plain-object grouping, pairs
    joined with '|', directed pairs joined with '>'), two are plausible regressions (a directed pair
-   stored undirected, the short-canvas rule comparing counts)
+   stored undirected, the short-canvas rule comparing counts); X7 runs the M and C checks on mutated
+   copies of the contract module (a leaf without an assessment accepted, an assessment on a
+   container or a record accepted, states admitted beside Criterion, an empty declaration
+   accepted, an unknown system read as Spectral State, the unassessed wash painted from a --state-
+   token, an absent role painted as no token, an explicit declaration reordering the states), each
+   failing the check written for it, and shows the geometry and model comparisons detect a moved
+   leaf, a 1e-9 displacement, a reordered state, a changed label and a hidden container
 ```
 
 **The retired role's control is the contract before Spectral State v2.0.** Run against that
@@ -1446,8 +1462,16 @@ C  the responsive chrome, on the third host and once on the specimen shell: one 
    a phone turned, both themes, destroy and remount, chrome configuration errors; no flip or
    refit loop where the Fit straddles a tier, a selection never changing the arrangement, Escape
    forgetting a set-aside panel, no unreadable legend strip on a short wide canvas, focus never
-   passing through another control, refits carrying their cause
+   passing through another control, refits carrying their cause; C20 opens all three shells;
+   C27 to C30 the visitor-facilities shell's keyed legend: offered, and opened by a real press, at
+   1024x768, 390x844, 393x666, 844x390 and 568x320, its three words and five declarations each
+   scrolled whole into the panel and the canvas and drawn on top; withdrawn with every other
+   trigger at 520x190 and 320x170, with and without a selection; kept open and readable over the
+   inspector's pill where the panels' own room falls below 72px (568x320 proves the trap fires);
+   no uncaught error. X10, a chrome copy with the keyed branch removed, fails C29
 ```
+
+M6 checks that `DIAGRAM_RADIAL.VERSION` is 2.
 
 The first line of its output names the runtimes: Node and V8, and the browser and its V8.
 
@@ -1547,8 +1571,9 @@ Headless touch emulation is **not** iPhone or Safari evidence; the pattern's dev
 ## radial-stack-fixture.html + radial-stack.mjs
 
 The **full-stack harness** of [`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md): every optional module (inspector,
-facets, legend, chrome, export, theme) on the synthetic composition, in two hosts, and once on the
-reference specimen, which the fixture loads only when a check asks for it. Keys that peel layers
+facets, legend, chrome, export, theme) on the synthetic composition, in two hosts, once on the
+reference specimen, which the fixture loads only when a check asks for it, and on the
+visitor-facilities composition under Criterion Assessment. Keys that peel layers
 arrive as trusted DevTools input; the other checks drive the modules' own controls in the page.
 Each check is an in-page function, and group X runs some of them again against a planted fault in
 a copy of a module, each of which must fail the check written for it.
@@ -1613,7 +1638,7 @@ U  the inspector: views, the default kind line and an adapter's own kept as give
    > short portrait > tall portrait, at the Fit (opening never refits or shrinks the drawing and
    keeps the node beside the sheet; closing returns to the same Fit; each turn refits) and away
    from it (the camera stays); and
-   the two public expressions, the CFW reference and the Vellmark parks composition, in each
+   the CFW reference and the Vellmark parks composition, in each
    theme (the theme in force checked): framed at the whole-map Fit on a touch page turned from
    tall portrait through short portrait (393x666, 390x664) and the short landscape sizes
    (844x390 to 568x320) and back, then tablet and wide, and on a desktop page 1150 tall narrowed
@@ -1666,6 +1691,16 @@ H  theme: the cycle, one owner per document, teardown
 N  the synthetic composition in every hierarchy shape, two instances, destroy and remount,
    missing modules and slots, the minimum composition's membership, no reference content loaded
 R  the reference specimen on the complete stack
+A  Criterion Assessment on the visitor-facilities composition, on its own page: the key (the three
+   words on their own --assessment- tokens, then the system's name and its five declarations); the
+   default announcements carrying the owner word, and the start message the criterion; the
+   chooser's words by a real click; the facet's three options with their counts and no unassessed
+   option; the inspector's word, criterion line and tint, and none for an unassessed leaf, a
+   container, the root or a record; KEY_REQUIRED, TOKENS, the strict swatch facet and the muted-only
+   tone, each refused with its message and the host untouched; the export's one control, its page
+   plate, key and refusals; no uncaught error. X65 to X70 plant the Criterion paint read from a
+   --state- token, an unassessed row, option or word, and the diagram plate accepted, each failing
+   the A check written for it
 X  planted faults: OR as AND, the record layer below the selection, rows without direction, an
    unbounded drawer, a panel without its claim, a locator linking anything, the root framed alone,
    a hidden selection kept, a selection refitting the opened sheet, the sheet claiming before it
@@ -1727,7 +1762,13 @@ time; teardown during and after a run; and one click-time snapshot: a theme chan
 direction while the first export font's load is held at the native boundary leaves the plate (a
 diagram plate both ways, and a page plate with its mark, legend and caption) equal to that theme's
 plate without a change, with its theme and filename, and the page with the reader's new theme (a
-held load with no change is the control).
+held load with no change is the control). Under Criterion Assessment, on the visitor-facilities
+composition (E23 to E28): the diagram plate and a page plate without its legend refused at mount;
+KEY_REQUIRED and TOKENS, each leaving the host untouched; one control and the diagram plate refused
+at the click; the page plate in both themes carrying the three words, the system's name and the five
+declarations, its tokens the base five and the three assessment tokens, with no --state- token and no
+unassessed word; with controls for a key removed at the click ('key missing') and for that reading on
+the Spectral specimen, which fails it.
 
 ```
 node tests/radial-export.mjs             # --out DIR keeps the review PNGs and the results
@@ -1738,8 +1779,8 @@ node tests/radial-export.mjs             # --out DIR keeps the review PNGs and t
 Guards the interactive [`diagram-interactive-spine`](../patterns/diagram-interactive-spine/README.md) and
 [`diagram-interactive-radial`](../patterns/diagram-interactive-radial/README.md) on the surface treatments'
 fill paint ([`surface-treatments.css`](../surface-treatments.css), FILL PAINT). It serves the repository
-read-only and opens the spine's and the radial's gallery previews, the radial's synthetic composition and
-its arrow fixture ([`radial-arrows-fixture.html`](radial-arrows-fixture.html)), in headless Chrome, in both schemes: hover and a locking click with a real pointer, keyboard focus with
+read-only and opens the spine's and the radial's gallery previews, the radial's synthetic composition, its
+visitor-facilities composition and its arrow fixture ([`radial-arrows-fixture.html`](radial-arrows-fixture.html)), in headless Chrome, in both schemes: hover and a locking click with a real pointer, keyboard focus with
 real keys, and the rest of selection, zoom and Fit through the page's own API or a dispatched click on a
 node or a zoom button.
 
@@ -1781,9 +1822,18 @@ R  the arrow fixture (R16–R19): a relation between close neighbors (the target
    lies on a filled mark (the source's center within the target's reach, the cut inside a filled source,
    the tip on a filled neighbor); the exported diagram, opened as its own document with its own styles,
    drawing the live relation paths, its heads on a fill exactly where the live drawing reports one
+C  the visitor-facilities composition, Criterion Assessment: every assessed mark at 100% of its
+   --assessment- token, read by token reference and against an independent value map, its chip a hole,
+   and every unassessed leaf, container and the root at the 15% wash of --fg-1 (C1); the assessed
+   rings holed at their chips' geometry, and the page plate keeping the fill paint by reference with
+   its masks resolving and no --state- token (C2); every --state- role token overridden with a sentinel
+   moving no mark, swatch or dot (C3), and --assessment-favorable overridden moving exactly the
+   favorable marks and their key, facet and dot (C4): equal values cannot tell aliasing apart, so
+   this reads token references
 N  controls: with surface-treatments.css off, S's paint check fails (N1); with structural painted its
    former yellow, role and ink bound alike, the binding checks pass and S fails its state and ink maps on
-   the structural nodes only (N2)
+   the structural nodes only (N2); the assessment tokens aliased to --state- tokens fail C3 (N3), caution
+   aliased to favorable fails C4 (N4), and criterion-assessment.css off fails C1 (N5)
 ```
 
 Each fix this guard was written for was reverted alone, in its own copy, and the suite run against it: the

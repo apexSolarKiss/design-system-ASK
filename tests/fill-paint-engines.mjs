@@ -5,10 +5,10 @@
      node tests/fill-paint-engines.mjs --out DIR    and keep results.json in DIR
 
    It serves this repository read-only on 127.0.0.1 and opens the spine's and the radial's gallery previews,
-   and the radial's synthetic composition, in headless Chrome (Node 22+, Chrome at $CHROME or the default
-   locations; no npm dependency), in the light and the dark scheme. Hover is a real pointer and keyboard
-   focus real keys; selection, zoom and Fit go through the page's own API, or a dispatched click on a node
-   or a zoom button.
+   and the radial's synthetic composition and its visitor-facilities composition, in headless Chrome (Node
+   22+, Chrome at $CHROME or the default locations; no npm dependency), in the light and the dark scheme.
+   Hover is a real pointer and keyboard focus real keys; selection, zoom and Fit go through the page's own
+   API, or a dispatched click on a node or a zoom button.
 
    Paint: a state node or mark is filled at 100% of its role's value, its text in that role's ink (the state
    map, each role's physical fill and its approved ink, read independently, as values); the spine's root is
@@ -36,9 +36,17 @@
    filled mark (the source's center within the target's reach; the cut inside a filled source; the tip on
    a filled neighbor); the exported diagram, measured as its own document, agrees. Plates: the radial's page plate
    draws no frame and every mask it references resolves.
+   Criterion Assessment, on the visitor-facilities composition: an assessed mark is filled at 100% of its
+   var(--assessment-<role>), by that reference and never a --state-* one; an unassessed leaf, a container and the
+   root keep the 15% wash of var(--fg-1); its page plate holds the assessment tokens and no --state- token. With
+   every Spectral State role token held at a sentinel value, no mark, key, facet or chooser swatch or inspector dot
+   shows it or changes; with --assessment-favorable held at another, exactly the favorable marks follow.
 
    The negative controls turn the fill paint's stylesheet off and require the paint check to fail, and paint the
-   structural state its former yellow and require the state and ink maps, not the binding checks, to fail. */
+   structural state its former yellow and require the state and ink maps, not the binding checks, to fail; on the
+   visitor-facilities composition they plant the assessment roles as aliases of Spectral State tokens and require
+   the sentinel check to fail, plant caution as an alias of favorable and require the favorable check to fail,
+   and turn criterion-assessment.css off and require the paint check to fail. */
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -335,13 +343,85 @@ const RADIAL_HOLES = `(function(){var M=window.RADIAL_MAP,n=0,bad=[];M.layout.no
   if(Math.abs(+c.getAttribute('cx')-nd.x)>1e-6||Math.abs(+c.getAttribute('cy')-nd.y)>1e-6)bad.push([nd.id,'off center']);
   if(m.localName!=='circle'||+h.getAttribute('r')>=+m.getAttribute('r')*0.5)bad.push([nd.id,'not inside the ring']);});return {holes:n,bad:bad};})()`;
 const PLATE = `(async function(){var r=await window.RADIAL_MAP.service('export').run('page'),s=r.svg,ids=(s.match(/mask="url\\(#([^)]+)\\)"/g)||[]).map(function(m){return m.slice(11,-2);});
-  return {refs:ids.length,resolved:ids.filter(function(id){return s.indexOf('id="'+id+'"')>=0;}).length,frames:(s.match(/radial-frame/g)||[]).length,fillRef:/var\\(--surface-fill-color\\)/.test(s)};})()`;
+  return {refs:ids.length,resolved:ids.filter(function(id){return s.indexOf('id="'+id+'"')>=0;}).length,frames:(s.match(/radial-frame/g)||[]).length,fillRef:/var\\(--surface-fill-color\\)/.test(s),
+    stateTokens:(s.match(/--state-/g)||[]).length,assessmentTokens:(s.match(/--assessment-(favorable|caution|adverse):/g)||[]).length};})()`;
+
+/* the visitor-facilities composition, under Criterion Assessment. Each assessed leaf at 100% of its role's
+   value, by reference: its --st and its fill paint's color are var(--assessment-<role>), never a --state-*
+   token; its chip a hole. Every unassessed leaf, container and the root keeps the 15% wash of var(--fg-1). */
+const ASSESSED = ['favorable', 'caution', 'adverse'];
+/* the assessment map, as values, never read from the owner: each role binds the foundation's physical value
+   directly (criterion-assessment.css v0.3), green, yellow and red, the values earned, partial and deflated
+   also bind: a shared family, never a shared meaning. One value in both themes. */
+const ASSESSMENT_FILL = { favorable: 'rgb(56, 250, 56)', caution: 'rgb(250, 250, 56)', adverse: 'rgb(250, 56, 56)' };
+const CRITERION_PAINT = `(function(){${RESOLVE}var M=window.RADIAL_MAP,A=${JSON.stringify(ASSESSED)},V=${JSON.stringify(ASSESSMENT_FILL)},out={filled:{},wash:{},bad:[]},fg=res('var(--fg-1)');
+  out.fgResolves=!!getComputedStyle(document.documentElement).getPropertyValue('--fg-1').trim();M.layout.nodes.forEach(function(n,i){
+  var g=document.getElementById(M.id+'-n'+i);if(!g)return;var m=g.querySelector('.radial-mark'),c=getComputedStyle(m),st=g.style.getPropertyValue('--st'),sf=g.style.getPropertyValue('--surface-fill-color');
+  if(/--state-/.test(st+sf))out.bad.push([n.id,'a --state- token',st,sf]);
+  if(n.kind==='leaf'&&A.indexOf(n.state)>=0){out.filled[n.state]=(out.filled[n.state]||0)+1;var tok='var(--assessment-'+n.state+')',want=res(tok);
+    if(st!==tok||sf!==tok)out.bad.push([n.id,'reference',st,sf]);
+    if(!m.classList.contains('surface-fill')||c.fill!==want||c.stroke!==want||c.fillOpacity!=='1')out.bad.push([n.id,'fill',c.fill,want,c.fillOpacity]);
+    if(c.fill!==V[n.state])out.bad.push([n.id,'assessment map',n.state,c.fill]);
+    var chip=g.querySelector('.radial-chip');if(chip){var mk=m.getAttribute('mask'),el=mk&&document.getElementById(mk.slice(5,-1));if(!el||!el.querySelector('circle[style*="#000"]')||getComputedStyle(chip).fill!=='none')out.bad.push([n.id,'chip hole']);}}
+  else{var w=n.kind==='leaf'?n.state:n.kind;out.wash[w]=(out.wash[w]||0)+1;
+    if(st!=='var(--fg-1)'||sf!==''||m.classList.contains('surface-fill')||c.fill!==fg||c.stroke!==fg||c.fillOpacity!=='0.15')out.bad.push([n.id,'wash',st,c.fill,c.fillOpacity]);}});
+  return out;})()`;
+const criterionPaintOk = (o) => o.bad.length === 0 && o.fgResolves && JSON.stringify(o.filled) === JSON.stringify({ caution: 103, favorable: 26, adverse: 70 }) &&
+  o.wash.unassessed === 21 && o.wash.container === 28 && o.wash.root === 1 && Object.keys(o.wash).length === 3;
+/* every color each painted surface of the instance resolves: each mark, each legend, facet and chooser
+   swatch, and the inspector's dot for an assessed leaf of each role, with their ::before and ::after.
+   The chooser opens by a dispatched click where marks crowd one point: the most roles, a washed one
+   preferred, so its swatches show a fill and the wash. */
+const PAINTED = `(async function(){var M=window.RADIAL_MAP,stage=document.querySelector('.radial-stage'),wait=function(ms){return new Promise(function(r){setTimeout(r,ms);});},
+  props=['fill','stroke','color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','boxShadow','outlineColor'],
+  out={marks:[],legend:[],facet:[],dot:[],chooser:[]};
+  function read(e){var v=[];[null,'::before','::after'].forEach(function(ps){var c=getComputedStyle(e,ps);props.forEach(function(p){v.push(c[p]);});});return v.join('|');}
+  M.layout.nodes.forEach(function(n,i){var g=document.getElementById(M.id+'-n'+i);if(g)out.marks.push([n.id,read(g.querySelector('.radial-mark'))]);});
+  [].forEach.call(document.querySelectorAll('.radial-legend-sw'),function(e,i){out.legend.push([i,read(e)]);});
+  var f=M.service('facets');f.open(true);await wait(250);[].forEach.call(document.querySelectorAll('.radial-facet-sw'),function(e,i){out.facet.push([i,read(e)]);});f.open(false);await wait(150);
+  for(var a=0;a<3;a++){var role=${JSON.stringify(ASSESSED)}[a],leaf=M.layout.nodes.find(function(n){return n.kind==='leaf'&&n.state===role;});M.select(leaf.id);await wait(120);
+    var d=document.querySelector('.radial-insp-dot');out.dot.push([role,d?read(d):null]);}
+  M.select(null);await wait(120);
+  if(!window.__chooserAt){var L=M.layout.nodes.filter(function(n){return n.kind!=='root';}),best=null;
+    for(var i=0;i<L.length;i++)for(var j=i+1;j<L.length;j++){var p=M.project(L[i].id),q=M.project(L[j].id);if(Math.hypot(p.x-q.x,p.y-q.y)>30)continue;
+      var x=(p.x+q.x)/2,y=(p.y+q.y)/2,t=M.tap(x,y);if(t.action!=='choose')continue;
+      var roles=t.shown.map(function(id){var n=M.layout.nodes.find(function(z){return z.id===id;});return n.kind==='leaf'?n.state:n.kind;}).filter(function(r,k,s){return s.indexOf(r)===k;});
+      var score=roles.length+(roles.some(function(r){return ${JSON.stringify(ASSESSED)}.indexOf(r)<0;})?1:0);
+      if(!best||score>best.score)best={x:x,y:y,roles:roles,shown:t.shown,score:score};}
+    window.__chooserAt=best;}
+  var at=window.__chooserAt;if(at){var r=stage.getBoundingClientRect();stage.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.left+at.x,clientY:r.top+at.y}));await wait(150);
+    [].forEach.call(document.querySelectorAll('.radial-chooser-sw'),function(e,i){out.chooser.push([i,read(e)]);});
+    stage.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.left+4,clientY:r.top+4}));await wait(120);}
+  out.chooserRoles=at?at.roles:null;out.chooserOpenAfter=!!document.querySelector('.radial-chooser');return out;})()`;
+/* a stylesheet placed last, its rules !important, to hold a token at a sentinel value */
+const OVERRIDE = (css) => `(function(){var s=document.createElement('style');s.setAttribute('data-test-override','');s.textContent=${JSON.stringify(css)};document.head.appendChild(s);return new Promise(function(r){setTimeout(r,80);});})()`;
+const NO_OVERRIDE = `(function(){[].forEach.call(document.querySelectorAll('style[data-test-override]'),function(s){s.remove();});return new Promise(function(r){setTimeout(r,80);});})()`;
+/* every Spectral State role token at one sentinel value: a Criterion surface that read any of them would show it */
+const STATE_SENTINEL = ':root{' + ['earned', 'partial', 'held', 'deflated', 'structural', 'proposed', 'neutral'].map((r) => `--state-${r}:rgb(1,2,3) !important`).join(';') + '}';
+const SENTINEL = 'rgb(1, 2, 3)', FAVORABLE_SENTINEL = ':root{--assessment-favorable:rgb(4,5,6) !important}';
+/* where the sentinel shows, and which surfaces changed between two readings */
+const sentinelHits = (o) => ['marks', 'legend', 'facet', 'dot', 'chooser'].flatMap((k) => o[k].filter(([, v]) => v && v.includes(SENTINEL)).map(([id]) => k + ':' + id));
+const changed = (a, b, k) => a[k].filter(([id, v], i) => !b[k][i] || b[k][i][0] !== id || b[k][i][1] !== v).map(([id]) => id);
+const paintedCounts = (o) => ({ marks: o.marks.length, legend: o.legend.length, facet: o.facet.length, dot: o.dot.filter((d) => d[1]).length, chooser: o.chooser.length });
+/* the sentinel reaches nothing painted, and nothing painted moves; every surface was read */
+const sentinelOk = (before, after) => sentinelHits(after).length === 0 && ['marks', 'legend', 'facet', 'dot', 'chooser'].every((k) => changed(before, after, k).length === 0) &&
+  before.marks.length === 249 && before.legend.length === 3 && before.facet.length === 3 && before.dot.every((d) => d[1]) && before.chooser.length >= 2;
+/* the favorable value moved: exactly the favorable marks change, each to it, and only the favorable rows of the key and the facet */
+const favorableOk = (before, after, favorable) => {
+  const moved = changed(before, after, 'marks').sort();
+  return JSON.stringify(moved) === JSON.stringify([...favorable].sort()) && moved.length === 26 &&
+    after.marks.filter(([id]) => favorable.includes(id)).every(([, v]) => v.startsWith('rgb(4, 5, 6)|rgb(4, 5, 6)|')) &&
+    JSON.stringify(changed(before, after, 'legend')) === '[0]' && JSON.stringify(changed(before, after, 'facet')) === '[0]' &&
+    JSON.stringify(changed(before, after, 'dot')) === '["favorable"]';
+};
+const FAVORABLE_IDS = `window.RADIAL_MAP.layout.nodes.filter(function(n){return n.kind==='leaf'&&n.state==='favorable';}).map(function(n){return n.id;})`;
 
 /* ----------------------------------------------------------------- run -- */
 const { srv, base } = await serve(ROOT);
 const b = await launch();
 const SP = `${base}/patterns/_preview/diagram-interactive-spine.html`, RP = `${base}/patterns/_preview/diagram-interactive-radial.html`;
 const RN = `${base}/patterns/_preview/diagram-interactive-radial.neutral.html`, AF = `${base}/tests/radial-arrows-fixture.html`;
+const RC = `${base}/patterns/_preview/diagram-interactive-radial.facilities.html`;
 const errors = [];
 try {
   for (const scheme of ['light', 'dark']) {
@@ -518,6 +598,53 @@ try {
     check(`${S}R15`, `synthetic radial, ${scheme}: into a filled target, every arrowhead's tip is clear of its target and of every other filled mark, no head is reported obscured, and no head lies on another filled mark except the one accepted base corner (${EXCEPTION}, at most 0.111)`,
       nheads.paths === nheads.relations && nheads.solid > 0 && nheads.tipInside.length === 0 && nheads.tipOnOther.length === 0 && nheads.obscured === 0
         && nheads.headOnOther.every(([k, f]) => k === EXCEPTION && f <= 0.111) && nheads.washShortened.length === 0, nheads);
+    errors.push(...p.errors); await p.close();
+
+    /* ---- radial, the visitor-facilities composition: the same specimen under Criterion Assessment ---- */
+    p = await page(b, RC, scheme);
+    const cp = await p.evaluate(CRITERION_PAINT);
+    check(`${S}C1`, `facilities radial, ${scheme}: every assessed mark at 100% of var(--assessment-<role>), by that reference and never a --state-* one, at the assessment map's value, its chip a hole; every unassessed leaf, container and the root at the 15% wash of var(--fg-1)`,
+      criterionPaintOk(cp), { filled: cp.filled, wash: cp.wash, bad: cp.bad.slice(0, 5) });
+    const ch = await p.evaluate(RADIAL_HOLES), cplate = await p.evaluate(PLATE);
+    check(`${S}C2`, `facilities radial, ${scheme}: its assessed rings are holed at their chips' geometry; the page plate draws no frame, keeps the fill paint by reference, resolves every mask it references and holds the --assessment-* tokens and no --state- token`,
+      ch.holes > 0 && ch.bad.length === 0 && cplate.refs === ch.holes && cplate.resolved === cplate.refs && cplate.frames === 0 && cplate.fillRef &&
+      cplate.stateTokens === 0 && cplate.assessmentTokens === 3, { holes: ch.holes, bad: ch.bad.slice(0, 3), plate: cplate });
+    /* aliasing: every Spectral State role token held at a sentinel reaches no painted surface and moves none */
+    const rest = await p.evaluate(PAINTED);
+    await p.evaluate(OVERRIDE(STATE_SENTINEL));
+    const held = await p.evaluate(PAINTED);
+    await p.evaluate(NO_OVERRIDE);
+    check(`${S}C3`, `facilities radial, ${scheme}: with every --state-* role token (earned, partial, held, deflated, structural, proposed, neutral) at rgb(1,2,3), no mark, legend, facet or chooser swatch or inspector dot resolves to it, and none changes`,
+      sentinelOk(rest, held), { read: paintedCounts(rest), chooserRoles: rest.chooserRoles, hits: sentinelHits(held).slice(0, 5),
+        changed: ['marks', 'legend', 'facet', 'dot', 'chooser'].map((k) => k + ' ' + changed(rest, held, k).length).join(', ') });
+    /* the favorable value moved alone: exactly the favorable marks follow it */
+    const favorable = await p.evaluate(FAVORABLE_IDS);
+    await p.evaluate(OVERRIDE(FAVORABLE_SENTINEL));
+    const shifted = await p.evaluate(PAINTED);
+    await p.evaluate(NO_OVERRIDE);
+    check(`${S}C4`, `facilities radial, ${scheme}: with --assessment-favorable at rgb(4,5,6), exactly the 26 favorable marks change, each to it, with only the key's and the facet's favorable rows and the favorable dot`,
+      favorableOk(rest, shifted, favorable), { favorable: favorable.length, marks: changed(rest, shifted, 'marks').length, legend: changed(rest, shifted, 'legend'),
+        facet: changed(rest, shifted, 'facet'), dot: changed(rest, shifted, 'dot') });
+    /* the negative controls: Criterion's roles planted as aliases of Spectral State's (the reading criterion-assessment.css
+       retired at v0.3) fail C3; caution planted as an alias of favorable fails C4 */
+    await p.evaluate(OVERRIDE(':root{--assessment-favorable:var(--state-earned) !important;--assessment-caution:var(--state-partial) !important;--assessment-adverse:var(--state-deflated) !important}' + STATE_SENTINEL));
+    const aliased = await p.evaluate(PAINTED);
+    await p.evaluate(NO_OVERRIDE);
+    const ahits = sentinelHits(aliased);
+    check(`${S}N3`, `control, ${scheme}: with the assessment roles planted as aliases of --state-earned, --state-partial and --state-deflated, C3 fails, the sentinel on every assessed mark and every key, facet and dot swatch`,
+      !sentinelOk(rest, aliased) && ahits.filter((h) => h.startsWith('marks:')).length === 199 && ['legend', 'facet', 'dot'].every((k) => ahits.filter((h) => h.startsWith(k + ':')).length === 3),
+      { hits: ahits.length, marks: ahits.filter((h) => h.startsWith('marks:')).length, first: ahits.slice(0, 3) });
+    await p.evaluate(OVERRIDE(FAVORABLE_SENTINEL + ':root{--assessment-caution:var(--assessment-favorable) !important}'));
+    const spread = await p.evaluate(PAINTED);
+    await p.evaluate(NO_OVERRIDE);
+    check(`${S}N4`, `control, ${scheme}: with caution planted as an alias of favorable, C4 fails, the 103 caution marks moving with the 26 favorable`,
+      !favorableOk(rest, spread, favorable) && changed(rest, spread, 'marks').length === 129, { marks: changed(rest, spread, 'marks').length });
+    /* without the Criterion Assessment stylesheet the roles resolve to nothing: C1 fails on every assessed mark */
+    await p.evaluate(`[].forEach.call(document.styleSheets,function(s){if(s.href&&/criterion-assessment\\.css$/.test(s.href))s.disabled=true;})`);
+    const unsheeted = await p.evaluate(CRITERION_PAINT);
+    const offMap = unsheeted.bad.filter((x) => x[1] === 'assessment map').length;
+    check(`${S}N5`, `control, ${scheme}: with criterion-assessment.css off, C1's paint check fails, every assessed mark off the assessment map`,
+      !criterionPaintOk(unsheeted) && offMap === 199, { failures: unsheeted.bad.length, offMap, first: unsheeted.bad[0] });
     errors.push(...p.errors); await p.close();
 
     /* ---- radial, the arrow fixture: short relations, a filled triangle, overlapping filled marks ---- */

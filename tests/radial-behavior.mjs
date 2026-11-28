@@ -14,7 +14,8 @@
    and the specimen generator only: no consumer code and no stub.
 
    GROUPS
-     M  the minimum composition (no optional module) renders, fits and reports
+     M  the minimum composition (no optional module) renders, fits and reports; the engine reports
+        its version
      R  the relation layer's first state: drawn-always relations on, drawn-on-selection relations
         off, never-drawn relations absent, in the minimum and the legend compositions: on a fresh
         mount and a remount, with URL arrival claimed and no link, on a resolved and an unresolved
@@ -58,9 +59,12 @@
         configuration errors; and the classes an internal challenge found, each checked: a Fit
         straddling a tier settles with no flip or refit loop, a selection never changes the
         arrangement, Escape forgets a set-aside panel, a short wide canvas keeps no unreadable
-        legend strip, focus never passes through another control, and refits carry their cause
-     X  controls: the isolation, teardown, reach, relation, chrome-collision and press-focus checks each
-        fail for their intended reason
+        legend strip, focus never passes through another control, and refits carry their cause; and
+        a keyed system's legend, on the facilities shell: offered, opened by a real press and readable
+        row by row at the compact sizes, kept open over the inspector's pill where that leaves the
+        panels less than 72px, and withdrawn with every trigger below 72px of canvas
+     X  controls: the isolation, teardown, reach, relation, chrome-collision, press-focus and
+        keyed-legend checks each fail for their intended reason
 
    MEASUREMENTS (reported, not judged): per shape at 1280x800, the Fit, the names it defers, the
    pairs of marks whose shapes overlap, how the click resolution resolves at each mark's center,
@@ -353,6 +357,8 @@ async function run() {
       await p.ev(`FX.inst.A.destroy(); FX.mount('A', 'specimen', { noArrival: true }); true`); await settle();
       const shown = await p.ev(geo);
       check('M5 a map mounted in a hidden host and then shown measures and fits as one mounted visible', hidden === shown && p.errors.length === 0);
+      const engine = await p.ev('DIAGRAM_RADIAL.VERSION');
+      check('M6 the engine reports its version: 2, the release that admits a declared semantic system', engine === 2, J(engine));
       await p.close();
     }
 
@@ -1288,9 +1294,10 @@ async function run() {
         await cp.close();
       }
 
-      /* C20: the two shells themselves, opened directly as generated: the reference specimen and the
-         synthetic composition, each with the complete module stack */
-      for (const [label, file] of [['the reference shell', 'diagram-interactive-radial.html'], ['the synthetic shell', 'diagram-interactive-radial.neutral.html']]) {
+      /* C20: the shells themselves, opened directly as generated: the reference specimen, the synthetic
+         composition and the facilities composition, each with the complete module stack */
+      for (const [label, file] of [['the reference shell', 'diagram-interactive-radial.html'], ['the synthetic shell', 'diagram-interactive-radial.neutral.html'],
+                                   ['the facilities shell', 'diagram-interactive-radial.facilities.html']]) {
         const sh = await open(b, `${base}/patterns/_preview/${file}`, { width: 1600, height: 1000, ready: false });
         await sh.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
         const shellAt = async (w, h) => { await sh.size(w, h); await sh.frames(); await sh.ev('new Promise((r) => setTimeout(r, 120))');
@@ -1300,6 +1307,115 @@ async function run() {
           sh1.arrangement === 'wide' && sh2.arrangement === 'compact' && sh2.open === null && sh3.arrangement === 'compact' && sh4.arrangement === 'wide' &&
           [sh1, sh2, sh3, sh4].every((z) => z.clear) && sh.errors.length === 0, J([sh1, sh2, sh3, sh4, sh.errors]));
         await sh.close();
+      }
+
+      /* C27-C30: a keyed system's legend, on the facilities shell (Criterion Assessment), its key part of
+         reading the map's color. One window swept through the compact sizes, as C1 sweeps its widths. At
+         each, the legend's trigger is offered and a real press opens it, with every word row and every
+         declaration scrolled whole into the panel and the canvas, drawn on top. Then a selection opens the
+         inspector's sheet, and a real press on the legend's trigger folds the sheet to its pill, which can
+         leave the panels' own room below 72px: the legend stays open there through the next measure, not
+         set aside, and as readable. Below 72px of canvas above the controls every trigger is withdrawn, as
+         on the legacy shells (C8, C15), so none is left that opens nothing */
+      const FAC = 'diagram-interactive-radial.facilities.html';
+      const KL = `window.KL = {
+        legend() { return document.querySelector('[data-radial-slot="legend"]'); },
+        trigger() { return Array.from(document.querySelectorAll('.radial-chrome-trigger')).find((t) => t.getAttribute('aria-controls') === this.legend().id); },
+        at() { const t = this.trigger(); if (!t || !t.getClientRects().length) return null; const r = t.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+          return { x, y, hit: t.contains(document.elementFromPoint(x, y)) }; },
+        snap() { const s = RADIAL_MAP.state(), lg = this.legend();
+          return { chrome: s.chrome, sheet: s.inspector.expanded, sel: s.selection.locked, expanded: this.trigger().getAttribute('aria-expanded'),
+                   shown: Array.from(document.querySelectorAll('.radial-chrome-trigger')).filter((t) => t.getClientRects().length > 0).length,
+                   row: document.querySelector('.radial-chrome-triggers').hidden, open: !lg.hidden && lg.getClientRects().length > 0 }; },
+        /* each word row and declaration scrolled to the top of the open panel: whole inside its box and the canvas, and on top there */
+        rows() { const lg = this.legend(), cv = document.querySelector('[data-radial-slot="canvas"]').getBoundingClientRect();
+          if (lg.hidden || !lg.getClientRects().length) return null;
+          const items = Array.from(lg.querySelectorAll('.radial-legend-row')).filter((r) => r.querySelector('.radial-legend-sw') || r.classList.contains('radial-legend-decl'));
+          return { box: lg.clientHeight, rows: items.map((r) => {
+            lg.scrollTop += r.getBoundingClientRect().top - (lg.getBoundingClientRect().top + lg.clientTop);
+            const a = lg.getBoundingClientRect(), b = r.getBoundingClientRect(), top = a.top + lg.clientTop, bottom = top + lg.clientHeight, y = (b.top + b.bottom) / 2;
+            const word = r.classList.contains('radial-legend-decl') ? r.querySelector('.radial-legend-sub') : r.querySelector('.radial-legend-lbl');
+            return { k: word.textContent, h: Math.round(b.height),
+                     whole: b.top >= top - 0.5 && b.bottom <= bottom + 0.5 && b.left >= a.left - 0.5 && b.right <= a.right + 0.5,
+                     canvas: b.top >= cv.top - 0.5 && b.bottom <= cv.bottom + 0.5 && b.left >= cv.left - 0.5 && b.right <= cv.right + 0.5,
+                     onTop: [b.left + 4, (b.left + b.right) / 2, b.right - 4].every((x) => lg.contains(document.elementFromPoint(x, y))) }; }) }; }
+      };`;
+      const KEYED_ROWS = J(['Favorable', 'Caution', 'Adverse', 'Criterion', 'Direction', 'Scope', 'Basis', 'Rule']);
+      const ASSESSED = `RADIAL_MAP.layout.nodes.find((n) => n.kind === 'leaf' && ['favorable', 'caution', 'adverse'].indexOf(n.state) >= 0).id`;
+      const keyedSweep = async (kp) => {
+        const press = async () => { const t = await kp.ev('KL.at()'); if (t) await kp.click(t.x, t.y); await settleC(kp); return t; };
+        const rows = [], short = [];
+        for (const [w, h] of [[1024, 768], [390, 844], [393, 666], [844, 390], [568, 320]]) {
+          await kp.size(w, h); await settleC(kp);
+          const s0 = await kp.ev('KL.snap()'), t1 = await press(), s1 = await kp.ev('KL.snap()'), r1 = await kp.ev('KL.rows()');
+          await press();                                                   /* closed by its trigger */
+          await kp.ev(`RADIAL_MAP.select(${ASSESSED}); true`); await settleC(kp);
+          const s2 = await kp.ev('KL.snap()'), t3 = await press();
+          await kp.size(w, h + 1); await settleC(kp); await kp.size(w, h); await settleC(kp);   /* the next measure */
+          const s3 = await kp.ev('KL.snap()'), r3 = await kp.ev('KL.rows()');
+          if (s3.open && (await kp.ev('KL.at()'))) await press();
+          await kp.ev('RADIAL_MAP.select(null); true'); await settleC(kp);
+          rows.push({ w, h, s0, t1, s1, r1, s2, t3, s3, r3 });
+        }
+        for (const [w, h] of [[520, 190], [320, 170]]) {
+          await kp.size(w, h); await settleC(kp);
+          const a = await kp.ev('KL.snap()');
+          await kp.ev(`RADIAL_MAP.select(${ASSESSED}); true`); await settleC(kp);
+          const z = await kp.ev('KL.snap()');
+          await kp.ev('RADIAL_MAP.select(null); true'); await settleC(kp);
+          short.push({ w, h, a, z });
+        }
+        const readable = (r) => !!r && r.box >= 72 && J(r.rows.map((x) => x.k)) === KEYED_ROWS && r.rows.every((x) => x.whole && x.canvas && x.onTop);
+        const unread = (r) => r ? { box: r.box, rows: r.rows.filter((x) => !(x.whole && x.canvas && x.onTop)) } : null;
+        const c27 = [], c28 = [], c29 = [];
+        rows.forEach((x) => {
+          const at = x.w + 'x' + x.h;
+          if (!(x.s0.chrome.arrangement === 'compact' && x.s0.chrome.open === null && x.t1 && x.t1.hit && x.s1.chrome.open === 'legend' && x.s1.expanded === 'true' && x.s1.open && readable(x.r1)))
+            c27.push([at, { s0: x.s0.chrome, press: x.t1, open: x.s1.chrome.open, expanded: x.s1.expanded, shown: x.s1.open, read: unread(x.r1) }]);
+          if (!(x.s2.sheet === true && x.s2.chrome.open === null && x.t3 && x.t3.hit && x.s3.chrome.open === 'legend' && x.s3.chrome.setAside === null && x.s3.open && x.s3.sheet === false && readable(x.r3)))
+            c29.push([at, { sheet: x.s2.sheet, press: x.t3, open: x.s3.chrome.open, setAside: x.s3.chrome.setAside, offered: x.s3.chrome.offered, shown: x.s3.open, folded: x.s3.sheet === false, read: unread(x.r3) }]);
+        });
+        short.forEach((x) => [['nothing selected', x.a], ['a selection', x.z]].forEach(([k, s]) => {
+          if (!(s.chrome.arrangement === 'compact' && s.chrome.offered === false && s.shown === 0 && s.row === true && s.chrome.open === null && !s.open))
+            c28.push([x.w + 'x' + x.h + ', ' + k, s]);
+        }));
+        /* the pill leaves the panels' own room below 72px at one size at least, or the trap is not set */
+        const tight = rows.filter((x) => x.s3.chrome.offered === false).map((x) => x.w + 'x' + x.h);
+        return { c27: { ok: c27.length === 0, fails: c27 }, c28: { ok: c28.length === 0, fails: c28 }, c29: { ok: c29.length === 0 && tight.length > 0, fails: c29, tight },
+                 table: rows.map((x) => ({ viewport: [x.w, x.h], box: x.r1 && x.r1.box, trapBox: x.r3 && x.r3.box, panelsOffered: x.s3.chrome.offered })) };
+      };
+      {
+        const kp = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kp.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        await kp.ev(KL); await settleC(kp);
+        const k = await keyedSweep(kp);
+        measures.keyedLegend = k.table;
+        check('C27 the facilities shell, keyed, at 1024x768, 390x844, 393x666, 844x390 and 568x320: the legend\'s trigger is offered, a real press opens the legend, and each of its three word rows and five declarations scrolls whole into the panel and the canvas, on top',
+          k.c27.ok, J(k.c27.fails).slice(0, 400));
+        check('C28 the facilities shell at 520x190 and 320x170, with nothing selected and with a selection: every trigger is withdrawn, the trigger row hidden and nothing open, so no trigger is left that opens nothing',
+          k.c28.ok, J(k.c28.fails).slice(0, 400));
+        check('C29 the facilities shell at the same compact sizes, with a selection that opens the inspector\'s sheet: a real press on the legend\'s trigger folds the sheet to its pill and opens the legend, which stays open through the next measure, not set aside, and as readable, where the pill leaves the panels\' own room below 72px included',
+          k.c29.ok, J({ tight: k.c29.tight, fails: k.c29.fails }).slice(0, 400));
+        check('C30 no uncaught error on the facilities shell through the sweep', kp.errors.length === 0, kp.errors.join(' | '));
+        await kp.close();
+      }
+      /* X10: the keyed branch planted out of a copy of the chrome, the shell's map mounted again */
+      {
+        const kx = await open(b, `${base}/patterns/_preview/${FAC}`, { width: 1600, height: 1000, ready: false });
+        await kx.ev(`document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 200)))`);
+        const planted = await kx.ev(`(async () => { const src = await (await fetch('/patterns/diagram-interactive-radial/diagrams-radial-chrome.js')).text();
+          const from = 'var keyed = !!(api.model && api.model.system && api.model.system.keyed);';
+          if (src.split(from).length !== 2) return false;
+          (0, eval)(src.replace(from, 'var keyed = false;'));
+          const S = window.RADIAL_FACILITIES, N = window.RADIAL_NEUTRAL; RADIAL_MAP.destroy();
+          window.RADIAL_MAP = DIAGRAM_RADIAL.mount({ host: document.querySelector('[data-radial]'), data: S.data, adapter: N.adapterFor(S.data, S.adapter), modules: N.modules });
+          return true; })()`);
+        await kx.ev(KL); await settleC(kx);
+        const x = planted ? await keyedSweep(kx) : null;
+        check('X10 control: a chrome copy with the keyed branch removed fails C29 on the facilities shell for its intended reason: at 568x320, where the pill leaves the panels less than 72px, the legend a real press opened is set aside at the next measure; C27 and C28 still pass',
+          planted && x.c27.ok && x.c28.ok && !x.c29.ok && x.c29.fails.length === 1 && x.c29.fails[0][0] === '568x320' && x.c29.fails[0][1].setAside === 'legend',
+          planted ? J(x.c29).slice(0, 400) : 'the fault could not be planted: the module text changed');
+        await kx.close();
       }
     }
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* radial-stack.mjs — the full-stack harness of the interactive radial pattern: the inspector,
    facets (search, filters, membership), export and theme modules with the legend and chrome, on
-   the synthetic composition in every hierarchy shape and on the reference specimen.
+   the synthetic composition in every hierarchy shape, under Criterion Assessment as the
+   visitor-facilities composition, and on the reference specimen.
 
      node tests/radial-stack.mjs           run every group; exit 1 on any failure
      node tests/radial-stack.mjs --json    the same, with the measurements as JSON at the end
@@ -29,7 +30,7 @@
         another record);
         a resize into compact keeping a reader's record open and folding an idle panel; the sheet
         opened and closed with a record and a filter through a portrait / landscape turn, at the
-        Fit and away from it; the two public expressions framed at the Fit (clear, as large as the
+        Fit and away from it; the CFW reference and Vellmark parks framed at the Fit (clear, as large as the
         best reservation of the inspector, and where the panels fold as large as with it folded)
         on a touch page and a desktop page; on each, the same turn with a record and a filter; the
         inspector folded with the panels on a desktop window, and its dynamic states there;
@@ -54,6 +55,12 @@
         remount, missing modules and slots, the minimum composition's membership, and no
         reference content loaded
      R  the reference specimen mounts the complete stack on its captured content
+     A  Criterion Assessment, on the visitor-facilities composition: the key (the owner words, the
+        system's name and its five declarations); the default announcements and the chooser with the
+        owner word; the assessment facet (the owner words, its counts, no unassessed option); the
+        inspector's word, criterion and tint; the keyed mount refused without the legend module or a
+        resolving role token; the strict swatch facet and the muted-only tone; the page plate with its
+        key, and the diagram plate refused
      X  controls: a planted fault in a copy of a module fails the check written for it, or, for a
         public expression, in a copy loaded into that page and remounted */
 import { spawn } from 'node:child_process';
@@ -1000,6 +1007,141 @@ window.C = (function () {
     m.on(type, () => { if (window.__reopened || m.state().inspector.view !== 'idle') return; window.__reopened++; insp.openRecord('OFFICE-S'); });
     listen(); return true; };
   C.reopenProbe = () => Object.assign(C.closeProbe(), { reopened: window.__reopened, title: (q('#D .radial-insp-title') || {}).textContent || null, atFit: FX.inst.D.view().atFit });
+  /* ---- A: Criterion Assessment, on the visitor-facilities composition ---- */
+  const ROLES = ['favorable', 'caution', 'adverse'], WORDS = ['Favorable', 'Caution', 'Adverse'];
+  const FIELDS = ['criterion', 'direction', 'scope', 'basis', 'rule'], FIELD_LABELS = ['Criterion', 'Direction', 'Scope', 'Basis', 'Rule'];
+  /* the token a role's paint references, by name: an assessed role its own, anything else the structural wash */
+  const paintOf = (role) => ROLES.indexOf(role) >= 0 ? 'var(--assessment-' + role + ')' : 'var(--fg-1)';
+  const wordOf = (role) => ROLES.indexOf(role) >= 0 ? WORDS[ROLES.indexOf(role)] : null;
+  /* a mount of the facilities composition that should be refused: its code and words, and whether the host was left as it was */
+  const refused = (o) => { if (FX.inst.D) { try { FX.inst.D.destroy(); } catch (e) {} FX.inst.D = null; } FX.mode('one');
+    const host = FX.host('D'), before = host.outerHTML;
+    try { FX.mount('D', 'facilities', o); return { code: 'mounted' }; } catch (e) { return { code: e.code, msg: e.message, same: host.outerHTML === before }; }
+    finally { if (FX.inst.D) { FX.inst.D.destroy(); FX.inst.D = null; } } };
+  /* the key: the color heading, the three owner words on swatches of their own tokens, the system's name, then its five declarations */
+  C.critLegend = async () => { const m = fresh('facilities'); await frames(); const S = FX.G.FACILITIES_SEMANTIC, lg = q('#D [data-radial-slot="legend"]');
+    const kids = Array.from(lg.children).filter((c) => !c.classList.contains('radial-panel-h'));
+    const order = kids.slice(0, 10).map((c) => c.classList.contains('radial-legend-h') ? c.textContent : c.classList.contains('radial-legend-decl') ? 'decl' : c.querySelector('.radial-legend-sw') ? 'word' : 'other');
+    const words = kids.filter((c) => c.querySelector('.radial-legend-sw')).map((c) => { const sw = c.querySelector('.radial-legend-sw');
+      return { label: c.querySelector('.radial-legend-lbl').textContent, st: sw.style.getPropertyValue('--st'), wash: sw.classList.contains('radial-sw--wash'), sub: !!c.querySelector('.radial-legend-sub') }; });
+    const decl = kids.filter((c) => c.classList.contains('radial-legend-decl')).map((c) => [c.querySelector('.radial-legend-sub').textContent, c.querySelector('.radial-legend-lbl').textContent]);
+    const model = m.service('legend').model, want = FIELDS.map((k, i) => ({ field: k, label: FIELD_LABELS[i], value: S[k] }));
+    return { ok: J(words.map((w) => w.label)) === J(WORDS) && words.every((w, i) => w.st === paintOf(ROLES[i]) && !w.wash && !w.sub) &&
+                 J(order) === J(['color = visitor facilities', 'word', 'word', 'word', 'Criterion Assessment', 'decl', 'decl', 'decl', 'decl', 'decl']) &&
+                 J(decl) === J(want.map((x) => [x.label, x.value])) && model.system === 'Criterion Assessment' && J(model.declarations) === J(want),
+             d: { order, words, decl: decl.map((x) => x[0]), system: model.system } }; };
+  /* the default announcements, on a page no pointer has pressed, so a scripted focus of the figure is a keyboard focus: the start
+     message names the system and its criterion; a focus and a selection of an assessed leaf, and the inspector's default, end with
+     its owner word, and an unassessed leaf's carry none */
+  C.critSay = async () => { const m = fresh('facilities'); await frames(); const S = FX.G.FACILITIES_SEMANTIC, stage = q('#D [data-radial-slot="stage"]');
+    const leaves = m.layout.nodes.filter((n) => n.kind === 'leaf'), a = leaves.find((n) => n.state === 'favorable'), u = leaves.find((n) => n.state === 'unassessed');
+    const node = (id) => m.layout.nodes.find((n) => n.id === id), root = m.model.root.label;
+    listen(); stage.focus({ preventScroll: true }); const keyboard = stage.matches(':focus-visible'); await frames();
+    m.focus(a.id); m.focus(u.id); m.select(a.id); m.select(u.id); await frames();
+    const said = C.said(), rx = (s) => s.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&'), at = (n) => '^' + rx(n.label) + ', \\d+ of \\d+ in ' + rx(node(n.parent).label);
+    const start = root + '. Arrow keys move between nodes; Enter selects; Escape clears. ' + root + ', the center';
+    const ok = keyboard && said.length === 7 && said[0] === start + '. Color is Criterion Assessment: ' + S.criterion + '.' &&
+      new RegExp(at(a) + ', Favorable$').test(said[1]) && new RegExp(at(u) + '$').test(said[2]) &&
+      J(said.slice(3)) === J([a.label + ' selected, Favorable', a.label + ', Favorable', u.label + ' selected', u.label]);
+    stage.blur();
+    return { ok, d: { keyboard, said } }; };
+  /* the chooser: a point where a click offers an assessed and an unassessed leaf, clear of the panel, and what each item should read */
+  C.critChooserSetup = async () => { const m = fresh('facilities'); await frames();
+    const stage = q('#D [data-radial-slot="stage"]'), sr = stage.getBoundingClientRect(), panel = q('#D [data-radial-slot="inspector"]').getBoundingClientRect();
+    const node = (id) => m.layout.nodes.find((n) => n.id === id), asserted = (id) => !!wordOf(node(id).state);
+    let at = null;
+    for (const n of m.layout.nodes) { if (n.kind !== 'leaf' || n.state !== 'unassessed') continue; const p = m.project(n.id);
+      for (const [dx, dy] of [[0, 0], [3, 0], [-3, 0], [0, 3], [0, -3]]) {
+        const x = Math.round(p.x + dx + sr.left), y = Math.round(p.y + dy + sr.top);
+        if (x - sr.left < 40 || y - sr.top < 40 || x > panel.left - 220 || y - sr.top > sr.height - 200) continue;
+        const e = document.elementFromPoint(x, y); if (!e || !stage.contains(e)) continue;
+        const t = m.tap(x - sr.left, y - sr.top, 4);
+        if (t.action === 'choose' && t.shown.some(asserted) && t.shown.some((id) => !asserted(id))) { at = { x, y, shown: t.shown }; break; } }
+      if (at) break; }
+    if (!at) return { ok: false, at };
+    const want = at.shown.map((id) => { const n = node(id), par = node(n.parent), w = wordOf(n.state);
+      return { lbl: n.label, sub: (par ? par.label : '') + (par && w ? ' · ' : '') + (w || ''), st: paintOf(n.state), wash: !w }; });
+    return { ok: true, at, want }; };
+  C.critChooserProbe = () => qa('#D .radial-chooser-item').map((b) => { const sw = b.querySelector('.radial-chooser-sw');
+    return { lbl: b.querySelector('.radial-chooser-lbl').textContent, sub: (b.querySelector('.radial-chooser-sub') || {}).textContent || null,
+             st: sw.style.getPropertyValue('--st'), wash: sw.classList.contains('radial-sw--wash') }; });
+  /* the assessment facet: the owner words on swatches of their own tokens, over the whole data, and no unassessed option */
+  C.critFacets = async () => { const m = fresh('facilities'); await frames();
+    const f = st().facets.options.find((o) => o.id === 'assessment'), opts = f ? f.options.map((o) => [o.value, o.label, o.count]) : null;
+    const boxes = qa('#D input[data-radial-facet="assessment"]'), values = boxes.map((x) => x.value);
+    const shown = boxes.map((x) => { const l = x.closest('label'), sw = l.querySelector('.radial-facet-sw'); return [l.querySelector('.radial-facet-lbl').textContent, sw ? sw.style.getPropertyValue('--st') : null]; });
+    const leaves = m.layout.nodes.filter((n) => n.kind === 'leaf'), by = (r) => leaves.filter((n) => n.state === r).length;
+    await choose('assessment', 'favorable'); const one = st().membership.visibleItems;
+    await choose('assessment', 'adverse'); const two = st().membership.visibleItems;
+    return { ok: J(opts) === J([['favorable', 'Favorable', 26], ['caution', 'Caution', 103], ['adverse', 'Adverse', 70]]) && J(values) === J(ROLES) &&
+                 J(shown) === J(ROLES.map((r, i) => [WORDS[i], paintOf(r)])) && leaves.length === 220 && by('unassessed') === 21 && one === 26 && two === 96,
+             d: { opts, values, leaves: leaves.length, unassessed: by('unassessed'), one, two } }; };
+  /* the inspector: an assessed leaf's word, with the criterion as its second line, tinted by its own token; an unassessed leaf
+     shows no state row and takes the structural wash, as a group and the root do; a record takes no tint */
+  C.critInspector = async () => { const m = fresh('facilities'); await frames(); const S = FX.G.FACILITIES_SEMANTIC, slot = q('#D [data-radial-slot="inspector"]');
+    const tint = () => slot.style.getPropertyValue('--st'), leaves = m.layout.nodes.filter((n) => n.kind === 'leaf'), d = {};
+    ROLES.forEach((r) => { m.select(leaves.find((n) => n.state === r).id); const dot = q('#D .radial-insp-dot');
+      d[r] = { name: (q('#D .radial-insp-state-name') || {}).textContent, mean: (q('#D .radial-insp-state-mean') || {}).textContent,
+               dot: dot ? dot.style.getPropertyValue('--st') + (dot.classList.contains('radial-sw--wash') ? ' wash' : '') : null, tint: tint() }; });
+    m.select(leaves.find((n) => n.state === 'unassessed').id); d.unassessed = { rows: qa('#D .radial-insp-state').length, tint: tint(), view: st().inspector.view };
+    m.select(m.layout.nodes.find((n) => n.kind === 'container').id); d.container = tint();
+    m.select(m.model.root.id); d.root = tint();
+    m.service('inspector').openRecord('OFFICE-N'); await frames(); d.record = tint();
+    return { ok: ROLES.every((r, i) => d[r].name === WORDS[i] && d[r].mean === S.criterion && d[r].dot === paintOf(r) && d[r].tint === paintOf(r)) &&
+                 d.unassessed.rows === 0 && d.unassessed.tint === 'var(--fg-1)' && d.unassessed.view === 'item' && d.container === 'var(--fg-1)' && d.root === 'var(--fg-1)' && d.record === '', d }; };
+  /* the keyed mount: refused without the legend module, every module but it listed or none, before anything is drawn */
+  C.critKeyRequired = async () => { const all = refused({ modules: FX.ALL.filter((x) => x !== 'legend') }), min = refused({ modules: [], adapter: {} });
+    const words = 'radial mount KEY_REQUIRED: a Criterion Assessment instance is drawn keyed only: list the legend module';
+    return { ok: [all, min].every((r) => r.code === 'KEY_REQUIRED' && r.msg === words && r.same), d: { all, min } }; };
+  /* refused where a role token resolves empty in the host (a host style sets it to an empty value); the same mount without that style
+     is not (the control) */
+  C.critTokens = async () => { const sheet = document.createElement('style'); sheet.textContent = '#D { --assessment-favorable: ; }'; document.head.appendChild(sheet);
+    const resolved = getComputedStyle(FX.host('D')).getPropertyValue('--assessment-favorable'); let r;
+    try { r = refused({}); } finally { sheet.remove(); }
+    const control = refused({}).code;
+    return { ok: resolved.trim() === '' && r.code === 'TOKENS' && r.msg === 'radial mount TOKENS: --assessment-favorable does not resolve in the host; load the Criterion Assessment stylesheet' &&
+                 r.same && control === 'mounted', d: { resolved, r, control } }; };
+  /* a swatch facet under Criterion Assessment takes the owner words: an adapter's label, or a value no role names, is refused */
+  C.critFacetErrors = async () => { const a = FX.adapterFor('facilities'); a.facets.declared[0].label = (v) => v;
+    const b = FX.adapterFor('facilities'), f = b.facets.declared[0], v = f.value; f.value = (x) => x.assessment === 'caution' ? 'amber' : v(x);
+    const label = refused({ adapter: a }), foreign = refused({ adapter: b });
+    return { ok: label.code === 'HOOK_MISSING' && label.msg === 'radial mount HOOK_MISSING: facets.declared[0]: a swatch facet under Criterion Assessment takes the owner words, not a label' && label.same &&
+                 foreign.code === 'HOOK_MISSING' && foreign.msg === 'radial mount HOOK_MISSING: facets.declared[0]: "amber" is not a Criterion Assessment role' && foreign.same, d: { label, foreign } }; };
+  /* a structured field's tone is muted only: a role tone is a named error, and muted draws (the control) */
+  C.critTone = async () => { const toned = (tone) => { const a = FX.adapterFor('facilities'), sec = a.inspector.sections;
+      a.inspector.sections = (t, c) => t.type === 'item' ? sec(t, c).concat([{ type: 'fields', fields: [{ label: 'note', value: 'a toned block', format: 'structured', tone }] }]) : sec(t, c); return a; };
+    let m = fresh('facilities', { adapter: toned('caution') }), err = null; const leaf = leafOf(m);
+    try { m.select(leaf.id); } catch (e) { err = e; }
+    m = fresh('facilities', { adapter: toned('muted') }); m.select(leaf.id); await frames();
+    const block = q('#D .radial-insp-block.has-tone'), tone = block && block.style.getPropertyValue('--tone');
+    return { ok: !!err && err.code === 'SECTION' && /^radial inspector SECTION: section \d+ field 0: under Criterion Assessment a field tone is muted only$/.test(err.message) && tone === 'var(--fg-3)',
+             d: { err: err && err.message, tone } }; };
+  /* the export, keyed: one control, the page plate with its key and declarations and no Spectral State token; the diagram plate, a page
+     plate with its legend off, and a click whose legend model carries no declarations are refused */
+  C.critExport = async () => { const m = fresh('facilities'); await frames(); const S = FX.G.FACILITIES_SEMANTIC, d = {};
+    d.controls = qa('#D [data-radial-slot="actions"] .radial-export-control').map((x) => [x.getAttribute('data-radial-export'), x.textContent]);
+    const r = await m.service('export').run('page').catch((e) => ({ ok: false, reason: e.reason || String(e) }));
+    d.page = [r.ok, r.width, r.height, r.filename, r.reason];
+    const svg = r.svg || '', lines = Array.from(new DOMParser().parseFromString(svg || '<svg/>', 'image/svg+xml').querySelectorAll('.radial-plate-legend text')).map((t) => t.textContent);
+    d.state = svg.indexOf('--state-') >= 0;
+    const rule = /\.radial-export-plate\{([^}]*)\}/.exec(svg); d.tokens = rule ? rule[1].split(';').map((x) => x.split(':')[0]) : null;
+    /* the color heading and the three words, then the system's name and each declaration's label, then its value, wrapped */
+    let i = lines.indexOf('CRITERION ASSESSMENT');
+    d.words = i >= 4 ? lines.slice(i - 4, i) : null;
+    d.decl = i < 0 ? null : FIELDS.map((k) => { const label = lines[++i]; let value = ''; while (i + 1 < lines.length && value.length < S[k].length) value += (value ? ' ' : '') + lines[++i]; return [label, value]; });
+    d.diagram = await m.service('export').run('diagram').then(() => 'ran', (e) => e.reason);
+    const lm = m.service('legend').model, keep = lm.declarations; delete lm.declarations;
+    d.key = await m.service('export').run('page').then(() => 'ran', (e) => e.reason); lm.declarations = keep;
+    const both = FX.adapterFor('facilities'); both.export.profiles = { page: true, diagram: true };
+    const off = FX.adapterFor('facilities'); off.export.profiles = { page: { legend: false } };
+    d.refuseDiagram = refused({ adapter: both }); d.refuseOff = refused({ adapter: off });
+    return { ok: J(d.controls) === J([['page', 'PNG page']]) && r.ok && r.width === 3840 && r.height === 2880 && r.filename === 'radial-facilities-page-3840x2880-light.png' && !d.state &&
+                 J(d.tokens) === J(['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to', '--assessment-favorable', '--assessment-caution', '--assessment-adverse']) &&
+                 J(d.words) === J(['COLOR = VISITOR FACILITIES'].concat(WORDS)) && J(d.decl) === J(FIELDS.map((k, j) => [FIELD_LABELS[j], S[k]])) &&
+                 d.diagram === 'no such profile' && d.key === 'key missing' &&
+                 d.refuseDiagram.code === 'HOOK_MISSING' && d.refuseDiagram.msg === 'radial mount HOOK_MISSING: export.profiles.diagram is refused: a Criterion Assessment instance exports the page plate with its key' && d.refuseDiagram.same &&
+                 d.refuseOff.code === 'HOOK_MISSING' && d.refuseOff.msg === 'radial mount HOOK_MISSING: export.profiles.page.legend cannot be off: a Criterion Assessment instance exports its key' && d.refuseOff.same,
+             d }; };
   /* ---- X: a planted fault in a copy of a module, then the check written for it ---- */
   /* a preview page's map mounted again, after a plant: the CFW reference or the neutral composition */
   C.remount = () => { const host = q('[data-radial]'), R = window.RADIAL_REFERENCE, S = window.RADIAL_SPECIMEN, N = window.RADIAL_NEUTRAL;
@@ -1840,6 +1982,16 @@ Object.assign(KEYED, {
     return { ok: fails.length === 0, d: { fails, d } };
   }
 });
+Object.assign(KEYED, {
+  /* A3: the chooser under Criterion Assessment, by a real click where an assessed and an unassessed leaf meet: each item's sub line
+     names its parent and, for an assessed leaf, its owner word, beside a swatch of its own token; Escape closes it */
+  async a3(P) {
+    const s = await P.ev('C.critChooserSetup()'); if (!s.ok) return { ok: false, d: s };
+    await clickAt(P, s.at.x, s.at.y); const got = await P.ev('C.critChooserProbe()');
+    await P.key('Escape'); const closed = await P.ev(`!document.querySelector('#D .radial-chooser')`);
+    return { ok: J(got) === J(s.want) && got.some((x) => x.wash) && got.some((x) => !x.wash) && closed, d: { at: s.at, got, want: s.want, closed } };
+  }
+});
 
 async function run() {
   const b = await launch();
@@ -1964,6 +2116,25 @@ async function run() {
     await W('R1 the complete stack on the captured content: 590 placed nodes, 217 relations, 479 records, 1,068 search entries, nothing unresolved', 'reference');
     await P.close();
 
+    /* A on a page of its own: no pointer presses before A2, so its scripted focus of the figure is a keyboard focus */
+    console.log('# A  Criterion Assessment');
+    {
+      const Pa = await open(b, url);
+      const A = async (name, fn) => { const r = await at(Pa, fn); check(name, r.ok, J(r.d).slice(0, 400)); return r; };
+      await A('A1 the key: the color heading, the owner words Favorable, Caution and Adverse on swatches of their own --assessment-* tokens with no meaning line and no unassessed row, then the heading Criterion Assessment and its five declarations, each label over its value; the legend model carries the system and the declarations', 'critLegend');
+      await A('A2 the default announcements carry the owner word: the start message ends with Color is Criterion Assessment and the criterion, and a focus, a selection and the inspector\'s default for an assessed leaf end with its word, an unassessed leaf\'s with none', 'critSay');
+      { const r = await KEYED.a3(Pa); check('A3 the chooser, by a real click where an assessed and an unassessed leaf meet: each item\'s sub line is its parent · its owner word, its parent alone for the unassessed leaf, beside a swatch of its own token or the wash', r.ok, J(r.d).slice(0, 400)); }
+      await A('A4 the assessment facet offers exactly Favorable, Caution and Adverse, 26, 103 and 70 of the 220 places, on swatches of their own tokens, and no option for the 21 unassessed; a filter by each bounds the places to its count', 'critFacets');
+      await A('A5 the inspector: an assessed leaf shows its word with the criterion as its second line, dot and panel tinted var(--assessment-<role>); an unassessed leaf shows no state row and the var(--fg-1) tint, as a group and the root do; a record takes none', 'critInspector');
+      await A('A6 KEY_REQUIRED: with every module but the legend listed, or none, the mount is refused in the system\'s words and leaves the host as it was', 'critKeyRequired');
+      await A('A7 TOKENS: where a host style sets --assessment-favorable to an empty value, the mount is refused naming that token and leaves the host as it was; without the style the same mount succeeds', 'critTokens');
+      await A('A8 the swatch facet takes the owner words: an adapter\'s label on it, or a value that is no Criterion Assessment role, is HOOK_MISSING in the system\'s words, the host left as it was', 'critFacetErrors');
+      await A('A9 under Criterion Assessment a structured field\'s tone is muted only: a role tone is SECTION in the system\'s words, and muted draws with var(--fg-3)', 'critTone');
+      await A('A10 the export, keyed: one control, PNG page; the page plate at 3840x2880 carries the base tokens and the three --assessment-* tokens and no --state- token, and its legend column draws the three words, then CRITERION ASSESSMENT and each declaration\'s label then value; the diagram profile and a page plate with its legend off are refused at mount, the diagram plate is no profile, and a plate whose legend model carries no declarations fails as key missing', 'critExport');
+      check('A11 no uncaught error on the Criterion Assessment page', Pa.errors.length === 0, J(Pa.errors.slice(0, 3)));
+      await Pa.close();
+    }
+
     /* compact */
     P = await open(b, url, { width: 390, height: 844, touch: true });
     console.log('# U, Q on a compact canvas');
@@ -2010,7 +2181,7 @@ async function run() {
       await Xp.close();
     }
 
-    /* the two public expressions at the whole-map Fit: a touch page turned from tall portrait through
+    /* the CFW reference and Vellmark parks at the whole-map Fit: a touch page turned from tall portrait through
        short portrait and the short landscape sizes and back, then tablet and wide; a desktop page
        narrowed past the lower panels' and the inspector's transitions and widened again */
     console.log('# U  the public expressions at the Fit');
@@ -2280,6 +2451,30 @@ async function run() {
       ['X64 the follow planted to swallow the selection\'s error fails U55: neither the adapter\'s error nor the malformed section\'s reaches the page', 'diagrams-radial-inspector.js',
        "      } finally {\n        pending = null;\n      }\n", "      } catch (e) {\n        ok = false;\n      } finally {\n        pending = null;\n      }\n", KEYED.u55, {},
        (r) => r.d.fails.length === 2 && r.d.fails.every((f) => /reaches the page unchanged/.test(f[0])) && r.d.d.adapter.threw.caught === 0 && r.d.d.section.threw.caught === 0 && r.d.d.adapter.reported === 0 && r.d.d.section.reported === 0 && r.d.d.adapter.again.ret === null && r.d.d.section.again.ret === null]);
+    /* the Criterion Assessment controls: each planted fault is one the check written for it reads by name, not by appearance */
+    plants.push(
+      ['X65 the resolver\'s Criterion paint planted to name a Spectral State token fails A1: each word\'s swatch is drawn, but from var(--state-<role>), not its own token', 'diagrams-radial-contract.js',
+       "      paint: function (role) { return asserts(role) ? 'var(--assessment-' + role + ')' : 'var(--fg-1)'; },",
+       "      paint: function (role) { return asserts(role) ? 'var(--state-' + role + ')' : 'var(--fg-1)'; },", 'critLegend', {},
+       (r) => r.d.words.length === 3 && r.d.words.every((w, i) => w.st === 'var(--state-' + ['favorable', 'caution', 'adverse'][i] + ')')],
+      ['X66 the key planted with an unassessed row fails A1: a fourth word row stands under the color heading', 'diagrams-radial-contract.js',
+       '      rows: Object.freeze(ASSESSED.map(function (r) { return Object.freeze({ role: r, label: ASSESSMENT_WORDS[r], meaning: null }); })),',
+       '      rows: Object.freeze(ASSESSMENT_ROLES.map(function (r) { return Object.freeze({ role: r, label: ASSESSMENT_WORDS[r] || r, meaning: null }); })),', 'critLegend', {},
+       (r) => r.d.words.length === 4 && r.d.words[3].label === 'unassessed'],
+      ['X67 the swatch facet planted to keep the unassessed value fails A4: an unassessed option is offered', 'diagrams-radial-facets.js',
+       '          return M.system.asserts(v);\n', '          return true;\n', 'critFacets', {},
+       (r) => r.d.values.indexOf('unassessed') >= 0],
+      ['X68 the resolver planted with a word for unassessed fails A2: the unassessed leaf\'s focus and selection are announced with it', 'diagrams-radial-contract.js',
+       '      word: function (role) { return asserts(role) ? ASSESSMENT_WORDS[role] : null; },',
+       "      word: function (role) { return asserts(role) ? ASSESSMENT_WORDS[role] : role === 'unassessed' ? 'Unassessed' : null; },", 'critSay', {},
+       (r) => r.d.said.some((x) => / selected, Unassessed$/.test(x))],
+      ['X69 the same word planted fails A3: the unassessed leaf\'s chooser item names it after its parent', 'diagrams-radial-contract.js',
+       '      word: function (role) { return asserts(role) ? ASSESSMENT_WORDS[role] : null; },',
+       "      word: function (role) { return asserts(role) ? ASSESSMENT_WORDS[role] : role === 'unassessed' ? 'Unassessed' : null; },", KEYED.a3, {},
+       (r) => !!r.d.got && r.d.got.some((x) => / · Unassessed$/.test(x.sub || ''))],
+      ['X70 the export planted to accept the diagram profile under Criterion Assessment fails A10: an adapter that declares it mounts', 'diagrams-radial-export.js',
+       "      if (model.system.keyed && name === 'diagram') throw ExportError('export.profiles.diagram is refused: a ' + model.system.title + ' instance exports the page plate with its key');\n", '', 'critExport', {},
+       (r) => r.d.refuseDiagram.code === 'mounted']);
     for (const [name, file, from, to, fn, opts, why] of plants) {
       const Q = await open(b, url, opts);
       const pl = await Q.ev(`C.plant(${J(file)}, ${J(from)}, ${J(to)})`);
