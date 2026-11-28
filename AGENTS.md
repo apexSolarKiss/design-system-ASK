@@ -5,7 +5,7 @@ This repo's `AGENTS.md` is a **resolved carrier**: the shared execution protocol
 <!-- BEGIN carrier-metadata -->
 CARRIER_TYPE: resolved-local
 SHARED_BLOCK_SOURCE: apexSolarKiss/control-surface/protocol/AGENTS.shared.md
-SHARED_BLOCK_PIN: 52334e29a72137696f7e98969e9bd679f11f597b
+SHARED_BLOCK_PIN: 31bbe8a58b8634fdd38c848aab7f2e2d9e2e7484
 PROFILES: [core-ecology]
 GRANT_FRAGMENT: none
 OPERATING_SURFACE: direct-core
@@ -872,7 +872,7 @@ If a proposed update says "the project currently should do X," it does not belon
 
 - Verify repo state before meaningful work.
 - Read repo-local truth and grounding note before responding.
-- Stop at exact scoped diff before commit; carry through to merged + cleanup once approved.
+- Stop at exact scoped diff before commit; follow §Advisor-Readable Review Objects and §Default: Hold or Carry Through Per Adversarial-Collaboration Preconditions for the applicable review windows and authorized carry-through.
 - State the plan before executing.
 - Single-writer per branch. Treat repo as audit trail.
 - Match the unit of work to the level of the question.
