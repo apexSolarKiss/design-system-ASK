@@ -232,6 +232,32 @@
     return { ids: ids, children: children, depth: depth, planes: planes, states: states, kinds: kinds,
              emptyContainers: emptyContainers, unresolved: unresolved, unsupported: unsupported };
   }
+  /* The semantic system: the one resolver every module reads a role's paint, word, key rows and
+     export tokens through, so no module builds a token name of its own. Spectral State resolves
+     to exactly the strings the modules wrote before the resolver existed: a role's paint is
+     `var(--state-<role>)`, and the framing root, a node with no state and `neutral` paint
+     `var(--state-neutral)`, the wash. */
+  function spectralSystem(states) {
+    var rows = [], tokens = ['--state-neutral'];
+    states.forEach(function (s, role) {
+      rows.push({ role: s.role, label: s.label, meaning: s.meaning });
+      if (tokens.indexOf('--state-' + role) < 0) tokens.push('--state-' + role);
+    });
+    return Object.freeze({
+      name: 'spectral-state',
+      keyed: false,
+      declarations: null,
+      none: 'neutral',
+      rows: Object.freeze(rows),
+      tokenNames: Object.freeze(tokens),
+      roleOf: function (x) { return x.state === undefined ? 'neutral' : x.state; },
+      asserts: function (role) { return !!role && role !== 'neutral'; },
+      paint: function (role) { return 'var(--state-' + (role || 'neutral') + ')'; },
+      word: function (role) { var s = states.get(role); return s ? s.label : null; },
+      stateOf: function (x) { return x && x.state !== undefined ? states.get(x.state) || null : null; }
+    });
+  }
+
   /* an edge's own reference information, kept whole in every diagnostic */
   function reference(e, i) {
     var r = { index: i, from: e.from, to: e.to, plane: e.plane };
@@ -303,7 +329,8 @@
       relations: relations, links: links, recordLinks: recordLinks,
       unresolved: v.unresolved, unsupported: v.unsupported, hiddenRefs: hiddenRefs,
       kinds: v.kinds, planes: v.planes, states: v.states, emptyContainers: v.emptyContainers,
-      kindOf: function (id) { return v.ids.get(id); }
+      kindOf: function (id) { return v.ids.get(id); },
+      system: spectralSystem(v.states)
     };
   }
 

@@ -229,7 +229,7 @@
     var sheetView = null;            /* the camera as the open panel left it, and whether it left the Fit */
 
     function kindOf(x) { return x && x.kind !== undefined ? M.kinds.get(x.kind) || null : null; }
-    function stateOf(x) { return x && x.state !== undefined ? M.states.get(x.state) || null : null; }
+    function stateOf(x) { return M.system.stateOf(x); }
     /* the target an adapter sees: its type, the contract object, and what the owner knows of it */
     function targetFor(id) {
       var t = M.kindOf(id);
@@ -288,7 +288,7 @@
       var row = el('div', 'radial-insp-field');
       if (fmt === 'structured') {
         row.className = 'radial-insp-block' + (f.tone ? ' has-tone' : '');
-        if (f.tone) row.style.setProperty('--tone', f.tone === 'muted' ? 'var(--fg-3)' : 'var(--state-' + f.tone + ')');
+        if (f.tone) row.style.setProperty('--tone', f.tone === 'muted' ? 'var(--fg-3)' : M.system.paint(f.tone));
         row.appendChild(el('span', 'radial-insp-lbl', f.label));
         if (typeof v === 'string') row.appendChild(el('span', 'radial-insp-val', v));
         else if (Array.isArray(v)) v.forEach(function (x) { row.appendChild(el('div', 'radial-insp-val', str(x))); });
@@ -336,8 +336,8 @@
         if (!st) return null;
         var row = el('div', 'radial-insp-state');
         /* no asserted state shows as the marks show it: the wash, not a solid dot */
-        var dot = el('span', 'radial-insp-dot' + (st.role === 'neutral' ? ' radial-sw--wash' : ''));
-        dot.style.setProperty('--st', 'var(--state-' + st.role + ')');
+        var dot = el('span', 'radial-insp-dot' + (M.system.asserts(st.role) ? '' : ' radial-sw--wash'));
+        dot.style.setProperty('--st', M.system.paint(st.role));
         row.appendChild(dot);
         row.appendChild(el('span', 'radial-insp-state-name', st.label));
         row.appendChild(el('span', 'radial-insp-state-mean', st.meaning));
@@ -423,7 +423,7 @@
         var secs = cfg.sections(t, ctx);
         if (!Array.isArray(secs)) throw SectionError('sections must return an array');
         secs.forEach(function (s, i) { var f = section(s, t, i); if (f) out.appendChild(f); });
-        st = t.type === 'item' && t.state ? 'var(--state-' + t.state.role + ')' : t.type === 'record' ? null : 'var(--state-neutral)';
+        st = t.type === 'item' && t.state ? M.system.paint(t.state.role) : t.type === 'record' ? null : M.system.paint(null);
       }
       var focused = body.contains(document.activeElement);
       while (body.firstChild) body.removeChild(body.firstChild);

@@ -301,10 +301,10 @@
 
     /* the theme tokens, resolved now, as custom properties on the plate's root */
     function tokensRule() {
-      var cs = getComputedStyle(document.documentElement), roles = ['neutral'], out = [];
-      model.states.forEach(function (s, role) { if (roles.indexOf(role) < 0) roles.push(role); });
-      L.nodes.forEach(function (n) { if (n.state && roles.indexOf(n.state) < 0) roles.push(n.state); });
-      ['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to'].concat(roles.map(function (r) { return '--state-' + r; })).forEach(function (t) {
+      var cs = getComputedStyle(document.documentElement), out = [];
+      var base = ['--fg-1', '--fg-2', '--fg-3', '--bg-from', '--bg-to'];
+      /* the declared system's role tokens, in its own order; a role painted from a base token adds none */
+      base.concat(model.system.tokenNames.filter(function (t) { return base.indexOf(t) < 0; })).forEach(function (t) {
         var v = cs.getPropertyValue(t).trim();
         if (!v) throw fail(WHY.tokens);
         out.push(t + ':' + v);
@@ -668,10 +668,11 @@
           if (m.states.length) {
             heading(m.headings.state);
             m.states.forEach(function (s) {
-              /* no asserted state is drawn as the marks' wash, a state as its fill */
-              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: s.role === 'neutral'
-                ? 'fill: var(--state-neutral); fill-opacity: 0.15; stroke: var(--state-neutral); stroke-width: 1.5'
-                : 'fill: var(--state-' + s.role + ')' }));
+              /* no asserted role is drawn as the marks' wash, a role as its fill */
+              var pnt = model.system.paint(s.role);
+              gG.appendChild(el('rect', { x: x0 + 9, y: num(y + 3), width: 12, height: 12, rx: 3, style: model.system.asserts(s.role)
+                ? 'fill: ' + pnt
+                : 'fill: ' + pnt + '; fill-opacity: 0.15; stroke: ' + pnt + '; stroke-width: 1.5' }));
               rowText('label', s.label, 19, 14);
               if (note(s.meaning)) rowText('meaning', s.meaning, 16, 12);
               y += 7;

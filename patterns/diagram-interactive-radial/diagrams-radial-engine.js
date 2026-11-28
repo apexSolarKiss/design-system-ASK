@@ -146,6 +146,7 @@
     MODULES.forEach(function (m) { if (adapter[m] !== undefined && listed.indexOf(m) < 0 && m !== 'theme') ignored.push(m); });
 
     var model = R.contract.assemble(opts.data);                 /* throws: radial contract <CODE> */
+    var SYS = model.system;                                     /* the declared system: every role's paint and word */
     var L = R.layout.layout(model, adapter.layout);             /* throws: radial layout <CODE> */
     var LC = R.labels.configure(adapter.labels);                /* throws: radial labels <CODE> */
 
@@ -252,8 +253,8 @@
        clears the fill: the curve is cut where it meets that reach, by splitting it (de Casteljau),
        so the part drawn is the same curve. */
     var edgeEls = [], undrawn = 0, obscured = [];
-    /* a mark that asserts a state is filled at 100%; the root and a mark asserting none keep the wash */
-    function filled(n) { return n.kind !== 'root' && !!n.state && n.state !== 'neutral'; }
+    /* a mark that asserts a role is filled at 100%; the root and a mark asserting none keep the wash */
+    function filled(n) { return n.kind !== 'root' && SYS.asserts(n.state); }
     var filledMarks = L.nodes.filter(filled).map(function (n) { return { n: n, shape: shapeOf(n) }; });
     var strokeOf = {};                                       /* a plane's stroke width, read once per drawn class */
     function tipUnderFill(cut, p, target, drawn) {
@@ -374,7 +375,7 @@
     drawOrder.forEach(function (n) {
       var g = el('g', { 'class': 'radial-node radial-node--' + nodeClass(n), id: id + '-n' + index.get(n.id) });
       g.setAttribute('data-radial-id', n.id);
-      g.style.setProperty('--st', 'var(--state-' + (n.kind === 'root' ? 'neutral' : n.state) + ')');
+      g.style.setProperty('--st', SYS.paint(n.kind === 'root' ? null : n.state));
       var r = n.r, sh = n.kind === 'root' ? 'circle' : shapeOf(n);
       if (sh === 'pill')
         g.appendChild(el('rect', { 'class': 'radial-mark', x: n.x - r, y: n.y - r * 0.62, width: r * 2, height: r * 1.24, rx: r * 0.5, ry: r * 0.5 }));
@@ -398,8 +399,8 @@
          stylesheet's neutral wash. Every mark has one neutral frame outside it, drawn only for
          hover, relation and selection: emphasis never steps the fill. */
       var mark = g.querySelector('.radial-mark'), chip = g.querySelector('.radial-chip');
-      if (n.kind !== 'root' && n.state && n.state !== 'neutral') {
-        g.style.setProperty('--surface-fill-color', 'var(--state-' + n.state + ')');
+      if (filled(n)) {
+        g.style.setProperty('--surface-fill-color', SYS.paint(n.state));
         mark.setAttribute('class', 'radial-mark surface-fill');
         if (chip) {
           var cutId = id + '-cut' + index.get(n.id), cut = el('mask', { id: cutId, maskUnits: 'userSpaceOnUse',
@@ -964,9 +965,8 @@
       shown.forEach(function (k) {
         var n = byId.get(k), b = html('button', 'radial-chooser-item');
         b.type = 'button';
-        var swNeutral = n.kind === 'root' || !n.state || n.state === 'neutral';
-        var sw = html('span', 'radial-chooser-sw' + (swNeutral ? ' radial-sw--wash' : ''));
-        sw.style.setProperty('--st', 'var(--state-' + (n.kind === 'root' ? 'neutral' : n.state) + ')');
+        var sw = html('span', 'radial-chooser-sw' + (filled(n) ? '' : ' radial-sw--wash'));
+        sw.style.setProperty('--st', SYS.paint(n.kind === 'root' ? null : n.state));
         b.appendChild(sw);
         var tx = html('span', 'radial-chooser-txt');
         tx.appendChild(html('span', 'radial-chooser-lbl', n.label));

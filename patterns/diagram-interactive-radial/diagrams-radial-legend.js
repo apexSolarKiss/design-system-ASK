@@ -56,7 +56,7 @@
   /* the legend model: data only, shared by the live legend and any other renderer */
   function model(M, cfg) {
     var states = [], planes = [], kinds = [];
-    M.states.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
+    M.system.rows.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
     M.planes.forEach(function (p) { planes.push({ id: p.id, label: p.label, drawn: p.drawn, directed: p.directed, note: note(cfg, 'planes', p.id) }); });
     M.kinds.forEach(function (k) { kinds.push({ id: k.id, label: k.label, shape: k.shape, note: note(cfg, 'kinds', k.id) }); });
     return { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
@@ -97,14 +97,14 @@
     return r;
   }
 
-  function render(slot, m) {
+  function render(slot, m, sys) {
     var frag = document.createDocumentFragment();
     if (m.states.length) {
       frag.appendChild(div('radial-legend-h', m.headings.state));
       m.states.forEach(function (s) {
         /* no asserted state draws as the marks' wash, a state as its fill */
-        var sw = span('radial-legend-sw' + (s.role === 'neutral' ? ' radial-sw--wash' : ''));
-        sw.style.setProperty('--st', 'var(--state-' + s.role + ')');
+        var sw = span('radial-legend-sw' + (sys.asserts(s.role) ? '' : ' radial-sw--wash'));
+        sw.style.setProperty('--st', sys.paint(s.role));
         frag.appendChild(row(sw, s.label, s.meaning));
       });
     }
@@ -143,7 +143,7 @@
       var slot = api.slot('legend');                         /* required: the engine checked it */
       var m = model(api.model, cfg);
       var before = Array.prototype.slice.call(slot.childNodes);
-      render(slot, m);
+      render(slot, m, api.model.system);
       /* the same model for any other renderer of this instance (the export's page plate) */
       if (api.provide) api.provide('legend', { model: m });
       return {
