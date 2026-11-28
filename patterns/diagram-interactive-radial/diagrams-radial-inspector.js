@@ -287,6 +287,7 @@
       if (empty(v)) return null;
       var row = el('div', 'radial-insp-field');
       if (fmt === 'structured') {
+        if (f.tone && f.tone !== 'muted' && M.system.keyed) throw SectionError(where + ': under ' + M.system.title + ' a field tone is muted only');
         row.className = 'radial-insp-block' + (f.tone ? ' has-tone' : '');
         if (f.tone) row.style.setProperty('--tone', f.tone === 'muted' ? 'var(--fg-3)' : M.system.paint(f.tone));
         row.appendChild(el('span', 'radial-insp-lbl', f.label));
@@ -459,7 +460,8 @@
     function stillClosed() { return !destroyed && view === 'idle'; }
     function say(t) {
       if (!t) return;
-      var msg = cfg.announce ? cfg.announce(t, ctx) : cfg.header(t).title;
+      /* the default names the target, and under a keyed system its owner word; an adapter's own message is its own */
+      var msg = cfg.announce ? cfg.announce(t, ctx) : cfg.header(t).title + (M.system.keyed && t.state ? ', ' + t.state.label : '');
       if (typeof msg === 'string' && msg) api.announce(msg);
     }
 

@@ -57,7 +57,7 @@
               mark: 'no mark is displayed for this theme', image: 'mark image unavailable', markOut: 'mark outside the plate',
               tokens: 'theme tokens missing', lines: 'plate lines must be strings', chrome: 'chrome text outside the plate',
               overlap: 'chrome blocks overlap', label: 'label outside the label area', raster: 'raster failed',
-              busy: 'export busy', stopped: 'export stopped', profile: 'no such profile',
+              busy: 'export busy', stopped: 'export stopped', profile: 'no such profile', key: 'key missing',
               capture: 'plate style not captured at the click' };
   /* the state the screen paints and a plate never shows */
   var STATE = ['is-selected', 'is-near', 'is-dim', 'is-out', 'is-on', 'is-linked'];
@@ -204,6 +204,9 @@
     ['page', 'diagram'].forEach(function (name) {
       if (!given(cfg.profiles, name)) return;
       var v = cfg.profiles[name] === true ? {} : cfg.profiles[name];
+      /* a keyed system is exported with its key: the page plate only, its legend always drawn */
+      if (model.system.keyed && name === 'diagram') throw ExportError('export.profiles.diagram is refused: a ' + model.system.title + ' instance exports the page plate with its key');
+      if (model.system.keyed && given(v, 'legend') && !v.legend) throw ExportError('export.profiles.page.legend cannot be off: a ' + model.system.title + ' instance exports its key');
       var P = { name: name, scale: given(v, 'scale') ? v.scale : 2 };
       if (given(v, 'detail')) {
         if (v.detail >= LC.tiers.length) throw ExportError('export.profiles.' + name + '.detail names no tier');
@@ -491,6 +494,7 @@
       var legendSvc = api.service('legend');
       var showLegend = page && P.legend && !!legendSvc && !!legendSvc.model;
       var legendModel = showLegend ? legendSvc.model : null;
+      if (page && model.system.keyed && !(legendModel && legendModel.declarations)) throw fail(WHY.key);
       var FA = figureArea(P, showLegend), b = L.bounds;
       var k = Math.min((FA.w - 2 * G.gutterX) / b.w, (FA.h - 2 * G.gutterY) / b.h);
       var view = { k: k, x: FA.w / 2 - (b.x + b.w / 2) * k, y: FA.h / 2 - (b.y + b.h / 2) * k };
@@ -677,6 +681,15 @@
               if (note(s.meaning)) rowText('meaning', s.meaning, 16, 12);
               y += 7;
             });
+            /* a keyed system's name, then each declaration under its label, across the column */
+            if (m.declarations) {
+              heading(m.system);
+              m.declarations.forEach(function (d) {
+                y += cellText('meaning', d.label, x0, G.legendW, 12, 16, y);
+                y += cellText('label', d.value, x0, G.legendW, 14, 19, y);
+                y += 7;
+              });
+            }
           }
           if (m.planes.length) {
             heading(m.headings.line);

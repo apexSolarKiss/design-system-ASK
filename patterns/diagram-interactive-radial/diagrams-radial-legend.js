@@ -59,9 +59,15 @@
     M.system.rows.forEach(function (s) { states.push({ role: s.role, label: s.label, meaning: s.meaning }); });
     M.planes.forEach(function (p) { planes.push({ id: p.id, label: p.label, drawn: p.drawn, directed: p.directed, note: note(cfg, 'planes', p.id) }); });
     M.kinds.forEach(function (k) { kinds.push({ id: k.id, label: k.label, shape: k.shape, note: note(cfg, 'kinds', k.id) }); });
-    return { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
-             states: states, planes: planes, kinds: kinds, shapes: cfg.shapes === undefined ? null : cfg.shapes,
-             bound: cfg.bound === undefined ? null : cfg.bound };
+    var m = { headings: { state: cfg.headings.state, line: cfg.headings.line, shape: cfg.headings.shape },
+              states: states, planes: planes, kinds: kinds, shapes: cfg.shapes === undefined ? null : cfg.shapes,
+              bound: cfg.bound === undefined ? null : cfg.bound };
+    /* a keyed system's key carries its name and declarations, under its rows; Spectral's model is unchanged */
+    if (M.system.keyed) {
+      m.system = M.system.title;
+      m.declarations = M.system.declarations.map(function (x) { return { field: x.field, label: x.label, value: x.value }; });
+    }
+    return m;
   }
 
   function div(cls, txt) { var e = document.createElement('div'); e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
@@ -107,6 +113,16 @@
         sw.style.setProperty('--st', sys.paint(s.role));
         frag.appendChild(row(sw, s.label, s.meaning));
       });
+      if (m.declarations) {
+        frag.appendChild(div('radial-legend-h', m.system));
+        m.declarations.forEach(function (x) {
+          var r = div('radial-legend-row radial-legend-decl'), t = span('radial-legend-txt');
+          t.appendChild(span('radial-legend-sub', x.label));
+          t.appendChild(span('radial-legend-lbl', x.value));
+          r.appendChild(t);
+          frag.appendChild(r);
+        });
+      }
     }
     if (m.planes.length) {
       frag.appendChild(div('radial-legend-h', m.headings.line));

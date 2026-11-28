@@ -147,6 +147,15 @@
 
     var model = R.contract.assemble(opts.data);                 /* throws: radial contract <CODE> */
     var SYS = model.system;                                     /* the declared system: every role's paint and word */
+    /* a keyed system is read with its key: the legend module is listed, and the system's role tokens
+       and the structural wash resolve in this host, before anything is drawn */
+    if (SYS.keyed) {
+      if (listed.indexOf('legend') < 0) throw MountError('KEY_REQUIRED', 'a ' + SYS.title + ' instance is drawn keyed only: list the legend module');
+      var tcs = root.getComputedStyle(host);
+      SYS.tokenNames.concat(['--fg-1']).forEach(function (t) {
+        if (!tcs.getPropertyValue(t).trim()) throw MountError('TOKENS', t + ' does not resolve in the host; load the ' + SYS.title + ' stylesheet');
+      });
+    }
     var L = R.layout.layout(model, adapter.layout);             /* throws: radial layout <CODE> */
     var LC = R.labels.configure(adapter.labels);                /* throws: radial labels <CODE> */
 
@@ -785,7 +794,7 @@
       locked = nid; previewId = null;
       paint(nid);
       selectedReadout();
-      if (nid) announce(fill(announceT.select, { label: byId.get(nid).label }));
+      if (nid) announce(fill(announceT.select, { label: byId.get(nid).label }) + word(nid));
       emit('select', { id: nid, cause: cause || (via === 'api' ? 'module' : 'reader'), via: via || 'api' });
       return true;
     }
@@ -970,8 +979,9 @@
         b.appendChild(sw);
         var tx = html('span', 'radial-chooser-txt');
         tx.appendChild(html('span', 'radial-chooser-lbl', n.label));
-        var par = byId.get(n.parent);
-        if (par) tx.appendChild(html('span', 'radial-chooser-sub', par.label));
+        var par = byId.get(n.parent), w = SYS.keyed && n.kind !== 'root' ? SYS.word(n.state) : null;
+        /* a keyed system's colored swatch sits beside its owner word */
+        if (par || w) tx.appendChild(html('span', 'radial-chooser-sub', (par ? par.label : '') + (par && w ? ' \u00B7 ' : '') + (w || '')));
         b.appendChild(tx);
         b.addEventListener('click', function (ev) {
           ev.stopPropagation();
@@ -1047,6 +1057,11 @@
     setAttr(stage, 'aria-roledescription', 'radial diagram');
     setAttr(stage, 'aria-label', model.root.label);
     var keyboard = false;
+    /* a keyed system's owner word for an assessed node, spoken after its name; nothing otherwise */
+    function word(nid) {
+      var n = byId.get(nid), w = SYS.keyed && n && n.kind !== 'root' ? SYS.word(n.state) : null;
+      return w ? ', ' + w : '';
+    }
     function position(nid) {
       var n = byId.get(nid);
       if (n.kind === 'root') return fill(announceT.focusRoot, { label: n.label });
@@ -1069,7 +1084,7 @@
       raise();
       reveal(nid);
       drawFocus();
-      announce(position(nid));
+      announce(position(nid) + word(nid));
       emit('focus', { id: nid, cause: cause || 'reader' });
       return true;
     }
@@ -1078,7 +1093,8 @@
       if (!keyboard) return;
       if (!focusId || !visible(focusId)) focusId = locked || model.root.id;
       raise(); drawFocus();
-      announce(fill(announceT.start, { label: byId.get(focusId).label }) + ' ' + position(focusId));
+      announce(fill(announceT.start, { label: byId.get(focusId).label }) + ' ' + position(focusId) + word(focusId) +
+               (SYS.keyed ? ' Color is ' + SYS.title + ': ' + SYS.declarations[0].value + '.' : ''));
     });
     on(stage, 'blur', function () { drawFocus(); });
     on(stage, 'keydown', function (ev) {
@@ -1335,5 +1351,5 @@
 
   R.mount = mount;
   R.MountError = MountError;
-  R.VERSION = 1;
+  R.VERSION = 2;
 })(typeof window !== 'undefined' ? window : globalThis);
